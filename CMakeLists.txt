@@ -12,6 +12,9 @@ endmacro()
 # this has to be done before the project() instruction!
 otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
+# enable c++11
+set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+
 # project name
 project(OTL)
 
