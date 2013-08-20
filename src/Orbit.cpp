@@ -1,5 +1,5 @@
-#include "Orbit.h"
-#include "Vector3.h"
+#include "Orbit.hpp"
+#include "Vector3.hpp"
 
 namespace otl
 {
