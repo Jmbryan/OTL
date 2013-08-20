@@ -21,8 +21,11 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src)
 
 # all source files
 set(SRC
-	${SRCROOT}/Vector3.cpp
+	${SRCROOT}/Orbit.cpp
 )
 source_group("" FILES ${SRC})
 
 add_library(otl STATIC ${SRC})
+
+# set the target's folder (for IDEs that support it, e.g. Visual Studio)
+set_target_properties(otl PROPERTIES FOLDER "OTL")
