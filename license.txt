@@ -28,4 +28,5 @@ it freely, subject to the following restrictions:
 External libraries used by OTL
 -------------------------------
 
+* SFML is under the zlib/png License
 * Catch is under the Boost Software License
