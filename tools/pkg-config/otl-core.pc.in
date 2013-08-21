@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib@LIB_SUFFIX@
+includedir=${prefix}/include
+
+Name: OTL-core
+Description: The Orbital Trajectory Library, core module.
+URL: http://www.otl-dev.com
+Version: @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@
+Libs: -L${libdir} -lotl-core
+Cflags: -I${includedir}

@@ -1,5 +1,5 @@
-#include "Orbit.hpp"
-#include "Vector3.hpp"
+#include <OTL/Orbit.hpp>
+#include <SFML/System.hpp>
 
 namespace otl
 {
