@@ -1,0 +1,18 @@
+JPL provides an online Ephemeris calculation tool which can be used to generate 
+truth data for the DE405 interpolation programs.
+
+The webpage is here:
+http://ssd.jpl.nasa.gov/horizons.cgi
+
+To receive values in the form as those computed by niek-ephem, use the following
+settings:
+
+    Ephemeris Type:      "Vector Table"
+    Target Body:         <one of the bodies supported by DE405> 
+    Coordinate Origin:   Solar System Barycenter (SSB) [500@0] 
+    Time Span:           Julian Days within 1600-2200 AD.
+    Table Settings:      
+        output units     -> km & km/d
+        quantities code  -> 2 (state vector {x,y,z,vx,vy,vz})
+        reference plane  -> Earth mean equator and equinox of reference epoch
+        reference system -> ICRF/J2000.0

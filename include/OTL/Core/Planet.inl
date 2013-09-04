@@ -22,81 +22,60 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Orbit.hpp>
-
-namespace otl
-{
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit() :
-m_mu(0.0f),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline Planet::PlanetInfo::PlanetInfo() :
+name(""),
+radius(0.0),
+mu(0.0)
 {
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline Planet::PlanetInfo::PlanetInfo(const std::string& Name, double Radius, double Mu) :
+name(Name),
+radius(Radius),
+mu(Mu)
 {
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const StateVector& stateVector, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
-{
-   SetStateVector(stateVector);
-}
-
-////////////////////////////////////////////////////////////
-Orbit::Orbit(const OrbitalElements& orbitalElements, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
-{
-   SetOrbitalElements(orbitalElements);
-}
-
-////////////////////////////////////////////////////////////
-Orbit::~Orbit()
+inline Planet::Planet() :
+OrbitalBody(),
+m_id(InvalidPlanet)
 {
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::UpdateOrbitType()
+inline Planet::Planet(Planet::PlanetId planetId) :
+OrbitalBody(),
+m_id(planetId)
 {
-   double eccentricity = m_orbitalElements.eccentricity;
-   
-   if (eccentricity == ASTRO_ECC_CIRCULAR)
-   {
-      m_orbitType = Circular;
-   }
-   else if (eccentricity > ASTRO_ECC_CIRCULAR &&
-            eccentricity < ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Elliptical;
-   }
-   else if (eccentricity == ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Parabolic;
-   }
-   else if (eccentricity > ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Hyperbolic;
-   }
-   else
-   {
-      m_orbitType = InvalidType;
-   }
+   Initialize(planetId);
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(double seconds)
+inline Planet::Planet(const std::string& name) :
+OrbitalBody(),
+m_id(InvalidPlanet)
+{
+   m_id = ConvertName2Identifier(name);
+   Initialize(m_id);
+}
+
+////////////////////////////////////////////////////////////
+inline std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
+{
+   assert(planetId > InvalidPlanet && planetId < NumPlanets);
+   return m_planetInfo.at(planetId).name;
+}
+
+////////////////////////////////////////////////////////////
+inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) const
 {
 }
 
-} // namespace otl
+////////////////////////////////////////////////////////////
+inline void Planet::GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) const
+{
+}

@@ -1,17 +1,35 @@
 
 # set the include directory
-set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL)
+set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Core)
 
 # set the source directory
 set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 
-# set the catch include directory
+# set the Catch include directory
 set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
+
+# set the Jpl_eph include direction
+set (JPLEPHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Jpl_eph)
 
 # all source files
 set(SRC
-	${SRCROOT}/Orbit.cpp
+	${INCROOT}/Base.hpp
+	${SRCROOT}/Conversion.cpp
+	${INCROOT}/Conversion.hpp
+	${INCROOT}/Matrix3.hpp
+	${INCROOT}/Matrix3.inl
+	${SRCROOT}/Orbit.cpp	
 	${INCROOT}/Orbit.hpp
+	${INCROOT}/Orbit.inl
+	${INCROOT}/OrbitalBody.hpp
+	${INCROOT}/OrbitalBody.inl
+	${SRCROOT}/Planet.cpp	
+	${INCROOT}/Planet.hpp
+	${INCROOT}/Planet.inl
+	${SRCROOT}/Transformation.cpp	
+	${INCROOT}/Transformation.hpp
+	${INCROOT}/Vector3.hpp
+	${INCROOT}/Vector3.inl
 	${CATCHROOT}/Catch.hpp
 )
 source_group("" FILES ${SRC})
@@ -36,4 +54,4 @@ set(CORE_EXT_LIBS ${SFML_LIBRARY})
 # define the otl-core target
 otl_add_library(otl-core
                 SOURCES ${SRC}
-					 EXTERNAL_LIBS ${CORE_EXT_LIBS})
+				EXTERNAL_LIBS ${CORE_EXT_LIBS})

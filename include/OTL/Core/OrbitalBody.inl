@@ -1,5 +1,3 @@
-////////////////////////////////////////////////////////////
-//
 // OTL - Orbital Trajectory Library
 // Copyright (C) 2013-2018 Jason Bryan (Jmbryan10@gmail.com)
 //
@@ -22,81 +20,55 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Orbit.hpp>
-
-namespace otl
-{
-
 ////////////////////////////////////////////////////////////
-Orbit::Orbit() :
-m_mu(0.0f),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+OrbitalBody::OrbitalBody() :
+m_name(""),
+m_radius(0.0),
+m_mu(0.0)
 {
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+OrbitalBody::OrbitalBody(const std::string& name, double radius, double mu) :
+m_name(name),
+m_radius(radius),
+m_mu(mu)
 {
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const StateVector& stateVector, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline void OrbitalBody::SetName(const std::string& name)
 {
-   SetStateVector(stateVector);
+   m_name = name;
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const OrbitalElements& orbitalElements, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline void OrbitalBody::SetRadius(double radius)
 {
-   SetOrbitalElements(orbitalElements);
+   m_radius = radius;
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::~Orbit()
+inline void OrbitalBody::SetMu(double mu)
 {
+   m_mu = mu;
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::UpdateOrbitType()
+inline std::string OrbitalBody::GetName() const
 {
-   double eccentricity = m_orbitalElements.eccentricity;
-   
-   if (eccentricity == ASTRO_ECC_CIRCULAR)
-   {
-      m_orbitType = Circular;
-   }
-   else if (eccentricity > ASTRO_ECC_CIRCULAR &&
-            eccentricity < ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Elliptical;
-   }
-   else if (eccentricity == ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Parabolic;
-   }
-   else if (eccentricity > ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Hyperbolic;
-   }
-   else
-   {
-      m_orbitType = InvalidType;
-   }
+   return m_name;
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(double seconds)
+inline double OrbitalBody::SetRadius() const
 {
+   return m_radius;
 }
 
-} // namespace otl
+////////////////////////////////////////////////////////////
+inline double OrbitalBody::GetMu() const
+{
+   return m_mu;
+}
+

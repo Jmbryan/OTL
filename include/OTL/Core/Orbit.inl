@@ -22,81 +22,73 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Orbit.hpp>
-
-namespace otl
-{
-
 ////////////////////////////////////////////////////////////
-Orbit::Orbit() :
-m_mu(0.0f),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline void Orbit::SetMu(double mu)
 {
+   m_mu = mu;
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline void Orbit::SetStateVector(const StateVector& stateVector)
 {
+   m_stateVector = stateVector;  
+   UpdateOrbitalElements();
+   UpdateRadius();
+   UpdateOrbitType();
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const StateVector& stateVector, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
 {
-   SetStateVector(stateVector);
+   m_orbitalElements = orbitalElements;  
+   UpdateStateVector();
+   UpdateRadius();
+   UpdateOrbitType();
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const OrbitalElements& orbitalElements, double mu) :
-m_mu(mu),
-m_radius(0.0f),
-m_orbitType(InvalidType)
+inline double Orbit::GetMu() const
 {
-   SetOrbitalElements(orbitalElements);
+   return m_mu;
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::~Orbit()
+inline const StateVector& Orbit::GetStateVector() const
 {
+   return m_stateVector;
+}
+////////////////////////////////////////////////////////////
+inline const OrbitalElements& Orbit::GetOrbitalElements() const
+{
+   return m_orbitalElements;
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::UpdateOrbitType()
+inline double Orbit::GetRadius() const
 {
-   double eccentricity = m_orbitalElements.eccentricity;
-   
-   if (eccentricity == ASTRO_ECC_CIRCULAR)
-   {
-      m_orbitType = Circular;
-   }
-   else if (eccentricity > ASTRO_ECC_CIRCULAR &&
-            eccentricity < ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Elliptical;
-   }
-   else if (eccentricity == ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Parabolic;
-   }
-   else if (eccentricity > ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Hyperbolic;
-   }
-   else
-   {
-      m_orbitType = InvalidType;
-   }
+   return m_radius;
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(double seconds)
+inline Orbit::OrbitType Orbit::GetType() const
 {
+   return m_orbitType;
 }
 
-} // namespace otl
+////////////////////////////////////////////////////////////
+inline void Orbit::UpdateStateVector()
+{
+   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector);
+}
+
+////////////////////////////////////////////////////////////
+inline void Orbit::UpdateOrbitalElements()
+{
+   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements);
+}
+
+////////////////////////////////////////////////////////////
+inline void Orbit::UpdateRadius()
+{
+   m_radius = sqrt(SQR(m_stateVector.position.x) * SQR(m_stateVector.position.y) + SQR(m_stateVector.position.z));
+}
