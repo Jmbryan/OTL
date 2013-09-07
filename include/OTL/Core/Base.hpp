@@ -32,12 +32,12 @@
 namespace otl
 {
 
-enum State
+enum class State
 {
-   InvalidState = -1,
+   Invalid = -1,
    Dirty,
    Clean,
-   NumStates
+   Count
 };
 
 struct StateVector

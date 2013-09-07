@@ -8,8 +8,9 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 # set the Catch include directory
 set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
 
-# set the Jpl_eph include direction
-set (JPLEPHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Jpl_eph)
+# set the Niek-ephem include direction
+set (EPHEM_INCROOT ${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
+set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
 
 # all source files
 set(SRC
@@ -54,4 +55,4 @@ set(CORE_EXT_LIBS ${SFML_LIBRARY})
 # define the otl-core target
 otl_add_library(otl-core
                 SOURCES ${SRC}
-				EXTERNAL_LIBS ${CORE_EXT_LIBS})
+					 EXTERNAL_LIBS ${CORE_EXT_LIBS})

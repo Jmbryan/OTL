@@ -31,7 +31,7 @@ namespace otl
 Orbit::Orbit() :
 m_mu(0.0f),
 m_radius(0.0f),
-m_orbitType(InvalidType)
+m_orbitType(Type::Invalid)
 {
 }
 
@@ -39,7 +39,7 @@ m_orbitType(InvalidType)
 Orbit::Orbit(double mu) :
 m_mu(mu),
 m_radius(0.0f),
-m_orbitType(InvalidType)
+m_orbitType(Type::Invalid)
 {
 }
 
@@ -47,7 +47,7 @@ m_orbitType(InvalidType)
 Orbit::Orbit(const StateVector& stateVector, double mu) :
 m_mu(mu),
 m_radius(0.0f),
-m_orbitType(InvalidType)
+m_orbitType(Type::Invalid)
 {
    SetStateVector(stateVector);
 }
@@ -56,7 +56,7 @@ m_orbitType(InvalidType)
 Orbit::Orbit(const OrbitalElements& orbitalElements, double mu) :
 m_mu(mu),
 m_radius(0.0f),
-m_orbitType(InvalidType)
+m_orbitType(Type::Invalid)
 {
    SetOrbitalElements(orbitalElements);
 }
@@ -73,24 +73,24 @@ void Orbit::UpdateOrbitType()
    
    if (eccentricity == ASTRO_ECC_CIRCULAR)
    {
-      m_orbitType = Circular;
+      m_orbitType = Type::Circular;
    }
    else if (eccentricity > ASTRO_ECC_CIRCULAR &&
             eccentricity < ASTRO_ECC_PARABOLIC)
    {
-      m_orbitType = Elliptical;
+      m_orbitType = Type::Elliptical;
    }
    else if (eccentricity == ASTRO_ECC_PARABOLIC)
    {
-      m_orbitType = Parabolic;
+      m_orbitType = Type::Parabolic;
    }
    else if (eccentricity > ASTRO_ECC_PARABOLIC)
    {
-      m_orbitType = Hyperbolic;
+      m_orbitType = Type::Hyperbolic;
    }
    else
    {
-      m_orbitType = InvalidType;
+      m_orbitType = Type::Invalid;
    }
 }
 

@@ -33,9 +33,9 @@ class Planet : public OrbitalBody
 {
 public:
 
-   enum PlanetId
+   enum class PlanetId
    {
-      InvalidPlanet = -1,  ///< Invalid planet identifier
+      Invalid = -1,  ///< Invalid planet identifier
       Mercury,
       Venus,
       Earth,
@@ -45,7 +45,7 @@ public:
       Uranus,
       Neptune,
       Pluto,
-      NumPlanets           ///< Number of planets
+      Count           ///< Number of planets
    };
 
    struct PlanetInfo

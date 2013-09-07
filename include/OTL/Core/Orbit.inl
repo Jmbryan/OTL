@@ -70,7 +70,7 @@ inline double Orbit::GetRadius() const
 }
 
 ////////////////////////////////////////////////////////////
-inline Orbit::OrbitType Orbit::GetType() const
+inline Orbit::Type Orbit::GetType() const
 {
    return m_orbitType;
 }

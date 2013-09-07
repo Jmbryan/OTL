@@ -33,22 +33,22 @@ class Orbit
 {
 public:
 
-   enum OrbitDirection
+   enum class Direction
    {
-      InvalidDirection = -1,
+      Invalid = -1,
       Propgrade,
       Retrograde,
-      NumDirections
+      Count
    };
 
-   enum OrbitType
+   enum class Type
    {
-      InvalidType = -1,
+      Invalid = -1,
       Circular,
       Elliptical,
       Parabolic,
       Hyperbolic,
-      NumTypes
+      Count
    };
 
    ////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ public:
    /// \return Type of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   OrbitType GetType() const;
+   Type GetType() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit in time
@@ -213,7 +213,7 @@ private:
 
    double m_mu;                        ///< Gravitational parameter of the central body (kg^2/m^3)
    double m_radius;                    ///< Radius of the orbit (m)
-   OrbitType m_orbitType;              ///< Type of orbit (prograde or retrograde)
+   Type m_orbitType;                   ///< Type of orbit (prograde or retrograde)
 };
 
 #include <OTL/Core/Orbit.inl>

@@ -42,7 +42,7 @@ mu(Mu)
 ////////////////////////////////////////////////////////////
 inline Planet::Planet() :
 OrbitalBody(),
-m_id(InvalidPlanet)
+m_id(PlanetId::Invalid)
 {
 }
 
@@ -57,7 +57,7 @@ m_id(planetId)
 ////////////////////////////////////////////////////////////
 inline Planet::Planet(const std::string& name) :
 OrbitalBody(),
-m_id(InvalidPlanet)
+m_id(PlanetId::Invalid)
 {
    m_id = ConvertName2Identifier(name);
    Initialize(m_id);
@@ -66,7 +66,7 @@ m_id(InvalidPlanet)
 ////////////////////////////////////////////////////////////
 inline std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 {
-   assert(planetId > InvalidPlanet && planetId < NumPlanets);
+   assert(planetId > PlanetId::Invalid && planetId < PlanetId::Count);
    return m_planetInfo.at(planetId).name;
 }
 

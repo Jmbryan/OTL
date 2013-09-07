@@ -33,7 +33,7 @@ const Planet::PlanetDictionary Planet::m_planetInfo = Planet::CreatePlanetInfo()
 ////////////////////////////////////////////////////////////
 void Planet::Initialize(Planet::PlanetId planetId)
 {
-   assert(planetId > InvalidPlanet && planetId < NumPlanets);
+   assert(planetId > PlanetId::Invalid && planetId < PlanetId::Count);
    
    const PlanetInfo& planetInfo = m_planetInfo.at(planetId);
 
@@ -45,7 +45,7 @@ void Planet::Initialize(Planet::PlanetId planetId)
 ////////////////////////////////////////////////////////////
 Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
 {
-   PlanetId planetId = InvalidPlanet;
+   PlanetId planetId = PlanetId::Invalid;
 
    for (auto it = m_planetInfo.begin(); it != m_planetInfo.end(); ++it)
    {
@@ -64,16 +64,16 @@ Planet::PlanetDictionary Planet::CreatePlanetInfo()
 {
    PlanetDictionary planetInfo;
 
-   //         Planet                  Name          Radius                 Gravitational Parameter    
-   planetInfo[Mercury]   = PlanetInfo("Mercury",    ASTRO_RADIUS_MERCURY,  ASTRO_MU_MERCURY);
-   planetInfo[Venus]     = PlanetInfo("Venus",      ASTRO_RADIUS_VENUS,    ASTRO_MU_VENUS);
-   planetInfo[Earth]     = PlanetInfo("Earth",      ASTRO_RADIUS_EARTH,    ASTRO_MU_EARTH);
-   planetInfo[Mars]      = PlanetInfo("Mars",       ASTRO_RADIUS_MARS,     ASTRO_MU_MARS);
-   planetInfo[Jupiter]   = PlanetInfo("Jupiter",    ASTRO_RADIUS_JUPITER,  ASTRO_MU_JUPITER);
-   planetInfo[Saturn]    = PlanetInfo("Saturn",     ASTRO_RADIUS_SATURN,   ASTRO_MU_SATURN);
-   planetInfo[Uranus]    = PlanetInfo("Uranus",     ASTRO_RADIUS_URANUS,   ASTRO_MU_URANUS);
-   planetInfo[Neptune]   = PlanetInfo("Neptune",    ASTRO_RADIUS_NEPTUNE,  ASTRO_MU_NEPTUNE);
-   planetInfo[Pluto]     = PlanetInfo("Pluto",      ASTRO_RADIUS_PLUTO,    ASTRO_MU_PLUTO);
+   //         Planet                            Name          Radius                 Gravitational Parameter    
+   planetInfo[PlanetId::Mercury]   = PlanetInfo("Mercury",    ASTRO_RADIUS_MERCURY,  ASTRO_MU_MERCURY);
+   planetInfo[PlanetId::Venus]     = PlanetInfo("Venus",      ASTRO_RADIUS_VENUS,    ASTRO_MU_VENUS);
+   planetInfo[PlanetId::Earth]     = PlanetInfo("Earth",      ASTRO_RADIUS_EARTH,    ASTRO_MU_EARTH);
+   planetInfo[PlanetId::Mars]      = PlanetInfo("Mars",       ASTRO_RADIUS_MARS,     ASTRO_MU_MARS);
+   planetInfo[PlanetId::Jupiter]   = PlanetInfo("Jupiter",    ASTRO_RADIUS_JUPITER,  ASTRO_MU_JUPITER);
+   planetInfo[PlanetId::Saturn]    = PlanetInfo("Saturn",     ASTRO_RADIUS_SATURN,   ASTRO_MU_SATURN);
+   planetInfo[PlanetId::Uranus]    = PlanetInfo("Uranus",     ASTRO_RADIUS_URANUS,   ASTRO_MU_URANUS);
+   planetInfo[PlanetId::Neptune]   = PlanetInfo("Neptune",    ASTRO_RADIUS_NEPTUNE,  ASTRO_MU_NEPTUNE);
+   planetInfo[PlanetId::Pluto]     = PlanetInfo("Pluto",      ASTRO_RADIUS_PLUTO,    ASTRO_MU_PLUTO);
 
    return planetInfo;
 }
