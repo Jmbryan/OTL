@@ -17,8 +17,14 @@ set(SRC
 	${INCROOT}/Base.hpp
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.hpp
+	${INCROOT}/Epoch.hpp
+	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Matrix3.hpp
 	${INCROOT}/Matrix3.inl
+	${INCROOT}/Lambert.hpp
+	${SRCROOT}/Lambert.cpp
+	${INCROOT}/LambertExponentialSinusoid.hpp
+	${SRCROOT}/LambertExponentialSinusoid.cpp
 	${SRCROOT}/Orbit.cpp	
 	${INCROOT}/Orbit.hpp
 	${INCROOT}/Orbit.inl

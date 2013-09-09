@@ -23,28 +23,22 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Lambert.hpp>
 
 namespace otl
 {
 
-////////////////////////////////////////////////////////////
-/**
- \brief Transform a 3D vector from perifocal to inertial reference frames
+class ExponentialSinusoidLambert : public LambertAlgorithm
+{
+public:
+    virtual void Evaluate(const Vector3d& initialPosition,
+                          const Vector3d& finalPosition,
+                          double seconds,
+                          Vector3d& initialVelocity,
+                          Vector3d& finalVelocity);
 
- \reference Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Eqn 4.44.
-
- \param perifocalVector Vector in perifocal coordinates
- \param inclinaiton Inclination (radians)
- \param argOfPericenter Arguement of Perigee (radians)
- \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
- \param [out] inertialVector Transformed vector in inertial coordinates.
-*/
-////////////////////////////////////////////////////////////
-void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
-                                 double inclination,
-                                 double argOfPericenter,
-                                 double lonOfAscendingNode,
-                                 Vector3d& inertialVector);
+private:
+    double CalculateTimeOfFlight(double x, double s, double c, int longway);
+};
 
 } // namespace otl

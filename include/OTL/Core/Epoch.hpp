@@ -42,13 +42,13 @@ class Epoch final
 {
 public:
 
-   enum Type
+   enum class Type
    {
       Invalid = -1,  ///< Invalid epoch type
       JD,            ///< Julian Date
       MJD,           ///< Modified Julian Date
       MJD2000,       ///< Modified Julian Date 2000
-      NumTypes       ///< Number of epoch types
+      Count          ///< Number of epoch types
    };
 
    ////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ public:
    /// \param type Epoch type (JD, MJD, or MJD2000)
    ///
    ////////////////////////////////////////////////////////////
-   Epoch(double epoch, Type type = MJD2000);
+   Epoch(double epoch, Type type = Type::MJD2000);
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the epoch from a Gregorian date and time
@@ -73,13 +73,13 @@ public:
    ////////////////////////////////////////////////////////////
    Epoch(const GregorianDateTime& date);
 
-   void Set(double epoch, Type type = MJD2000);
+   void Set(double epoch, Type type = Type::MJD2000);
    void SetJD(double julianDate);
    void SetMJD(double modifiedJulianDate);
    void SetMJD2000(double modifiedJulianDate2000);
    void SetGregorian(const GregorianDateTime& date);
 
-   double Get(Type type = MJD2000) const;
+   double Get(Type type = Type::MJD2000) const;
    double GetJD() const;
    double GetMJD() const;
    double GetMJD2000() const;

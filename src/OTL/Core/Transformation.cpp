@@ -30,17 +30,17 @@ namespace otl
 
 void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
                                  double inclination,
-                                 double arguementOfPerigee,
-                                 double RAAN,
+                                 double argOfPericenter,
+                                 double lonOfAscendingNode,
                                  Vector3d& inertialVector)
 {
    // Precalculate common trig functions.
    double cosIncl = cos(inclination);
    double sinIncl = sin(inclination);
-   double cosAop = cos(arguementOfPerigee);
-   double sinAop = sin(arguementOfPerigee);
-   double cosRaan = cos(RAAN);
-   double sinRaan = sin(RAAN);
+   double cosAop = cos(argOfPericenter);
+   double sinAop = sin(argOfPericenter);
+   double cosRaan = cos(lonOfAscendingNode);
+   double sinRaan = sin(lonOfAscendingNode);
    
    // Build the rotation matrix.
    Matrix3d matrix;

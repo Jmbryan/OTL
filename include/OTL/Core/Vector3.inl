@@ -71,6 +71,16 @@ inline T Vector3<T>::Magnitude() const
 
 ////////////////////////////////////////////////////////////
 template <typename T>
+inline void Vector3<T>::Normalize()
+{
+    T magnitude = Magnitude();
+    x /= magnitude;
+    y /= magnitude;
+    z /= magnitude;
+}
+
+////////////////////////////////////////////////////////////
+template <typename T>
 inline T Vector3<T>::Dot(const Vector3<T>& vector)
 {
    return x*vector.x + y*vector.y + z*vector.z;

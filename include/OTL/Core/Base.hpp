@@ -48,11 +48,11 @@ struct StateVector
 
 struct OrbitalElements
 {
-   double semimajorAxis;      ///< Semimajor axis (m)
+   double semiMajorAxis;      ///< Semimajor axis
    double eccentricity;       ///< Eccentricity
    double inclination;        ///< Inclination (rad)
-   double arguementOfPerigee; ///< Arguement of perigee (rad)
-   double RAAN;               ///< Right ascension of the ascending node (rad)
+   double argOfPericenter;    ///< Argument of pericenter (rad)
+   double lonOfAscendingNode; ///< Longitude of the ascending node (rad)
    double trueAnomaly;        ///< True Anomaly (rad)
 };
 
@@ -104,11 +104,24 @@ const double ASTRO_RADIUS_URANUS    = 1.0;
 const double ASTRO_RADIUS_NEPTUNE   = 1.0;
 const double ASTRO_RADIUS_PLUTO     = 1.0;
 
-/// Returns the square of x.
+/// Returns the square of x
 inline double SQR(double x)
 {return x*x;}
 
+/// Returns r rounded towards zero
 inline double Round0(double x)
 {return (x < 0.0 ? ceil(x) : floor(x));}
 
-}
+/// Returns the inverse hyperbolic sine of x
+inline double asinh(double x)
+{ return log(x + sqrt(x*x + 1.0f)); }
+
+/// Returns the inverse hyperbolic cosine of x
+inline double acosh(double x)
+{ return log(x + sqrt(x*x - 1.0)); }
+
+/// Returns the inverse hyperbolic tangent of x
+inline double atanh(double x)
+{ return 0.5f*log((1.0f+x)/(1.0f-x)); }
+
+} // namespace otl

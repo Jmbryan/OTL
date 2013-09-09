@@ -146,11 +146,11 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
       }
    }
 
-   orbitalElements.semimajorAxis       = a;
+   orbitalElements.semiMajorAxis       = a;
    orbitalElements.eccentricity        = ecc;
    orbitalElements.inclination         = incl;
-   orbitalElements.arguementOfPerigee  = aop;
-   orbitalElements.RAAN                = raan;
+   orbitalElements.argOfPericenter     = aop;
+   orbitalElements.lonOfAscendingNode  = raan;
    orbitalElements.trueAnomaly         = ta;
 }
 
@@ -158,11 +158,11 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
 void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
                                         StateVector& stateVector)
 {
-   double a    = orbitalElements.semimajorAxis;
+   double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;
    double incl = orbitalElements.inclination;
-   double aop  = orbitalElements.arguementOfPerigee;
-   double raan = orbitalElements.RAAN;
+   double aop  = orbitalElements.argOfPericenter;
+   double raan = orbitalElements.lonOfAscendingNode;
    double ta   = orbitalElements.trueAnomaly;
 
    // Calculate the semiparameter.

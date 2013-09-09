@@ -48,15 +48,15 @@ void Epoch::Set(double epoch, Epoch::Type type)
 {
    switch (type)
    {
-   case MJD2000:
+   case Type::MJD2000:
       m_mjd2000 = epoch;
       break;
 
-   case MJD:
+   case Type::MJD:
       m_mjd2000 = ConvertMJD2MJD2000(epoch);
       break;
 
-   case JD:
+   case Type::JD:
       m_mjd2000 = ConvertJD2MJD2000(epoch);
       break;
    }
@@ -95,15 +95,15 @@ double Epoch::Get(Epoch::Type type) const
 
    switch (type)
    {
-   case MJD2000:
+   case Type::MJD2000:
       epoch = m_mjd2000;
       break;
 
-   case MJD:
+   case Type::MJD:
       epoch = ConvertMJD20002MJD(m_mjd2000);
       break;
 
-   case JD:
+   case Type::JD:
       epoch = ConvertMJD20002JD(m_mjd2000);
       break;
    }
