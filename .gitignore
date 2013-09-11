@@ -1,0 +1,23 @@
+
+# Visual Studio #
+#################
+*.obj
+*.ilk
+*.lnk
+*.pdb
+*.sdf
+*.aps
+*.opensdf
+*.sdf
+
+# XCode #
+#################
+
+# JPL #
+############
+*.405
+*.430
+
+# Logs and databases #
+######################
+*.log
