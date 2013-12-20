@@ -36,7 +36,7 @@ void PropagateAnalytical::Propagate(Orbit& orbit, double seconds)
    const double e = orbitalElements.eccentricity;
    double TA = orbitalElements.trueAnomaly;
 
-   if (orbit.GetType() == Orbit::Type::Elliptical)
+   if (orbit.IsType(Orbit::Type::Elliptical))
    {
       double T = 2.0 * MATH_2_PI * pow(a, 1.5) / sqrt(mu);
 

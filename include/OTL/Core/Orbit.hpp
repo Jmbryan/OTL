@@ -175,6 +175,14 @@ public:
    Type GetType() const;
 
    ////////////////////////////////////////////////////////////
+   /// \brief Is the orbit of this type
+   ///
+   /// \return True if the orbit is this type
+   ///
+   ////////////////////////////////////////////////////////////
+   bool IsType(Type orbitType) const;
+
+   ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit in time
    ///
    /// The number of seconds can be positive or negative for

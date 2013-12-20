@@ -86,6 +86,12 @@ inline Orbit::Type Orbit::GetType() const
 }
 
 ////////////////////////////////////////////////////////////
+inline bool Orbit::IsType(Type orbitType) const
+{
+   return (m_orbitType == orbitType); 
+}
+
+////////////////////////////////////////////////////////////
 inline void Orbit::UpdateStateVector()
 {
    ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector);
