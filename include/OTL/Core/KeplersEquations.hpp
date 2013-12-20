@@ -24,24 +24,51 @@
 
 #pragma once
 #include <OTL/Core/Base.hpp>
-#include <OTL/Core/Orbit.hpp>
 
 namespace otl
 {
 
-class ILambertAlgorithm
+namespace KeplersEquations
+{
+
+class EccentricAnomalyEquation
 {
 public:
-   ILambertAlgorithm() {}
-   virtual ~ILambertAlgorithm() {}
-
-   virtual void Evaluate(const Vector3d& initialPosition,
-                         const Vector3d& finalPosition,
-                         double seconds,
-                         const Orbit::Direction& orbitDirection,
-                         int maxRevolutions,
-                         Vector3d& initialVelocity,
-                         Vector3d& finalVelocity) = 0;
+   double operator() (double eccentricity, double eccentricAnomaly, double meanAnomaly) const;
 };
+
+class EccentricAnomalyDerivative
+{
+public:
+   double operator() (double eccentricity, double eccentricAnomaly) const;
+};
+
+class HyperbolicAnomalyEquation
+{
+public:
+   double operator() (double eccentricity, double hyperbolicAnomaly, double meanAnomaly) const;
+};
+
+class HyperbolicAnomalyDerivative
+{
+public:
+   double operator() (double eccentricity, double hyperbolicAnomaly) const;
+};
+
+} // namespace KeplersEquations
+
+
+double SolveKeplersEquationElliptical(double eccentricity,
+                                      double meanAnomaly,
+                                      int maxIterations = 1000,
+                                      double tolerance = MATH_TOLERANCE);
+
+double SolveKeplersEquationHyperbolic(double eccentricity,
+                                      double meanAnomaly,
+                                      int maxIterations = 1000,
+                                      double tolerance = MATH_TOLERANCE);
+
+
+#include <OTL/Core/KeplersEquations.inl>
 
 } // namespace otl

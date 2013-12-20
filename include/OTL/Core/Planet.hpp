@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
 #include <OTL/Core/OrbitalBody.hpp>
 
 namespace otl

@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////
-//
-// OTL - Orbital Trajectory Library
 // Copyright (C) 2013-2018 Jason Bryan (Jmbryan10@gmail.com)
 //
 // This software is provided 'as-is', without any express or implied warranty.
@@ -23,24 +20,19 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/Propagate.hpp>
 
 namespace otl
 {
 
-class ExponentialSinusoidLambert : public ILambertAlgorithm
+class PropagateAnalytical : public IPropagateAlgorithm
 {
 public:
-    virtual void Evaluate(const Vector3d& initialPosition,
-                          const Vector3d& finalPosition,
-                          double seconds,
-                          const Orbit::Direction& orbitDirection,
-                          int maxRevolutions,
-                          Vector3d& initialVelocity,
-                          Vector3d& finalVelocity);
+   PropagateAnalytical() {}
+   virtual ~PropagateAnalytical() {}
 
-private:
-    double CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions);
+   virtual void Propagate(Orbit& orbit, double seconds);
+
 };
 
 } // namespace otl

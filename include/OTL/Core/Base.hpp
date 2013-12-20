@@ -24,10 +24,13 @@
 
 #pragma once
 #include <OTL/Core/Matrix3.hpp>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <map>
 #include <cmath>
 #include <cassert>
+#include <vector>
 
 namespace otl
 {
@@ -48,18 +51,18 @@ struct StateVector
 
 struct OrbitalElements
 {
-   double semiMajorAxis;      ///< Semimajor axis
+   double semiMajorAxis;      ///< SemiMajor axis
    double eccentricity;       ///< Eccentricity
-   double inclination;        ///< Inclination (rad)
-   double argOfPericenter;    ///< Argument of pericenter (rad)
-   double lonOfAscendingNode; ///< Longitude of the ascending node (rad)
-   double trueAnomaly;        ///< True Anomaly (rad)
+   double inclination;        ///< Inclination
+   double argOfPericenter;    ///< Argument of pericenter
+   double lonOfAscendingNode; ///< Longitude of the ascending node
+   double trueAnomaly;        ///< True Anomaly
 };
 
 // Math
 const double MATH_DEG_TO_RAD        = 0.0174532925;
 const double MATH_RAD_TO_DEG        = 57.29577951;
-const double MATH_double_SMALL      = 1.0e-37;
+const double MATH_DOUBLE_SMALL      = 1.0e-37;
 const double MATH_NEAR_ZERO         = 2.0e-37;
 const double MATH_TOLERANCE         = 1.0e-8;
 const double MATH_INFINITY          = 1.0e37;

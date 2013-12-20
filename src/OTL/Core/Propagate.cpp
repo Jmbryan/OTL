@@ -22,45 +22,9 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/Propagate.hpp>
 
 namespace otl
 {
-
-////////////////////////////////////////////////////////////
-LambertAlgorithm::LambertAlgorithm() :
-m_orbitDirection(Orbit::Direction::Propgrade),
-m_maxRevolutions(0)
-{
-}
-
-////////////////////////////////////////////////////////////
-LambertAlgorithm::~LambertAlgorithm()
-{
-}
-
-////////////////////////////////////////////////////////////
-inline void LambertAlgorithm::SetOrbitDirection(const Orbit::Direction& orbitDirection)
-{
-    m_orbitDirection = orbitDirection;
-}
-
-////////////////////////////////////////////////////////////
-inline void LambertAlgorithm::SetMaxRevolutions(int maxRevolutions)
-{
-    m_maxRevolutions = maxRevolutions;
-}
-
-////////////////////////////////////////////////////////////
-inline Orbit::Direction LambertAlgorithm::GetOrbitDirection() const
-{
-    return m_orbitDirection;
-}
-
-////////////////////////////////////////////////////////////
-inline int LambertAlgorithm::GetMaxRevolutions() const
-{
-    return m_maxRevolutions;
-}
 
 } // namespace otl

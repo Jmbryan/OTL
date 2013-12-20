@@ -22,25 +22,9 @@
 //
 ////////////////////////////////////////////////////////////
 
-#pragma once
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/OrbitalBody.hpp>
 
 namespace otl
 {
-
-class ExponentialSinusoidLambert : public ILambertAlgorithm
-{
-public:
-    virtual void Evaluate(const Vector3d& initialPosition,
-                          const Vector3d& finalPosition,
-                          double seconds,
-                          const Orbit::Direction& orbitDirection,
-                          int maxRevolutions,
-                          Vector3d& initialVelocity,
-                          Vector3d& finalVelocity);
-
-private:
-    double CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions);
-};
 
 } // namespace otl

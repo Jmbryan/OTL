@@ -23,24 +23,25 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/Base.hpp>
 
 namespace otl
 {
 
-class ExponentialSinusoidLambert : public ILambertAlgorithm
+// Forward declarations
+class Planet;
+
+class IFlybyAlgorithm
 {
 public:
-    virtual void Evaluate(const Vector3d& initialPosition,
-                          const Vector3d& finalPosition,
-                          double seconds,
-                          const Orbit::Direction& orbitDirection,
-                          int maxRevolutions,
-                          Vector3d& initialVelocity,
-                          Vector3d& finalVelocity);
+   IFlybyAlgorithm() {}
+   virtual ~IFlybyAlgorithm() {}
 
-private:
-    double CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions);
+   virtual void Evaluate(const Vector3d& approachVelocity,
+                         const Planet& planet,
+                         double altitude,
+                         double BPlaneAngle,
+                         Vector3d& departureVelocity) = 0;
 };
 
 } // namespace otl

@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
+
 ////////////////////////////////////////////////////////////
 inline void Orbit::SetMu(double mu)
 {
@@ -41,6 +42,15 @@ inline void Orbit::SetStateVector(const StateVector& stateVector)
 inline void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
 {
    m_orbitalElements = orbitalElements;  
+   UpdateStateVector();
+   UpdateRadius();
+   UpdateOrbitType();
+}
+
+////////////////////////////////////////////////////////////
+inline void Orbit::SetTrueAnomaly(double trueAnomaly)
+{
+   m_orbitalElements.trueAnomaly = trueAnomaly;
    UpdateStateVector();
    UpdateRadius();
    UpdateOrbitType();

@@ -89,14 +89,14 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
       incl = acos(H.z / h);
    }
 
-   // Right ascension of the ascending node
-   double raan = 0.0;
+   // Longitude of the ascending node
+   double lan = 0.0;
    if (n > 0.0)
    {
-      raan = acos(N.x / n);
+      lan = acos(N.x / n);
       if (N.y < 0.0)
       {
-         raan = MATH_2_PI - raan;
+         lan = MATH_2_PI - lan;
       }
    }
 
@@ -150,7 +150,7 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    orbitalElements.eccentricity        = ecc;
    orbitalElements.inclination         = incl;
    orbitalElements.argOfPericenter     = aop;
-   orbitalElements.lonOfAscendingNode  = raan;
+   orbitalElements.lonOfAscendingNode  = lan;
    orbitalElements.trueAnomaly         = ta;
 }
 
@@ -162,7 +162,7 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
    double ecc  = orbitalElements.eccentricity;
    double incl = orbitalElements.inclination;
    double aop  = orbitalElements.argOfPericenter;
-   double raan = orbitalElements.lonOfAscendingNode;
+   double lan  = orbitalElements.lonOfAscendingNode;
    double ta   = orbitalElements.trueAnomaly;
 
    // Calculate the semiparameter.
@@ -182,8 +182,8 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
    Vp.z = 0.0;
 
    // Transform the state vectors into inertial coordinates.
-   TransformPerifocal2Inertial(Rp, incl, aop, raan, stateVector.position);
-   TransformPerifocal2Inertial(Vp, incl, aop, raan, stateVector.velocity);
+   TransformPerifocal2Inertial(Rp, incl, aop, lan, stateVector.position);
+   TransformPerifocal2Inertial(Vp, incl, aop, lan, stateVector.velocity);
 }
 
 } // namespace otl

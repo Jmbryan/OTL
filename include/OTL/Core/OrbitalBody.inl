@@ -1,3 +1,5 @@
+////////////////////////////////////////////////////////////
+//
 // OTL - Orbital Trajectory Library
 // Copyright (C) 2013-2018 Jason Bryan (Jmbryan10@gmail.com)
 //
@@ -21,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-OrbitalBody::OrbitalBody() :
+inline OrbitalBody::OrbitalBody() :
 m_name(""),
 m_radius(0.0),
 m_mu(0.0)
@@ -29,7 +31,7 @@ m_mu(0.0)
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalBody::OrbitalBody(const std::string& name, double radius, double mu) :
+inline OrbitalBody::OrbitalBody(const std::string& name, double radius, double mu) :
 m_name(name),
 m_radius(radius),
 m_mu(mu)
@@ -55,15 +57,15 @@ inline void OrbitalBody::SetMu(double mu)
 }
 
 ////////////////////////////////////////////////////////////
-inline std::string OrbitalBody::GetName() const
+inline void OrbitalBody::SetEpoch(const Epoch& epoch)
 {
-   return m_name;
+   m_epoch = epoch;
 }
 
 ////////////////////////////////////////////////////////////
-inline double OrbitalBody::SetRadius() const
+inline std::string OrbitalBody::GetName() const
 {
-   return m_radius;
+   return m_name;
 }
 
 ////////////////////////////////////////////////////////////
@@ -72,3 +74,32 @@ inline double OrbitalBody::GetMu() const
    return m_mu;
 }
 
+////////////////////////////////////////////////////////////
+inline double OrbitalBody::GetRadius() const
+{
+   return m_radius;
+}
+
+////////////////////////////////////////////////////////////
+inline const Epoch& OrbitalBody::GetEpoch() const
+{
+   return m_epoch;
+}
+
+////////////////////////////////////////////////////////////
+inline const StateVector& OrbitalBody::GetStateVector() const
+{
+   return m_stateVector;
+}
+
+////////////////////////////////////////////////////////////
+inline const Vector3d& OrbitalBody::GetPosition() const
+{
+   return m_stateVector.position;
+}
+
+////////////////////////////////////////////////////////////
+inline const Vector3d& OrbitalBody::GetVelocity() const
+{
+   return m_stateVector.velocity;
+}

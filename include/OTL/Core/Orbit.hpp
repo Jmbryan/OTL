@@ -29,6 +29,9 @@
 namespace otl
 {
 
+// Forward declarations
+class IPropagateAlgorithm;
+
 class Orbit
 {
 public:
@@ -118,6 +121,18 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void SetOrbitalElements(const OrbitalElements& orbitalElements);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the true anomaly orbital element
+   ///
+   /// The true anomaly is the only orbital element that varies with
+   /// time (assuming a non-perturbed orbit).
+   /// The state vector is automatically updated.
+   /// 
+   /// \param orbitalElements Orbital elements of the orbit at this time
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetTrueAnomaly(double trueAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of the central body
@@ -214,6 +229,8 @@ private:
    double m_mu;                        ///< Gravitational parameter of the central body (kg^2/m^3)
    double m_radius;                    ///< Radius of the orbit (m)
    Type m_orbitType;                   ///< Type of orbit (prograde or retrograde)
+
+   std::unique_ptr<IPropagateAlgorithm> m_propagator; ///< Pointer to the propagate algorithm
 };
 
 #include <OTL/Core/Orbit.inl>

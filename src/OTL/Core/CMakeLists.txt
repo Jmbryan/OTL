@@ -17,24 +17,27 @@ set(SRC
 	${INCROOT}/Base.hpp
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.hpp
-	${INCROOT}/Epoch.hpp
 	${SRCROOT}/Epoch.cpp
+	${INCROOT}/Epoch.hpp
+	${INCROOT}/Flyby.hpp
+	${SRCROOT}/FlybyIzzo.cpp
+	${INCROOT}/FlybyIzzo.hpp
+	${INCROOT}/Lambert.hpp
+	${SRCROOT}/LambertExponentialSinusoid.cpp
+	${INCROOT}/LambertExponentialSinusoid.hpp
 	${INCROOT}/Matrix3.hpp
 	${INCROOT}/Matrix3.inl
-	${INCROOT}/Lambert.hpp
-	${SRCROOT}/Lambert.cpp
-	${INCROOT}/LambertExponentialSinusoid.hpp
-	${SRCROOT}/LambertExponentialSinusoid.cpp
-	${SRCROOT}/Orbit.cpp	
+	${SRCROOT}/Orbit.cpp
 	${INCROOT}/Orbit.hpp
 	${INCROOT}/Orbit.inl
+	${SRCROOT}/OrbitalBody.cpp
 	${INCROOT}/OrbitalBody.hpp
 	${INCROOT}/OrbitalBody.inl
-	${SRCROOT}/Planet.cpp	
+	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.hpp
 	${INCROOT}/Planet.inl
-	${SRCROOT}/Transformation.cpp	
-	${INCROOT}/Transformation.hpp
+	${SRCROOT}/Transformation.cpp
+    ${INCROOT}/Transformation.hpp		
 	${INCROOT}/Vector3.hpp
 	${INCROOT}/Vector3.inl
 	${CATCHROOT}/Catch.hpp

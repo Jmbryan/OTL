@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Orbit.hpp>
+#include <OTL/Core/PropagateAnalytical.hpp>
 
 namespace otl
 {
@@ -97,6 +98,10 @@ void Orbit::UpdateOrbitType()
 ////////////////////////////////////////////////////////////
 void Orbit::Propagate(double seconds)
 {
+   if (m_propagator)
+   {
+      m_propagator->Propagate(*this, seconds);
+   }
 }
 
 } // namespace otl

@@ -31,6 +31,8 @@ namespace otl
 void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
                                           const Vector3d& finalPosition,
                                           double seconds,
+                                          const Orbit::Direction& orbitDirection,
+                                          int maxRevolutions,
                                           Vector3d& initialVelocity,
                                           Vector3d& finalVelocity)
 {
@@ -62,11 +64,11 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
     double trueAnomaly = acos(dotR1R2 / r2);
 
     // Direction of travel
-    if (m_orbitDirection == Orbit::Direction::Propgrade && CrossR1R2.z <= 0.0)
+    if (orbitDirection == Orbit::Direction::Propgrade && CrossR1R2.z <= 0.0)
     {
         trueAnomaly = MATH_2_PI - trueAnomaly;
     }
-    else if (m_orbitDirection == Orbit::Direction::Retrograde && CrossR1R2.z >= 0.0)
+    else if (orbitDirection == Orbit::Direction::Retrograde && CrossR1R2.z >= 0.0)
     {
         trueAnomaly = MATH_2_PI - trueAnomaly;
     }
@@ -89,8 +91,8 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
 
     double logt   = log(tof);
 
-    double y1 = CalculateTimeOfFlight(input1, s, c, longway);
-    double y2 = CalculateTimeOfFlight(input2, s, c, longway);
+    double y1 = CalculateTimeOfFlight(input1, s, c, longway, maxRevolutions);
+    double y2 = CalculateTimeOfFlight(input2, s, c, longway, maxRevolutions);
     y1 = log(y1) - logt;
     y2 = log(y2) - logt;
 
@@ -101,7 +103,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
     while (error > MATH_TOLERANCE && iteration < 60)
     {
         xnew = (x1*y2 - y1*x2) / (y2 - y1);
-        if (m_maxRevolutions == 0)
+        if (maxRevolutions == 0)
         {
             x = exp(xnew) - 1.0;
         }
@@ -110,9 +112,9 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
             x = 2.0 * MATH_1_OVER_PI * atan(xnew);
         }
 
-        ynew = CalculateTimeOfFlight(x, s, c, longway);
+        ynew = CalculateTimeOfFlight(x, s, c, longway, maxRevolutions);
 
-        if (m_maxRevolutions == 0)
+        if (maxRevolutions == 0)
         {
             ynew = log(ynew) - logt;
         }
@@ -176,7 +178,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
 }
 
 ////////////////////////////////////////////////////////////
-double ExponentialSinusoidLambert::CalculateTimeOfFlight(double x, double s, double c, int longway)
+double ExponentialSinusoidLambert::CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions)
 {
     double timeOfFlight = 0.0;
 
@@ -187,7 +189,7 @@ double ExponentialSinusoidLambert::CalculateTimeOfFlight(double x, double s, dou
     {
         alpha = 2.0*acos(x);
         beta  = 2.0*longway*asin(sqrt(0.5*(s - c) / a));
-        timeOfFlight  = a*sqrt(a)*((alpha - sin(alpha)) - (beta - sin(beta)) + MATH_2_PI * m_maxRevolutions); 
+        timeOfFlight  = a*sqrt(a)*((alpha - sin(alpha)) - (beta - sin(beta)) + MATH_2_PI * maxRevolutions); 
     }
     else // hyperbola
     {

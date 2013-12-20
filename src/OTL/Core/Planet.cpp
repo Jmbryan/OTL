@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Planet.hpp>
-#include <vector>
 
 namespace otl
 {

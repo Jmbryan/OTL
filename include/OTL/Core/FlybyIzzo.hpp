@@ -23,24 +23,27 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/Flyby.hpp>
 
 namespace otl
 {
 
-class ExponentialSinusoidLambert : public ILambertAlgorithm
+class FlybyIzzo : public IFlybyAlgorithm
 {
 public:
-    virtual void Evaluate(const Vector3d& initialPosition,
-                          const Vector3d& finalPosition,
-                          double seconds,
-                          const Orbit::Direction& orbitDirection,
-                          int maxRevolutions,
-                          Vector3d& initialVelocity,
-                          Vector3d& finalVelocity);
+   FlybyIzzo();
+   virtual ~FlybyIzzo();
 
-private:
-    double CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions);
+   virtual void Evaluate(const Vector3d& approachVelocity,
+                         const Planet& planet,
+                         double altitude,
+                         double BPlaneAngle,
+                         Vector3d& departureVelocity) override;
+
+protected:
+   Vector3d m_VInfinityIn;
+   Vector3d m_VInfinityOut;
+   Vector3d m_B1, m_B2, m_B3;
 };
 
 } // namespace otl
