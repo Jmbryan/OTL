@@ -107,6 +107,8 @@ const double ASTRO_RADIUS_URANUS    = 1.0;
 const double ASTRO_RADIUS_NEPTUNE   = 1.0;
 const double ASTRO_RADIUS_PLUTO     = 1.0;
 
+#define OTL_ASSERT assert
+
 /// Returns the square of x
 inline double SQR(double x)
 {return x*x;}
