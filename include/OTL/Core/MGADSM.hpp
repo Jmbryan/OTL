@@ -161,6 +161,13 @@ private:
    std::unique_ptr<IPropagateAlgorithm> m_propagator;
    std::unique_ptr<ILambertAlgorithm> m_lambert;
    std::unique_ptr<IFlybyAlgorithm> m_flyby;
+
+   // Temporary variables used in CalculateTrajectory()
+   Epoch m_initialEpoch;
+   Epoch m_finalEpoch;
+   StateVector m_initialStateVector;
+   StateVector m_finalStateVector;
+   StateVector m_planetStateVector;
 };
 
 } // namespace otl

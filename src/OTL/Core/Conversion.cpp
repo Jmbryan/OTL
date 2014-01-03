@@ -186,4 +186,13 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
    TransformPerifocal2Inertial(Vp, incl, aop, lan, stateVector.velocity);
 }
 
+////////////////////////////////////////////////////////////
+Vector3d ConvertSpherical2Cartesian(double magnitude, double normTheta, double normPhi)
+{
+    double theta = MATH_2_PI * normTheta;
+    double phi = acos(2.0 * normPhi - 1.0);
+    Vector3d vec(-sin(phi) * cos(theta), sin(phi) * sin(theta), -cos(phi));
+    return vec * magnitude;
+}
+
 } // namespace otl

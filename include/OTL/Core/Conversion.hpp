@@ -96,4 +96,7 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
 void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
                                         StateVector& stateVector);
 
+////////////////////////////////////////////////////////////
+Vector3d ConvertSpherical2Cartesian(double radius, double delta, double theta);
+
 } // namespace otl

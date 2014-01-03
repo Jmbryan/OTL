@@ -32,6 +32,7 @@ public:
    virtual ~PropagateAnalytical() {}
 
    virtual void Propagate(Orbit& orbit, double seconds);
+   virtual void Propagate(StateVector& stateVector, double mu, double seconds);
 
 };
 

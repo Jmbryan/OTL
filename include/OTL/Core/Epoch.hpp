@@ -83,11 +83,61 @@ public:
    double GetJD() const;
    double GetMJD() const;
    double GetMJD2000() const;
-   GregorianDateTime GetGregorian() const; 
-   
+   GregorianDateTime GetGregorian() const;
+
 private:
    double m_mjd2000; ///< Modified Julian Date 2000
 };
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator +=
+///
+/// This operator performs a memberwise addition of both Epochs,
+/// and assigns the result to \a left.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Epoch)
+///
+/// \return Reference to \a left
+///
+////////////////////////////////////////////////////////////
+Epoch& operator +=(Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator -=
+///
+/// This operator performs a memberwise subtraction of both Epochs,
+/// and assigns the result to \a left.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Epoch)
+///
+/// \return Reference to \a left
+///
+////////////////////////////////////////////////////////////
+Epoch& operator -=(Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator +
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Epoch)
+///
+/// \return Memberwise addition of both Epochs
+///
+////////////////////////////////////////////////////////////
+Epoch operator +(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator -
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Epoch)
+///
+/// \return Memberwise subtraction of both Epochs
+///
+////////////////////////////////////////////////////////////
+Epoch operator -(const Epoch& left, const Epoch& right);
 
 double ConvertJD2MJD(double julianDate);
 double ConvertJD2MJD2000(double julianDate);
@@ -96,5 +146,6 @@ double ConvertMJD2MJD2000(double modifiedJulianDate);
 double ConvertMJD20002JD(double modifiedJulianDate2000);
 double ConvertMJD20002MJD(double modifiedJulianDate2000);
 
+#include <OTL/Core/Epoch.inl>
 
 } // namespace otl

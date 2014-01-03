@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/MGADSM.hpp>
-#include <OTL/Core/Orbit.hpp>
 //#include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl
@@ -137,61 +136,54 @@ void MGADSM::Init(const std::vector<TrajectoryNode*>& nodes)
 
 void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<double>& deltaVs)
 {
-   StateVector initialStateVector;
-   StateVector finalStateVector;
+    int iState = 0;
+    int iPlanet = 0;
 
-   Epoch initialEpoch;
-   Epoch finalEpoch;
+    // Trajectory initial conditions
+    m_initialEpoch = states[iState++];
+    m_itinerary[iPlanet++].GetStateVectorsAtEpoch(m_initialEpoch, m_initialStateVector);
 
-   int iPlanet = 0;
-   int iState = 0;
-   int iDeltaV = 0;
+   // Calculate the trajectory one leg at a time
    for (auto i = 0; i < m_legs.size(); ++i)
    {
       const TrajectoryLeg& leg = m_legs[i];
 
-      Planet& initialPlanet = m_itinerary[iPlanet];
-      Planet& finalPlanet   = m_itinerary[iPlanet + 1];
-      iPlanet++;
+      // Leg destination
+      Planet& planet = m_itinerary[iPlanet++];
+
+      // Leg initial conditions
+      m_initialEpoch = m_finalEpoch;
+      m_initialStateVector = m_finalStateVector;
+
+      // Leg flight time
+      double timeOfFlightLeg = states[leg.timeofFlightIndex];
+      double timeOfFlightRemaining = timeOfFlightLeg;
+
+      // Leg final conditions
+      m_finalEpoch = m_initialEpoch + timeOfFlightLeg;
+      planet.GetStateVectorsAtEpoch(m_finalEpoch, m_planetStateVector);
+      m_finalStateVector = m_planetStateVector;
 
       // Handle departure event
       if (leg.departure)
       {
-         // Initial departure
-         if (i == 0)
-         {
-            initialEpoch = states[iState++];
-            initialPlanet.GetStateVectorsAtEpoch(initialEpoch, initialStateVector);
-         }
-         // Intermediate departure
-         else
-         {
-            initialStateVector = finalStateVector;
-         }
-
          // Followed by a DSM
          if (leg.numDSM > 0)
          {
             double vinf  = states[iState++];
-            double delta = states[iState++];
             double theta = states[iState++];
+            double phi = states[iState++];
 
-            Vector3d oldVelocity = initialStateVector.velocity;
-            Vector3d deltaV; //= ConvertSpherical2Cartesian(vinf, delta, theta);
-            initialStateVector.velocity = oldVelocity + deltaV;
+            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, theta, phi);
+            m_initialStateVector.velocity += deltaV;
 
             deltaVs.push_back(deltaV.Magnitude());
          }
       }
 
-      double timeOfFlightLeg = states[leg.timeofFlightIndex];
-      double timeOfFlightRemaining = timeOfFlightLeg;
-
-      // Handle DSM event(s)
+      // Handle DSM event(s) (Propagate)
       if (leg.numDSM > 0)
       {
-         Orbit orbit(initialStateVector, ASTRO_MU_SUN);
-         
          for (int j = 0; j < leg.numDSM; ++j)
          {
             double alpha = states[iState++];
@@ -202,59 +194,52 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
             if (j > 0)
             {
                double vinf = states[iState++];
-               double delta = states[iState++];
                double theta = states[iState++];
+               double phi = states[iState++];
 
-               Vector3d deltaV; //= ConvertSpherical2Cartesian(vinf, delta, theta);
-               initialStateVector.velocity += deltaV;
+               Vector3d deltaV = ConvertSpherical2Cartesian(vinf, theta, phi);
+               m_initialStateVector.velocity += deltaV;
 
                deltaVs.push_back(deltaV.Magnitude());
             }
 
-            orbit.SetStateVector(initialStateVector);
-            orbit.Propagate(timeOfFlight);
-
-            initialStateVector = orbit.GetStateVector();
+            m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, timeOfFlight);
          }      
       }
 
-      Vector3d finalPlanetVelocity = finalStateVector.velocity;
-
-
-      // Handle Rendezvous event
-      if (leg.rendezvous || leg.flyby || leg.insertion)
+      // Handle Rendezvous event (Lambert)
       {
-         //finalEpoch = initialEpoch + timeOfFlightLeg;
-         finalPlanet.GetStateVectorsAtEpoch(finalEpoch, finalStateVector);
+          Vector3d preLambertVelocity = m_initialStateVector.velocity;
 
-         Vector3d oldInitialVelocity = initialStateVector.velocity;
-         
-         m_lambert->Evaluate(initialStateVector.position,
-                             finalStateVector.position,
-                             timeOfFlightRemaining,
-                             Orbit::Direction::Propgrade,
-                             0,
-                             initialStateVector.velocity,
-                             finalStateVector.velocity);
+          m_lambert->Evaluate(m_initialStateVector.position,
+                              m_finalStateVector.position,
+                              timeOfFlightRemaining,
+                              Orbit::Direction::Propgrade,
+                              0,
+                              m_initialStateVector.velocity,
+                              m_finalStateVector.velocity);
 
-         deltaVs.push_back((initialStateVector.velocity - oldInitialVelocity).Magnitude());
-         deltaVs.push_back((finalStateVector.velocity - finalPlanetVelocity).Magnitude());
+          deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
+
+          if (!leg.flyby && !leg.insertion)
+          {
+              deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
+          }
       }
 
-      // Handle flyby event
+      // Handle flyby event (Flyby)
       if (leg.flyby)
       {
          double altitude = states[iState++];
          double bInclinationAngle = states[iState++];
 
-         Vector3d approachVelocity = finalStateVector.velocity;
+         Vector3d approachVelocity = m_finalStateVector.velocity;
 
          m_flyby->Evaluate(approachVelocity,
-                           finalPlanet,
+                           planet,
                            altitude,
                            bInclinationAngle,
-                           finalStateVector.velocity);
-
+                           m_finalStateVector.velocity);
       }
 
       // Handle Insertion event
@@ -263,11 +248,11 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
          double orbitTime = states[iState++];
 
          // Orbit insertion
-         double mu = finalPlanet.GetMu();
+         double mu = planet.GetMu();
          double h  = 0;//
          double e  = leg.insertionOrbit.eccentricity;
          double rp = h * h / mu / (1 + e);
-         double vinf = (finalStateVector.velocity - finalPlanetVelocity).Magnitude();
+         double vinf = (m_finalStateVector.velocity -  m_planetStateVector.velocity).Magnitude();
          double vper = sqrt(vinf * vinf + 2.0 * mu / rp);
          double vper2 = sqrt(mu / rp * (1 + e));
 
@@ -282,8 +267,7 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
 
          double r = h * h / mu / (1.0 + e * cos(TA));
 
-         double v1 = sqrt(mu / r * (1.0 + e));
-         
+         double v1 = sqrt(mu / r * (1.0 + e));    
       }
    }
 }

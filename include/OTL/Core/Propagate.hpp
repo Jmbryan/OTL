@@ -38,6 +38,7 @@ public:
    virtual ~IPropagateAlgorithm() {}
 
    virtual void Propagate(Orbit& orbit, double seconds) = 0;
+   virtual void Propagate(StateVector& stateVector, double mu, double seconds) = 0;
 
 };
 

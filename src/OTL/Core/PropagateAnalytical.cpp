@@ -69,4 +69,12 @@ void PropagateAnalytical::Propagate(Orbit& orbit, double seconds)
    orbit.SetTrueAnomaly(TA);
 }
 
+void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double seconds)
+{
+    // [TODO] Replace with efficient state vector propgation algorithm
+    Orbit orbit(stateVector, mu);
+    Propagate(orbit, seconds);
+    stateVector = orbit.GetStateVector();
+}
+
 } // namespace otl
