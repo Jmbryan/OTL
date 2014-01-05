@@ -16,17 +16,22 @@ set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
 set(SRC
 	${INCROOT}/Base.hpp
 	${SRCROOT}/Conversion.cpp
-	${INCROOT}/Conversion.hpp
+	${INCROOT}/Conversion.hpp	
 	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Epoch.hpp
+	${INCROOT}/Epoch.inl
 	${INCROOT}/Flyby.hpp
 	${SRCROOT}/FlybyIzzo.cpp
 	${INCROOT}/FlybyIzzo.hpp
+	${INCROOT}/KeplersEquations.hpp
+	${INCROOT}/KeplersEquations.inl
 	${INCROOT}/Lambert.hpp
 	${SRCROOT}/LambertExponentialSinusoid.cpp
 	${INCROOT}/LambertExponentialSinusoid.hpp
 	${INCROOT}/Matrix3.hpp
 	${INCROOT}/Matrix3.inl
+	${SRCROOT}/MGADSM.cpp
+	${INCROOT}/MGADSM.hpp
 	${SRCROOT}/Orbit.cpp
 	${INCROOT}/Orbit.hpp
 	${INCROOT}/Orbit.inl
@@ -36,11 +41,19 @@ set(SRC
 	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.hpp
 	${INCROOT}/Planet.inl
+	${SRCROOT}/Propagate.cpp
+	${INCROOT}/Propagate.hpp
+	${SRCROOT}/PropagateAnalytical.cpp
+	${INCROOT}/PropagateAnalytical.hpp
 	${SRCROOT}/Transformation.cpp
-    ${INCROOT}/Transformation.hpp		
+   ${INCROOT}/Transformation.hpp		
 	${INCROOT}/Vector3.hpp
 	${INCROOT}/Vector3.inl
 	${CATCHROOT}/Catch.hpp
+	${EPHEM_SRCROOT}/DE405Ephemeris.cpp
+	${EPHEM_INCROOT}/DE405Ephemeris.h
+	${EPHEM_SRCROOT}/DE405EphemerisIO.cpp
+	${EPHEM_INCROOT}/DE405EphemerisIO.h
 )
 source_group("" FILES ${SRC})
 

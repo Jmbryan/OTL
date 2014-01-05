@@ -44,7 +44,8 @@ void CalculateCanonicalUnits(double radius, double mu,
 
 ////////////////////////////////////////////////////////////
 void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
-                                        OrbitalElements& orbitalElements)
+                                        OrbitalElements& orbitalElements,
+                                        double mu)
 {
    // Position and velocity
    const Vector3d& R = stateVector.position;
@@ -65,21 +66,21 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    double n = N.Magnitude();
 
    // Eccentricity
-   Vector3d Ecc = (SQR(v) - 1.0 / r) * R - rDotv * V;
+   Vector3d Ecc = (SQR(v) / mu - 1.0 / r) * R - (rDotv / mu) * V;
    double ecc = Ecc.Magnitude();
 
    // Semimajor axis and semiparameter
    double a, p;
    if (ecc != ASTRO_ECC_PARABOLIC) // non parabolic orbit
    {
-      double m = 0.5 * SQR(v) - 1.0 / r;
-      a = -0.5 / h;
+      double m = 0.5 * SQR(v) - mu / r;
+      a = -0.5 * mu / m;
       p = a * (1.0 - SQR(ecc));
    }
    else
    {
       a = MATH_INFINITY;
-      p = SQR(h);
+      p = SQR(h) / mu;
    }
 
    // Inclination
@@ -156,7 +157,8 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
 
 ////////////////////////////////////////////////////////////
 void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
-                                        StateVector& stateVector)
+                                        StateVector& stateVector,
+                                        double mu)
 {
    double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;
@@ -177,8 +179,8 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
    Rp.x = p * cosTa / (1.0 + ecc * cosTa);
    Rp.y = p * sinTa / (1.0 + ecc * cosTa);
    Rp.z = 0.0;
-   Vp.x = -sqrt(1.0 / p) * sinTa;
-   Vp.y =  sqrt(1.0 / p) * (ecc + cosTa);
+   Vp.x = -sqrt(mu / p) * sinTa;
+   Vp.y =  sqrt(mu / p) * (ecc + cosTa);
    Vp.z = 0.0;
 
    // Transform the state vectors into inertial coordinates.

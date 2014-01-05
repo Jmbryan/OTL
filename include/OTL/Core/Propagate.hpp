@@ -24,9 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Base.hpp>
-
-// Forward declarations
-class Orbit;
+#include <OTL/Core/Orbit.hpp>
 
 namespace otl
 {

@@ -78,7 +78,8 @@ void CalculateCanonicalUnits(double radius, double mu,
 */
 ////////////////////////////////////////////////////////////
 void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
-                                        OrbitalElements& orbitalElements);
+                                        OrbitalElements& orbitalElements,
+                                        double mu);
 
 ////////////////////////////////////////////////////////////
 /**
@@ -94,7 +95,8 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
 */
 ////////////////////////////////////////////////////////////
 void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
-                                        StateVector& stateVector);
+                                        StateVector& stateVector,
+                                        double mu);
 
 ////////////////////////////////////////////////////////////
 Vector3d ConvertSpherical2Cartesian(double radius, double delta, double theta);

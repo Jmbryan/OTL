@@ -95,6 +95,11 @@ struct DepartureNode : public TrajectoryNode
 
    Vector3d departureVectorMin;
    Vector3d departureVectorMax;
+
+   DepartureNode()
+   {
+       type = Type::Departure;
+   }
 };
 
 struct FlybyNode : public TrajectoryNode
@@ -109,6 +114,11 @@ struct FlybyNode : public TrajectoryNode
 
    double bInclinationMin;
    double bInclinationMax;
+
+   FlybyNode()
+   {
+       type = Type::Flyby;
+   }
 };
 
 struct DSMNode : public TrajectoryNode
@@ -118,6 +128,11 @@ struct DSMNode : public TrajectoryNode
 
    Vector3d vectorMin;
    Vector3d vectorMax;
+
+   DSMNode()
+   {
+       type = Type::DSM;
+   }
 };
 
 struct RendezvousNode : public TrajectoryNode
@@ -126,6 +141,11 @@ struct RendezvousNode : public TrajectoryNode
 
    double timeOfFlightMin;
    double timeOfFlightMax;
+
+   RendezvousNode()
+   {
+       type = Type::Rendezvous;
+   }
 };
 
 struct InsertionNode : public RendezvousNode
@@ -134,6 +154,11 @@ struct InsertionNode : public RendezvousNode
 
    double orbitTimeMin;
    double orbitTimeMax;
+
+   InsertionNode()
+   {
+       type = Type::Insertion;
+   }
 };
 
 class MGADSM
@@ -143,6 +168,8 @@ public:
    MGADSM(const std::vector<TrajectoryNode*>& nodes);
 
    void CalculateTrajectory(const std::vector<double>& states, std::vector<double>& deltaVs);
+
+   int GetNumStates() const;
 
 private:
    void Init(const std::vector<TrajectoryNode*>& nodes);

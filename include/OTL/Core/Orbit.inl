@@ -94,13 +94,13 @@ inline bool Orbit::IsType(Type orbitType) const
 ////////////////////////////////////////////////////////////
 inline void Orbit::UpdateStateVector()
 {
-   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector);
+   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector, m_mu);
 }
 
 ////////////////////////////////////////////////////////////
 inline void Orbit::UpdateOrbitalElements()
 {
-   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements);
+   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements, m_mu);
 }
 
 ////////////////////////////////////////////////////////////

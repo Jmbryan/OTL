@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/OrbitalBody.hpp>
+#include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {

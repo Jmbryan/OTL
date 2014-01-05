@@ -23,6 +23,9 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/MGADSM.hpp>
+#include <OTL/Core/PropagateAnalytical.hpp>
+#include <OTL/Core/LambertExponentialSinusoid.hpp>
+#include <OTL/Core/FlybyIzzo.hpp>
 //#include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl
@@ -35,6 +38,10 @@ MGADSM::MGADSM()
 MGADSM::MGADSM(const std::vector<TrajectoryNode*>& nodes)
 {
    Init(nodes);
+
+   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateAnalytical());
+   m_lambert    = std::unique_ptr<ILambertAlgorithm>(new ExponentialSinusoidLambert());
+   m_flyby      = std::unique_ptr<IFlybyAlgorithm>(new FlybyIzzo());
 }
 
 void MGADSM::Init(const std::vector<TrajectoryNode*>& nodes)
@@ -140,8 +147,8 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
     int iPlanet = 0;
 
     // Trajectory initial conditions
-    m_initialEpoch = states[iState++];
-    m_itinerary[iPlanet++].GetStateVectorsAtEpoch(m_initialEpoch, m_initialStateVector);
+    m_finalEpoch = states[iState++];
+    m_itinerary[iPlanet++].GetStateVectorsAtEpoch(m_finalEpoch, m_finalStateVector);
 
    // Calculate the trajectory one leg at a time
    for (auto i = 0; i < m_legs.size(); ++i)
@@ -214,8 +221,9 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
           m_lambert->Evaluate(m_initialStateVector.position,
                               m_finalStateVector.position,
                               timeOfFlightRemaining,
-                              Orbit::Direction::Propgrade,
+                              Orbit::Direction::Prograde,
                               0,
+                              ASTRO_MU_SUN,
                               m_initialStateVector.velocity,
                               m_finalStateVector.velocity);
 
@@ -230,6 +238,7 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
       // Handle flyby event (Flyby)
       if (leg.flyby)
       {
+         iState++;
          double altitude = states[iState++];
          double bInclinationAngle = states[iState++];
 
@@ -270,6 +279,11 @@ void MGADSM::CalculateTrajectory(const std::vector<double>& states, std::vector<
          double v1 = sqrt(mu / r * (1.0 + e));    
       }
    }
+}
+
+int MGADSM::GetNumStates() const
+{
+    return m_numStates;
 }
 
 void MGADSM::AddState(double lowerBound, double upperBound)

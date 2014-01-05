@@ -33,6 +33,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
                                           double seconds,
                                           const Orbit::Direction& orbitDirection,
                                           int maxRevolutions,
+                                          double mu,
                                           Vector3d& initialVelocity,
                                           Vector3d& finalVelocity)
 {
@@ -41,7 +42,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
     // Non-dimensional units
     double DU, VU, TU;
     DU = initialPosition.Magnitude();
-    VU = sqrt(1.0 / DU);
+    VU = sqrt(mu / DU);
     TU = DU / VU;
 
      // Non-dimensionalize the position vectors
@@ -64,7 +65,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
     double trueAnomaly = acos(dotR1R2 / r2);
 
     // Direction of travel
-    if (orbitDirection == Orbit::Direction::Propgrade && CrossR1R2.z <= 0.0)
+    if (orbitDirection == Orbit::Direction::Prograde && CrossR1R2.z <= 0.0)
     {
         trueAnomaly = MATH_2_PI - trueAnomaly;
     }

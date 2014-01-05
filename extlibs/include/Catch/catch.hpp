@@ -3233,6 +3233,12 @@ namespace Detail {
 
     class Approx {
     public:
+        explicit Approx ( double value, double epsilon )
+        :   m_epsilon( epsilon ),
+            m_scale( std::numeric_limits<float>::epsilon()*100 ),
+            m_value( value )
+        {}
+
         explicit Approx ( double value )
         :   m_epsilon( std::numeric_limits<float>::epsilon()*100 ),
             m_scale( 1.0 ),
@@ -3285,7 +3291,7 @@ namespace Detail {
 
         std::string toString() const {
             std::ostringstream oss;
-            oss << "Approx( " << m_value << " )";
+            oss << "Approx( " << m_value << " , " << m_epsilon << " )";
             return oss.str();
         }
 

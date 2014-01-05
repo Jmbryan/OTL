@@ -40,6 +40,7 @@ public:
                          double seconds,
                          const Orbit::Direction& orbitDirection,
                          int maxRevolutions,
+                         double mu,
                          Vector3d& initialVelocity,
                          Vector3d& finalVelocity) = 0;
 };

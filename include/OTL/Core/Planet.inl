@@ -72,9 +72,40 @@ inline std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 ////////////////////////////////////////////////////////////
 inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) const
 {
+    static DE405Ephemeris* ephem = new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data");
+
+    DE405Ephemeris::AstroEntity entity;
+    if (m_id == PlanetId::Mercury)
+    {
+        entity = DE405Ephemeris::Mercury;
+    }
+    else if (m_id == PlanetId::Venus)
+    {
+        entity = DE405Ephemeris::Venus;
+    }
+    else if (m_id == PlanetId::Earth)
+    {
+        entity = DE405Ephemeris::EarthMoonBarycenter;
+    }
+
+    double pos[3];
+    double vel[3];
+    ephem->getPosVel(epoch.GetJD(), entity, pos, vel);
+
+    for (int i = 0; i < 3; ++i)
+    {
+        stateVector.position[i] = pos[i];
+        stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
+    }
+
+    double r = stateVector.position.Magnitude();
+    double v = stateVector.velocity.Magnitude();
+
+    //delete ephem;
 }
 
 ////////////////////////////////////////////////////////////
 inline void Planet::GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) const
 {
+
 }

@@ -39,7 +39,7 @@ public:
    enum class Direction
    {
       Invalid = -1,
-      Propgrade,
+      Prograde,
       Retrograde,
       Count
    };

@@ -80,6 +80,18 @@ public :
     ////////////////////////////////////////////////////////////
     T operator[](int index) const;
 
+    ////////////////////////////////////////////////////////////
+    // \brief Access each element of the vector
+    //
+    // Convenience function for accessing each element of the vector
+    // using the natural [] syntax. However, it is more efficient
+    // to directly access the elements through the public members.
+    //
+    // \param index Index of the element to access
+    // 
+    ////////////////////////////////////////////////////////////
+    T& operator[](int index);
+
     T Magnitude() const;
 
     void Normalize();

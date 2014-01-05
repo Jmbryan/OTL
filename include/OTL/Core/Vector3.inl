@@ -59,7 +59,14 @@ z(static_cast<T>(vector.z))
 template <typename T>
 inline T Vector3<T>::operator[](int index) const
 {
+    return (index == 0 ? x : (index == 1 ? y : z));
+}
 
+////////////////////////////////////////////////////////////
+template <typename T>
+inline T&  Vector3<T>::operator[](int index)
+{
+    return (index == 0 ? x : (index == 1 ? y : z));
 }
 
 ////////////////////////////////////////////////////////////
