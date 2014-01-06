@@ -18,6 +18,7 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
 
     SECTION("Evaluate")
     {
+        /// Test ExponentialSinusoidLambert.Evaluate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 7-5.
         SECTION("Truth Case: Vallado 7-5")
         {
             initialPosition = otl::Vector3d(15945.34, 0.0, 0.0);          // [km]
@@ -43,7 +44,7 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
         }
 
         /// Test ExponentialSinusoidLambert.Evaluate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 7-5.
-        SECTION("Truth Case: Vallado 7-5 (Canonical)")
+        SECTION("Truth Case: Vallado 7-5 (canonical)")
         {
             initialPosition = otl::Vector3d(2.5, 0.0, 0.0);         // [ER]
             finalPosition = otl::Vector3d(1.915111, 1.606969, 0.0); // [ER]
@@ -73,7 +74,7 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
             initialPosition = otl::Vector3d(5000.0, 10000.0, 2100.0); // [km]
             finalPosition = otl::Vector3d(-14600.0, 2500.0, 7000.0);  // [km]
             timeOfFlight = 1.0 * 3660.0;                              // [s]
-            mu = otl::ASTRO_MU_EARTH;
+            mu = 398600.0;                                            // [km^3/s^2]
 
             lambert->Evaluate(initialPosition,
                                 finalPosition,
@@ -98,7 +99,7 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
             initialPosition = otl::Vector3d(273378.0, 0.0, 0.0);   // [km]
             finalPosition = otl::Vector3d(145820.0, 12758.0, 0.0); // [km]
             timeOfFlight = 13.5 * 3660.0;                          // [s]
-            mu = otl::ASTRO_MU_EARTH;
+            mu = 398600.0;                                         // [km^3/s^2]
 
             lambert->Evaluate(initialPosition,
                                 finalPosition,

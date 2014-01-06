@@ -31,9 +31,12 @@ public:
    PropagateAnalytical() {}
    virtual ~PropagateAnalytical() {}
 
-   virtual void Propagate(Orbit& orbit, double seconds);
+   virtual void Propagate(OrbitalElements& orbitalElements, double mu, double seconds);
    virtual void Propagate(StateVector& stateVector, double mu, double seconds);
 
+private:
+    double CalculateUniversalVariable(double r0, double vr0, double alpha, double dt, double mu); 
+    void CalculateC2C3(double psi, double& c2, double& c3);
 };
 
 } // namespace otl

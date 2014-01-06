@@ -113,6 +113,10 @@ const double ASTRO_RADIUS_PLUTO     = 1.0;
 inline double SQR(double x)
 {return x*x;}
 
+/// Returns positive one if x is positive or negative one otherwise
+inline int Sign(double x)
+{ return (x >= 0.0 ? 1 : -1); }
+
 /// Returns r rounded towards zero
 inline double Round0(double x)
 {return (x < 0.0 ? ceil(x) : floor(x));}

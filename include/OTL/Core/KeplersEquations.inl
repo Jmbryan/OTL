@@ -73,7 +73,7 @@ double SolveKeplersEquationElliptical(double eccentricity,
    }
    if (iteration >= maxIterations)
    {
-      std::cout << "SolveKeplersEquationElliptical: Max iterations exceeded!" << std::endl;
+      std::cout << "SolveKeplersEquationElliptical(): Max iterations exceeded!" << std::endl;
    }
 
    return eccentricAnomaly;
@@ -97,7 +97,7 @@ double SolveKeplersEquationHyperbolic(double eccentricity,
    }
    if (iteration >= maxIterations)
    {
-      std::cout << "SolveKeplersEquationHyperbolic: Max iterations exceeded!" << std::endl;
+      std::cout << "SolveKeplersEquationHyperbolic(): Max iterations exceeded!" << std::endl;
    }
 
    return hyperbolicAnomaly;

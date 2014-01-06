@@ -113,5 +113,24 @@ int main()
     auto micro   = std::chrono::duration_cast<std::chrono::microseconds>(duration);
     auto nano    = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
 
+    //MGADSMTrajectory trajectory;
+    //trajectory.AddDeparture("Earth", 1000.0, 3.0);
+    //trajectory.AddDSM(0.4);
+    //trajectory.AddFlyby("Venus", 250.0, 100.0, MATH_PI);
+    //trajectory.AddDSM(0.6);
+    //trajectoryAddRendezvous("Mercury", 300.0);   
+    //Vector3d deltaVs = trajectory.Evaluate();
+
+    //std::vector<std::string> itinerary;
+    //itinerary.push_back("Earth");
+    //itinerary.push_back("Venus");
+    //itinerary.push_back("Mercury");
+
+    //MGADSMTrajectory trajectory;  
+    //trajectory.SetItinerary(itinerary);
+    //trajectory.SetNumDSMsPerLeg(1);
+    //trajectory.SetStateVector(x);
+    //Vector3d deltaVs = trajectory.Evaluate();
+
     return 0;
 }

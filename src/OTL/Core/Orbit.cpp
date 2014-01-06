@@ -100,7 +100,8 @@ void Orbit::Propagate(double seconds)
 {
    if (m_propagator)
    {
-      m_propagator->Propagate(*this, seconds);
+      m_propagator->Propagate(m_stateVector, m_mu, seconds);
+      SetStateVector(m_stateVector);
    }
 }
 

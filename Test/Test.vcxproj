@@ -82,8 +82,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConversionTest.cpp" />
     <ClCompile Include="LambertTest.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PropagateTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
