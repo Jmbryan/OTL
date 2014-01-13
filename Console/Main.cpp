@@ -2,8 +2,7 @@
 #include <assert.h>
 #include <chrono>
 
-
-#include <OTL/Core/MGADSM.hpp>
+#include <OTL/Core/MGADSMTrajectory.hpp>
 #include <OTL/Core/Planet.hpp>
 #include <OTL/Core/Orbit.hpp>
 
@@ -45,44 +44,45 @@ int main()
     //auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
     //auto milli   = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
 
-    DepartureNode depNode;
-    depNode.planetId = Planet::PlanetId::Earth;
-    depNode.julianDateMin = 1000;
-    depNode.julianDateMax = 1100;
-    depNode.departureVectorMin = Vector3d(0.0, 0.0, 0.0);
-    depNode.departureVectorMax = Vector3d(5.0, 1.0, 1.0);
+    //DepartureNode<double> depNode;
+    //depNode.planetId = Planet::PlanetId::Earth;
+    //depNode.julianDate = 1000;
+    //depNode.julianDateMin = 1000;
+    //depNode.julianDateMax = 1100;
+    //depNode.departureVectorMin = Vector3d(0.0, 0.0, 0.0);
+    //depNode.departureVectorMax = Vector3d(5.0, 1.0, 1.0);
 
-    DSMNode dsmNode1;
-    dsmNode1.alphaMin = 0.01;
-    dsmNode1.alphaMax = 0.99;
-    
-    FlybyNode flyNode;
-    flyNode.planetId = Planet::PlanetId::Venus;
-    flyNode.timeOfFlightMin = 50;
-    flyNode.timeOfFlightMax = 300;
-    flyNode.altitudeMin = 1000;
-    flyNode.altitudeMax = 10000;
-    flyNode.bInclinationMin = -MATH_PI;
-    flyNode.bInclinationMax =  MATH_PI;
+    //DSMNode<double> dsmNode1;
+    //dsmNode1.alphaMin = 0.01;
+    //dsmNode1.alphaMax = 0.99;
+    //
+    //FlybyNode<double> flyNode;
+    //flyNode.planetId = Planet::PlanetId::Venus;
+    //flyNode.timeOfFlightMin = 50;
+    //flyNode.timeOfFlightMax = 300;
+    //flyNode.altitudeMin = 1000;
+    //flyNode.altitudeMax = 10000;
+    //flyNode.bInclinationMin = -MATH_PI;
+    //flyNode.bInclinationMax =  MATH_PI;
 
-    DSMNode dsmNode2;
-    dsmNode2.alphaMin = 0.01;
-    dsmNode2.alphaMax = 0.99;
+    //DSMNode<double> dsmNode2;
+    //dsmNode2.alphaMin = 0.01;
+    //dsmNode2.alphaMax = 0.99;
 
-    RendezvousNode renNode;
-    renNode.planetId = Planet::PlanetId::Mercury;
-    renNode.timeOfFlightMin = 50;
-    renNode.timeOfFlightMax = 300;
+    //RendezvousNode<double> renNode;
+    //renNode.planetId = Planet::PlanetId::Mercury;
+    //renNode.timeOfFlightMin = 50;
+    //renNode.timeOfFlightMax = 300;
 
-    std::vector<TrajectoryNode*> nodes;
-    nodes.push_back(&depNode);
-    nodes.push_back(&dsmNode1);
-    nodes.push_back(&flyNode);
-    nodes.push_back(&dsmNode2);
-    nodes.push_back(&renNode);
+    //std::vector<TrajectoryNode<double>*> nodes;
+    //nodes.push_back(&depNode);
+    //nodes.push_back(&dsmNode1);
+    //nodes.push_back(&flyNode);
+    //nodes.push_back(&dsmNode2);
+    //nodes.push_back(&renNode);
 
-    MGADSM mgadsm(nodes);
-    int numStates = mgadsm.GetNumStates();
+    //MGADSM mgadsm(nodes);
+    //int numStates = mgadsm.GetNumStates();
 
     std::vector<double> x;
     x.push_back(1050);
@@ -102,7 +102,7 @@ int main()
 
     for (int i = 0; i < 1; ++i)
     {
-        mgadsm.CalculateTrajectory(x, f);
+        //mgadsm.CalculateTrajectory(x, f);
     }
 
     std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
@@ -113,24 +113,66 @@ int main()
     auto micro   = std::chrono::duration_cast<std::chrono::microseconds>(duration);
     auto nano    = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
 
-    //MGADSMTrajectory trajectory;
-    //trajectory.AddDeparture("Earth", 1000.0, 3.0);
-    //trajectory.AddDSM(0.4);
-    //trajectory.AddFlyby("Venus", 250.0, 100.0, MATH_PI);
-    //trajectory.AddDSM(0.6);
-    //trajectoryAddRendezvous("Mercury", 300.0);   
-    //Vector3d deltaVs = trajectory.Evaluate();
+    // Direct
+    {
+       MGADSMTrajectory trajectory;
+       trajectory.AddDeparture("Earth", 3867.51);
+       trajectory.AddFlyby("Venus", 117.17, 3331.84, -1.62453);
+       trajectory.AddDSM(0.35435);
+       trajectory.AddRendezvous("Mars", 690.286);
+       std::vector<double> deltaVs = trajectory.Evaluate();
 
-    //std::vector<std::string> itinerary;
-    //itinerary.push_back("Earth");
-    //itinerary.push_back("Venus");
-    //itinerary.push_back("Mercury");
+       //trajectory.SetDSM(1, 0.45435);
+    }
+    
+    // Postponed
+    {
+       MGADSMTrajectory trajectory;
+       trajectory.AddDeparture("Earth");
+       trajectory.AddFlyby("Venus");
+       trajectory.AddDSM();
+       trajectory.AddRendezvous("Mars");
+       std::vector<double> states;
+       std::vector<double> deltaVs = trajectory.Evaluate(states);
+    }
+    
 
-    //MGADSMTrajectory trajectory;  
-    //trajectory.SetItinerary(itinerary);
-    //trajectory.SetNumDSMsPerLeg(1);
-    //trajectory.SetStateVector(x);
-    //Vector3d deltaVs = trajectory.Evaluate();
+
+    //MGADSMProblem prob;
+    //prob.AddDeparture(
+
+
+    //struct FlybyNode2
+    //{
+    //    std::string name;
+    //    double timeOfFlight;
+    //    double altitude;
+    //    double bInclinationAngle;
+    //};
+
+    //trajectory.SetFlyby(1, "Venus", 200.0, 3331.84, -1.62453);
+    //int flyIndex = trajectory.GetFlybyIndex(1);
+    //FlybyNode2 flybyNode = trajectory.GetFlyby(1);
+    //flybyNode.altitude = 4000.0;
+    //trajectory.SetFlyby(1, flybyNode);
+
+    //MGADSMItinerary itinerary;
+    //itinerary.AddDeparture("Earth");
+    //itinerary.AddFlyby("Venus");
+    //itinerary.AddDSM();
+    //itinerary.AddRendezvous("Mars");
+    //MGADSM trajectory2(itinerary);
+
+    //MGADSMTrajectory trajectory2;
+    //trajectory2.AddDeparture("Earth");
+    //trajectory2.AddFlyby("Venus");
+    //trajectory2.AddDSM();
+    //trajectory2.AddRendezvous("Mars");
+    //std::vector<double> states;
+    //deltaVs = trajectory.Evaluate(states);
+
+    // JDs     = [2455412.511, 2455529.6813, 2456219.967, 2456219.967] days
+    // deltaVs = [2.8049, 1.43987, 3.78799] km/s
 
     return 0;
 }

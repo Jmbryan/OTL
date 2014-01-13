@@ -43,6 +43,27 @@ enum class State
    Count
 };
 
+enum class PropagateType
+{
+   Invalid = -1,
+   Analytical,
+   Count
+};
+
+enum class LambertType
+{
+   Invalid = -1,
+   ExponentialSinusoid,
+   Count
+};
+
+enum class FlybyType
+{
+   Invalid = -1,
+   Izzo,
+   Count
+};
+
 struct StateVector
 {
    Vector3d position;    ///< 3-dimensional position vector (m)
@@ -87,27 +108,27 @@ const double ASTRO_ECC_CIRCULAR     = 0.0;              // Eccentricity of a cir
 const double ASTRO_ECC_PARABOLIC    = 1.0;              // Eccentricity of a parabolic orbit
 const double ASTRO_INCL_EQUATORIAL  = 0.0;              // Inclination of an equatorial orbit
 const double ASTRO_MU_SUN           = 132712428000.0;   // Gravitional Parameter of the Sun (km3/s2)
-const double ASTRO_MU_MERCURY       = 1.0;
-const double ASTRO_MU_VENUS         = 1.0;
+const double ASTRO_MU_MERCURY       = 22032.0;
+const double ASTRO_MU_VENUS         = 325700.0;
 const double ASTRO_MU_EARTH         = 398600.4418;      // Gravitional Parameter of the Earth
-const double ASTRO_MU_MARS          = 1.0;
-const double ASTRO_MU_JUPITER       = 1.0;
-const double ASTRO_MU_SATURN        = 1.0;
-const double ASTRO_MU_URANUS        = 1.0;
-const double ASTRO_MU_NEPTUNE       = 1.0;
-const double ASTRO_MU_PLUTO         = 1.0;
-const double ASTRO_RADIUS_SUN       = 1.0;
-const double ASTRO_RADIUS_MERCURY   = 1.0;
-const double ASTRO_RADIUS_VENUS     = 1.0;
-const double ASTRO_RADIUS_EARTH     = 6378.137;      // Radius of the Earth
-const double ASTRO_RADIUS_MARS      = 1.0;
-const double ASTRO_RADIUS_JUPITER   = 1.0;
-const double ASTRO_RADIUS_SATURN    = 1.0;
-const double ASTRO_RADIUS_URANUS    = 1.0;
-const double ASTRO_RADIUS_NEPTUNE   = 1.0;
-const double ASTRO_RADIUS_PLUTO     = 1.0;
+const double ASTRO_MU_MARS          = 43050.0;
+const double ASTRO_MU_JUPITER       = 126800000.0;
+const double ASTRO_MU_SATURN        = 37940000.0;
+const double ASTRO_MU_URANUS        = 5794000.0;
+const double ASTRO_MU_NEPTUNE       = 6809000.0;
+const double ASTRO_MU_PLUTO         = 900.0;
+const double ASTRO_RADIUS_SUN       = 696000.0;
+const double ASTRO_RADIUS_MERCURY   = 2439.0;
+const double ASTRO_RADIUS_VENUS     = 6052.0;
+const double ASTRO_RADIUS_EARTH     = 6378.1363;      // Radius of the Earth
+const double ASTRO_RADIUS_MARS      = 3397.2;
+const double ASTRO_RADIUS_JUPITER   = 71492.0;
+const double ASTRO_RADIUS_SATURN    = 60268.0;
+const double ASTRO_RADIUS_URANUS    = 25559.0;
+const double ASTRO_RADIUS_NEPTUNE   = 24764.0;
+const double ASTRO_RADIUS_PLUTO     = 1151.0;
 
-#define OTL_ASSERT assert
+#define OTL_ASSERT(condition, message) assert(condition)
 
 /// Returns the square of x
 inline double SQR(double x)

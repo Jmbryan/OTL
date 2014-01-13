@@ -70,7 +70,7 @@ inline std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 }
 
 ////////////////////////////////////////////////////////////
-inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) const
+inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector)
 {
     static DE405Ephemeris* ephem = new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data");
 
@@ -87,6 +87,10 @@ inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stat
     {
         entity = DE405Ephemeris::EarthMoonBarycenter;
     }
+    else if (m_id == PlanetId::Mars)
+    {
+        entity = DE405Ephemeris::Mars;
+    }
 
     double pos[3];
     double vel[3];
@@ -98,14 +102,11 @@ inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stat
         stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
     }
 
-    double r = stateVector.position.Magnitude();
-    double v = stateVector.velocity.Magnitude();
-
-    //delete ephem;
+    m_stateVector = stateVector;
 }
 
 ////////////////////////////////////////////////////////////
-inline void Planet::GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) const
+inline void Planet::GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements)
 {
 
 }

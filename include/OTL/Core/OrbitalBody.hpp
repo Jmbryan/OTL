@@ -155,7 +155,7 @@ public:
    /// \param stateVector Resulting state vector computed at the specified Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) const = 0;
+   virtual void GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) = 0;
    
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the orbital body at an Epoch
@@ -169,7 +169,7 @@ public:
    /// \param orbitalElements Resulting orbital elements computed at the specified Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) const = 0;
+   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
 protected:
    std::string m_name;        ///< Name of the orbital body

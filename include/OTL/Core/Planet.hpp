@@ -103,7 +103,7 @@ public:
    /// \param stateVector Resulting state vector 
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector) const;
+   virtual void GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector);
    
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the planet at the the epoch
@@ -112,7 +112,7 @@ public:
    /// \param orbitalElements Resulting orbital elements 
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) const;
+   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements);
 
    ////////////////////////////////////////////////////////////
    /// \brief Convert a planet name into an planet identifier

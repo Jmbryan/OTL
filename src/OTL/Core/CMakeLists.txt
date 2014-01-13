@@ -30,18 +30,18 @@ set(SRC
 	${INCROOT}/LambertExponentialSinusoid.hpp
 	${INCROOT}/Matrix3.hpp
 	${INCROOT}/Matrix3.inl
-	${SRCROOT}/MGADSM.cpp
-	${INCROOT}/MGADSM.hpp
+	${INCROOT}/MGADSMNodes.hpp
+	${INCROOT}/MGADSMNodes.inl
+	${SRCROOT}/MGADSMTrajectory.cpp
+	${INCROOT}/MGADSMTrajectory.hpp
 	${SRCROOT}/Orbit.cpp
 	${INCROOT}/Orbit.hpp
 	${INCROOT}/Orbit.inl
-	${SRCROOT}/OrbitalBody.cpp
 	${INCROOT}/OrbitalBody.hpp
 	${INCROOT}/OrbitalBody.inl
 	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.hpp
 	${INCROOT}/Planet.inl
-	${SRCROOT}/Propagate.cpp
 	${INCROOT}/Propagate.hpp
 	${SRCROOT}/PropagateAnalytical.cpp
 	${INCROOT}/PropagateAnalytical.hpp

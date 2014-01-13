@@ -126,12 +126,13 @@ void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double 
     double x;
 
     // Circle or Ellipse
-    if (alpha > 0.000001)
+    double alphaThreshold = 0.000001 * (ASTRO_MU_EARTH / mu);
+    if (alpha >alphaThreshold)
     {
         x = sqrt(mu) * seconds * alpha;
     }
     // Hyperbola
-    else if (alpha < -0.00001)
+    else if (alpha < -alphaThreshold)
     {
         double a = 1.0 / alpha;
 
@@ -139,7 +140,7 @@ void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double 
                                            (rDotv + Sign(seconds) * sqrt(-mu * a) * (1.0 - r0 * alpha)));
     }
     // Parabola
-    else if (fabs(alpha) <= 0.00001)
+    else
     {
         Vector3d H;
         Vector3d::Cross(R, V, H);
@@ -168,6 +169,12 @@ void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double 
     double fDot = sqrt(mu) / r / r0 * x * (psi * c3 - 1.0);
     double g    = seconds - pow(x, 3.0) / sqrt(mu) * c3;
     double gDot = 1.0 - SQR(x) / r * c2;
+
+    double sanityCheck = (f * gDot - fDot * g) - 1.0;
+    if (abs(sanityCheck) > MATH_TOLERANCE)
+    {
+        std::cout << "PropagateAnalytical::Propagate(): Lagrange coefficient sanity check failed!" << std::endl;
+    }
 
     stateVector.position = f * R + g * V;
     stateVector.velocity = fDot * R + gDot * V;
