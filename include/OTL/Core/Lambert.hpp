@@ -32,9 +32,35 @@ namespace otl
 class ILambertAlgorithm
 {
 public:
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
    ILambertAlgorithm() {}
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
    virtual ~ILambertAlgorithm() {}
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Evaluate Lambert's Problem
+   ///
+   /// Calculates the initial and final velocity vectors given
+   /// an initial position, final position, and time delta.  
+   ///
+   /// This is a pure virtual function that muse be re-implemented
+   /// by the derived class.
+   ///
+   /// \param initialPosition Vector3d consisting of the initial position
+   /// \param finalPosition Vector3d consisting of the final position
+   /// \param seconds Total time of flight in seconds
+   /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
+   /// \param maxRevolutions Maximum number of revolutions allowed
+   /// \param mu Gravitational parameter of the central body
+   /// \param [out] initialVelocity Vector3d consisting of computed initial velocity
+   /// \param [out] finalVelocity Vector3d consisting of computed final velocity
+   ///
+   ////////////////////////////////////////////////////////////
    virtual void Evaluate(const Vector3d& initialPosition,
                          const Vector3d& finalPosition,
                          double seconds,
@@ -46,3 +72,14 @@ public:
 };
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::ILambertAlgorithm
+/// \ingroup core
+///
+/// otl::ILambertAlgorithm is a simple class that defines the interface
+/// for all Lambert algorithms.  
+///
+/// This class is an abstract base class and cannot be instantiated.
+/// 
+////////////////////////////////////////////////////////////

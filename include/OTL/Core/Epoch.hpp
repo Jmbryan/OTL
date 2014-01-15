@@ -38,7 +38,7 @@ struct GregorianDateTime
    double sec;
 };
 
-class Epoch final
+class Epoch
 {
 public:
 
@@ -149,3 +149,45 @@ double ConvertMJD20002MJD(double modifiedJulianDate2000);
 #include <OTL/Core/Epoch.inl>
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::Epoch
+/// \ingroup core
+///
+/// otl::Epoch is a simple class that defines a point in time.
+/// An epoch supports multiple formats including Julian Date (JD),
+/// Modified Julian Date (MJD), Modified Julian Date 2000 (MJD2000),
+/// and Gregorian.
+///
+/// Internally, the date is always stored as a MJD2000. Setting
+/// the date using a different format results in calling the
+/// conversion helper functions ConvertMJD20002[OtherFormat].
+/// Likewise, retreiving a date in a different format results
+/// in calling the conversion helper functions Convert[OtherFormat]2MJD2000.
+///
+/// Usage example:
+/// \code
+/// otl::Epoch epoch1;
+/// epoch1.SetMJD2000(1000);                    // One thousand days past Januray 1st, 2000.
+/// otl::Epoch epoch2(1000);                    // Implicit conversion from double
+/// otl::Epoch epoch3 = epoch1 + epoch2;        // Support for common operator overloads
+///
+/// double mjd = otl::ConvertMJD20002MJD(1000);
+/// assert(epoch1.GetMJD() == mjd);
+///
+/// double jd = otl::ConvertMJD20002JD(1000);
+/// otl::Epoch epoch4(jd, Epoch::Type::JD);
+/// assert(epoch1 == epoch4);                   // Comparison works even if epochs are created with different formats
+/// 
+/// otl::GregorianDateTime dateTime;
+/// dateTime.year  = 2014;
+/// dateTime.month = 1;
+/// dateTime.day   = 14;
+/// dateTime.hour  = 19;
+/// dateTime.min   = 10;
+/// dateTime.sec   = 15.0;
+/// otl::Epoch epoch5(dateTime);
+///
+///\endcode
+///
+////////////////////////////////////////////////////////////

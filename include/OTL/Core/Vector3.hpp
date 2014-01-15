@@ -26,11 +26,7 @@
 
 namespace otl
 {
-////////////////////////////////////////////////////////////
-/// \brief Utility template class for manipulating
-///        3-dimensional vectors
-///
-////////////////////////////////////////////////////////////
+
 template <typename T>
 class Vector3
 {
@@ -315,7 +311,7 @@ typedef Vector3<double> Vector3d;
 /// \li otl::Vector3<float> is otl::Vector3f
 /// \li otl::Vector3<double> is otl::Vector3d
 ///
-/// The otl::Vector3 class has a small and simple interface, its x and y members
+/// The otl::Vector3 class has a small and simple interface, its members
 /// can be accessed directly (there's no accessor like setX(), getX()).
 ///
 /// Usage example:

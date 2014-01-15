@@ -41,3 +41,14 @@ public:
 };
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::IPropagateAlgorithm
+/// \ingroup core
+///
+/// otl::IPropagateAlgorithm is a simple class that defines the interface
+/// for all propagation algorithms.  
+///
+/// This class is an abstract base class and cannot be instantiated.
+/// 
+////////////////////////////////////////////////////////////

@@ -138,4 +138,81 @@ private:
    StateVector m_planetStateVector;
 };
 
+////////////////////////////////////////////////////////////
+/// \class otl::MGADSMTrajectory
+/// \ingroup core
+///
+/// otl::MGADSMTrajectory is a class that defines a Multiple
+/// Gravity Assist trajectory with Deep Space Maneuvers (MGADSM).
+///
+/// A trajectory generally consists of a itinerary which defines
+/// the high level overview, and the state vector which defines
+/// the low level details that are needed to compute the position
+/// and velocity of the spacecraft throught the trajectory.
+/// 
+/// For example, say that we want to travel from Earth to Mars
+/// with a Venus flyby inbetween and a Deep Space Maneuver (DSM)
+/// between Venus and Mars. What we have defined here is the
+/// itinerary of the trajectory. In OTL, this is simply done as follows:
+///
+/// \code
+/// MGADSMTrajectory trajectory;
+/// trajectory.AddDeparture("Earth");
+/// trajectory.AddFlyby("Venus");
+/// trajectory.AddDSM();
+/// trajectory.AddRendezvous("Mars");
+/// \endcode
+///
+/// In order to actually calculate the spacecraft's position
+/// and velocity throughout this trajectory, we need more
+/// detailed information such as the departure date, time of
+/// flight between the planets, flyby altitude, etc. These
+/// details are stored in a state vector. Using our example above,
+/// we can specify the state vector as follows:
+///
+/// \code
+/// std::vector<double> states;
+/// states.push_back(3867.51);  // Departure date (mjd2000)
+/// states.push_back(117.17);   // Time of flight from Earth to Venus (days)
+/// states.push_back(3331.84);  // Altitude of Venus flyby (km)
+/// states.push_back(-1.62453); // B-inclination angle of Venus flyby (rad)
+/// states.push_back(0.35435);  // Time of flight fraction of DSM between Venus and Mars
+/// states.push_back(690.286);  // Time of flight from Venus and Mars
+/// trajectory.SetStateVector(states);
+/// \endcode
+///
+/// Now we have all of the information required to calculate
+/// the trajectory. What we are usually interested in is the
+/// total change in velocity (deltaV) required to achieve the
+/// trajectory. The total deltaV is the sum of each individual
+/// deltaV required throughout the trajectory. Calling the
+/// Evaluate() function returns this vector of deltaVs:
+///
+/// \code
+/// std::vector<double> deltaVs = trajectory.Evaluate();
+/// double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
+/// \endcode
+///
+/// Note that the order of states in the state vector matters, and
+/// as such it is often easier to define the states at the same time
+/// as the itinerary. For example, the above trajectory could have
+/// been defined all at once as follows:
+///
+/// \code
+/// MGADSMTrajectory trajectory;
+/// trajectory.AddDeparture("Earth", 3867.51);
+/// trajectory.AddFlyby("Venus", 117.17, 3331.84, -1.62453);
+/// trajectory.AddDSM(0.35435);
+/// trajectory.AddRendezvous("Mars", 690.286); 
+/// std::vector<double> deltaVs = trajectory.Evaluate();
+/// double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
+/// \endcode
+///
+/// Here, the state vector is constructed internally as the
+/// trajectory is defined. The function signatures make it
+/// easy to understand what additional information is needed
+/// in the state vector.
+///
+////////////////////////////////////////////////////////////
+
 } // namespace otl

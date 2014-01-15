@@ -6,6 +6,8 @@
 #include <OTL/Core/Planet.hpp>
 #include <OTL/Core/Orbit.hpp>
 
+#include <numeric>
+
 using namespace otl;
 
 int main()
@@ -134,6 +136,8 @@ int main()
        trajectory.AddRendezvous("Mars");
        std::vector<double> states;
        std::vector<double> deltaVs = trajectory.Evaluate(states);
+
+       double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
     }
     
 
