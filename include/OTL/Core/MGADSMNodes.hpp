@@ -26,32 +26,71 @@
 namespace otl
 {
 
+////////////////////////////////////////////////////////////
+/// \brief otl::TrajectoryNode is a simple struct that is used to define a componentof a MGADSMTrajectory itinerary
+///
+/// The TrajectoryNode is an abstract base class that all other
+/// nodes are derived from.
+/// 
+////////////////////////////////////////////////////////////
 struct TrajectoryNode
 {
+   ////////////////////////////////////////////////////////////
+   /// \brief Types of TrajectoryNodes
+   ////////////////////////////////////////////////////////////
    enum class Type
    {
-      Invalid = -1,
-      Departure,
-      DSM,
-      Flyby,
-      Rendezvous,
-      Insertion,
-      Count
+      Invalid = -1,  ///< Invalid node type
+      Departure,     ///< DepartureNode
+      DSM,           ///< DSMNode
+      Flyby,         ///< FlybyNode
+      Rendezvous,    ///< RendezvousNode
+      Insertion,     ///< InsertionNode
+      Count          ///< Number of node types
    };
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
    TrajectoryNode();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Default destructor
+   ////////////////////////////////////////////////////////////
    virtual ~TrajectoryNode();  
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the type of TrajectoryNode
+   ///
+   /// \returns A TrajectoryNode::Type that characterizes this node
+   ///
+   ////////////////////////////////////////////////////////////
    Type GetType() const;
 
 protected:
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the type of TrajectoryNode
+   ///
+   /// This function should only be called by the derived nodes
+   /// during their creation.
+   ///
+   /// \param _type TrajectoryNode::Type that characterizes this node
+   ///
+   ////////////////////////////////////////////////////////////
    void SetType(Type _type);
 
 private:
-   Type type;
+   Type type;  ///< Type of node
 };
-typedef std::shared_ptr<TrajectoryNode> TrajectoryNodePtr;
+typedef std::shared_ptr<TrajectoryNode> TrajectoryNodePtr; ///< Convenience alias for TrajectoryNode smart pointer
 
+////////////////////////////////////////////////////////////
+/// \brief otl::DepartureNode is a simple struct that contains
+///
+/// A DepartureNode must be and can only be the first node of
+/// a trajectory.
+/// 
+////////////////////////////////////////////////////////////
 struct DepartureNode : public TrajectoryNode
 {
    std::string orbitalBody;

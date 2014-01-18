@@ -143,52 +143,52 @@ void MGADSMTrajectory::SetDeparture(const DepartureNode& departureNode)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetDSM(int dsm, const DSMNode& dsmNode)
+void MGADSMTrajectory::SetDSM(int n, const DSMNode& dsmNode)
 {
-   int index = GetDSMIndex(dsm);
+   int index = GetDSMIndex(n);
    SetNode(index, TrajectoryNodePtr(new DSMNode(dsmNode)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetFlyby(int flyby, const FlybyNode& flybyNode)
+void MGADSMTrajectory::SetFlyby(int n, const FlybyNode& flybyNode)
 {
-   int index = GetFlybyIndex(flyby);
+   int index = GetFlybyIndex(n);
    SetNode(index, TrajectoryNodePtr(new FlybyNode(flybyNode)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetRendezvous(int rendezvous, const RendezvousNode& rendezvousNode)
+void MGADSMTrajectory::SetRendezvous(int n, const RendezvousNode& rendezvousNode)
 {
-   int index = GetRendezvousIndex(rendezvous);
+   int index = GetRendezvousIndex(n);
    SetNode(index, TrajectoryNodePtr(new RendezvousNode(rendezvousNode)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetInsertion(int insertion, const InsertionNode& insertionNode)
+void MGADSMTrajectory::SetInsertion(int n, const InsertionNode& insertionNode)
 {
-   int index = GetInsertionIndex(insertion);
+   int index = GetInsertionIndex(n);
    SetNode(index, TrajectoryNodePtr(new InsertionNode(insertionNode)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetNode(int index, const TrajectoryNodePtr& node)
+void MGADSMTrajectory::SetNode(int n, const TrajectoryNodePtr& node)
 {
    OTL_ASSERT(node, "Can't set node. Invalid node");
-   OTL_ASSERT(index >= 0 && index < static_cast<int>(m_nodes.size()), "Can't set node. Index out of bounds.");
-   OTL_ASSERT(m_nodes[index]->GetType() == node->GetType(), "Can't set node. Type mismatch.");
+   OTL_ASSERT(n >= 0 && n < static_cast<int>(m_nodes.size()), "Can't set node. Index out of bounds.");
+   OTL_ASSERT(m_nodes[n]->GetType() == node->GetType(), "Can't set node. Type mismatch.");
 
-   m_nodes[index] = node;
+   m_nodes[n] = node;
 
    m_legsInitialized = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetNodes(int index, const std::vector<TrajectoryNodePtr>& nodes)
+void MGADSMTrajectory::SetNodes(int n, const std::vector<TrajectoryNodePtr>& nodes)
 {
-   OTL_ASSERT(index >= 0, "Invalid node index");
+   OTL_ASSERT(n >= 0, "Invalid node index");
    for (std::size_t i = 0; i < nodes.size(); ++i)
    {
-      SetNode(index + i, nodes[i]);
+      SetNode(n + i, nodes[i]);
    }
 }
 
@@ -203,9 +203,9 @@ DepartureNode MGADSMTrajectory::GetDeparture() const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-DSMNode MGADSMTrajectory::GetDSM(int dsm) const
+DSMNode MGADSMTrajectory::GetDSM(int n) const
 {
-   int nodeIndex = GetDSMIndex(dsm);
+   int nodeIndex = GetDSMIndex(n);
    OTL_ASSERT(nodeIndex >= 0, "Can't get DSM node. Node not found.");
 
    auto dsmNode = dynamic_cast<DSMNode*>(m_nodes[nodeIndex].get());
@@ -214,9 +214,9 @@ DSMNode MGADSMTrajectory::GetDSM(int dsm) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-FlybyNode MGADSMTrajectory::GetFlyby(int flyby) const
+FlybyNode MGADSMTrajectory::GetFlyby(int n) const
 {
-   int nodeIndex = GetFlybyIndex(flyby);
+   int nodeIndex = GetFlybyIndex(n);
    OTL_ASSERT(nodeIndex >= 0, "Can't get Flyby node. Node not found.");
 
    auto flyNode = dynamic_cast<FlybyNode*>(m_nodes[nodeIndex].get());
@@ -225,9 +225,9 @@ FlybyNode MGADSMTrajectory::GetFlyby(int flyby) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-RendezvousNode MGADSMTrajectory::GetRendezvous(int rendezvous) const
+RendezvousNode MGADSMTrajectory::GetRendezvous(int n) const
 {
-   int nodeIndex = GetRendezvousIndex(rendezvous);
+   int nodeIndex = GetRendezvousIndex(n);
    OTL_ASSERT(nodeIndex >= 0, "Can't get Rendezvous node. Node not found.");
 
    auto renNode = dynamic_cast<RendezvousNode*>(m_nodes[nodeIndex].get());
@@ -236,9 +236,9 @@ RendezvousNode MGADSMTrajectory::GetRendezvous(int rendezvous) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-InsertionNode MGADSMTrajectory::GetInsertion(int insertion) const
+InsertionNode MGADSMTrajectory::GetInsertion(int n) const
 {
-   int nodeIndex = GetInsertionIndex(insertion);
+   int nodeIndex = GetInsertionIndex(n);
    OTL_ASSERT(nodeIndex >= 0, "Can't get Flyby node. Node not found.");
 
    auto insNode = dynamic_cast<InsertionNode*>(m_nodes[nodeIndex].get());
@@ -247,7 +247,7 @@ InsertionNode MGADSMTrajectory::GetInsertion(int insertion) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::AddDeparture(const std::string& orbitalBody, Epoch epoch, const Vector3d& deltaV)
+void MGADSMTrajectory::AddDeparture(const std::string& orbitalBody, const Epoch& epoch, const Vector3d& deltaV)
 {
    DepartureNode depNode;
    depNode.orbitalBody = orbitalBody;
@@ -297,7 +297,7 @@ void MGADSMTrajectory::AddInsertion(const std::string& orbitalBody, const Orbita
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetDeparture(const std::string& orbitalBody, Epoch epoch, const Vector3d& deltaV)
+void MGADSMTrajectory::SetDeparture(const std::string& orbitalBody, const Epoch& epoch, const Vector3d& deltaV)
 {
    DepartureNode depNode;
    depNode.orbitalBody = orbitalBody;
@@ -336,21 +336,34 @@ void MGADSMTrajectory::SetRendezvous(int rendezvous, const std::string& orbitalB
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetInsertion(int insertion, const std::string& orbitalBody, const OrbitalElements& orbitalElements, double timeOfFlight, double timeOfOrbit)
+void MGADSMTrajectory::SetInsertion(int insertion, const std::string& orbitalBody, const OrbitalElements& orbitalElements, double timeOfFlight, double timeOfOrbit, const Vector3d& deltaV)
 {
    InsertionNode insNode;
    insNode.orbitalBody = orbitalBody;
    insNode.orbitalElements = orbitalElements;
    insNode.timeOfFlight = timeOfFlight;
    insNode.timeOfOrbit = timeOfOrbit;
+   insNode.deltaV = deltaV;
    SetInsertion(insertion, insNode);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 void MGADSMTrajectory::SetStateVector(const std::vector<double>& states)
 {
-   OTL_ASSERT(states.size() == m_numStates, "Invalid state vector. Dimension mismatch");
-   m_states = states;
+   if (!m_legsInitialized)
+   {
+      CalculateLegs();
+   }
+
+   if (states.size() != m_states.size())
+   {
+      OTL_ASSERT(false, "Can't set state vector. Dimension mismatch.");
+   }
+   else
+   {
+      // UpdateNodeStates(states); [TODO]
+      m_states = states;
+   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -611,10 +624,10 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
          if (leg.numDSM > 0)
          {
             double vinf  = states[iState++];
+            double delta = states[iState++];
             double theta = states[iState++];
-            double phi = states[iState++];
 
-            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, theta, phi);
+            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
             m_initialStateVector.velocity += deltaV;
 
             deltaVs.push_back(deltaV.Magnitude());
@@ -634,10 +647,10 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
             if (j > 0)
             {
                double vinf = states[iState++];
+               double delta = states[iState++];
                double theta = states[iState++];
-               double phi = states[iState++];
 
-               Vector3d deltaV = ConvertSpherical2Cartesian(vinf, theta, phi);
+               Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
                m_initialStateVector.velocity += deltaV;
 
                deltaVs.push_back(deltaV.Magnitude());
@@ -662,7 +675,8 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
           deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
 
-          if (!leg.flyby && !leg.insertion)
+          // This is the end of the trajectory
+          if (!leg.flyby && !leg.insertion && (i == m_legs.size() - 1))
           {
               deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
           }
@@ -709,7 +723,20 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
          double r = h * h / mu / (1.0 + e * cos(TA));
 
-         double v1 = sqrt(mu / r * (1.0 + e));    
+         double v1 = sqrt(mu / r * (1.0 + e));
+
+         // Orbit departure (if followed by a DSM)
+         if ((i < m_legs.size() - 1) && m_legs[i + 1].numDSM > 0)
+         {
+            double vinf  = states[iState++];
+            double delta = states[iState++];
+            double theta = states[iState++];
+
+            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
+            m_finalStateVector.velocity += deltaV;
+
+            deltaVs.push_back(deltaV.Magnitude());
+         }
       }
    }
 }
@@ -764,27 +791,6 @@ int MGADSMTrajectory::GetFlybyIndex(int flyby) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-int MGADSMTrajectory::GetInsertionIndex(int insertion) const
-{
-   OTL_ASSERT(insertion >= 0, "Invalid Insertion node index");
-   int nodeIndex = -1;
-   int numInsertions = 0;
-   for (std::size_t i = 0; i < m_nodes.size(); ++i)
-   {
-      if (m_nodes[i]->GetType() == TrajectoryNode::Type::Insertion)
-      {
-         numInsertions++;
-      }
-      if (insertion == numInsertions)
-      {
-         nodeIndex = i;
-         break;
-      }
-   }
-   return nodeIndex;
-}
-
-///////////////////////////////////////////////////////////////////////////////////
 int MGADSMTrajectory::GetRendezvousIndex(int rendezvous) const
 {
    OTL_ASSERT(rendezvous >= 0, "Invalid Rendezvous node index");
@@ -797,6 +803,27 @@ int MGADSMTrajectory::GetRendezvousIndex(int rendezvous) const
          numRendezvous++;
       }
       if (rendezvous == numRendezvous)
+      {
+         nodeIndex = i;
+         break;
+      }
+   }
+   return nodeIndex;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+int MGADSMTrajectory::GetInsertionIndex(int insertion) const
+{
+   OTL_ASSERT(insertion >= 0, "Invalid Insertion node index");
+   int nodeIndex = -1;
+   int numInsertions = 0;
+   for (std::size_t i = 0; i < m_nodes.size(); ++i)
+   {
+      if (m_nodes[i]->GetType() == TrajectoryNode::Type::Insertion)
+      {
+         numInsertions++;
+      }
+      if (insertion == numInsertions)
       {
          nodeIndex = i;
          break;

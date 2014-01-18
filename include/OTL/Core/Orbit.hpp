@@ -249,7 +249,7 @@ private:
 /// \class otl::Orbit
 /// \ingroup core
 ///
-/// otl::Orbit is a simple class that defines a Keplerian
+/// otl::Orbit is a simple class that defines a 2D or 3D Keplerian
 /// orbit. A orbit can be represented by either a state vector
 /// or by a set of orbital elements. 
 ///
