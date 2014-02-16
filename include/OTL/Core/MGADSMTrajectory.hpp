@@ -30,7 +30,7 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/// \brief otl::TrajectoryLeg is a simple helper struct used by a MGADSMTrajectory
+/// \brief otl::TrajectoryLeg is a simple struct used by a MGADSMTrajectory
 ///
 /// The itinerary of an otl::MGADSMTrajectory is defined by a
 /// vector of TrajectoryNodes. Before computing a trajectory,

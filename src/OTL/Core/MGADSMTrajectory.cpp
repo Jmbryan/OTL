@@ -666,7 +666,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
           m_lambert->Evaluate(m_initialStateVector.position,
                               m_finalStateVector.position,
-                              timeOfFlightRemaining,
+                              Time::Seconds(timeOfFlightRemaining),
                               Orbit::Direction::Prograde,
                               0,
                               ASTRO_MU_SUN,

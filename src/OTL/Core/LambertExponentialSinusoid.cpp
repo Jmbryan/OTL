@@ -30,13 +30,14 @@ namespace otl
 ////////////////////////////////////////////////////////////
 void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
                                           const Vector3d& finalPosition,
-                                          double seconds,
+                                          const Time& timeDelta,
                                           const Orbit::Direction& orbitDirection,
                                           int maxRevolutions,
                                           double mu,
                                           Vector3d& initialVelocity,
                                           Vector3d& finalVelocity)
 {
+    double seconds = timeDelta.Seconds();
     assert(seconds >= 0.0);
     
     // Non-dimensional units

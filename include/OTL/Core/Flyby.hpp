@@ -50,8 +50,7 @@ public:
 /// \class otl::IFlybyAlgorithm
 /// \ingroup core
 ///
-/// otl::IFlybyAlgorithm is a simple class that defines the interface
-/// for all flyby algorithms.  
+/// interface class for all flyby algorithms.  
 ///
 /// This class is an abstract base class and cannot be instantiated.
 /// 

@@ -140,8 +140,6 @@ int main()
        double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
     }
     
-
-
     //MGADSMProblem prob;
     //prob.AddDeparture(
 

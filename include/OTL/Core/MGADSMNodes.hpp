@@ -27,10 +27,9 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/// \brief otl::TrajectoryNode is a simple struct that is used to define a componentof a MGADSMTrajectory itinerary
+/// \brief Basic component of a MGADSMTrajectory itinerary
 ///
-/// The TrajectoryNode is an abstract base class that all other
-/// nodes are derived from.
+/// Interface class for all trajectory nodes
 /// 
 ////////////////////////////////////////////////////////////
 struct TrajectoryNode
