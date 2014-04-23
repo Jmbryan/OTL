@@ -34,9 +34,10 @@ namespace otl
 ///
 /// The itinerary of an otl::MGADSMTrajectory is defined by a
 /// vector of TrajectoryNodes. Before computing a trajectory,
-/// the TrajectoryNodes are transcribed to a vector of
-/// TrajectoryLegs which precompute additional information
-/// requried for calculating the trajectory.
+/// the TrajectoryNodes are translated into a vector of
+/// TrajectoryLegs which are more efficent data structures
+/// and contain additional precomputed information requried
+/// for calculating the trajectory.
 /// 
 ////////////////////////////////////////////////////////////
 struct TrajectoryLeg
@@ -671,15 +672,17 @@ private:
 /// otl::MGADSMTrajectory is a class that defines a Multiple
 /// Gravity Assist trajectory with Deep Space Maneuvers (MGADSM).
 ///
-/// A trajectory generally consists of a itinerary which defines
-/// the high level overview, and the state vector which defines
-/// the low level details that are needed to compute the position
-/// and velocity of the spacecraft throught the trajectory.
+/// A MGADSM trajectory consists of an itinerary and a state vector.
+/// The itinerary defines the points of interest (nodes) along the trajectory
+/// and the order in which they will be encountered (e.g. Earth -> DSM -> Mars)
+/// The state vector contains the specific details of the trajectory
+/// such as the departure date, time of flight inbetween the nodes,
+/// flyby altitudes, etc.
 /// 
 /// For example, say that we want to travel from Earth to Mars
 /// with a Venus flyby inbetween and a Deep Space Maneuver (DSM)
-/// between Venus and Mars. What we have defined here is the
-/// itinerary of the trajectory. In OTL, this is simply done as follows:
+/// between Venus and Mars. This is the trajectory itinerary and
+/// is declared in OTL as follows:
 ///
 /// \code
 /// MGADSMTrajectory trajectory;
@@ -689,12 +692,9 @@ private:
 /// trajectory.AddRendezvous("Mars");
 /// \endcode
 ///
-/// In order to actually calculate the spacecraft's position
-/// and velocity throughout this trajectory, we need more
-/// detailed information such as the departure date, time of
-/// flight between the planets, flyby altitude, etc. These
-/// details are stored in a state vector. Using our example above,
-/// we can specify the state vector as follows:
+/// Now, in order to calculate spacecraft's position and
+/// velocity throughout this trajectory, the state vector
+/// must be defined. This can be done as follows:
 ///
 /// \code
 /// std::vector<double> states;
@@ -702,8 +702,8 @@ private:
 /// states.push_back(117.17);   // Time of flight from Earth to Venus (days)
 /// states.push_back(3331.84);  // Altitude of Venus flyby (km)
 /// states.push_back(-1.62453); // B-inclination angle of Venus flyby (rad)
-/// states.push_back(0.35435);  // Time of flight fraction of DSM between Venus and Mars
-/// states.push_back(690.286);  // Time of flight from Venus and Mars
+/// states.push_back(0.35435);  // Fraction of the time of flight between Venus and Mars at which the DMS occurs
+/// states.push_back(690.286);  // Time of flight from Venus and Mars (days)
 /// trajectory.SetStateVector(states);
 /// \endcode
 ///
@@ -735,9 +735,9 @@ private:
 /// \endcode
 ///
 /// Here, the state vector is constructed internally as the
-/// trajectory is defined. The function signatures make it
-/// easier to understand which states are required by each
-/// node type and in which order to define them.
+/// trajectory is defined. The function signatures are helpful
+/// tools in determining which states are required by each node
+/// type and and which order they must be defined.
 ///
 ////////////////////////////////////////////////////////////
 

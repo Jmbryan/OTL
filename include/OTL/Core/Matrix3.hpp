@@ -183,8 +183,8 @@ typedef Matrix3<double> Matrix3d;
 /// Internally, each row is represented by a simple 3-dimensional
 /// vector class (Vector<T>). Each row is a public member and can
 /// be accessed directly (i.e matrix.row1) or indirectly through the
-//// convenient operator[] function which allows for more natural matrix
-/// indexing (i.e matrix[0]).
+/// convenient operator[] function which allows for more natural matrix
+/// indexing (i.e matrix[0].x or matrix[0][0]).
 ///
 /// The template parameter T is the type of the values. It
 /// can be any type that supports arithmetic operations (+, -, /, *)
@@ -199,8 +199,10 @@ typedef Matrix3<double> Matrix3d;
 /// Usage example:
 /// \code
 /// otl::Matrix3f m1(1.0f);
-/// m1.row1.x = 2.0f; // Most efficient way to access each row
-/// m1[1].y = 3.0f; // Convenient (but less efficient) way to access each row
+/// // The following three statements all achieve the same result:
+/// m1.row1.x  = 2.0f; // Most efficient
+/// m1.row1[0] = 2.0f; // Less efficient
+/// m1[0][0]   = 2.0f; // Least efficient
 ///
 /// otl::Matrix3f m2(m1);
 /// otl::Matrix3f m3 = m1 * m2;
