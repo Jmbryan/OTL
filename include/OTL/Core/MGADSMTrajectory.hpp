@@ -30,14 +30,26 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/// \brief otl::TrajectoryLeg is a simple struct used by a MGADSMTrajectory
+/// \defgroup keplerian
 ///
-/// The itinerary of an otl::MGADSMTrajectory is defined by a
-/// vector of TrajectoryNodes. Before computing a trajectory,
-/// the TrajectoryNodes are translated into a vector of
-/// TrajectoryLegs which are more efficent data structures
-/// and contain additional precomputed information requried
-/// for calculating the trajectory.
+/// Classes and functions specific to Keplerian dynamics which
+/// assume instantaneous changes in velocity. This includes the
+/// MGA-DSM problem, Lambert's problem, lagrangian propagation,
+/// flybys, and more.
+///
+////////////////////////////////////////////////////////////
+namespace keplerian
+{
+
+////////////////////////////////////////////////////////////
+/// \brief Data structure representing one "leg" of a MGADSMTrajectory
+///
+/// The itinerary of an otl::keplerian::MGADSMTrajectory is
+/// defined by a vector of TrajectoryNodes. Before computing
+/// a trajectory, the TrajectoryNodes are translated into a
+/// vector of TrajectoryLegs which are more efficent data
+/// structures and contain additional precomputed information
+/// requried for calculating the trajectory.
 /// 
 ////////////////////////////////////////////////////////////
 struct TrajectoryLeg
@@ -588,16 +600,34 @@ private:
    ////////////////////////////////////////////////////////////
    /// \brief Calculate the trajectory
    ///
-   /// This function is the primary workhorse of the MGADSMTrajectory
-   /// class and uses the TrajectoryNodes (transcribed to TrajectoryLegs)
-   /// and the state vector to compute the deltaVs required to
-   /// achieve the trajectory.
+   /// This function iteratively calls the CalculateTrajectoryLeg
+   /// function for each leg.
    ///
    /// \param states Vector of states used throughout the trajectory
    /// \param [out] deltaVs Vector of computed deltaVs required throughout the trajectory
    ///
    ////////////////////////////////////////////////////////////
    void CalculateTrajectory(const std::vector<double>& states, std::vector<double>& deltaVs);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Calculate a trajectory leg
+   ///
+   /// This function is the primary workhorse of the MGADSMTrajectory
+   /// class and uses the TrajectoryNodes (transcribed to TrajectoryLegs)
+   /// and the state vector to compute the deltaVs required to
+   /// achieve the specified leg of the trajectory.
+   ///
+   /// \param iLeg Index of leg
+   /// \param iState Index of first state vector variable for this leg
+   /// \param initialEpoch Epoch at the beginning of the leg
+   /// \param initialStateVector StateVector at the beginning of the leg
+   /// \param states Vector of states used throughout the trajectory
+   /// \param [out] finalEpoch Epoch at the end of the leg
+   /// \param [out] finalStateVector StateVector at the end of the leg
+   /// \param [out] deltaVs Vector of computed deltaVs required throughout the trajectory
+   ///
+   ////////////////////////////////////////////////////////////
+   void CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const StateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, StateVector& finalStateVector, std::vector<double>& deltaVs);
 
    ////////////////////////////////////////////////////////////
    /// \brief Add a state to the internal state vector
@@ -666,11 +696,10 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
-/// \class otl::MGADSMTrajectory
-/// \ingroup core
+/// \class otl::keplerian::MGADSMTrajectory
+/// \ingroup keplerian
 ///
-/// otl::MGADSMTrajectory is a class that defines a Multiple
-/// Gravity Assist trajectory with Deep Space Maneuvers (MGADSM).
+/// Defines a Multiple Gravity Assist trajectory with Deep Space Maneuvers (MGADSM).
 ///
 /// A MGADSM trajectory consists of an itinerary and a state vector.
 /// The itinerary defines the points of interest (nodes) along the trajectory
@@ -701,8 +730,8 @@ private:
 /// states.push_back(3867.51);  // Departure date (mjd2000)
 /// states.push_back(117.17);   // Time of flight from Earth to Venus (days)
 /// states.push_back(3331.84);  // Altitude of Venus flyby (km)
-/// states.push_back(-1.62453); // B-inclination angle of Venus flyby (rad)
-/// states.push_back(0.35435);  // Fraction of the time of flight between Venus and Mars at which the DMS occurs
+/// states.push_back(-1.62453); // B-inclination angle of Venus flyby hyperbola (rad)
+/// states.push_back(0.35435);  // Fractional time between Venus and Mars at which the DMS occurs
 /// states.push_back(690.286);  // Time of flight from Venus and Mars (days)
 /// trajectory.SetStateVector(states);
 /// \endcode
@@ -740,5 +769,7 @@ private:
 /// type and and which order they must be defined.
 ///
 ////////////////////////////////////////////////////////////
+
+} // namespace keplerian
 
 } // namespace otl

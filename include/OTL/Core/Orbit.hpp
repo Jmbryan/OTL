@@ -29,6 +29,9 @@
 namespace otl
 {
 
+namespace keplerian
+{
+
 // Forward declarations
 class IPropagateAlgorithm;
 
@@ -185,13 +188,13 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit in time
    ///
-   /// The number of seconds can be positive or negative for
+   /// The time can be positive or negative for
    /// forewards and backwards propagation respectively.
    ///
-   /// \param seconds Number of seconds to propagate the orbit for
+   /// \param timeDelta Time object for specifying the propagation duration
    ///
    ////////////////////////////////////////////////////////////
-   void Propagate(double seconds);
+   void Propagate(const Time& timeDelta);
 
 private:
    ////////////////////////////////////////////////////////////
@@ -243,11 +246,13 @@ private:
 
 #include <OTL/Core/Orbit.inl>
 
+} // namespace keplerian
+
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::Orbit
-/// \ingroup core
+/// \class otl::keplerian::Orbit
+/// \ingroup keplerian
 ///
 /// Simple class that defines a 2D or 3D Keplerian orbit.
 /// A orbit can be represented by either a state vector
@@ -255,7 +260,7 @@ private:
 ///
 /// Usage example:
 /// \code
-/// otl::Orbit orbit(ASTRO_MU_EARTH);
+/// otl::keplerian::Orbit orbit(ASTRO_MU_EARTH);
 /// orbit.SetStateVector(myStateVector);
 ///
 /// myOrbitalElements = orbit.GetOrbitalElements();

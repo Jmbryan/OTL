@@ -28,77 +28,86 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/**
- \brief Calculate canonical unit conversion factors
- 
- This routine calculates the conversion factors for converting real units to canonical units.
- Working in canonical units typically improves computational efficiency and has the benefit
- that the gravitational parameter is unity which saves numerous mathematical operations.
-
- In Earth-centered reference frames, the equitorial radius of the Earth is typically used as
- the reference radius whereas in a Sun-centered reference frame, one astronomical unit (AU)
- is typically used as the reference radius.
-
- Canonical units are obtained by multiplying real units by the appropriate conversion factor.
-
- Usage example:
- \code
- double DU, TU, VU; // canonical unit converters
- CalculateCanonicalUnits(ASTRO_RADIUS_EARTH, ASTRO_MU_EARTH, DU, TU, VU);
-
- double distance = 10000.0; // km
- double canonicalDistance = distance * DU;
-
- double time = 1200.0; // seconds
- double canonicalTime = time * TU;
-
- \endcode
-
- \param radius Reference radius to be used as the distance unit (DU)
- \param mu Gravitional parameter of the central body
- \param [out] DU Conversion factor from real distance units to canonical distance units
- \param [out] TU Conversion factor from real time units to canonical time units
- \param [out] VU Conversion factor from real velocity units to canonical velocity units
- */
+/// \brief Calculate canonical unit conversion factors
+/// \ingroup otl
+/// 
+/// This routine calculates the conversion factors for converting real units to canonical units.
+/// Working in canonical units typically improves computational efficiency and has the benefit
+/// that the gravitational parameter is unity which saves numerous mathematical operations.
+///
+/// In Earth-centered reference frames, the equitorial radius of the Earth is typically used as
+/// the reference radius whereas in a Sun-centered reference frame, one astronomical unit (AU)
+/// is typically used as the reference radius.
+///
+/// Canonical units are obtained by multiplying real units by the appropriate conversion factor.
+///
+/// Usage example:
+/// \code
+/// double DU, TU, VU; // canonical unit converters
+/// CalculateCanonicalUnits(ASTRO_RADIUS_EARTH, ASTRO_MU_EARTH, DU, TU, VU);
+///
+/// double distance = 10000.0; // km
+/// double canonicalDistance = distance * DU;
+///
+/// double time = 1200.0; // seconds
+/// double canonicalTime = time * TU;
+///
+/// \endcode
+///
+/// \param radius Reference radius to be used as the distance unit (DU)
+/// \param mu Gravitional parameter of the central body
+/// \param [out] DU Conversion factor from real distance units to canonical distance units
+/// \param [out] TU Conversion factor from real time units to canonical time units
+/// \param [out] VU Conversion factor from real velocity units to canonical velocity units
+///
 ////////////////////////////////////////////////////////////
 void CalculateCanonicalUnits(double radius, double mu,
                              double& DU, double& TU, double& VU);
 
 ////////////////////////////////////////////////////////////
-/**
- \brief Convert state vectors to orbital elements
- 
- This routine calculates the classical orbital elements (orbitalElements) of an object given its position
- and velocity (state) vectors.
-
- \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 9
-
- \param stateVector Position and velocity vectors
- \param [out] orbitalElements Computed orbital elements
-*/
+/// \brief Convert state vectors to orbital elements
+/// \ingroup otl
+/// 
+/// This routine calculates the classical orbital elements (orbitalElements) of an object given its position
+/// and velocity (state) vectors.
+///
+/// \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 9
+///
+/// \param stateVector Position and velocity vectors
+/// \param [out] orbitalElements Computed orbital elements
+///
 ////////////////////////////////////////////////////////////
 void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
                                         OrbitalElements& orbitalElements,
                                         double mu);
 
 ////////////////////////////////////////////////////////////
-/**
- \brief Convert orbital elements to state vectors
-
- This routine calculates the position and velocity (state) vectors of an object given its
- classical orbital elements (orbitalElements).
-
- \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 10
-
- \param orbitalElements rbital elements
- \param [out] stateVector Computed position and velocity vectors
-*/
+/// \brief Convert orbital elements to state vectors
+/// \ingroup otl
+///
+/// This routine calculates the position and velocity (state) vectors of an object given its
+/// classical orbital elements (orbitalElements).
+///
+/// \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 10
+///
+/// \param orbitalElements rbital elements
+/// \param [out] stateVector Computed position and velocity vectors
+///
 ////////////////////////////////////////////////////////////
 void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
                                         StateVector& stateVector,
                                         double mu);
 
 ////////////////////////////////////////////////////////////
-Vector3d ConvertSpherical2Cartesian(double radius, double delta, double theta);
+/// \brief Converts normalized spherical coordinates into a Cartesian vector
+/// \ingroup otl
+///
+/// \param magnitude Magnitude of polar vector
+/// \param normTheta Normalized azimuth angle between [0, 1]
+/// \param normPhi Normalized inclination angle between [0, 1]
+/// \returns Vector3d representing Cartesian vector
+///
+////////////////////////////////////////////////////////////
+Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta, double normPhi);
 
 } // namespace otl

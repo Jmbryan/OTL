@@ -182,3 +182,22 @@ protected:
 #include <OTL/Core/OrbitalBody.inl>
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::OrbitalBody
+/// \ingroup otl
+///
+/// Interface class for all orbital bodies (solar system
+/// planets, asteroids, comets, etc..).  
+///
+/// The state vector and orbital elements of the orbital
+/// body at a desired Epoch can be obtained by calling
+/// the inherited member functions:
+/// \li GetStateVectorAtEpoch()
+/// \li GetOrbitalElementsAtEpoch()
+///
+/// This class is an abstract base class and cannot be instantiated.
+///
+/// \see Epoch, StateVector, OrbitalElements
+///
+////////////////////////////////////////////////////////////

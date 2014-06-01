@@ -21,58 +21,28 @@
 
 #pragma once
 #include <OTL/Core/Orbit.hpp>
-#include <OTL/Core/PropagateAnalytical.hpp>
+#include <OTL/Core/PropagateLagrangian.hpp>
 #include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl
 {
 
-void PropagateAnalytical::Propagate(OrbitalElements& orbitalElements, double mu, double seconds)
+namespace keplerian
+{
+
+////////////////////////////////////////////////////////////
+void PropagateLagrangian::Propagate(OrbitalElements& orbitalElements, double mu, const Time& timeDelta)
 {
    const double a = orbitalElements.semiMajorAxis;
    const double e = orbitalElements.eccentricity;
    double TA = orbitalElements.trueAnomaly;
 
-   //// Elliptical orbits
-   //if (e > 0.0 && e < 1.0)
-   //{
-   //   double T = 2.0 * MATH_2_PI * pow(a, 1.5) / sqrt(mu);
-
-   //   double E1 = 2.0 * atan(sqrt((1.0 - e) / (1.0 + e)) * tan(TA / 2.0));
-   //   double M1 = E1 - e * sin(E1);
-   //   double t1 = M1 * T / MATH_2_PI;
-
-   //   double t2 = seconds + t1;
-   //   double M2 = MATH_2_PI * t2 / T;
-
-   //   double E2 = SolveKeplersEquationElliptical(e, M2);
-
-   //   TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(E2 / 2.0));
-   //}
-   //// Hyperpolic orbits
-   //else if (e > 1.0)
-   //{
-   //   double h = sqrt(mu * a * (1.0 - SQR(e)));
-
-   //   double F1 = 2.0 * atanh(sqrt((e - 1.0) / (e + 1.0)) * tan(TA / 2.0));
-   //   double M1 = e * sinh(F1) - F1;
-   //   double t1 = M1 * pow(h, 3.0) / SQR(mu) / pow(SQR(e) - 1.0, 1.5);
-
-   //   double t2 = seconds + t1;
-   //   double M2 = t2 / pow(h, 3.0) * SQR(mu) * pow(SQR(e) - 1.0, 1.5);
-   //   double F2 = SolveKeplersEquationHyperbolic(e, M2);
-
-   //   TA = 2.0 * atan(sqrt((e + 1.0) / (e - 1.0)) * tanh(F2 / 2.0));
-   //}
-
-   //orbitalElements.trueAnomaly = TA;
-  
    double r0 = a * (1.0 - SQR(e)) / (1.0 + e * cos(TA));
    double v0 = sqrt(mu * (2.0 / r0 - 1.0 / a));
    double vr0 = (sqrt(mu) * e * sin(TA)) / sqrt(a * (1.0 - SQR(e)));
 
    double alpha = 1.0 / a;
-   double x = CalculateUniversalVariable(r0, vr0, alpha, seconds, mu);
+   double x = CalculateUniversalVariable(r0, vr0, alpha, timeDelta, mu);
 
    // Ellpitcal orbits
    if (e > 0.0 && e < 1.0)
@@ -103,13 +73,10 @@ void PropagateAnalytical::Propagate(OrbitalElements& orbitalElements, double mu,
 
 }
 
-void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double seconds)
+////////////////////////////////////////////////////////////
+void PropagateLagrangian::Propagate(StateVector& stateVector, double mu, const Time& timeDelta)
 {
-    //OrbitalElements orbitalElements;
-    //ConvertStateVector2OrbitalElements(stateVector, orbitalElements, mu);
-    //Propagate(orbitalElements, mu, seconds);
-    //ConvertOrbitalElements2StateVector(orbitalElements, stateVector, mu);
-    //return;
+   double seconds = timeDelta.Seconds();
 
     Vector3d R = stateVector.position;
     Vector3d V = stateVector.velocity;
@@ -173,7 +140,7 @@ void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double 
     double sanityCheck = (f * gDot - fDot * g) - 1.0;
     if (abs(sanityCheck) > MATH_TOLERANCE)
     {
-        std::cout << "PropagateAnalytical::Propagate(): Lagrange coefficient sanity check failed!" << std::endl;
+        std::cout << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check failed!" << std::endl;
     }
 
     stateVector.position = f * R + g * V;
@@ -181,11 +148,13 @@ void PropagateAnalytical::Propagate(StateVector& stateVector, double mu, double 
 
 }
 
-double PropagateAnalytical::CalculateUniversalVariable(double r0, double vr0, double alpha, double dt, double mu)
+////////////////////////////////////////////////////////////
+double PropagateLagrangian::CalculateUniversalVariable(double r0, double vr0, double alpha, const Time& timeDelta, double mu)
 {
     const double TOL = 1.e-8;
     const int MAX_ITERATIONS = 100;
 
+    double dt = timeDelta.Seconds();
     double x = sqrt(mu) * abs(alpha) * dt;
 
     int iteration = 0;
@@ -205,13 +174,14 @@ double PropagateAnalytical::CalculateUniversalVariable(double r0, double vr0, do
     }
     if (iteration >= MAX_ITERATIONS)
    {
-      std::cout << "PropagateAnalytical::CalculateUniversalVariable(): Max iterations exceeded!" << std::endl;
+      std::cout << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations exceeded!" << std::endl;
    }
 
     return x;
 }
 
-void PropagateAnalytical::CalculateC2C3(double psi, double& c2, double& c3)
+////////////////////////////////////////////////////////////
+void PropagateLagrangian::CalculateC2C3(double psi, double& c2, double& c3)
 {
     if (psi > 1.0e-6)
     {
@@ -232,5 +202,6 @@ void PropagateAnalytical::CalculateC2C3(double psi, double& c2, double& c3)
     }
 }
 
+} // namespace keplerian
 
 } // namespace otl

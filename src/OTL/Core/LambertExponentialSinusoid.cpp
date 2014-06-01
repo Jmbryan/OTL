@@ -27,8 +27,11 @@
 namespace otl
 {
 
+namespace keplerian
+{
+
 ////////////////////////////////////////////////////////////
-void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
+void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
                                           const Vector3d& finalPosition,
                                           const Time& timeDelta,
                                           const Orbit::Direction& orbitDirection,
@@ -180,7 +183,7 @@ void ExponentialSinusoidLambert::Evaluate(const Vector3d& initialPosition,
 }
 
 ////////////////////////////////////////////////////////////
-double ExponentialSinusoidLambert::CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions)
+double LambertExponentialSinusoid::CalculateTimeOfFlight(double x, double s, double c, int longway, int maxRevolutions)
 {
     double timeOfFlight = 0.0;
 
@@ -202,5 +205,7 @@ double ExponentialSinusoidLambert::CalculateTimeOfFlight(double x, double s, dou
 
     return timeOfFlight;
 }
+
+} // namespace keplerian
 
 } // namespace otl

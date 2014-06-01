@@ -166,7 +166,7 @@ private:
 
 ////////////////////////////////////////////////////////////
 /// \class otl::Planet
-/// \ingroup core
+/// \ingroup otl
 ///
 /// otl::Planet is a class that defines a planet body. The
 /// state vector and orbital elements of the planet at a

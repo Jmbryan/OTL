@@ -48,7 +48,7 @@ Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
 
    for (auto it = m_planetInfo.begin(); it != m_planetInfo.end(); ++it)
    {
-      if (it->second.name.compare(name) == 0.0)
+      if (it->second.name == name)
       {
          planetId = it->first;
          break;

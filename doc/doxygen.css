@@ -211,9 +211,9 @@ div.contents {
 }
 
 td.indexkey {
-	background-color: #EBEFF6;
+	background-color: #FFFFFF;
 	font-weight: bold;
-	border: 1px solid #C4CFE5;
+	border: 1px solid #FFFFFF;
 	margin: 2px 0px 2px 0;
 	padding: 2px 10px;
         white-space: nowrap;
@@ -221,8 +221,8 @@ td.indexkey {
 }
 
 td.indexvalue {
-	background-color: #EBEFF6;
-	border: 1px solid #C4CFE5;
+	background-color: #FFFFFF;
+	border: 1px solid #FFFFFF;
 	padding: 2px 10px;
 	margin: 2px 0px;
 }
@@ -1078,7 +1078,8 @@ tr.heading h2 {
     width: 100%;
     z-index: 101;
     font-size: 11pt;
-    background-color: #EAF5DB;
+    /*background-color: #EAF5DB;*/
+	 background-color: rgb(210,230,230);
     border-left: 1px solid #999;
     border-right: 1px solid #999;
     border-bottom: 1px solid #999;
@@ -1145,14 +1146,14 @@ body
     margin-top: 25px;
     border-top: 2px solid #999;
     border-bottom: 2px solid #999;
-    background-color: rgb(140, 200, 65);
+    background-color: rgb(30, 170, 185);
 }
 
 #banner
 {
     width: 950px;
-    height: 60px;
-    line-height: 54px;
+    height: 70px;
+    line-height: 65px;
     margin: 0 auto;
     text-align: center;
 }
@@ -1239,7 +1240,7 @@ div.contents a, #content a
 {
     padding: 1px;
     text-decoration: none;
-    color: rgb(70, 100, 30);
+    color: rgb(25, 130, 145);
 }
 
 div.contents a:hover, #content a:hover

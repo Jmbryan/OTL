@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Matrix3.hpp>
+#include <OTL/Core/Time.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -64,20 +65,57 @@ enum class FlybyType
    Count
 };
 
+////////////////////////////////////////////////////////////
+/// \class otl::StateVector
+/// \ingroup core
+///
+/// Fundamental construct representing a three dimensional
+/// position and velocity in space.
+///
+////////////////////////////////////////////////////////////
 struct StateVector
 {
-   Vector3d position;    ///< 3-dimensional position vector (m)
-   Vector3d velocity;    ///< 3-dimensional velocity vector (m)
+   Vector3d position;    ///< 3-dimensional position vector
+   Vector3d velocity;    ///< 3-dimensional velocity vector
 };
 
+////////////////////////////////////////////////////////////
+/// \class otl::OrbitalElements
+/// \ingroup core
+///
+/// Fundamental construct which contains the minimum parameters
+/// required to fully define a three dimensonal orbit in space.
+///
+/// <ul>
+/// <li>The Semimajor Axis defines the length of the primary axis</li>
+/// <li>The Eccentricity defines the shape of the orbit
+/// <ul>
+/// <li>0 for circular orbits</li>
+/// <li>(0, 1) for elliptical orbits</li>
+/// <li>1 for parabolic orbits</li>
+/// <li>(1, infinity) for hyperbolic orbits</li>
+/// </ul>
+/// <li>The Inclination, Argument of Pericenter, and Longitude
+/// of Ascending Node all define the orientation of the
+/// orbit in 3D space. These parameters are uncessary for 2D orbits.</li>
+/// <li>The true anomaly defines the current point on the orbit. Neglecting
+/// external disturbances, this is the only parameter that varies
+/// in time.</li>
+/// </ul>
+///
+/// The Longitude of Ascending Node is also sometimes referred
+/// to as the Right Ascension of the Ascending Node (RAAN).
+///
+///
+////////////////////////////////////////////////////////////
 struct OrbitalElements
 {
-   double semiMajorAxis;      ///< SemiMajor axis
-   double eccentricity;       ///< Eccentricity
-   double inclination;        ///< Inclination
-   double argOfPericenter;    ///< Argument of pericenter
-   double lonOfAscendingNode; ///< Longitude of the ascending node
-   double trueAnomaly;        ///< True Anomaly
+   double semiMajorAxis;      ///< SemiMajor axis (a)
+   double eccentricity;       ///< Eccentricity (e)
+   double inclination;        ///< Inclination (i)
+   double argOfPericenter;    ///< Argument of pericenter (omega)
+   double lonOfAscendingNode; ///< Longitude of the ascending node ()
+   double trueAnomaly;        ///< True Anomaly (theta)
 };
 
 // Math

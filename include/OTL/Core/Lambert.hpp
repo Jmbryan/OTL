@@ -30,6 +30,9 @@
 namespace otl
 {
 
+namespace keplerian
+{
+
 class ILambertAlgorithm
 {
 public:
@@ -72,11 +75,13 @@ public:
                          Vector3d& finalVelocity) = 0;
 };
 
+} // namespace keplerian
+
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::ILambertAlgorithm
-/// \ingroup core
+/// \class otl::keplerian::ILambertAlgorithm
+/// \ingroup keplerian
 ///
 /// Interface class for all Lambert algorithms.  
 ///

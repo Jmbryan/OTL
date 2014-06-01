@@ -28,7 +28,7 @@
 namespace otl
 {
 
-namespace KeplersEquations
+namespace keplerian
 {
 
 class EccentricAnomalyEquation
@@ -55,9 +55,6 @@ public:
    double operator() (double eccentricity, double hyperbolicAnomaly) const;
 };
 
-} // namespace KeplersEquations
-
-
 double SolveKeplersEquationElliptical(double eccentricity,
                                       double meanAnomaly,
                                       int maxIterations = 1000,
@@ -70,5 +67,7 @@ double SolveKeplersEquationHyperbolic(double eccentricity,
 
 
 #include <OTL/Core/KeplersEquations.inl>
+
+} // namespace keplerian
 
 } // namespace otl

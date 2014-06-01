@@ -27,6 +27,7 @@
 namespace otl
 {
 
+////////////////////////////////////////////////////////////
 void Epoch::Set(double epoch, Epoch::Type type)
 {
    switch (type)
@@ -45,6 +46,7 @@ void Epoch::Set(double epoch, Epoch::Type type)
    }
 }
 
+////////////////////////////////////////////////////////////
 inline void Epoch::SetGregorian(const GregorianDateTime& date)
 {
    double julianDate = 367 * date.year -
@@ -57,6 +59,7 @@ inline void Epoch::SetGregorian(const GregorianDateTime& date)
    SetJD(julianDate);
 }
 
+////////////////////////////////////////////////////////////
 double Epoch::Get(Epoch::Type type) const
 {
    double epoch = 0.0;

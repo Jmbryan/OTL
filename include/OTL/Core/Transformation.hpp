@@ -29,17 +29,18 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/**
- \brief Transform a 3D vector from perifocal to inertial reference frames
-
- \reference Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Eqn 4.44.
-
- \param perifocalVector Vector in perifocal coordinates
- \param inclinaiton Inclination (radians)
- \param argOfPericenter Arguement of Perigee (radians)
- \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
- \param [out] inertialVector Transformed vector in inertial coordinates.
-*/
+/// \brief Transform a 3D vector from perifocal to inertial reference frames
+/// \ingroup otl
+///
+/// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
+/// Algorthm ?? (X.X)XX, 2007
+///
+/// \param perifocalVector Vector in perifocal coordinates
+/// \param inclinaiton Inclination (radians)
+/// \param argOfPericenter Arguement of Perigee (radians)
+/// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
+/// \param [out] inertialVector Transformed vector in inertial coordinates.
+///
 ////////////////////////////////////////////////////////////
 void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
                                  double inclination,

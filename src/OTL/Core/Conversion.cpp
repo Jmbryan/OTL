@@ -189,7 +189,7 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
 }
 
 ////////////////////////////////////////////////////////////
-Vector3d ConvertSpherical2Cartesian(double magnitude, double normTheta, double normPhi)
+Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta, double normPhi)
 {
     double theta = MATH_2_PI * normTheta;
     double phi = acos(2.0 * normPhi - 1.0);

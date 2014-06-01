@@ -117,7 +117,7 @@ int main()
 
     // Direct
     {
-       MGADSMTrajectory trajectory;
+       keplerian::MGADSMTrajectory trajectory;
        trajectory.AddDeparture("Earth", 3867.51);
        trajectory.AddFlyby("Venus", 117.17, 3331.84, -1.62453);
        trajectory.AddDSM(0.35435);
@@ -129,15 +129,15 @@ int main()
     
     // Postponed
     {
-       MGADSMTrajectory trajectory;
+       keplerian::MGADSMTrajectory trajectory;
        trajectory.AddDeparture("Earth");
        trajectory.AddFlyby("Venus");
        trajectory.AddDSM();
        trajectory.AddRendezvous("Mars");
-       std::vector<double> states;
-       std::vector<double> deltaVs = trajectory.Evaluate(states);
+       //std::vector<double> states;
+       //std::vector<double> deltaVs = trajectory.Evaluate(states);
 
-       double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
+       //double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
     }
     
     //MGADSMProblem prob;

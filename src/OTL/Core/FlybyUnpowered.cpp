@@ -22,31 +22,23 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/FlybyIzzo.hpp>
-#include <OTL/Core/Planet.hpp>
+#include <OTL/Core/FlybyUnpowered.hpp>
+#include <OTL/Core/OrbitalBody.hpp>
 
 namespace otl
 {
 
-////////////////////////////////////////////////////////////
-FlybyIzzo::FlybyIzzo() :
-IFlybyAlgorithm()
+namespace keplerian
 {
-}
 
 ////////////////////////////////////////////////////////////
-FlybyIzzo::~FlybyIzzo()
-{
-}
-
-////////////////////////////////////////////////////////////
-void FlybyIzzo::Evaluate(const Vector3d& approachVelocity,
-                         const Planet& planet,
+void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
+                         const OrbitalBody& orbitalBody,
                          double altitude,
                          double BPlaneAngle,
                          Vector3d& departureVelocity)
 {
-   const Vector3d& planetVelocity = planet.GetVelocity();
+   const Vector3d& planetVelocity = orbitalBody.GetVelocity();
 
    // VInfinityIn is the relative velocity of the object
    // as it approaches the planet.
@@ -65,8 +57,8 @@ void FlybyIzzo::Evaluate(const Vector3d& approachVelocity,
    m_B3.Normalize();
 
    // Flyby hyperbola
-   double radiusOfPeriapsis = planet.GetRadius() + altitude;
-   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / planet.GetMu();
+   double radiusOfPeriapsis = orbitalBody.GetRadius() + altitude;
+   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / orbitalBody.GetMu();
 
    double turnAngle = 2.0 * asin(1.0 / eccentricity);
 
@@ -78,5 +70,7 @@ void FlybyIzzo::Evaluate(const Vector3d& approachVelocity,
 
    departureVelocity = planetVelocity + m_VInfinityOut;                     
 }
+
+} // namespace keplerian
 
 } // namespace otl

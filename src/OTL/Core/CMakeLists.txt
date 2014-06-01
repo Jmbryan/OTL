@@ -21,8 +21,8 @@ set(SRC
 	${INCROOT}/Epoch.hpp
 	${INCROOT}/Epoch.inl
 	${INCROOT}/Flyby.hpp
-	${SRCROOT}/FlybyIzzo.cpp
-	${INCROOT}/FlybyIzzo.hpp
+	${SRCROOT}/FlybyUnpowered.cpp
+	${INCROOT}/FlybyUnpowered.hpp
 	${INCROOT}/KeplersEquations.hpp
 	${INCROOT}/KeplersEquations.inl
 	${INCROOT}/Lambert.hpp
@@ -43,8 +43,10 @@ set(SRC
 	${INCROOT}/Planet.hpp
 	${INCROOT}/Planet.inl
 	${INCROOT}/Propagate.hpp
-	${SRCROOT}/PropagateAnalytical.cpp
-	${INCROOT}/PropagateAnalytical.hpp
+	${SRCROOT}/PropagateLagrangian.cpp
+	${INCROOT}/PropagateLagrangian.hpp
+	${SRCROOT}/Time.cpp
+   ${INCROOT}/Time.hpp	
 	${SRCROOT}/Transformation.cpp
    ${INCROOT}/Transformation.hpp		
 	${INCROOT}/Vector3.hpp
@@ -67,9 +69,11 @@ endif()
 
 # find external libraries
 find_package(SFML REQUIRED)
+find_package(EPHEMERIS REQUIRED)
 
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})
+include_directories(${EPHEMERIS_INCLUDE_DIR})
 
 # build the list of libraries to link
 set(CORE_EXT_LIBS ${SFML_LIBRARY})

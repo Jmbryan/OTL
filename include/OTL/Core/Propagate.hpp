@@ -29,22 +29,64 @@
 namespace otl
 {
 
+namespace keplerian
+{
+
 class IPropagateAlgorithm
 {
 public:
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
    IPropagateAlgorithm() {}
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
    virtual ~IPropagateAlgorithm() {}
 
-   virtual void Propagate(OrbitalElements& orbitalElements, double mu, double seconds) = 0;
-   virtual void Propagate(StateVector& stateVector, double mu, double seconds) = 0;
-
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital elements in time
+   ///
+   /// Calculates the final orbital elements after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// This is a pure virtual function that must be re-implemented
+   /// by the derived class.
+   ///
+   /// \param [out] orbitalElements OrbitalElements which define the orbit
+   /// \param mu Gravitational parameter of the central body
+   /// \param timeDelta Propgation time (may be negative)
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void Propagate(OrbitalElements& orbitalElements, double mu, const Time& timeDelta) = 0;
+   
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the state vector in time
+   ///
+   /// Calculates the final state vector after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// This is a pure virtual function that must be re-implemented
+   /// by the derived class.
+   ///
+   /// \param [out] stateVector StateVector which define the orbit
+   /// \param mu Gravitational parameter of the central body
+   /// \param timeDelta Propgation time (may be negative)
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void Propagate(StateVector& stateVector, double mu, const Time& timeDelta) = 0;
 };
+
+} // namespace keplerian
 
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::IPropagateAlgorithm
-/// \ingroup core
+/// \class otl::keplerian::IPropagateAlgorithm
+/// \ingroup keplerian
 ///
 /// Interface class for all propagation algorithms.  
 ///

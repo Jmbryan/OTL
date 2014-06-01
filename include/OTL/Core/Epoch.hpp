@@ -152,7 +152,7 @@ double ConvertMJD20002MJD(double modifiedJulianDate2000);
 
 ////////////////////////////////////////////////////////////
 /// \class otl::Epoch
-/// \ingroup core
+/// \ingroup otl
 ///
 /// otl::Epoch is a simple class that defines a point in time.
 /// An epoch supports multiple formats including Julian Date (JD),

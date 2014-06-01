@@ -23,12 +23,15 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/MGADSMTrajectory.hpp>
-#include <OTL/Core/PropagateAnalytical.hpp>
+#include <OTL/Core/PropagateLagrangian.hpp>
 #include <OTL/Core/LambertExponentialSinusoid.hpp>
-#include <OTL/Core/FlybyIzzo.hpp>
+#include <OTL/Core/FlybyUnpowered.hpp>
 //#include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl
+{
+
+namespace keplerian
 {
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -372,7 +375,7 @@ void MGADSMTrajectory::SetPropagateType(PropagateType type)
    switch (type)
    {
       case PropagateType::Analytical:
-         m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateAnalytical());
+         m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateLagrangian());
          break;
 
       case PropagateType::Invalid:
@@ -388,7 +391,7 @@ void MGADSMTrajectory::SetLambertType(LambertType type)
    switch (type)
    {
       case LambertType::ExponentialSinusoid:
-         m_lambert = std::unique_ptr<ILambertAlgorithm>(new ExponentialSinusoidLambert());
+         m_lambert = std::unique_ptr<ILambertAlgorithm>(new LambertExponentialSinusoid());
          break;
 
       case LambertType::Invalid:
@@ -404,7 +407,7 @@ void MGADSMTrajectory::SetFlybyType(FlybyType type)
    switch (type)
    {
       case FlybyType::Izzo:
-         m_flyby = std::unique_ptr<IFlybyAlgorithm>(new FlybyIzzo());
+         m_flyby = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
          break;
 
       case FlybyType::Invalid:
@@ -447,9 +450,9 @@ void MGADSMTrajectory::Init()
    m_legsInitialized = false;
 
    // Default algorithms
-   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateAnalytical());
-   m_lambert    = std::unique_ptr<ILambertAlgorithm>(new ExponentialSinusoidLambert());
-   m_flyby      = std::unique_ptr<IFlybyAlgorithm>(new FlybyIzzo());
+   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateLagrangian());
+   m_lambert    = std::unique_ptr<ILambertAlgorithm>(new LambertExponentialSinusoid());
+   m_flyby      = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -597,148 +600,162 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
     m_legs.front().initialPlanet.GetStateVectorsAtEpoch(m_finalEpoch, m_finalStateVector);
 
    // Calculate the trajectory one leg at a time
-   for (std::size_t i = 0; i < m_legs.size(); ++i)
+   for (std::size_t iLeg = 0; iLeg < m_legs.size(); ++iLeg)
    {
-      const TrajectoryLeg& leg = m_legs[i];
+      CalculateTrajectoryLeg(iLeg, iState, m_finalEpoch, m_finalStateVector, states, m_finalEpoch, m_finalStateVector, deltaVs);
+   }
+}
 
-      // Leg destination orbital body
-      Planet& planet = const_cast<Planet&>(leg.finalPlanet);
+///////////////////////////////////////////////////////////////////////////////////
+void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoch& initialEpoch, const StateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, StateVector& finalStateVector, std::vector<double>& deltaVs)
+{
+   if (!m_legsInitialized)
+   {
+      CalculateLegs();
+   }
 
-      // Leg initial conditions
-      m_initialEpoch = m_finalEpoch;
-      m_initialStateVector = m_finalStateVector;
+   const TrajectoryLeg& leg = m_legs[iLeg];
 
-      // Leg flight time
-      double timeOfFlightLeg = states[leg.timeofFlightIndex];
-      double timeOfFlightRemaining = timeOfFlightLeg;
+   // Leg destination orbital body
+   Planet& planet = const_cast<Planet&>(leg.finalPlanet);
 
-      // Leg final conditions
-      m_finalEpoch = m_initialEpoch + timeOfFlightLeg * MATH_SEC_TO_DAY;
-      planet.GetStateVectorsAtEpoch(m_finalEpoch, m_planetStateVector);
-      m_finalStateVector = m_planetStateVector;
+   // Leg initial conditions
+   m_initialEpoch = initialEpoch;
+   m_initialStateVector = initialStateVector;
 
-      // Handle departure event
-      if (leg.departure)
+   // Leg flight time
+   double timeOfFlightLeg = states[leg.timeofFlightIndex];
+   double timeOfFlightRemaining = timeOfFlightLeg;
+
+   // Leg final conditions
+   m_finalEpoch = m_initialEpoch + timeOfFlightLeg * MATH_SEC_TO_DAY;
+   planet.GetStateVectorsAtEpoch(m_finalEpoch, m_planetStateVector);
+   m_finalStateVector = m_planetStateVector;
+
+   // Handle departure event
+   if (leg.departure)
+   {
+      // Followed by a DSM
+      if (leg.numDSM > 0)
       {
-         // Followed by a DSM
-         if (leg.numDSM > 0)
+         double vinf  = states[iState++];
+         double delta = states[iState++];
+         double theta = states[iState++];
+
+         Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
+         m_initialStateVector.velocity += deltaV;
+
+         deltaVs.push_back(deltaV.Magnitude());
+      }
+   }
+
+   // Handle DSM event(s) (Propagate)
+   if (leg.numDSM > 0)
+   {
+      for (int j = 0; j < leg.numDSM; ++j)
+      {
+         double alpha = states[iState++];
+         double timeOfFlight = alpha * timeOfFlightRemaining;
+         timeOfFlightRemaining -= timeOfFlight;
+
+         // Additional DSMs after the first
+         if (j > 0)
          {
-            double vinf  = states[iState++];
+            double vinf = states[iState++];
             double delta = states[iState++];
             double theta = states[iState++];
 
-            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
+            Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
             m_initialStateVector.velocity += deltaV;
 
             deltaVs.push_back(deltaV.Magnitude());
          }
-      }
 
-      // Handle DSM event(s) (Propagate)
-      if (leg.numDSM > 0)
-      {
-         for (int j = 0; j < leg.numDSM; ++j)
-         {
-            double alpha = states[iState++];
-            double timeOfFlight = alpha * timeOfFlightRemaining;
-            timeOfFlightRemaining -= timeOfFlight;
+         m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, Time::Seconds(timeOfFlight));
+      }      
+   }
 
-            // Additional DSMs after the first
-            if (j > 0)
-            {
-               double vinf = states[iState++];
-               double delta = states[iState++];
-               double theta = states[iState++];
+   // Handle Rendezvous event (Lambert)
+   {
+         Vector3d preLambertVelocity = m_initialStateVector.velocity;
 
-               Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
-               m_initialStateVector.velocity += deltaV;
-
-               deltaVs.push_back(deltaV.Magnitude());
-            }
-
-            m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, timeOfFlight);
-         }      
-      }
-
-      // Handle Rendezvous event (Lambert)
-      {
-          Vector3d preLambertVelocity = m_initialStateVector.velocity;
-
-          m_lambert->Evaluate(m_initialStateVector.position,
-                              m_finalStateVector.position,
-                              Time::Seconds(timeOfFlightRemaining),
-                              Orbit::Direction::Prograde,
-                              0,
-                              ASTRO_MU_SUN,
-                              m_initialStateVector.velocity,
-                              m_finalStateVector.velocity);
-
-          deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
-
-          // This is the end of the trajectory
-          if (!leg.flyby && !leg.insertion && (i == m_legs.size() - 1))
-          {
-              deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
-          }
-      }
-
-      // Handle flyby event (Flyby)
-      if (leg.flyby)
-      {
-         iState++;
-         double altitude = states[iState++];
-         double bInclinationAngle = states[iState++];
-
-         Vector3d approachVelocity = m_finalStateVector.velocity;
-
-         m_flyby->Evaluate(approachVelocity,
-                           planet,
-                           altitude,
-                           bInclinationAngle,
+         m_lambert->Evaluate(m_initialStateVector.position,
+                           m_finalStateVector.position,
+                           Time::Seconds(timeOfFlightRemaining),
+                           Orbit::Direction::Prograde,
+                           0,
+                           ASTRO_MU_SUN,
+                           m_initialStateVector.velocity,
                            m_finalStateVector.velocity);
-      }
 
-      // Handle Insertion event
-      if (leg.insertion)
-      {
-         double orbitTime = states[iState++];
+         deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
 
-         // Orbit insertion
-         double mu = planet.GetMu();
-         double h  = 0;//
-         double e  = leg.insertionOrbit.eccentricity;
-         double rp = h * h / mu / (1 + e);
-         double vinf = (m_finalStateVector.velocity -  m_planetStateVector.velocity).Magnitude();
-         double vper = sqrt(vinf * vinf + 2.0 * mu / rp);
-         double vper2 = sqrt(mu / rp * (1 + e));
-
-         deltaVs.push_back(fabs(vper - vper2));
-
-         // Orbit propagation
-         double a = leg.insertionOrbit.semiMajorAxis;
-         double T = 2.0 * MATH_PI * pow(a, 1.5) / sqrt(mu) / 24.0 / 3600.0;
-         double M2 = 2.0 * MATH_PI * orbitTime / T;
-         double E2 = 0.0;//SolveKeplersEquationElliptical(e, M2);
-         double TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(0.5 * E2));
-
-         double r = h * h / mu / (1.0 + e * cos(TA));
-
-         double v1 = sqrt(mu / r * (1.0 + e));
-
-         // Orbit departure (if followed by a DSM)
-         if ((i < m_legs.size() - 1) && m_legs[i + 1].numDSM > 0)
+         // This is the end of the trajectory
+         if (!leg.flyby && !leg.insertion && (iLeg == m_legs.size() - 1))
          {
-            double vinf  = states[iState++];
-            double delta = states[iState++];
-            double theta = states[iState++];
-
-            Vector3d deltaV = ConvertSpherical2Cartesian(vinf, delta, theta);
-            m_finalStateVector.velocity += deltaV;
-
-            deltaVs.push_back(deltaV.Magnitude());
+            deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
          }
+   }
+
+   // Handle flyby event (Flyby)
+   if (leg.flyby)
+   {
+      iState++;
+      double altitude = states[iState++];
+      double bInclinationAngle = states[iState++];
+
+      Vector3d approachVelocity = m_finalStateVector.velocity;
+
+      m_flyby->Evaluate(approachVelocity,
+                        planet,
+                        altitude,
+                        bInclinationAngle,
+                        m_finalStateVector.velocity);
+   }
+
+   // Handle Insertion event
+   if (leg.insertion)
+   {
+      double orbitTime = states[iState++];
+
+      // Orbit insertion
+      double mu = planet.GetMu();
+      double h  = 0;//
+      double e  = leg.insertionOrbit.eccentricity;
+      double rp = h * h / mu / (1 + e);
+      double vinf = (m_finalStateVector.velocity -  m_planetStateVector.velocity).Magnitude();
+      double vper = sqrt(vinf * vinf + 2.0 * mu / rp);
+      double vper2 = sqrt(mu / rp * (1 + e));
+
+      deltaVs.push_back(fabs(vper - vper2));
+
+      // Orbit propagation
+      double a = leg.insertionOrbit.semiMajorAxis;
+      double T = 2.0 * MATH_PI * pow(a, 1.5) / sqrt(mu) / 24.0 / 3600.0;
+      double M2 = 2.0 * MATH_PI * orbitTime / T;
+      double E2 = 0.0;//SolveKeplersEquationElliptical(e, M2);
+      double TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(0.5 * E2));
+
+      double r = h * h / mu / (1.0 + e * cos(TA));
+
+      double v1 = sqrt(mu / r * (1.0 + e));
+
+      // Orbit departure (if followed by a DSM)
+      if ((iLeg < m_legs.size() - 1) && m_legs[iLeg + 1].numDSM > 0)
+      {
+         double vinf  = states[iState++];
+         double delta = states[iState++];
+         double theta = states[iState++];
+
+         Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
+         m_finalStateVector.velocity += deltaV;
+
+         deltaVs.push_back(deltaV.Magnitude());
       }
    }
+
+   finalEpoch = m_finalEpoch;
+   finalStateVector = m_finalStateVector;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -831,5 +848,7 @@ int MGADSMTrajectory::GetInsertionIndex(int insertion) const
    }
    return nodeIndex;
 }
+
+} // namespace keplerian
 
 } // namespace otl

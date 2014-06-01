@@ -23,9 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Orbit.hpp>
-#include <OTL/Core/PropagateAnalytical.hpp>
+#include <OTL/Core/PropagateLagrangian.hpp>
 
 namespace otl
+{
+
+namespace keplerian
 {
 
 ////////////////////////////////////////////////////////////
@@ -96,13 +99,15 @@ void Orbit::UpdateOrbitType()
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(double seconds)
+void Orbit::Propagate(const Time& timeDelta)
 {
    if (m_propagator)
    {
-      m_propagator->Propagate(m_stateVector, m_mu, seconds);
+      m_propagator->Propagate(m_stateVector, m_mu, timeDelta);
       SetStateVector(m_stateVector);
    }
 }
+
+} // namespace keplerian
 
 } // namespace otl

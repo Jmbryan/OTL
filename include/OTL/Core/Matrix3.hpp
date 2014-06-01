@@ -175,10 +175,9 @@ typedef Matrix3<double> Matrix3d;
 
 ////////////////////////////////////////////////////////////
 /// \class otl::Matrix3
-/// \ingroup core
+/// \ingroup otl
 ///
-/// otl::Matrix3 is a simple class that defines a mathematical
-/// matrix with three rows and three columns (3x3 matrix).
+/// Defines a mathematical matrix with three rows and three columns (3x3 matrix).
 ///
 /// Internally, each row is represented by a simple 3-dimensional
 /// vector class (Vector<T>). Each row is a public member and can
