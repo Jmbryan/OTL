@@ -23,6 +23,7 @@ set(SRC
 	${INCROOT}/Flyby.hpp
 	${SRCROOT}/FlybyUnpowered.cpp
 	${INCROOT}/FlybyUnpowered.hpp
+	${SRCROOT}/KeplersEquations.cpp
 	${INCROOT}/KeplersEquations.hpp
 	${INCROOT}/KeplersEquations.inl
 	${INCROOT}/Lambert.hpp

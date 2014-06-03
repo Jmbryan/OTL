@@ -169,6 +169,7 @@ const double ASTRO_RADIUS_NEPTUNE   = 24764.0;
 const double ASTRO_RADIUS_PLUTO     = 1151.0;
 
 #define OTL_ASSERT(condition, message) assert(condition)
+#define OTL_SAFE_DELETE(x) {if (x) {delete x; x = NULL;}
 
 /// Returns the square of x
 inline double SQR(double x)

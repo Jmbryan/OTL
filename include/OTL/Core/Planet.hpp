@@ -103,7 +103,7 @@ public:
    /// \param stateVector Resulting state vector 
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector);
+   virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector);
    
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the planet at the the epoch

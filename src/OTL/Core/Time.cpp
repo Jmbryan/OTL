@@ -27,6 +27,7 @@
 namespace otl
 {
 
+////////////////////////////////////////////////////////////
 Time Time::Seconds(double seconds)
 {
    Time time;
@@ -34,6 +35,7 @@ Time Time::Seconds(double seconds)
    return time;
 }
 
+////////////////////////////////////////////////////////////
 Time Time::Minutes(double minutes)
 {
    Time time;
@@ -41,6 +43,7 @@ Time Time::Minutes(double minutes)
    return time;
 }
 
+////////////////////////////////////////////////////////////
 Time Time::Hours(double hours)
 {
    Time time;
@@ -48,6 +51,7 @@ Time Time::Hours(double hours)
    return time;
 }
 
+////////////////////////////////////////////////////////////
 Time Time::Days(double days)
 {
    Time time;
@@ -55,83 +59,111 @@ Time Time::Days(double days)
    return time;
 }
 
+////////////////////////////////////////////////////////////
 void Time::SetSeconds(double seconds)
 {
    m_seconds = seconds;
 }
 
+////////////////////////////////////////////////////////////
 void Time::SetMinutes(double minutes)
 {
    m_seconds = minutes * MATH_MIN_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 void Time::SetHours(double hours)
 {
    m_seconds = hours * MATH_HOUR_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 void Time::SetDays(double days)
 {
    m_seconds = days * MATH_DAY_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 double Time::Seconds() const
 {
    return m_seconds;
 }
 
+////////////////////////////////////////////////////////////
 double Time::Minutes() const
 {
    return m_seconds / MATH_DAY_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 double Time::Hours() const
 {
    return m_seconds / MATH_HOUR_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 double Time::Days() const
 {
    return m_seconds / MATH_DAY_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 void Time::AddSeconds(double seconds)
 {
    m_seconds += seconds;
 }
 
+////////////////////////////////////////////////////////////
 void Time::AddMinutes(double minutes)
 {
    m_seconds += minutes * MATH_MIN_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 void Time::AddHours(double hours)
 {
    m_seconds += hours * MATH_HOUR_TO_SEC;
 }
 
+////////////////////////////////////////////////////////////
 void Time::AddDays(double days)
 {
    m_seconds += days * MATH_DAY_TO_SEC;
 }
 
-Time& operator+=(Time& lhs, const Time& rhs)
+////////////////////////////////////////////////////////////
+bool operator==(Time& left, const Time& right)
 {
-   lhs.AddSeconds(rhs.Seconds());
-   return lhs;
+   return (left.Seconds() == right.Seconds());
 }
 
-Time& operator-=(Time& lhs, const Time& rhs)
+////////////////////////////////////////////////////////////
+bool operator!=(Time& left, const Time& right)
 {
-   lhs.AddSeconds(-1.0 * rhs.Seconds());
-   return lhs;
+   return (left.Seconds() != right.Seconds());
 }
 
-Time operator+ (const Time& lhs, const Time& rhs)
-{ return Time::Seconds(lhs.Seconds() + rhs.Seconds()); }
+////////////////////////////////////////////////////////////
+Time& operator+=(Time& left, const Time& right)
+{
+   left.AddSeconds(right.Seconds());
+   return left;
+}
 
-Time operator- (const Time& lhs, const Time& rhs)
-{ return Time::Seconds(lhs.Seconds() - rhs.Seconds()); }
+////////////////////////////////////////////////////////////
+Time& operator-=(Time& left, const Time& right)
+{
+   left.AddSeconds(-1.0 * right.Seconds());
+   return left;
+}
+
+////////////////////////////////////////////////////////////
+Time operator+ (const Time& left, const Time& right)
+{ return Time::Seconds(left.Seconds() + right.Seconds()); }
+
+////////////////////////////////////////////////////////////
+Time operator- (const Time& left, const Time& right)
+{ return Time::Seconds(left.Seconds() - right.Seconds()); }
 
 
 } // namespace otl

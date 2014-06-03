@@ -70,7 +70,7 @@ inline std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 }
 
 ////////////////////////////////////////////////////////////
-inline void Planet::GetStateVectorsAtEpoch(const Epoch& epoch, StateVector& stateVector)
+inline void Planet::GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector)
 {
     static DE405Ephemeris* ephem = new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data");
 

@@ -23,77 +23,57 @@
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-inline double EccentricAnomalyEquation::operator() (double eccentricity, double eccentricAnomaly, double meanAnomaly) const
+double KeplersEquationElliptical::Evaluate(double eccentricity,
+                                           double meanAnomaly)
 {
-   return (eccentricAnomaly - eccentricity * sin(eccentricAnomaly) - meanAnomaly);
+   return IKeplersEquation::Evaluate(eccentricity, meanAnomaly);
 }
 
 ////////////////////////////////////////////////////////////
-inline double EccentricAnomalyDerivative::operator() (double eccentricity, double eccentricAnomaly) const
-{
-   return (1.0 - eccentricity * cos(eccentricAnomaly));
-}
-
-////////////////////////////////////////////////////////////
-inline double HyperbolicAnomalyEquation::operator() (double eccentricity, double hyperbolicAnomaly, double meanAnomaly) const
-{
-   return (eccentricity * sinh(hyperbolicAnomaly) - hyperbolicAnomaly - meanAnomaly);
-}
-
-////////////////////////////////////////////////////////////
-inline double HyperbolicAnomalyDerivative::operator() (double eccentricity, double hyperbolicAnomaly) const
-{
-   return (eccentricity * cosh(hyperbolicAnomaly) - 1.0);
-}
-
-////////////////////////////////////////////////////////////
-double SolveKeplersEquationElliptical(double eccentricity,
-                                      double meanAnomaly,
-                                      int maxIterations,
-                                      double tolerance)
+double KeplersEquationElliptical::CalculateInitialGuess(double eccentricity, double meanAnomaly)
 {
    double eccentricAnomaly;
    if (meanAnomaly < MATH_PI)
       eccentricAnomaly = meanAnomaly + eccentricity / 2.0;
    else
       eccentricAnomaly = meanAnomaly - eccentricity / 2.0;
-
-   int iteration = 0;
-   double ratio = MATH_INFINITY;
-   while (iteration++ < maxIterations && fabs(ratio) > tolerance)
-   {
-      ratio = EccentricAnomalyEquation()(eccentricity, eccentricAnomaly, meanAnomaly) /
-              EccentricAnomalyDerivative()(eccentricity, eccentricAnomaly);
-      eccentricAnomaly -= ratio;
-   }
-   if (iteration >= maxIterations)
-   {
-      std::cout << "SolveKeplersEquationElliptical(): Max iterations exceeded!" << std::endl;
-   }
-
    return eccentricAnomaly;
 }
 
 ////////////////////////////////////////////////////////////
-double SolveKeplersEquationHyperbolic(double eccentricity,
-                                      double meanAnomaly,
-                                      int maxIterations,
-                                      double tolerance)
+double KeplersEquationElliptical::SolveInverseEquation(double eccentricity, double eccentricAnomaly)
+{
+   return (eccentricAnomaly - eccentricity * sin(eccentricAnomaly));
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationElliptical::SolveInverseDerivative(double eccentricity, double eccentricAnomaly)
+{
+   return (1.0 - eccentricity * cos(eccentricAnomaly));
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::Evaluate(double eccentricity,
+                                           double meanAnomaly)
+{
+   return IKeplersEquation::Evaluate(eccentricity, meanAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::CalculateInitialGuess(double eccentricity, double meanAnomaly)
 {
    double hyperbolicAnomaly = meanAnomaly;
-
-   int iteration = 0;
-   double ratio = MATH_INFINITY;
-   while (iteration++ < maxIterations && fabs(ratio) > tolerance)
-   {
-      ratio = HyperbolicAnomalyEquation()(eccentricity, hyperbolicAnomaly, meanAnomaly) /
-              HyperbolicAnomalyDerivative()(eccentricity, hyperbolicAnomaly);
-      hyperbolicAnomaly -= ratio;
-   }
-   if (iteration >= maxIterations)
-   {
-      std::cout << "SolveKeplersEquationHyperbolic(): Max iterations exceeded!" << std::endl;
-   }
-
    return hyperbolicAnomaly;
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::SolveInverseEquation(double eccentricity, double hyperbolicAnomaly)
+{
+   return (eccentricity * sinh(hyperbolicAnomaly) - hyperbolicAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::SolveInverseDerivative(double eccentricity, double hyperbolicAnomaly)
+{
+   return (eccentricity * cosh(hyperbolicAnomaly) - 1.0);
 }

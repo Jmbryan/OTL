@@ -294,7 +294,7 @@ typedef Vector3<double> Vector3d;
 
 ////////////////////////////////////////////////////////////
 /// \class otl::Vector3
-/// \ingroup system
+/// \ingroup otl
 ///
 /// Defines a mathematical vector with three coordinates (x, y and z).
 /// It can be used to represent anything that has three dimensions:
