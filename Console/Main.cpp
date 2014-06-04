@@ -86,6 +86,26 @@ int main()
     //MGADSM mgadsm(nodes);
     //int numStates = mgadsm.GetNumStates();
 
+
+   otl::Epoch myEpoch = Epoch::JD(2449877.3458762);
+   GregorianDateTime dateTime = myEpoch.GetGregorian();
+   double jd = myEpoch.GetJD();
+
+   otl::Epoch myEpoch1 = Epoch::Gregorian(dateTime);
+   double jd1 = myEpoch1.GetJD();
+
+   GregorianDateTime dateTime2;
+   dateTime2.year = 1996;
+   dateTime2.month = 10;
+   dateTime2.day = 26;
+   dateTime2.hour = 14;
+   dateTime2.min = 20;
+   dateTime2.sec = 0.0;
+   otl::Epoch myEpoch2 = Epoch::Gregorian(dateTime2);
+   double jd2 = myEpoch2.GetJD();
+
+   double mjd2000 = otl::ConvertGregorian2MJD2000(myEpoch.GetGregorian());
+
     std::vector<double> x;
     x.push_back(1050);
     x.push_back(3.0);
@@ -118,7 +138,7 @@ int main()
     // Direct
     {
        keplerian::MGADSMTrajectory trajectory;
-       trajectory.AddDeparture("Earth", 3867.51);
+       trajectory.AddDeparture("Earth", Epoch::MJD2000(3867.51));
        trajectory.AddFlyby("Venus", 117.17, 3331.84, -1.62453);
        trajectory.AddDSM(0.35435);
        trajectory.AddRendezvous("Mars", 690.286);

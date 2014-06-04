@@ -22,27 +22,6 @@
 //
 ////////////////////////////////////////////////////////////
 
-
-////////////////////////////////////////////////////////////
-inline Epoch::Epoch() :
-m_mjd2000(0.0)
-{
-}
-
-////////////////////////////////////////////////////////////
-inline Epoch::Epoch(double epoch, Epoch::Type type) :
-m_mjd2000(0.0)
-{
-   Set(epoch, type);
-}
-
-////////////////////////////////////////////////////////////
-inline Epoch::Epoch(const GregorianDateTime& date) :
-m_mjd2000(0.0)
-{
-   SetGregorian(date);
-}
-
 ////////////////////////////////////////////////////////////
 inline void Epoch::SetJD(double julianDate)
 {
@@ -59,6 +38,13 @@ inline void Epoch::SetMJD(double modifiedJulianDate)
 inline void Epoch::SetMJD2000(double modifiedJulianDate2000)
 {
    m_mjd2000 = modifiedJulianDate2000;
+}
+
+////////////////////////////////////////////////////////////
+inline void Epoch::SetGregorian(const GregorianDateTime& dateTime)
+{
+   double julianDate = ConvertGregorian2JD(dateTime);
+   SetJD(julianDate);
 }
 
 ////////////////////////////////////////////////////////////
@@ -82,50 +68,34 @@ inline double Epoch::GetMJD2000() const
 ////////////////////////////////////////////////////////////
 inline GregorianDateTime Epoch::GetGregorian() const
 {
-   GregorianDateTime date;
-   // Not implemented
-   assert(false);
-   return date;
+   double julianDate = GetJD();
+   return ConvertJD2Gregorian(julianDate);
 }
 
 ////////////////////////////////////////////////////////////
-inline Epoch& operator +=(Epoch& left, const Epoch& right)
+inline Epoch& operator +=(Epoch& left, const Time& right)
 {
-    left.SetMJD2000(left.GetMJD2000() + right.GetMJD2000());
-
+    left.SetMJD2000(left.GetMJD2000() + right.Days());
     return left;
 }
 
 ////////////////////////////////////////////////////////////
-inline Epoch& operator -=(Epoch& left, const Epoch& right)
+inline Epoch& operator -=(Epoch& left, const Time& right)
 {
-    left.SetMJD2000(left.GetMJD2000() - right.GetMJD2000());
-
+    left.SetMJD2000(left.GetMJD2000() - right.Days());
     return left;
 }
 
 ////////////////////////////////////////////////////////////
-inline Epoch operator +(const Epoch& left, const Epoch& right)
+inline Epoch operator +(const Epoch& left, const Time& right)
 {
-    return Epoch(left.GetMJD2000() + right.GetMJD2000());
+    return Epoch::MJD2000(left.GetMJD2000() + right.Days());
 }
 
 ////////////////////////////////////////////////////////////
-inline Epoch operator -(const Epoch& left, const Epoch& right)
+inline Epoch operator -(const Epoch& left, const Time& right)
 {
-    return Epoch(left.GetMJD2000() - right.GetMJD2000());
-}
-
-////////////////////////////////////////////////////////////
-inline double ConvertJD2MJD(double julianDate)
-{
-   return julianDate - 2400000.5;
-}
-
-////////////////////////////////////////////////////////////
-inline double ConvertJD2MJD2000(double julianDate)
-{
-   return julianDate - 2451544.5;
+    return Epoch::MJD2000(left.GetMJD2000() - right.Days());
 }
 
 ////////////////////////////////////////////////////////////
@@ -135,15 +105,15 @@ inline double ConvertMJD2JD(double modifiedJulianDate)
 }
 
 ////////////////////////////////////////////////////////////
-inline double ConvertMJD2MJD2000(double modifiedJulianDate)
-{
-   return modifiedJulianDate - 51544.0;
-}
-
-////////////////////////////////////////////////////////////
 inline double ConvertMJD20002JD(double modifiedJulianDate2000)
 {
    return modifiedJulianDate2000 + 2451544.5;
+}
+
+////////////////////////////////////////////////////////////
+inline double ConvertJD2MJD(double julianDate)
+{
+   return julianDate - 2400000.5;
 }
 
 ////////////////////////////////////////////////////////////
@@ -151,3 +121,45 @@ inline double ConvertMJD20002MJD(double modifiedJulianDate2000)
 {
    return modifiedJulianDate2000 + 51544.0;
 }
+
+////////////////////////////////////////////////////////////
+inline double ConvertGregorian2MJD(const GregorianDateTime& dateTime)
+{
+   double julianDate = ConvertGregorian2JD(dateTime);
+   return ConvertJD2MJD(julianDate);
+}
+
+////////////////////////////////////////////////////////////
+inline double ConvertJD2MJD2000(double julianDate)
+{
+   return julianDate - 2451544.5;
+}
+
+////////////////////////////////////////////////////////////
+inline double ConvertMJD2MJD2000(double modifiedJulianDate)
+{
+   return modifiedJulianDate - 51544.0;
+}
+
+////////////////////////////////////////////////////////////
+inline double ConvertGregorian2MJD2000(const GregorianDateTime& dateTime)
+{
+   double julianDate = ConvertGregorian2JD(dateTime);
+   return ConvertJD2MJD2000(julianDate);
+}
+
+////////////////////////////////////////////////////////////
+inline GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate)
+{
+   double julianDate = ConvertMJD2JD(modifiedJulianDate);
+   return ConvertJD2Gregorian(julianDate);
+}
+
+////////////////////////////////////////////////////////////
+inline GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000)
+{
+   double julianDate = ConvertMJD20002JD(modifiedJulianDate2000);
+   return ConvertJD2Gregorian(julianDate);
+}
+
+

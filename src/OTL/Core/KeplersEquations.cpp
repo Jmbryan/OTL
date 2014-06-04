@@ -56,15 +56,15 @@ double IKeplersEquation::Evaluate(double eccentricity,
                                   double meanAnomaly)
 {
    // Determine the initial guess
-   double eccentricAnomaly = CalculateInitialGuess(eccentricity, meanAnomaly);
+   double anomaly = CalculateInitialGuess(eccentricity, meanAnomaly);
 
    // Newton-Raphson iteration
    int iteration = 0;
    double ratio = MATH_INFINITY;
    while (iteration++ < m_maxIterations && fabs(ratio) > m_tolerance)
    {
-      double numerator = meanAnomaly - SolveInverseEquation(eccentricity, eccentricAnomaly);
-      double denominator = SolveInverseDerivative(eccentricity, eccentricAnomaly);
+      double numerator = meanAnomaly - SolveInverseEquation(eccentricity, anomaly);
+      double denominator = SolveInverseDerivative(eccentricity, anomaly);
       if (fabs(denominator) > MATH_NEAR_ZERO)
       {
          ratio = numerator / denominator;
@@ -74,14 +74,14 @@ double IKeplersEquation::Evaluate(double eccentricity,
          std::cout << "IKeplersEquation::Evaluate: SolveInverseDerivative() returned zero!" << std::endl;
          break;
       }
-      eccentricAnomaly -= ratio;
+      anomaly -= ratio;
    }
    if (iteration >= m_maxIterations)
    {
       std::cout << "IKeplersEquation::Evaluate: Max iterations exceeded!" << std::endl;
    }
 
-   return eccentricAnomaly;
+   return anomaly;
 }
 
 ////////////////////////////////////////////////////////////

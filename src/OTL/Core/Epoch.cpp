@@ -28,58 +28,107 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-void Epoch::Set(double epoch, Epoch::Type type)
+Epoch::Epoch() :
+m_mjd2000(0.0)
 {
-   switch (type)
-   {
-   case Type::MJD2000:
-      m_mjd2000 = epoch;
-      break;
 
-   case Type::MJD:
-      m_mjd2000 = ConvertMJD2MJD2000(epoch);
-      break;
-
-   case Type::JD:
-      m_mjd2000 = ConvertJD2MJD2000(epoch);
-      break;
-   }
 }
 
 ////////////////////////////////////////////////////////////
-inline void Epoch::SetGregorian(const GregorianDateTime& date)
+Epoch Epoch::JD(double julianDate)
 {
-   double julianDate = 367 * date.year -
-                       Round0(7 * (date.year + Round0((date.month + 9) / 12)) / 4) +
-                       Round0(275 * date.month / 9) +
-                       date.day + 1721013.5 +
-                       date.hour / 24 +
-                       (date.min/ 60 / 24) +
-                       date.sec / 3600 / 24;
-   SetJD(julianDate);
-}
-
-////////////////////////////////////////////////////////////
-double Epoch::Get(Epoch::Type type) const
-{
-   double epoch = 0.0;
-
-   switch (type)
-   {
-   case Type::MJD2000:
-      epoch = m_mjd2000;
-      break;
-
-   case Type::MJD:
-      epoch = ConvertMJD20002MJD(m_mjd2000);
-      break;
-
-   case Type::JD:
-      epoch = ConvertMJD20002JD(m_mjd2000);
-      break;
-   }
-
+   Epoch epoch;
+   epoch.SetJD(julianDate);
    return epoch;
+}
+
+////////////////////////////////////////////////////////////
+Epoch Epoch::MJD(double modifiedJulianDate)
+{
+   Epoch epoch;
+   epoch.SetMJD(modifiedJulianDate);
+   return epoch;
+}
+
+////////////////////////////////////////////////////////////
+Epoch Epoch::MJD2000(double modifiedJulianDate2000)
+{
+   Epoch epoch;
+   epoch.SetMJD2000(modifiedJulianDate2000);
+   return epoch;
+}
+
+////////////////////////////////////////////////////////////
+Epoch Epoch::Gregorian(const GregorianDateTime& dateTime)
+{
+   Epoch epoch;
+   epoch.SetGregorian(dateTime);
+   return epoch;
+}
+
+////////////////////////////////////////////////////////////
+double ConvertGregorian2JD(const GregorianDateTime& dateTime)
+{
+   double julianDate = 367.0 * dateTime.year -
+                       Round0(7.0 * (dateTime.year + Round0((dateTime.month + 9.0) / 12.0)) / 4.0) +
+                       Round0(275.0 * dateTime.month / 9.0) +
+                       dateTime.day + 1721013.5 +
+                       dateTime.hour / 24.0 +
+                       (dateTime.min/ 60.0 / 24.0) +
+                       dateTime.sec / 3600.0 / 24.0;
+   return julianDate;
+}
+
+////////////////////////////////////////////////////////////
+GregorianDateTime ConvertJD2Gregorian(double julianDate)
+{
+   static int daysPerMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+   double T1900 = (julianDate - 2415019.5) / 365.25;
+   int year = 1900 + floor(T1900);
+   int leapYears = floor((year - 1900 - 1) * 0.25);
+   double days = (julianDate - 2415019.5) - ((year - 1900) * 365.0 + leapYears);
+   if (days < 1.0)
+   {
+      year -= 1;
+      leapYears = floor((year - 1900 - 1) * 0.25);
+      days = (julianDate - 2415019.5) - ((year - 1900) * 365.0 + leapYears);
+   }
+
+   bool bLeapYear = false;
+   if (year % 4 == 0)
+   {
+      bLeapYear = true;
+   }
+
+   int dayOfYear = floor(days);
+   int month = 1;
+   int daysSum = 0;
+   while (month <= 12 && dayOfYear > (daysSum + daysPerMonth[month - 1]))
+   {
+      daysSum += daysPerMonth[month++ - 1];
+      if (month == 2 && bLeapYear)
+      {
+         daysSum += 1;
+      }
+   }
+
+   int day = dayOfYear - daysSum;
+
+   double tau = (days - dayOfYear) * 24;
+   int hour = floor(tau);
+   int minute = floor((tau - hour) * 60.0);
+   double seconds = (tau - hour - minute/60.0) * 3600.0;
+
+   GregorianDateTime dateTime;
+   dateTime.year = year;
+   dateTime.month = month;
+   dateTime.day = day;
+   dateTime.hour = hour;
+   dateTime.min = minute;
+   dateTime.sec = seconds;
+
+   return dateTime;
 }
 
 } // namespace otl

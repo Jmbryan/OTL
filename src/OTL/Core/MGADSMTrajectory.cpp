@@ -47,13 +47,29 @@ insertion(false)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-MGADSMTrajectory::MGADSMTrajectory()
+MGADSMTrajectory::MGADSMTrajectory() :
+m_numNodes(0),
+m_numStates(0),
+m_legsInitialized(false),
+m_initialEpoch(Epoch::MJD2000(0.0)),
+m_finalEpoch(Epoch::MJD2000(0.0)),
+m_initialStateVector(StateVector()),
+m_finalStateVector(StateVector()),
+m_planetStateVector(StateVector())
 {
    Init();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-MGADSMTrajectory::MGADSMTrajectory(const std::vector<TrajectoryNodePtr>& nodes)
+MGADSMTrajectory::MGADSMTrajectory(const std::vector<TrajectoryNodePtr>& nodes) :
+m_numNodes(0),
+m_numStates(0),
+m_legsInitialized(false),
+m_initialEpoch(Epoch::MJD2000(0.0)),
+m_finalEpoch(Epoch::MJD2000(0.0)),
+m_initialStateVector(StateVector()),
+m_finalStateVector(StateVector()),
+m_planetStateVector(StateVector())
 {
    Init();
    SetNodes(0, nodes);
@@ -596,7 +612,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
     int iState = 0;
 
     // Trajectory initial conditions
-    m_finalEpoch = states[iState++];
+    m_finalEpoch.SetMJD2000(states[iState++]);
     m_legs.front().initialPlanet.GetStateVectorAtEpoch(m_finalEpoch, m_finalStateVector);
 
    // Calculate the trajectory one leg at a time
@@ -628,7 +644,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
    double timeOfFlightRemaining = timeOfFlightLeg;
 
    // Leg final conditions
-   m_finalEpoch = m_initialEpoch + timeOfFlightLeg * MATH_SEC_TO_DAY;
+   m_finalEpoch = m_initialEpoch + Time::Seconds(timeOfFlightLeg);
    planet.GetStateVectorAtEpoch(m_finalEpoch, m_planetStateVector);
    m_finalStateVector = m_planetStateVector;
 

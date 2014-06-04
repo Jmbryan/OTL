@@ -346,7 +346,7 @@ public:
    /// \param deltaV Vector3d which defines the deltaV vector if followed by a DSM
    ///
    ////////////////////////////////////////////////////////////
-   void AddDeparture(const std::string& orbitalBody, const Epoch& epoch = 0.0, const Vector3d& deltaV = Vector3d()); 
+   void AddDeparture(const std::string& orbitalBody, const Epoch& epoch = Epoch::MJD2000(0.0), const Vector3d& deltaV = Vector3d()); 
    
    ////////////////////////////////////////////////////////////
    /// \brief Add a DSMNode to the trajectory itinerary

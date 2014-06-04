@@ -23,128 +23,344 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Time.hpp>
 
 namespace otl
 {
 
+////////////////////////////////////////////////////////////
+/// \brief Data structure for expressing a Gregorian date and time
+/// \ingroup otl
+/// 
+////////////////////////////////////////////////////////////
 struct GregorianDateTime
 {
-   int year;
-   int month;
-   int day;
-   int hour;
-   int min;
-   double sec;
+   int year;   ///< The year
+   int month;  ///< The month
+   int day;    ///< The day
+   int hour;   ///< The hour
+   int min;    ///< The minute
+   double sec; ///< The second
 };
 
 class Epoch
 {
 public:
-
-   enum class Type
-   {
-      Invalid = -1,  ///< Invalid epoch type
-      JD,            ///< Julian Date
-      MJD,           ///< Modified Julian Date
-      MJD2000,       ///< Modified Julian Date 2000
-      Count          ///< Number of epoch types
-   };
+   ////////////////////////////////////////////////////////////
+   /// \brief Static constructor using a Julian Date
+   ///
+   /// Creates an Epoch object from a Julian Date.
+   /// Internally, the Julian Date is converted into
+   /// a Modified Julian Date 2000.
+   ///
+   /// \param julianDate Julian Date
+   /// \returns instance of Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   static Epoch JD(double julianDate);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Default constructor
+   /// \brief Static constructor using a Modified Julian Date
+   ///
+   /// Creates an Epoch object from a Modified Julian Date.
+   /// Internally, the Modified Julian Date is converted into
+   /// a Modified Julian Date 2000.
+   ///
+   /// \param modifiedJulianDate Modified Julian Date
+   /// \returns instance of Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   static Epoch MJD(double modifiedJulianDate);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Static constructor using a Modified Julian Date 2000
+   ///
+   /// Creates an Epoch object from a Modified Julian Date 2000.
+   ///
+   /// \param modifiedJulianDate2000 Modified Julian Date 2000
+   /// \returns instance of Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   static Epoch MJD2000(double modifiedJulianDate2000);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Static constructor using a Gregorian Date and time
+   ///
+   /// Creates an Epoch object from a Gregorian Date and time.
+   /// Internally, the Gregordian Date and time is converted into
+   /// a Modified Julian Date 2000.
+   ///
+   /// \param dateTime Gregorian Date and time
+   /// \returns instance of Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   static Epoch Gregorian(const GregorianDateTime& dateTime);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the epoch to the Julian Date.
+   ///
+   /// The epoch is converted to MJD2000 internally.
+   ///
+   /// \param julianDate New epoch expressed as a Julian Date
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetJD(double julianDate);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the epoch to the Modified Julian Date.
+   ///
+   /// The epoch is converted to MJD2000 internally.
+   ///
+   /// \param modifiedJulianDate New epoch expressed as a Modified Julian Date
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetMJD(double modifiedJulianDate);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the epoch to the Modified Julian Date 2000.
+   ///
+   /// \param modifiedJulianDate2000 New epoch expressed as a Modified Julian Date 2000
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetMJD2000(double modifiedJulianDate2000);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the epoch to the Gregorian date and time.
+   ///
+   /// The epoch is converted to MJD2000 internally.
+   ///
+   /// \param dateTime New epoch expressed as a Gregorian date and time
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetGregorian(const GregorianDateTime& dateTime);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the Julian Date.
+   ///
+   /// The epoch is converted from MJD2000 internally.
+   ///
+   /// \returns double representing the epoch expressed as a Julian Date
+   ///
+   ////////////////////////////////////////////////////////////
+   double GetJD() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the Modified Julian Date.
+   ///
+   /// The epoch is converted from MJD2000 internally.
+   ///
+   /// \returns double representing the epoch expressed as a Modified Julian Date
+   ///
+   ////////////////////////////////////////////////////////////
+   double GetMJD() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the Modified Julian Date 2000.
+   ///
+   /// \returns double representing the epoch expressed as a Modified Julian Date 2000
+   ///
+   ////////////////////////////////////////////////////////////
+   double GetMJD2000() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the Gregorian date and time.
+   ///
+   /// The epoch is converted from MJD2000 internally.
+   ///
+   /// \returns GregorianDateTime representing the epoch expressed as a Gregorian date and time
+   ///
+   ////////////////////////////////////////////////////////////
+   GregorianDateTime GetGregorian() const;
+
+private:
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor not allowed
    ////////////////////////////////////////////////////////////
    Epoch();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Create the epoch from the specified format
-   ///
-   /// \param epoch Epoch value
-   /// \param type Epoch type (JD, MJD, or MJD2000)
-   ///
-   ////////////////////////////////////////////////////////////
-   Epoch(double epoch, Type type = Type::MJD2000);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Create the epoch from a Gregorian date and time
-   ///
-   /// \param date Gregorian date and time
-   ///
-   ////////////////////////////////////////////////////////////
-   Epoch(const GregorianDateTime& date);
-
-   void Set(double epoch, Type type = Type::MJD2000);
-   void SetJD(double julianDate);
-   void SetMJD(double modifiedJulianDate);
-   void SetMJD2000(double modifiedJulianDate2000);
-   void SetGregorian(const GregorianDateTime& date);
-
-   double Get(Type type = Type::MJD2000) const;
-   double GetJD() const;
-   double GetMJD() const;
-   double GetMJD2000() const;
-   GregorianDateTime GetGregorian() const;
 
 private:
    double m_mjd2000; ///< Modified Julian Date 2000
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator +=
+/// \brief Helper function for converting from Modified Julian Date to Julian Date.
+/// \relates Epoch
 ///
-/// This operator performs a memberwise addition of both Epochs,
+/// \param modifiedJulianDate Modified Julian date
+/// \returns Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertMJD2JD(double modifiedJulianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Modified Julian Date 2000 to Julian Date
+/// \relates Epoch
+///
+/// \param modifiedJulianDate2000 Modified Julian date 2000
+/// \returns Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertMJD20002JD(double modifiedJulianDate2000);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Gregorian Date to Julian Date
+/// \relates Epoch
+///
+/// \param dateTIme Gregorian date and time
+/// \returns Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertGregorian2JD(const GregorianDateTime& dateTime);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Julian Date to Modified Julian Date
+/// \relates Epoch
+///
+/// \param julianDate Julian date
+/// \returns Modified Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertJD2MJD(double julianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Modified Julian Date 2000 to Modified Julian Date
+/// \relates Epoch
+///
+/// \param modifiedJulianDate2000 Modified Julian date 2000
+/// \returns Modified Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertMJD20002MJD(double modifiedJulianDate2000);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Gregorian Date to Modified Julian Date
+/// \relates Epoch
+///
+/// \param dateTime Gregorian date and time
+/// \returns Modified Julian date
+///
+////////////////////////////////////////////////////////////
+double ConvertGregorian2MJD(const GregorianDateTime& dateTime);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Julian Date to Modified Julian Date 2000
+/// \relates Epoch
+///
+/// \param julianDate Julian date
+/// \returns Modified Julian date 2000
+///
+////////////////////////////////////////////////////////////
+double ConvertJD2MJD2000(double julianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Modified Julian Date to Modified Julian Date 2000
+/// \relates Epoch
+///
+/// \param modifiedJulianDate Modified Julian date
+/// \returns Modified Julian date 2000
+///
+////////////////////////////////////////////////////////////
+double ConvertMJD2MJD2000(double modifiedJulianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Gregorian Date to Modified Julian Date 2000
+/// \relates Epoch
+///
+/// \param dateTime Gregorian date and time
+/// \returns Modified Julian date 2000
+///
+////////////////////////////////////////////////////////////
+double ConvertGregorian2MJD2000(const GregorianDateTime& dateTime);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Julian Date to Gregorian Date
+/// \relates Epoch
+///
+/// \param julianDate Julian date
+/// \returns Gregorian date and time
+///
+////////////////////////////////////////////////////////////
+GregorianDateTime ConvertJD2Gregorian(double julianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Modified Julian Date to Gregorian Date
+/// \relates Epoch
+///
+/// \param modifiedJulianDate Modified Julian date
+/// \returns Gregorian date and time
+///
+////////////////////////////////////////////////////////////
+GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting from Modified Julian Date 2000 to Gregorian Date
+/// \relates Epoch
+///
+/// \param modifiedJulianDate2000 Modified Julian date 2000
+/// \returns Gregorian date and time
+///
+////////////////////////////////////////////////////////////
+GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator +=
+/// \relates Epoch
+///
+/// This operator adds a Time to the Epoch,
 /// and assigns the result to \a left.
 ///
 /// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Epoch)
+/// \param right Right operand (a Time)
 ///
 /// \return Reference to \a left
 ///
 ////////////////////////////////////////////////////////////
-Epoch& operator +=(Epoch& left, const Epoch& right);
+Epoch& operator +=(Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator -=
+/// \relates Epoch
 ///
-/// This operator performs a memberwise subtraction of both Epochs,
+/// This operator subtracts a Time from the Epoch,
 /// and assigns the result to \a left.
 ///
 /// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Epoch)
+/// \param right Right operand (a Time)
 ///
 /// \return Reference to \a left
 ///
 ////////////////////////////////////////////////////////////
-Epoch& operator -=(Epoch& left, const Epoch& right);
+Epoch& operator -=(Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator +
+/// \relates Epoch
+///
+/// This operator adds the Time to the Epoch,
+/// and assigns the result to a new Epoch.
 ///
 /// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Epoch)
+/// \param right Right operand (a Time)
 ///
-/// \return Memberwise addition of both Epochs
+/// \return Instance of Epoch
 ///
 ////////////////////////////////////////////////////////////
-Epoch operator +(const Epoch& left, const Epoch& right);
+Epoch operator +(const Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator -
+/// \relates Epoch
+///
+/// This operator subratcs the Time from the Epoch,
+/// and assigns the result to a new Epoch.
 ///
 /// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Epoch)
+/// \param right Right operand (a Time)
 ///
-/// \return Memberwise subtraction of both Epochs
+/// \return Instance of Epoch
 ///
 ////////////////////////////////////////////////////////////
-Epoch operator -(const Epoch& left, const Epoch& right);
-
-double ConvertJD2MJD(double julianDate);
-double ConvertJD2MJD2000(double julianDate);
-double ConvertMJD2JD(double modifiedJulianDate);
-double ConvertMJD2MJD2000(double modifiedJulianDate);
-double ConvertMJD20002JD(double modifiedJulianDate2000);
-double ConvertMJD20002MJD(double modifiedJulianDate2000);
+Epoch operator -(const Epoch& left, const Time& right);
 
 #include <OTL/Core/Epoch.inl>
 
@@ -154,10 +370,12 @@ double ConvertMJD20002MJD(double modifiedJulianDate2000);
 /// \class otl::Epoch
 /// \ingroup otl
 ///
-/// otl::Epoch is a simple class that defines a point in time.
-/// An epoch supports multiple formats including Julian Date (JD),
-/// Modified Julian Date (MJD), Modified Julian Date 2000 (MJD2000),
-/// and Gregorian.
+/// Represents a point in time expressed in a variety of formats.
+/// Supported formats include:
+/// \li Julian Date (JD)
+/// \li Modified Julian Date (MJD)
+/// \li Modified Julian Date 2000 (MJD2000)
+/// \li Gregorian Date & Time
 ///
 /// Internally, the date is always stored as a MJD2000. Setting
 /// the date using a different format results in calling the
@@ -167,26 +385,27 @@ double ConvertMJD20002MJD(double modifiedJulianDate2000);
 ///
 /// Usage example:
 /// \code
-/// otl::Epoch epoch1;
-/// epoch1.SetMJD2000(1000);                    // One thousand days past Januray 1st, 2000.
-/// otl::Epoch epoch2(1000);                    // Implicit conversion from double
-/// otl::Epoch epoch3 = epoch1 + epoch2;        // Support for common operator overloads
+/// // The following three epochs all represent the date January 1st, 2000
+/// otl::Epoch epoch1 = otl::Epoch::JD(2451545.5);
+/// otl::Epoch epoch2 = otl::Epoch::MJD(51544.0);
+/// otl::Epoch epoch3 = otl::Epoch::MJD2000(0.0)
+/// OTL_ASSERT(epoch1 == epoch2 && epoch2 == epoch3);
 ///
-/// double mjd = otl::ConvertMJD20002MJD(1000);
-/// assert(epoch1.GetMJD() == mjd);
+/// double mjd2000_1 = epoch1.GetMJD2000();
+/// double mjd2000_2 = otl::ConvertJD2MJD2000(epoch2.GetJD()); // Helper conversion functions
+/// OTL_ASSERT(mjd2000_1 == mjd2000_2);
 ///
-/// double jd = otl::ConvertMJD20002JD(1000);
-/// otl::Epoch epoch4(jd, Epoch::Type::JD);
-/// assert(epoch1 == epoch4);                   // Comparison works even if epochs are created with different formats
-/// 
-/// otl::GregorianDateTime dateTime;
-/// dateTime.year  = 2014;
-/// dateTime.month = 1;
-/// dateTime.day   = 14;
-/// dateTime.hour  = 19;
-/// dateTime.min   = 10;
-/// dateTime.sec   = 15.0;
-/// otl::Epoch epoch5(dateTime);
+/// otl::GregorianDateTime dateTime1 = epoch1.GetGregorian();
+/// OTL_ASSERT(dateTime1.year == 2000 && dateTime1.month == 1 && dateTime1.day = 1);
+///
+/// otl::GregorianDateTime dateTime2;
+/// dateTime2.year  = 2014;
+/// dateTime2.month = 1;
+/// dateTime2.day   = 14;
+/// dateTime2.hour  = 19;
+/// dateTime2.min   = 10;
+/// dateTime2.sec   = 15.0;
+/// otl::Epoch epoch5(dateTime2);
 ///
 ///\endcode
 ///

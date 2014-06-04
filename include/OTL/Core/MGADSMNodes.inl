@@ -47,7 +47,10 @@ inline void TrajectoryNode::SetType(Type _type)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-inline DepartureNode::DepartureNode()
+inline DepartureNode::DepartureNode() :
+orbitalBody(""),
+epoch(Epoch::MJD2000(0.0)),
+deltaV(Vector3d())
 {
    SetType(Type::Departure);
 }

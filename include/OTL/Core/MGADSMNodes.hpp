@@ -115,7 +115,7 @@ struct DepartureNode : public TrajectoryNode
    ///
    ////////////////////////////////////////////////////////////
    DepartureNode(const std::string& _orbitalBody,
-                 Epoch _epoch = 0.0, const Vector3d& _deltaV = Vector3d());
+                 Epoch _epoch = Epoch::MJD2000(0.0), const Vector3d& _deltaV = Vector3d());
 };
 
 ////////////////////////////////////////////////////////////
