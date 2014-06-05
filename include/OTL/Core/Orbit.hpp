@@ -39,22 +39,28 @@ class Orbit
 {
 public:
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Orbit directions
+   ////////////////////////////////////////////////////////////
    enum class Direction
    {
-      Invalid = -1,
-      Prograde,
-      Retrograde,
-      Count
+      Invalid = -1,  ///< Invalid orbit direction
+      Prograde,      ///< Prograde (counterclockwise as viewed from above the orbit)
+      Retrograde,    ///< Retrograde (clockwise as viewed from above the orbit)
+      Count          ///< Number of orbit directions
    };
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Orbit types
+   ////////////////////////////////////////////////////////////
    enum class Type
    {
-      Invalid = -1,
-      Circular,
-      Elliptical,
-      Parabolic,
-      Hyperbolic,
-      Count
+      Invalid = -1,  ///< Invalid orbit type
+      Circular,      ///< Circular orbit (eccentricity equal to zero)
+      Elliptical,    ///< Elliptical orbit (eccentricity between zero and one)
+      Parabolic,     ///< Parabolic orbit (eccentricity equal to one)
+      Hyperbolic,    ///< Hyperbolic orbit (eccentricity greater than one)
+      Count          ///< Number of orbit types
    };
 
    ////////////////////////////////////////////////////////////

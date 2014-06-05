@@ -187,8 +187,8 @@ protected:
 /// \class otl::OrbitalBody
 /// \ingroup otl
 ///
-/// Interface class for all orbital bodies (solar system
-/// planets, asteroids, comets, etc..).  
+/// Interface class for all orbital bodies (planets,
+/// asteroids, comets, etc..).  
 ///
 /// The state vector and orbital elements of the orbital
 /// body at a desired Epoch can be obtained by calling

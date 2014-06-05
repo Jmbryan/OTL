@@ -34,6 +34,9 @@ namespace otl
 namespace keplerian
 {
 
+namespace trajectory
+{
+
 ///////////////////////////////////////////////////////////////////////////////////
 TrajectoryLeg::TrajectoryLeg() :
 initialPlanet(),
@@ -51,8 +54,8 @@ MGADSMTrajectory::MGADSMTrajectory() :
 m_numNodes(0),
 m_numStates(0),
 m_legsInitialized(false),
-m_initialEpoch(Epoch::MJD2000(0.0)),
-m_finalEpoch(Epoch::MJD2000(0.0)),
+m_initialEpoch(Epoch()),
+m_finalEpoch(Epoch()),
 m_initialStateVector(StateVector()),
 m_finalStateVector(StateVector()),
 m_planetStateVector(StateVector())
@@ -65,8 +68,8 @@ MGADSMTrajectory::MGADSMTrajectory(const std::vector<TrajectoryNodePtr>& nodes) 
 m_numNodes(0),
 m_numStates(0),
 m_legsInitialized(false),
-m_initialEpoch(Epoch::MJD2000(0.0)),
-m_finalEpoch(Epoch::MJD2000(0.0)),
+m_initialEpoch(Epoch()),
+m_finalEpoch(Epoch()),
 m_initialStateVector(StateVector()),
 m_finalStateVector(StateVector()),
 m_planetStateVector(StateVector())
@@ -630,6 +633,8 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
       CalculateLegs();
    }
 
+   int numLegs = static_cast<int>(m_legs.size());
+
    const TrajectoryLeg& leg = m_legs[iLeg];
 
    // Leg destination orbital body
@@ -707,7 +712,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
          deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
 
          // This is the end of the trajectory
-         if (!leg.flyby && !leg.insertion && (iLeg == m_legs.size() - 1))
+         if (!leg.flyby && !leg.insertion && (iLeg == numLegs - 1))
          {
             deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
          }
@@ -756,8 +761,9 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
 
       double v1 = sqrt(mu / r * (1.0 + e));
 
+
       // Orbit departure (if followed by a DSM)
-      if ((iLeg < m_legs.size() - 1) && m_legs[iLeg + 1].numDSM > 0)
+      if ((iLeg < numLegs - 1) && m_legs[iLeg + 1].numDSM > 0)
       {
          double vinf  = states[iState++];
          double delta = states[iState++];
@@ -864,6 +870,8 @@ int MGADSMTrajectory::GetInsertionIndex(int insertion) const
    }
    return nodeIndex;
 }
+
+} // namespace trajectory
 
 } // namespace keplerian
 

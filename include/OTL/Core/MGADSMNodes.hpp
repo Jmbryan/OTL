@@ -29,11 +29,12 @@ namespace otl
 namespace keplerian
 {
 
+namespace trajectory
+{
+
 ////////////////////////////////////////////////////////////
-/// \brief Basic component of a MGADSMTrajectory itinerary.
-/// \ingroup keplerian
-///
-/// Interface class for all trajectory nodes
+/// \brief Interface data structure for all trajectory nodes.
+/// \ingroup trajectory
 /// 
 ////////////////////////////////////////////////////////////
 struct TrajectoryNode
@@ -88,8 +89,8 @@ private:
 typedef std::shared_ptr<TrajectoryNode> TrajectoryNodePtr; ///< Convenience alias for TrajectoryNode smart pointer
 
 ////////////////////////////////////////////////////////////
-/// \brief Contains the departure conditions of the trajectory.
-/// \ingroup keplerian
+/// \brief Data structure containing the departure conditions of a trajectory.
+/// \ingroup trajectory
 ///
 /// A DepartureNode must be and can only be the first node of
 /// a trajectory.
@@ -115,12 +116,12 @@ struct DepartureNode : public TrajectoryNode
    ///
    ////////////////////////////////////////////////////////////
    DepartureNode(const std::string& _orbitalBody,
-                 Epoch _epoch = Epoch::MJD2000(0.0), const Vector3d& _deltaV = Vector3d());
+                 Epoch _epoch = Epoch(), const Vector3d& _deltaV = Vector3d());
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Contains the flyby conditions for a particular flyby of the trajectory.
-/// \ingroup keplerian
+/// \brief Data structure containing the flyby conditions for a flyby of a trajectory.
+/// \ingroup trajectory
 ///
 /// There may be multiple FlybyNodes in the trajectory.
 ///
@@ -151,8 +152,8 @@ struct FlybyNode : public TrajectoryNode
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Contains the DSM conditions for a particular flyby of the trajectory.
-/// \ingroup keplerian
+/// \brief Data structure containing the DSM conditions for a DSM of a trajectory.
+/// \ingroup trajectory
 ///
 /// There may be multiple DSMNodes in the trajectory.
 ///
@@ -179,8 +180,8 @@ struct DSMNode : public TrajectoryNode
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Contains the rendezvous conditions of the trajectory.
-/// \ingroup keplerian
+/// \brief Data structure containing the rendezvous conditions of a trajectory.
+/// \ingroup trajectory
 ///
 /// A RendezvousNode can only be the last node of a trajectory.
 ///
@@ -213,8 +214,8 @@ struct RendezvousNode : public TrajectoryNode
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Contains the insertion conditions of the trajectory.
-/// \ingroup keplerian
+/// \brief Data structure containing the insertion conditions of a trajectory.
+/// \ingroup trajectory
 ///
 /// An InsertionNode requires that the spacecraft achieves
 /// the same absolute position as the orbital body and inserts
@@ -249,6 +250,8 @@ struct InsertionNode : public TrajectoryNode
 };
 
 #include <OTL/Core/MGADSMNodes.inl>
+
+} // namespace trajectory
 
 } // namespace keplerian
 

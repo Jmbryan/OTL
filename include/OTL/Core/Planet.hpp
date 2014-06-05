@@ -33,21 +33,29 @@ class Planet : public OrbitalBody
 {
 public:
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Planetary body identifiers
+   ////////////////////////////////////////////////////////////
    enum class PlanetId
    {
       Invalid = -1,  ///< Invalid planet identifier
-      Mercury,
-      Venus,
-      Earth,
-      Mars,
-      Jupiter,
-      Saturn,
-      Uranus,
-      Neptune,
-      Pluto,
-      Count           ///< Number of planets
+      Mercury,       ///< Mercury
+      Venus,         ///< Venus
+      Earth,         ///< Earth
+      Mars,          ///< Mars
+      Jupiter,       ///< Jupiter
+      Saturn,        ///< Saturn
+      Uranus,        ///< Uranus
+      Neptune,       ///< Neptune
+      Pluto,         ///< Pluto
+      Count          ///< Number of planets
    };
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Simple data structure containing the basic characteristics of a planet.
+   /// \ingroup otl
+   /// 
+   ////////////////////////////////////////////////////////////
    struct PlanetInfo
    {
       std::string name; ///< Name of the planet
@@ -168,7 +176,7 @@ private:
 /// \class otl::Planet
 /// \ingroup otl
 ///
-/// otl::Planet is a class that defines a planet body. The
+/// Represents a solar system planetary body. The
 /// state vector and orbital elements of the planet at a
 /// desired Epoch can be obtained by calling the inherited
 /// member functions:

@@ -58,7 +58,9 @@ public:
 protected:
    Vector3d m_VInfinityIn;    ///< Temporary Vector3d for storing the relative approach velocity
    Vector3d m_VInfinityOut;   ///< Temporary Vector3d for storing the relative departure velocity
-   Vector3d m_B1, m_B2, m_B3; ///< Temporary Vector3d's for storing intermediate data
+   Vector3d m_B1;             ///< Temporary Vector3d for defining the B-plane coordinate system
+   Vector3d m_B2;             ///< Temporary Vector3d for defining the B-plane coordinate system
+   Vector3d m_B3;             ///< Temporary Vector3d for defining the B-plane coordinate system
 };
 
 } // namespace keplerian
@@ -89,15 +91,37 @@ protected:
 /// There are many ways to define the orientation of the flyby
 /// hyperbola in 3D space. This implementation is based on
 /// the method developed by Dario Izzo which uses the turn angle
-/// along with a B-Plane inclination angle. The B-Plane angle
-/// is the angle of the hyperbolic plane relative to the "B"
-/// reference frame which is defined as:
+/// along with the B-Plane inclination angle. The B-Plane
+/// inclination angle is the angle of the hyperbolic plane
+/// relative to the "B" reference frame which is defined as:
 ///
 /// \f$ \hat{B_i} = \frac{V_\inf^-}{||V_\inf^-||} \f$\n
 /// \f$ B_j = \hat{B_i} \times \frac{V_{planet}}{||V_{planet}||} \f$\n
 /// \f$ \hat{B_j} = \frac{B_j}{||B_j||} \f$\n
 /// \f$ B_k = \hat{B_i} \times \hat{B_j} \f$\n
 /// \f$ \hat{B_k} = \frac{B_k}{||B_k||} \f$
+///
+/// Usage example:
+/// \code
+/// otl::keplerian::IFlybyAlgorithm* flyby = new otl::keplerian::FlybyUnpowered();
+///
+/// // Setup inputs
+/// otl::Vector3d approachVelocity = Vector3d(-1.0, 2.0, 3.0); // Absolute velocity before flyby (km/s)
+/// otl::Planet flybyPlanet("Venus");                          // Venus flyby
+/// double flybyAltitude = 500.0;                              // Periapsis of flyby hyperbola (m)
+/// double BPlaneAngle = MATH_PI;                              // Orientation of flyby hyperbola
+///
+/// // Setup output
+/// otl::Vector3d departureVelocity;                           // Absolute velocity after flyby (km/s)
+///
+/// flyby->Evaluate(approachVelocity,
+///                 flybyPlanet,
+///                 flybyAltitude,
+///                 BPlaneAngle,
+///                 departureVelocity);
+///
+/// OTL_SAFE_DELETE(flyby);
+/// \endcode
 ///
 /// \reference D. Izzo. Advances in global optimisation for space trajectory design.
 /// Proceedings of 25th International Symposium on Space Technology and Science, 2006.

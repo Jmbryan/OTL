@@ -85,13 +85,13 @@ GregorianDateTime ConvertJD2Gregorian(double julianDate)
    static int daysPerMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
    double T1900 = (julianDate - 2415019.5) / 365.25;
-   int year = 1900 + floor(T1900);
-   int leapYears = floor((year - 1900 - 1) * 0.25);
+   int year = static_cast<int>(1900 + floor(T1900));
+   int leapYears = static_cast<int>(floor((year - 1900 - 1) * 0.25));
    double days = (julianDate - 2415019.5) - ((year - 1900) * 365.0 + leapYears);
    if (days < 1.0)
    {
       year -= 1;
-      leapYears = floor((year - 1900 - 1) * 0.25);
+      leapYears = static_cast<int>(floor((year - 1900 - 1) * 0.25));
       days = (julianDate - 2415019.5) - ((year - 1900) * 365.0 + leapYears);
    }
 
@@ -101,7 +101,7 @@ GregorianDateTime ConvertJD2Gregorian(double julianDate)
       bLeapYear = true;
    }
 
-   int dayOfYear = floor(days);
+   int dayOfYear = static_cast<int>(floor(days));
    int month = 1;
    int daysSum = 0;
    while (month <= 12 && dayOfYear > (daysSum + daysPerMonth[month - 1]))
@@ -116,8 +116,8 @@ GregorianDateTime ConvertJD2Gregorian(double julianDate)
    int day = dayOfYear - daysSum;
 
    double tau = (days - dayOfYear) * 24;
-   int hour = floor(tau);
-   int minute = floor((tau - hour) * 60.0);
+   int hour = static_cast<int>(floor(tau));
+   int minute = static_cast<int>(floor((tau - hour) * 60.0));
    double seconds = (tau - hour - minute/60.0) * 3600.0;
 
    GregorianDateTime dateTime;

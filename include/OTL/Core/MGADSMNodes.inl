@@ -49,7 +49,7 @@ inline void TrajectoryNode::SetType(Type _type)
 ///////////////////////////////////////////////////////////////////////////////////
 inline DepartureNode::DepartureNode() :
 orbitalBody(""),
-epoch(Epoch::MJD2000(0.0)),
+epoch(Epoch()),
 deltaV(Vector3d())
 {
    SetType(Type::Departure);

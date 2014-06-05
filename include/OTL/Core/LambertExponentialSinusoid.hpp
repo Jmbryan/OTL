@@ -83,18 +83,44 @@ private:
 /// \ingroup keplerian
 ///
 /// Implements Lambert's problem using exponential sinusoids
-/// developed by Dario Izzo. Here, trajectories are modeled
-/// using exponential sinusoids as opposed to classic ballistic
-/// arcs (i.e. conic sections). An exponential sinusoid is
-/// defined as:
+/// developed. Here, trajectories are modeled using exponential
+/// sinusoids as opposed to classic ballistic arcs (i.e. conic
+/// sections). An exponential sinusoid is defined as:
 ///
-/// r = k0 * exp[k1 * sin(k2 * theta + phi)]
+/// \f$ r = k_0 e^{[k_1\sin{(k_2 \theta) + \phi}]} \f$
 ///
 /// Izzo found that given an initial and final position, transfer
 /// angle, and maximum number of revolutions, then for all
 /// values of k2 there exist a class of exponential sinusoids
 /// that pass through both points parameterized only by the
-/// flight path angle.  
+/// flight path angle.
+///
+/// Usage example:
+/// \code
+/// otl::keplerian::ILambertAlgorithm* lambert = new otl::keplerian::LambertExponentialSinusoid();
+///
+/// // Setup inputs:
+/// otl::Vector3d initialPosition = Vector3d(1.0, 2.0, 3.0);      // Initial absolute position (km)
+/// otl::Vector3d finalPosition = Vector3d(4.0, 5.0, 6.0);        // Final absolute position (km)
+/// otl::Time timeDelta = Time::Days(150.0);                      // Total time of flight is 150 days
+/// otl::Orbit::Direction orbitDirection = otl::Orbit::Prograde;  // Prograde orbit
+/// int maxRevolutions = 1;                                       // Allow at most 1 full revolution
+/// double mu = ASTRO_MU_SUN;                                     // Gravitational parameter of the Sun
+///
+/// // Setup outputs:
+/// otl::Vector3d initialVelocity, finalVelocity;
+///
+/// lambert->Evaluate(initialPosition,
+///                   finalPosition,
+///                   timeDelta,
+///                   orbitDirection,
+///                   maxRevolutions,
+///                   mu,
+///                   initialVelocity,
+///                   finalVelocity);
+///
+/// OTL_SAFE_DELETE(lambert);
+/// \endcode
 ///
 /// \reference D. Izzo. Lambert's problem for exponential sinusoids.
 /// Journal of Guidance Control and Dynamics, 29(5):1242-1245, 2006.

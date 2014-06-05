@@ -84,8 +84,8 @@ private:
    ///
    /// Calculates the Stumpff Functions defined as (elliptical orbits):
    ///
-   /// c2 = (1 - cos(sqrt(psi)))/psi
-   /// c3 = (sqrt(psi) - sin(sqrt(psi)))/sqrt(psi^3)
+   /// \f$ c_2 = \frac{(1 - \cos{\sqrt{\psi}})}{\psi} \f$\n
+   /// \f$ c_3 = \frac{(\sqrt{\psi} - \sin{\sqrt{\psi}})}{\sqrt{\psi^3}} \f$
    ///
    /// The equations for hyperbolic orbits are similar,
    /// but use hyperbolic sine and cosine functions instead.
@@ -109,11 +109,42 @@ private:
 /// \class otl::keplerian::PropagateLagrangian
 /// \ingroup keplerian
 ///
+/// Propagation using Lagrange coefficients and Universal Variable.
+///
 /// Propgates a keplerian orbit forward or backwards in
 /// time through the use of Lagrange coeficients and
 /// universal variable (universal anomaly). All orbit types
 /// are inheritely supported. Internally, Kepler's
 /// equations are solved using a Newton-Raphson iteration.
+///
+/// Usage example:
+/// \code
+/// otl::keplerian::IPropagateAlgorithm* propagator = new otl::keplerian::PropagateLagrangian();
+///
+/// // Setup inputs
+/// otl::StateVector initialStateVector;
+/// initialStateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
+/// initialStateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
+/// double mu = ASTRO_MU_SUN;                                        // Gravitational parameter of the Sun
+/// otl::Time timeDelta = Time::Days(150.0);                         // Propagate forward 150 days
+///
+/// // Setup output
+/// otl::StateVector finalStateVector = initialStateVector;
+///
+/// propagator->Propagate(finalStateVector,
+///                       mu,
+///                       timeDelta);
+///
+/// // Now propagate backwards in time to verify we end up where we started
+/// otl::StateVector initialStateVector2 = finalStateVector;
+///
+/// propagator->Propagate(initialStateVector2,
+///                       mu,
+///                       -timeDelta);
+///
+/// OTL_ASSERT(initialStateVector == initialStateVector2);
+/// OTL_SAFE_DELETE(propagator); 
+/// \endcode
 ///
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition
 /// Algorithm 8, (2.3)101-102, 2007.

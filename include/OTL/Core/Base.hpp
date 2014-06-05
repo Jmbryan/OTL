@@ -67,9 +67,8 @@ enum class FlybyType
 
 ////////////////////////////////////////////////////////////
 /// \class otl::StateVector
-/// \ingroup core
 ///
-/// Fundamental construct representing a three dimensional
+/// Basic construct representing a three dimensional
 /// position and velocity in space.
 ///
 ////////////////////////////////////////////////////////////
@@ -81,10 +80,8 @@ struct StateVector
 
 ////////////////////////////////////////////////////////////
 /// \class otl::OrbitalElements
-/// \ingroup core
 ///
-/// Fundamental construct which contains the minimum parameters
-/// required to fully define a three dimensonal orbit in space.
+/// Basic construct representing a three dimensonal orbit in space.
 ///
 /// <ul>
 /// <li>The Semimajor Axis defines the length of the primary axis</li>

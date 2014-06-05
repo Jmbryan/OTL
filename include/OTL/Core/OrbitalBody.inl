@@ -27,7 +27,7 @@ inline OrbitalBody::OrbitalBody() :
 m_name(""),
 m_radius(0.0),
 m_mu(0.0),
-m_epoch(Epoch::MJD2000(0.0))
+m_epoch(Epoch())
 {
 }
 
@@ -36,7 +36,7 @@ inline OrbitalBody::OrbitalBody(const std::string& name, double radius, double m
 m_name(name),
 m_radius(radius),
 m_mu(mu),
-m_epoch(Epoch::MJD2000(0.0))
+m_epoch(Epoch())
 {
 }
 

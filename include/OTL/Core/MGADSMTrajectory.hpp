@@ -30,19 +30,29 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-/// \defgroup keplerian
+/// \defgroup keplerian Keplerian
 ///
 /// Classes and functions specific to Keplerian dynamics which
-/// assume instantaneous changes in velocity. This includes the
-/// MGA-DSM problem, Lambert's problem, lagrangian propagation,
-/// flybys, and more.
+/// assume instantaneous changes in velocity. Lambert's problem,
+/// orbit propagation, flybys, interplanetary trajectories and more.
 ///
 ////////////////////////////////////////////////////////////
 namespace keplerian
 {
 
 ////////////////////////////////////////////////////////////
-/// \brief Data structure representing one "leg" of a MGADSMTrajectory
+/// \defgroup trajectory Trajectory
+/// \ingroup keplerian
+///
+/// Classes and functions specific to interplanetary trajectories.
+///
+////////////////////////////////////////////////////////////
+namespace trajectory
+{
+
+////////////////////////////////////////////////////////////
+/// \brief Data structure representing one "leg" of a MGADSMTrajectory.
+/// \ingroup trajectory
 ///
 /// The itinerary of an otl::keplerian::MGADSMTrajectory is
 /// defined by a vector of TrajectoryNodes. Before computing
@@ -346,7 +356,7 @@ public:
    /// \param deltaV Vector3d which defines the deltaV vector if followed by a DSM
    ///
    ////////////////////////////////////////////////////////////
-   void AddDeparture(const std::string& orbitalBody, const Epoch& epoch = Epoch::MJD2000(0.0), const Vector3d& deltaV = Vector3d()); 
+   void AddDeparture(const std::string& orbitalBody, const Epoch& epoch = Epoch(), const Vector3d& deltaV = Vector3d()); 
    
    ////////////////////////////////////////////////////////////
    /// \brief Add a DSMNode to the trajectory itinerary
@@ -696,10 +706,10 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::MGADSMTrajectory
-/// \ingroup keplerian
+/// \class otl::keplerian::trajectory::MGADSMTrajectory
+/// \ingroup trajectory
 ///
-/// Defines a Multiple Gravity Assist trajectory with Deep Space Maneuvers (MGADSM).
+/// Multiple Gravity Assist with Deep Space Maneuvers (MGADSM) trajectory.
 ///
 /// A MGADSM trajectory consists of an itinerary and a state vector.
 /// The itinerary defines the points of interest (nodes) along the trajectory
@@ -769,6 +779,8 @@ private:
 /// type and and which order they must be defined.
 ///
 ////////////////////////////////////////////////////////////
+
+} // namespace trajectory
 
 } // namespace keplerian
 

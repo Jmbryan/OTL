@@ -137,7 +137,7 @@ int main()
 
     // Direct
     {
-       keplerian::MGADSMTrajectory trajectory;
+       keplerian::trajectory::MGADSMTrajectory trajectory;
        trajectory.AddDeparture("Earth", Epoch::MJD2000(3867.51));
        trajectory.AddFlyby("Venus", 117.17, 3331.84, -1.62453);
        trajectory.AddDSM(0.35435);
@@ -149,7 +149,7 @@ int main()
     
     // Postponed
     {
-       keplerian::MGADSMTrajectory trajectory;
+       keplerian::trajectory::MGADSMTrajectory trajectory;
        trajectory.AddDeparture("Earth");
        trajectory.AddFlyby("Venus");
        trajectory.AddDSM();
@@ -159,6 +159,8 @@ int main()
 
        //double totalDeltaV = std::accumulate(deltaVs.begin(), deltaVs.end(), 0);
     }
+
+    //otl::keplerian::trajectory::DepartureNode depNode("Earth", myEpoch, Vector3d(0.0, 0.0, 1.0));
     
     //MGADSMProblem prob;
     //prob.AddDeparture(
