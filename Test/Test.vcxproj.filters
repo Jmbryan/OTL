@@ -27,5 +27,16 @@
     <ClCompile Include="PropagateTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimeTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fakeit_instance.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

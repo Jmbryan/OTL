@@ -1,4 +1,4 @@
-#include <Catch/catch.hpp>
+#include "BaseTest.hpp"
 #include <OTL/Core/Conversion.hpp>
 
 const double TOL_PCT = 0.0001;
@@ -21,12 +21,12 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
                                                 orbitalElements,
                                                 mu);
 
-        REQUIRE(orbitalElements.semiMajorAxis      == OTL_APPROX(36127.343));                     // [km]
-        REQUIRE(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
-        REQUIRE(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
-        REQUIRE(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(36127.343));                     // [km]
+        CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
+        CHECK(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
+        CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 
     /// Test StateVector2OrbitalElements() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-5.
@@ -40,12 +40,12 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
                                                 orbitalElements,
                                                 mu);
 
-        REQUIRE(orbitalElements.semiMajorAxis      == OTL_APPROX(5.664247));                      // [ER]
-        REQUIRE(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
-        REQUIRE(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
-        REQUIRE(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(5.664247));                      // [ER]
+        CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
+        CHECK(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
+        CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 
     /// Test StateVector2OrbitalElements() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 4.3.
@@ -59,12 +59,12 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
                                                 orbitalElements,
                                                 mu);
 
-        REQUIRE(orbitalElements.semiMajorAxis      == OTL_APPROX(8788.1));                         // [km]
-        REQUIRE(orbitalElements.eccentricity       == OTL_APPROX(0.171212));
-        REQUIRE(orbitalElements.inclination        == OTL_APPROX(153.249 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.argOfPericenter    == OTL_APPROX(20.0683 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.lonOfAscendingNode == OTL_APPROX(255.279 * otl::MATH_DEG_TO_RAD)); // [rad]
-        REQUIRE(orbitalElements.trueAnomaly        == OTL_APPROX(28.4456 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(8788.1));                         // [km]
+        CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.171212));
+        CHECK(orbitalElements.inclination        == OTL_APPROX(153.249 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(20.0683 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(255.279 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(28.4456 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 }
 
@@ -89,12 +89,12 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
                                                 stateVector,
                                                 mu);
 
-        REQUIRE(stateVector.position.x == OTL_APPROX(6525.344));  // [km]
-        REQUIRE(stateVector.position.y == OTL_APPROX(6861.535));  // [km]
-        REQUIRE(stateVector.position.z == OTL_APPROX(6449.125));  // [km]
-        REQUIRE(stateVector.velocity.x == OTL_APPROX(4.902276));  // [km/s]
-        REQUIRE(stateVector.velocity.y == OTL_APPROX(5.533124));  // [km/s]
-        REQUIRE(stateVector.velocity.z == OTL_APPROX(-1.975709)); // [km/s]
+        CHECK(stateVector.position.x == OTL_APPROX(6525.344));  // [km]
+        CHECK(stateVector.position.y == OTL_APPROX(6861.535));  // [km]
+        CHECK(stateVector.position.z == OTL_APPROX(6449.125));  // [km]
+        CHECK(stateVector.velocity.x == OTL_APPROX(4.902276));  // [km/s]
+        CHECK(stateVector.velocity.y == OTL_APPROX(5.533124));  // [km/s]
+        CHECK(stateVector.velocity.z == OTL_APPROX(-1.975709)); // [km/s]
     }
 
     /// Test OrbitalElements2StateVector() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-6.
@@ -112,12 +112,12 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
                                                 stateVector,
                                                 mu);
 
-        REQUIRE(stateVector.position.x == OTL_APPROX(1.02308));  // [ER]
-        REQUIRE(stateVector.position.y == OTL_APPROX(1.07579));  // [ER]
-        REQUIRE(stateVector.position.z == OTL_APPROX(1.01113));  // [ER]
-        REQUIRE(stateVector.velocity.x == OTL_APPROX(0.62012));  // [ER/TU]
-        REQUIRE(stateVector.velocity.y == OTL_APPROX(0.69992));  // [ER/TU]
-        REQUIRE(stateVector.velocity.z == OTL_APPROX(-0.24992)); // [ER/TU]
+        CHECK(stateVector.position.x == OTL_APPROX(1.02308));  // [ER]
+        CHECK(stateVector.position.y == OTL_APPROX(1.07579));  // [ER]
+        CHECK(stateVector.position.z == OTL_APPROX(1.01113));  // [ER]
+        CHECK(stateVector.velocity.x == OTL_APPROX(0.62012));  // [ER/TU]
+        CHECK(stateVector.velocity.y == OTL_APPROX(0.69992));  // [ER/TU]
+        CHECK(stateVector.velocity.z == OTL_APPROX(-0.24992)); // [ER/TU]
     }
 
     /// Test OrbitalElements2StateVector() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 4.5.
@@ -139,11 +139,11 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
                                                 stateVector,
                                                 mu);
 
-        REQUIRE(stateVector.position.x == OTL_APPROX(-4039.9));  // [km]
-        REQUIRE(stateVector.position.y == OTL_APPROX(4814.56));  // [km]
-        REQUIRE(stateVector.position.z == OTL_APPROX(3628.62));  // [km]
-        REQUIRE(stateVector.velocity.x == OTL_APPROX(-10.386));  // [km/s]
-        REQUIRE(stateVector.velocity.y == OTL_APPROX(-4.77192)); // [km/s]
-        REQUIRE(stateVector.velocity.z == OTL_APPROX(1.74388));  // [km/s]
+        CHECK(stateVector.position.x == OTL_APPROX(-4039.9));  // [km]
+        CHECK(stateVector.position.y == OTL_APPROX(4814.56));  // [km]
+        CHECK(stateVector.position.z == OTL_APPROX(3628.62));  // [km]
+        CHECK(stateVector.velocity.x == OTL_APPROX(-10.386));  // [km/s]
+        CHECK(stateVector.velocity.y == OTL_APPROX(-4.77192)); // [km/s]
+        CHECK(stateVector.velocity.z == OTL_APPROX(1.74388));  // [km/s]
     }
 }

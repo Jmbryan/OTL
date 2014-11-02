@@ -6,6 +6,8 @@
 #include <OTL/Core/Planet.hpp>
 #include <OTL/Core/Orbit.hpp>
 
+#include <OTL/Core/LambertExponentialSinusoid.hpp>
+
 #include <numeric>
 
 using namespace otl;
@@ -85,6 +87,40 @@ int main()
 
     //MGADSM mgadsm(nodes);
     //int numStates = mgadsm.GetNumStates();
+
+   {
+otl::keplerian::LambertExponentialSinusoid lambert;
+
+//Setup the inputs
+otl::Vector3d initialPosition(15945.34, 0.0, 0.0);
+otl::Vector3d finalPosition(12214.83899, 10249.46731, 0.0);
+otl::Time timeDelta = Time::Minutes(76.0);
+otl::keplerian::Orbit::Direction orbitDirection = otl::keplerian::Orbit::Direction::Prograde;
+int maxRevolutions = 0;
+double mu = otl::ASTRO_MU_EARTH;
+
+// Setup the outputs
+otl::Vector3d initialVelocity;
+otl::Vector3d finalVelocity;
+
+// Evaluate Lambert's Problem
+lambert.Evaluate(initialPosition,
+                 finalPosition,
+                 timeDelta,
+                 orbitDirection,
+                 maxRevolutions,
+                 mu,
+                 initialVelocity,
+                 finalVelocity);
+
+std::cout << "Initial velocity (kms/s): [" << initialVelocity.x << ", "
+                                           << initialVelocity.y << ", "
+                                           << initialVelocity.z << "]" << std::endl;
+std::cout << "Final velocity (kms/s): [" << finalVelocity.x << ", "
+                                         << finalVelocity.y << ", "
+                                         << finalVelocity.z << "]" << std::endl;
+
+   }
 
 
    otl::Epoch myEpoch = Epoch::JD(2449877.3458762);

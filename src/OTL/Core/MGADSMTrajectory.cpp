@@ -692,7 +692,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
             deltaVs.push_back(deltaV.Magnitude());
          }
 
-         m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, Time::Seconds(timeOfFlight));
+         m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, Time::Seconds(timeOfFlight), m_initialStateVector);
       }      
    }
 

@@ -103,7 +103,7 @@ void Orbit::Propagate(const Time& timeDelta)
 {
    if (m_propagator)
    {
-      m_propagator->Propagate(m_stateVector, m_mu, timeDelta);
+      m_propagator->Propagate(m_stateVector, m_mu, timeDelta, m_stateVector);
       SetStateVector(m_stateVector);
    }
 }

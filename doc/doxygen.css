@@ -112,7 +112,7 @@ a.el
 {
     padding: 1px;
     text-decoration: none;
-    color: #577E25;
+    color: #25909C;
 }
 
 a.el:hover
@@ -799,7 +799,7 @@ div.summary a
 	white-space: nowrap;
     padding: 1px;
     text-decoration: none;
-    color: #577E25;
+    color: #25727A;
 }
 
 div.summary a:hover
@@ -1130,8 +1130,8 @@ tr.heading h2 {
 
 
 
-
 /* SFML css */
+/*
 body
 {
     font-family: 'Ubuntu', 'Arial', sans-serif;
@@ -1276,4 +1276,4 @@ div.contents ul li
     color: #333;
     margin: 0 0 0.3em 0;
 }
-
+*/

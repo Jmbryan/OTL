@@ -260,9 +260,9 @@ private:
 /// \class otl::keplerian::Orbit
 /// \ingroup keplerian
 ///
-/// Simple class that defines a 2D or 3D Keplerian orbit.
-/// A orbit can be represented by either a state vector
-/// or by a set of orbital elements. 
+/// Defines a 2D or 3D Keplerian orbit. A orbit can be
+/// represented by either a state vector or by a set
+/// of orbital elements. 
 ///
 /// Usage example:
 /// \code

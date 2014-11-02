@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <cmath>
 
 namespace otl
 {
@@ -49,6 +50,8 @@ public :
     ///
     ////////////////////////////////////////////////////////////
     Vector3(T X, T Y, T Z);
+
+    virtual ~Vector3() {}
 
     ////////////////////////////////////////////////////////////
     /// \brief Construct the vector from another type of vector
@@ -88,7 +91,7 @@ public :
     ////////////////////////////////////////////////////////////
     T& operator[](int index);
 
-    T Magnitude() const;
+    virtual T Magnitude() const;
 
     void Normalize();
 

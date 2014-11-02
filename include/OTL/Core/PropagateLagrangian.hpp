@@ -38,12 +38,13 @@ public:
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
-   /// \param [out] orbitalElements OrbitalElements which define the orbit
+   /// \param initialOrbitalElements OrbitalElements before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
+   /// \param [out] finalOrbitalElements OrbitalElements after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
+   virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements);
    
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
@@ -52,12 +53,13 @@ public:
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
-   /// \param [out] stateVector StateVector which define the orbit
+   /// \param initialStateVector StateVector before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
+   /// \param [out] finalStateVector StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(StateVector& stateVector, double mu, const Time& timeDelta);
+   virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector);
 
 private:
    ////////////////////////////////////////////////////////////
@@ -109,9 +111,9 @@ private:
 /// \class otl::keplerian::PropagateLagrangian
 /// \ingroup keplerian
 ///
-/// Propagation using Lagrange coefficients and Universal Variable.
+/// Propagation using Lagrange coefficients and the Universal Variable.
 ///
-/// Propgates a keplerian orbit forward or backwards in
+/// Propagates a keplerian orbit forward or backwards in
 /// time through the use of Lagrange coeficients and
 /// universal variable (universal anomaly). All orbit types
 /// are inheritely supported. Internally, Kepler's
@@ -119,17 +121,20 @@ private:
 ///
 /// Usage example:
 /// \code
-/// otl::keplerian::IPropagateAlgorithm* propagator = new otl::keplerian::PropagateLagrangian();
+/// using otl;
+/// using otl::keplerian;
+///
+/// IPropagateAlgorithm* propagator = new PropagateLagrangian();
 ///
 /// // Setup inputs
-/// otl::StateVector initialStateVector;
+/// StateVector initialStateVector;
 /// initialStateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
 /// initialStateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
 /// double mu = ASTRO_MU_SUN;                                        // Gravitational parameter of the Sun
-/// otl::Time timeDelta = Time::Days(150.0);                         // Propagate forward 150 days
+/// Time timeDelta = Time::Days(150.0);                              // Propagate forward 150 days
 ///
 /// // Setup output
-/// otl::StateVector finalStateVector = initialStateVector;
+/// StateVector finalStateVector = initialStateVector;
 ///
 /// propagator->Propagate(finalStateVector,
 ///                       mu,

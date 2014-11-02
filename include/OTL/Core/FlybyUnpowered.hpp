@@ -103,16 +103,19 @@ protected:
 ///
 /// Usage example:
 /// \code
-/// otl::keplerian::IFlybyAlgorithm* flyby = new otl::keplerian::FlybyUnpowered();
+/// using otl;
+/// using otl::keplerian;
+///
+/// IFlybyAlgorithm* flyby = new FlybyUnpowered();
 ///
 /// // Setup inputs
-/// otl::Vector3d approachVelocity = Vector3d(-1.0, 2.0, 3.0); // Absolute velocity before flyby (km/s)
-/// otl::Planet flybyPlanet("Venus");                          // Venus flyby
-/// double flybyAltitude = 500.0;                              // Periapsis of flyby hyperbola (m)
-/// double BPlaneAngle = MATH_PI;                              // Orientation of flyby hyperbola
+/// Vector3d approachVelocity = Vector3d(-1.0, 2.0, 3.0); // Absolute velocity before flyby (km/s)
+/// Planet flybyPlanet("Venus");                          // Venus flyby
+/// double flybyAltitude = 500.0;                         // Periapsis of flyby hyperbola (m)
+/// double BPlaneAngle = MATH_PI;                         // Orientation of flyby hyperbola
 ///
 /// // Setup output
-/// otl::Vector3d departureVelocity;                           // Absolute velocity after flyby (km/s)
+/// Vector3d departureVelocity;                           // Absolute velocity after flyby (km/s)
 ///
 /// flyby->Evaluate(approachVelocity,
 ///                 flybyPlanet,

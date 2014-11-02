@@ -55,12 +55,13 @@ public:
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
    ///
-   /// \param [out] orbitalElements OrbitalElements which define the orbit
+   /// \param initialOrbitalElements OrbitalElements before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
+   /// \param [out] finalOrbitalElements OrbitalElements after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(OrbitalElements& orbitalElements, double mu, const Time& timeDelta) = 0;
+   virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements) = 0;
    
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
@@ -72,12 +73,13 @@ public:
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
    ///
-   /// \param [out] stateVector StateVector which define the orbit
+   /// \param initialStateVector StateVector before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
+   /// \param [out] finalStateVector StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(StateVector& stateVector, double mu, const Time& timeDelta) = 0;
+   virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector) = 0;
 };
 
 } // namespace keplerian

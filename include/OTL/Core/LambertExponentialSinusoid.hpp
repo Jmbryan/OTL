@@ -82,14 +82,14 @@ private:
 /// \class otl::keplerian::LambertExponentialSinusoid
 /// \ingroup keplerian
 ///
-/// Implements Lambert's problem using exponential sinusoids
-/// developed. Here, trajectories are modeled using exponential
+/// Implements Lambert's problem using exponential sinusoids.
+/// In this method, trajectories are modeled using exponential
 /// sinusoids as opposed to classic ballistic arcs (i.e. conic
 /// sections). An exponential sinusoid is defined as:
 ///
 /// \f$ r = k_0 e^{[k_1\sin{(k_2 \theta) + \phi}]} \f$
 ///
-/// Izzo found that given an initial and final position, transfer
+/// It was found that given an initial and final position, transfer
 /// angle, and maximum number of revolutions, then for all
 /// values of k2 there exist a class of exponential sinusoids
 /// that pass through both points parameterized only by the
@@ -97,19 +97,23 @@ private:
 ///
 /// Usage example:
 /// \code
-/// otl::keplerian::ILambertAlgorithm* lambert = new otl::keplerian::LambertExponentialSinusoid();
+/// using otl;
+/// using otl::keplerian;
 ///
-/// // Setup inputs:
-/// otl::Vector3d initialPosition = Vector3d(1.0, 2.0, 3.0);      // Initial absolute position (km)
-/// otl::Vector3d finalPosition = Vector3d(4.0, 5.0, 6.0);        // Final absolute position (km)
-/// otl::Time timeDelta = Time::Days(150.0);                      // Total time of flight is 150 days
-/// otl::Orbit::Direction orbitDirection = otl::Orbit::Prograde;  // Prograde orbit
-/// int maxRevolutions = 1;                                       // Allow at most 1 full revolution
-/// double mu = ASTRO_MU_SUN;                                     // Gravitational parameter of the Sun
+/// ILambertAlgorithm* lambert = new LambertExponentialSinusoid();
 ///
-/// // Setup outputs:
-/// otl::Vector3d initialVelocity, finalVelocity;
+/// // Setup the inputs:
+/// Vector3d initialPosition = Vector3d(1.0, 2.0, 3.0);      // Initial absolute position (km)
+/// Vector3d finalPosition = Vector3d(4.0, 5.0, 6.0);        // Final absolute position (km)
+/// Time timeDelta = Time::Days(150.0);                      // Total time of flight is 150 days
+/// Orbit::Direction orbitDirection = otl::Orbit::Prograde;  // Prograde orbit
+/// int maxRevolutions = 1;                                  // Allow at most 1 full revolution
+/// double mu = ASTRO_MU_SUN;                                // Gravitational parameter of the Sun
 ///
+/// // Setup the outputs:
+/// Vector3d initialVelocity, finalVelocity;
+///
+/// // Evaluate Lambert's problem
 /// lambert->Evaluate(initialPosition,
 ///                   finalPosition,
 ///                   timeDelta,

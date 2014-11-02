@@ -31,11 +31,11 @@ namespace keplerian
 {
 
 ////////////////////////////////////////////////////////////
-void PropagateLagrangian::Propagate(OrbitalElements& orbitalElements, double mu, const Time& timeDelta)
+void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements)
 {
-   const double a = orbitalElements.semiMajorAxis;
-   const double e = orbitalElements.eccentricity;
-   double TA = orbitalElements.trueAnomaly;
+   const double a = initialOrbitalElements.semiMajorAxis;
+   const double e = initialOrbitalElements.eccentricity;
+   double TA = initialOrbitalElements.trueAnomaly;
 
    double r0 = a * (1.0 - SQR(e)) / (1.0 + e * cos(TA));
    double v0 = sqrt(mu * (2.0 / r0 - 1.0 / a));
@@ -69,17 +69,18 @@ void PropagateLagrangian::Propagate(OrbitalElements& orbitalElements, double mu,
 
    }
 
-   orbitalElements.trueAnomaly = TA;
+   finalOrbitalElements = initialOrbitalElements;
+   finalOrbitalElements.trueAnomaly = TA;
 
 }
 
 ////////////////////////////////////////////////////////////
-void PropagateLagrangian::Propagate(StateVector& stateVector, double mu, const Time& timeDelta)
+void PropagateLagrangian::Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
 {
    double seconds = timeDelta.Seconds();
 
-    Vector3d R = stateVector.position;
-    Vector3d V = stateVector.velocity;
+    Vector3d R = initialStateVector.position;
+    Vector3d V = initialStateVector.velocity;
     double r0 = R.Magnitude();
     double v0 = V.Magnitude();
 
@@ -143,8 +144,8 @@ void PropagateLagrangian::Propagate(StateVector& stateVector, double mu, const T
         std::cout << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check failed!" << std::endl;
     }
 
-    stateVector.position = f * R + g * V;
-    stateVector.velocity = fDot * R + gDot * V;
+    finalStateVector.position = f * R + g * V;
+    finalStateVector.velocity = fDot * R + gDot * V;
 
 }
 
