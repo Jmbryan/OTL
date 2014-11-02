@@ -40,14 +40,14 @@ IKeplersEquation::IKeplersEquation(int maxIterations, double tolerance)
 ////////////////////////////////////////////////////////////
 void IKeplersEquation::SetMaxIterations(int maxIterations)
 {
-   OTL_ASSERT(maxIterations > 0);
+   OTL_ASSERT(maxIterations > 0, "Max iterations must be greater than zero");
    m_maxIterations = maxIterations;
 }
 
 ////////////////////////////////////////////////////////////
 void IKeplersEquation::SetTolerance(double tolerance)
 {
-   OTL_ASSERT(tolerance > 0.0);
+   OTL_ASSERT(tolerance > 0.0, "Tolerance must be greater than zero");
    m_tolerance = tolerance;
 }
 
