@@ -52,7 +52,7 @@ set(SRC
    ${INCROOT}/Transformation.hpp
 	${INCROOT}/Vector3.hpp
 	${INCROOT}/Vector3.inl
-	${CATCHROOT}/Catch.hpp
+	${CATCHROOT}/catch.hpp
 	${EPHEM_SRCROOT}/DE405Ephemeris.cpp
 	${EPHEM_INCROOT}/DE405Ephemeris.h
 	${EPHEM_SRCROOT}/DE405EphemerisIO.cpp

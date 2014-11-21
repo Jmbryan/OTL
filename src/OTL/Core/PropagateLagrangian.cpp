@@ -19,7 +19,6 @@
 //
 ////////////////////////////////////////////////////////////
 
-#pragma once
 #include <OTL/Core/Orbit.hpp>
 #include <OTL/Core/PropagateLagrangian.hpp>
 #include <OTL/Core/KeplersEquations.hpp>
