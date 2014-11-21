@@ -14,7 +14,12 @@ endmacro()
 otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
 # enable c++11
-# set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+if (UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+    ADD_DEFINITIONS(
+        -std=c++11
+    )
+endif()	
 
 # project name
 project(OTL)
@@ -27,8 +32,13 @@ set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
-# add the OTL include path
+# add the OTL include paths
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
+
+#set(EXTERNAL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extlibs/include")
+#set(EPHEMERIS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem")
 
 # add an option for choosing the build type
 otl_set_option(BUILD_SHARED_LIBS TRUE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
@@ -188,6 +198,7 @@ endif()
 
 install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES cmake/Modules/FindEphemeris.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
+#install(FILES cmake/Modules/FindSFML.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES license.txt DESTINATION ${INSTALL_MISC_DIR})
 install(FILES readme.txt DESTINATION ${INSTALL_MISC_DIR})
 

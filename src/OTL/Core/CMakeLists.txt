@@ -16,7 +16,7 @@ set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
 set(SRC
 	${INCROOT}/Base.hpp
 	${SRCROOT}/Conversion.cpp
-	${INCROOT}/Conversion.hpp	
+	${INCROOT}/Conversion.hpp
 	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Epoch.hpp
 	${INCROOT}/Epoch.inl
@@ -47,9 +47,9 @@ set(SRC
 	${SRCROOT}/PropagateLagrangian.cpp
 	${INCROOT}/PropagateLagrangian.hpp
 	${SRCROOT}/Time.cpp
-   ${INCROOT}/Time.hpp	
+   ${INCROOT}/Time.hpp
 	${SRCROOT}/Transformation.cpp
-   ${INCROOT}/Transformation.hpp		
+   ${INCROOT}/Transformation.hpp
 	${INCROOT}/Vector3.hpp
 	${INCROOT}/Vector3.inl
 	${CATCHROOT}/Catch.hpp
@@ -69,12 +69,12 @@ if(MACOSX)
 endif()
 
 # find external libraries
-find_package(SFML REQUIRED)
-find_package(EPHEMERIS REQUIRED)
+#find_package(SFML REQUIRED)
+#find_package(EPHEMERIS REQUIRED)
 
 # add include paths of external libraries
-include_directories(${SFML_INCLUDE_DIR})
-include_directories(${EPHEMERIS_INCLUDE_DIR})
+#include_directories(${EXTERNAL_INCLUDE_DIR})
+#include_directories(${EPHEMERIS_INCLUDE_DIR})
 
 # build the list of libraries to link
 set(CORE_EXT_LIBS ${SFML_LIBRARY})
@@ -82,4 +82,4 @@ set(CORE_EXT_LIBS ${SFML_LIBRARY})
 # define the otl-core target
 otl_add_library(otl-core
                 SOURCES ${SRC}
-					 EXTERNAL_LIBS ${CORE_EXT_LIBS})
+                EXTERNAL_LIBS ${CORE_EXT_LIBS})

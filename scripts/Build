@@ -1,2 +1,13 @@
-cmake . -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=%configuration%
-make
+#!/bin/sh
+
+if [ $# -gt 0 ]; then
+	if [ $1 == GCC ]; then 
+
+	mkdir build
+	cd build
+	cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=%configuration%
+	make
+
+	elif [ %1 == CLANG ]; then
+	fi
+fi

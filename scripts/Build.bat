@@ -1,14 +1,24 @@
-IF %compiler%==MinGW GOTO BuildMinGW
+@echo off
+
+if %1==MinGW goto BuildMinGW
 
 :BuildMSVC2013
-cmake . -G "Visual Studio 12 2013" -DCMAKE_BUILD_TYPE=%configuration%
-call "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+mkdir build
+cd build
+cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%configuration%
+if not defined DevEnvDir (
+call "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat"
+)
 msbuild otl.sln /verbosity:minimal /maxcpucount:4 /property:Configuration=%configuration%
-GOTO :eof
+cd ..
+goto :eof
 
 :BuildMinGW
-cmake . -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%configuration%
+mkdir build
+cd build
+cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%configuration%
 mingw32-make.exe -all
-GOTO :eof
+cd ..
+goto :eof
 
 :eof
