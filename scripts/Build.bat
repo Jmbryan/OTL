@@ -1,6 +1,7 @@
 @echo off
 
-if %1==MinGW goto BuildMinGW
+if [%1]==[MinGW] goto BuildMinGW
+if [%1]==[MSVC2013] goto BuildMSVC2013
 
 :BuildMSVC2013
 mkdir build
