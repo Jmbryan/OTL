@@ -9,5 +9,7 @@ if [ $# -gt 0 ]; then
 		cd ..
 	elif [ %1 = CLANG ]; then
 		mkdir build
+		cd build
+		cd ..
 	fi
 fi
