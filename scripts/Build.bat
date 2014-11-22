@@ -9,7 +9,7 @@ if [%1]==[GCC] goto BuildMinGW
 goto End
 
 :BuildMSVC2013
-cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%2 -DCMAKE_INSTALL_PREFIX="./install"
+cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%2
 if not defined DevEnvDir (
 call "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat"
 )
@@ -18,7 +18,8 @@ goto End
 
 :BuildMinGW
 cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%2
-mingw32-make.exe -all
+mingw32-make
+mingw32-make install
 goto End
 
 :End

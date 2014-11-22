@@ -15,7 +15,7 @@ otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug 
 
 # enable c++11 (Unix only)
 if (UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -stdlib=lib++")
     ADD_DEFINITIONS(
         -std=c++11
     )
@@ -37,6 +37,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/FakeIt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
+
+# set install directories
+set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/install)
+set(INSTALL_MISC_DIR ${CMAKE_INSTALL_PREFIX})
 
 # add an option for choosing the build type
 otl_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
@@ -217,7 +221,7 @@ endif()
 
 install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES license.txt DESTINATION ${INSTALL_MISC_DIR})
-install(FILES readme.txt DESTINATION ${INSTALL_MISC_DIR})
+install(FILES README.md DESTINATION ${INSTALL_MISC_DIR})
 
 if(WINDOWS)
 	if(COMPILER_GCC)

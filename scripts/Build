@@ -6,9 +6,13 @@ cd build
 
 if [ $# -gt 1 ]; then
 	if [ $1 = GCC ]; then		
-		cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$2 -DCMAKE_INSTALL_PREFIX="./install"
+		cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$2
 		make
+		make install
 	elif [ %1 = CLANG ]; then
+		cmake .. -G "Clang" -DCMAKE_BUILD_TYPE=$2
+		make
+		make install
 	fi
 fi
 
