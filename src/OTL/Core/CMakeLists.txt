@@ -1,6 +1,6 @@
 
 # set the include directory
-set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Core)
+#set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Core)
 
 # set the source directory
 set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
@@ -13,7 +13,7 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 
 # set the Niek-ephem include direction
 set (EPHEM_INCROOT ${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
-set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
+#set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
 
 # all source files
 set(SRC

@@ -1,6 +1,6 @@
 
 # set the include directory
-set(TEST_INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Test)
+#set(TEST_INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Test)
 
 # set the source directory
 set(TEST_SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Test)

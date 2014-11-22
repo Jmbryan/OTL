@@ -13,7 +13,7 @@ endmacro()
 # this has to be done before the project() instruction!
 otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
-# enable c++11
+# enable c++11 (Unix only)
 if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
     ADD_DEFINITIONS(
@@ -215,9 +215,7 @@ else()
             COMPONENT devel)
 endif()
 
-#install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
-#install(FILES cmake/Modules/FindEphemeris.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
-#install(FILES cmake/Modules/FindSFML.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
+install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES license.txt DESTINATION ${INSTALL_MISC_DIR})
 install(FILES readme.txt DESTINATION ${INSTALL_MISC_DIR})
 
