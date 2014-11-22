@@ -1,41 +1,28 @@
 
 # set the include directory
-set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Test)
+set(TEST_INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Test)
 
 # set the source directory
-set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Test)
+set(TEST_SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Test)
 
 # set the Catch include directory
-set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
+#set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
 
-# set the Niek-ephem include direction
-set (EPHEM_INCROOT ${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
-set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
+# set the FakeIt include directory
+#set(FAKEITROOT ${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 
 # all source files
 set(SRC
-	${CATCHROOT}/Catch.hpp
+	#${TEST_INCROOT}/BaseTest.hpp
+	${TEST_SRCROOT}/ConversionTest.cpp
+	${TEST_SRCROOT}/LambertTest.cpp	
+	${TEST_SRCROOT}/Main.cpp
+	${TEST_SRCROOT}/PropagateTest.cpp
+	${TEST_SRCROOT}/TimeTest.cpp
 )
 source_group("" FILES ${SRC})
 
-# let CMake know about our additional library paths (on Windows and OSX)
-if(WINDOWS OR MACOSX)
-	set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/include/SFML")
-endif()
-if(MACOSX)
-	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
-endif()
-
-# find external libraries
-find_package(SFML REQUIRED)
-
-# add include paths of external libraries
-include_directories(${SFML_INCLUDE_DIR})
-
-# build the list of libraries to link
-set(CORE_EXT_LIBS ${SFML_LIBRARY})
-
 # define the otl-test target
-otl_add_library(otl-test
+otl_add_example(otl-test
                 SOURCES ${SRC}
-					 EXTERNAL_LIBS ${CORE_EXT_LIBS})
+				DEPENDS otl-core)

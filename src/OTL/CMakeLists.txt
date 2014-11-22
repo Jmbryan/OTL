@@ -34,9 +34,11 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 
 # set the output directory for OTL libraries
-set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
+#set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+#set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
 
 # add the modules subdirectories
 add_subdirectory(Core)
-#add_subdirectory(Main)
-#add_subdirectory(Test)
+if (OTL_BUILD_UNIT_TESTS OR OTL_BUILD_FUNCTIONAL_TESTS)
+	add_subdirectory(Test)
+endif()

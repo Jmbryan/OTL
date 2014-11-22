@@ -162,18 +162,13 @@ endmacro()
 macro(otl_add_example target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "GUI_APP" "" "SOURCES;DEPENDS" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS" ${ARGN})
 
     # set a source group for the source files
     source_group("" FILES ${THIS_SOURCES})
 
     # create the target
-    if(THIS_GUI_APP AND WINDOWS)
-        add_executable(${target} WIN32 ${THIS_SOURCES})
-        target_link_libraries(${target} otl-main)
-    else()
-        add_executable(${target} ${THIS_SOURCES})
-    endif()
+    add_executable(${target} ${THIS_SOURCES})
 
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
@@ -194,20 +189,18 @@ macro(otl_add_example target)
     endif()
 
     # add the install rule
+    #install(TARGETS ${target}
+    #        RUNTIME DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
+	
+	# add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
+            RUNTIME DESTINATION bin COMPONENT bin)
+			
 
     # install the example's source code
-    install(FILES ${THIS_SOURCES}
-            DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
-            COMPONENT examples)
-
-    # install the example's resources as well
-    set(EXAMPLE_RESOURCES "${CMAKE_SOURCE_DIR}/examples/${target}/resources")
-    if(EXISTS ${EXAMPLE_RESOURCES})
-        install(DIRECTORY ${EXAMPLE_RESOURCES}
-                DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
-                COMPONENT examples)
-    endif()
-
+    #install(FILES ${THIS_SOURCES}
+    #        DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
+	
+	install(FILES ${THIS_SOURCES}
+			DESTINATION bin COMPONENT bin)
 endmacro()

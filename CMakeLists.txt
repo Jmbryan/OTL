@@ -35,18 +35,22 @@ set(VERSION_PATCH 0)
 # add the OTL include paths
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/FakeIt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
 
-#set(EXTERNAL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extlibs/include")
-#set(EPHEMERIS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem")
-
 # add an option for choosing the build type
-otl_set_option(BUILD_SHARED_LIBS TRUE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
+otl_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
+
+# add an option for building the unit tests
+otl_set_option(OTL_BUILD_UNIT_TESTS TRUE BOOL "TRUE to build the OTL unit tests, FALSE to ignore them")
+
+# add an option for building the functional tests
+otl_set_option(OTL_BUILD_FUNCTIONAL_TESTS FALSE BOOL "TRUE to build the OTL functional tests, FALSE to ignore them")
 
 # add an option for building the examples
 otl_set_option(OTL_BUILD_EXAMPLES FALSE BOOL "TRUE to build the OTL examples, FALSE to ignore them")
 
-# add an option fo rbuilding the API documentation
+# add an option for building the API documentation
 otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
 # Mac OS X specific options
@@ -66,6 +70,21 @@ endif()
 # remove SL security warnings with Visual C++
 if(COMPILER_MSVC)
 	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+endif()
+
+# set the output directory for OTL libraries
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+
+# Create outputs in just bin instead of bin/Debug, bin/Release, etc. (Windows only)		
+if(WINDOWS)		
+	foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+			string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
+			set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib )
+			set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib )
+	endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 endif()
 
 # define an option for choosing between static and dynamic C runtime (Windows only)
@@ -196,8 +215,8 @@ else()
             COMPONENT devel)
 endif()
 
-install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
-install(FILES cmake/Modules/FindEphemeris.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
+#install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
+#install(FILES cmake/Modules/FindEphemeris.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 #install(FILES cmake/Modules/FindSFML.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES license.txt DESTINATION ${INSTALL_MISC_DIR})
 install(FILES readme.txt DESTINATION ${INSTALL_MISC_DIR})

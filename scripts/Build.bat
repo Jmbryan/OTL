@@ -1,25 +1,27 @@
 @echo off
 
-if [%1]==[MinGW] goto BuildMinGW
-if [%1]==[MSVC2013] goto BuildMSVC2013
-
-:BuildMSVC2013
+if exist build\ rmdir build\ /s /q
 mkdir build
 cd build
-cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%configuration%
+
+if [%1]==[MSVC2013] goto BuildMSVC2013
+if [%1]==[MinGW] goto BuildMinGW
+goto End
+
+:BuildMSVC2013
+cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%2 -DCMAKE_INSTALL_PREFIX="./install"
 if not defined DevEnvDir (
 call "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat"
 )
-msbuild otl.sln /verbosity:minimal /maxcpucount:4 /property:Configuration=%configuration%
-cd ..
-goto :eof
+msbuild otl.sln /verbosity:minimal /maxcpucount:4 /property:Configuration=%2
+goto End
 
 :BuildMinGW
-mkdir build
-cd build
-cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%configuration%
+cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%2
 mingw32-make.exe -all
+goto End
+
+:End
 cd ..
-goto :eof
 
 :eof
