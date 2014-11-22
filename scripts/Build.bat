@@ -5,7 +5,7 @@ mkdir build
 cd build
 
 if [%1]==[MSVC2013] goto BuildMSVC2013
-if [%1]==[MinGW] goto BuildMinGW
+if [%1]==[GCC] goto BuildMinGW
 goto End
 
 :BuildMSVC2013
