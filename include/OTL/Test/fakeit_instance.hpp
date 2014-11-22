@@ -1,4 +1,4 @@
-#include <FakeIt/DefaultFakeit.hpp>
+#include <fakeit/DefaultFakeit.hpp>
 #include <Catch/catch.hpp>
 
 namespace fakeit

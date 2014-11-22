@@ -1,15 +1,15 @@
 #!/bin/sh
 
+rm -rf build
+mkdir build
+cd build
+
 if [ $# -gt 1 ]; then
-	if [ $1 = GCC ]; then 
-		mkdir build
-		cd build
+	if [ $1 = GCC ]; then		
 		cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$2 -DCMAKE_INSTALL_PREFIX="./install"
 		make
-		cd ..
 	elif [ %1 = CLANG ]; then
-		mkdir build
-		cd build
-		cd ..
 	fi
 fi
+
+cd ..
