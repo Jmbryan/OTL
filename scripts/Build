@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 rm -rf build
 mkdir build
@@ -9,7 +10,13 @@ if [ $# -gt 1 ]; then
 		cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$2
 		make
 		make install
-	elif [ %1 = CLANG ]; then
+		cd bin
+		if [ $2 = Debug ]; then
+			otl-test-d.exe
+		elif [ %2 = Release ]; then
+			otl-test.exe
+		fi	
+	elif [ $1 = CLANG ]; then
 		cmake .. -G "Clang" -DCMAKE_BUILD_TYPE=$2
 		make
 		make install

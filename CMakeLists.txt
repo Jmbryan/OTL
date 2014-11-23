@@ -13,12 +13,15 @@ endmacro()
 # this has to be done before the project() instruction!
 otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
-# enable c++11 (Unix only)
-if (UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -stdlib=lib++")
+# enable c++11 (GCC compilers only)
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
     ADD_DEFINITIONS(
         -std=c++11
     )
+endif()
+if (MACOSX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
 endif()	
 
 # project name
@@ -39,8 +42,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/FakeIt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
 
 # set install directories
-set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/install)
-set(INSTALL_MISC_DIR ${CMAKE_INSTALL_PREFIX})
+set(CMAKE_INSTALL_PREFIX ./install)
+set(INSTALL_MISC_DIR ./)
 
 # add an option for choosing the build type
 otl_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")

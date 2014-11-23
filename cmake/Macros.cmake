@@ -201,6 +201,6 @@ macro(otl_add_example target)
     #install(FILES ${THIS_SOURCES}
     #        DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
 	
-	install(FILES ${THIS_SOURCES}
-			DESTINATION bin COMPONENT bin)
+	#install(FILES ${THIS_SOURCES}
+	#		DESTINATION bin COMPONENT bin)
 endmacro()
