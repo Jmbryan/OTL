@@ -10,6 +10,17 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\OTL\Test\BaseTest.hpp" />
+    <ClInclude Include="..\include\OTL\Test\fakeit_instance.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\OTL\Test\ConversionTest.cpp" />
+    <ClCompile Include="..\src\OTL\Test\LambertTest.cpp" />
+    <ClCompile Include="..\src\OTL\Test\Main.cpp" />
+    <ClCompile Include="..\src\OTL\Test\PropagateTest.cpp" />
+    <ClCompile Include="..\src\OTL\Test\TimeTest.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{285BC7D1-2FD2-4713-8C6F-3B2B5745B81A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -83,17 +94,6 @@
       <AdditionalDependencies>otl-core-s-x32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ConversionTest.cpp" />
-    <ClCompile Include="LambertTest.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="PropagateTest.cpp" />
-    <ClCompile Include="TimeTest.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BaseTest.hpp" />
-    <ClInclude Include="fakeit_instance.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

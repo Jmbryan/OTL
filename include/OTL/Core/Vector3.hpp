@@ -100,6 +100,8 @@ public :
     ////////////////////////////////////////////////////////////
     void Normalize();
 
+    void Zero();
+
     T Dot(const Vector3<T>& vector);
 
     static T Dot(const Vector3<T>& left, const Vector3<T>& right);

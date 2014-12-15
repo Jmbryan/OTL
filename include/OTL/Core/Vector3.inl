@@ -88,6 +88,13 @@ inline void Vector3<T>::Normalize()
 
 ////////////////////////////////////////////////////////////
 template <typename T>
+void Vector3<T>::Zero()
+{
+   x = y = z = static_cast<T>(0);
+}
+
+////////////////////////////////////////////////////////////
+template <typename T>
 inline T Vector3<T>::Dot(const Vector3<T>& vector)
 {
    return x*vector.x + y*vector.y + z*vector.z;

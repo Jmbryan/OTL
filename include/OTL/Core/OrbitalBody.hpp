@@ -95,6 +95,14 @@ public:
    double GetRadius() const;
 
    ////////////////////////////////////////////////////////////
+   /// \brief Get the mass of the orbital body
+   ///
+   /// \return mass of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   double GetMass() const;
+
+   ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of the orbital body
    ///
    /// \return Gravitational parameter of the orbital body
@@ -174,6 +182,7 @@ public:
 protected:
    std::string m_name;        ///< Name of the orbital body
    double m_radius;           ///< Radius of the orbital body
+   double m_mass;             ///< Mass of the orbital body
    double m_mu;               ///< Gravitational parameter of the orbital body
    Epoch m_epoch;             ///< Current epoch of the orbital body
    StateVector m_stateVector; ///< Current state vector of the orbital body

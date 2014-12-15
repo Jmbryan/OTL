@@ -83,6 +83,12 @@ inline double OrbitalBody::GetRadius() const
 }
 
 ////////////////////////////////////////////////////////////
+inline double OrbitalBody::GetMass() const
+{
+   return m_mass;
+}
+
+////////////////////////////////////////////////////////////
 inline const Epoch& OrbitalBody::GetEpoch() const
 {
    return m_epoch;
