@@ -188,6 +188,8 @@ protected:
    StateVector m_stateVector; ///< Current state vector of the orbital body
 };
 
+typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
+
 #include <OTL/Core/OrbitalBody.inl>
 
 } // namespace otl

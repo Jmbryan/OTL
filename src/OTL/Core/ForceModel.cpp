@@ -14,12 +14,12 @@ Vector3d IForceModel::GetForces() const
    return m_Forces;
 }
 
-GravityModel::GravityModel(const std::shared_ptr<OrbitalBody>& orbitalBody)
+GravityModel::GravityModel(const OrbitalBodyPointer& orbitalBody)
 {
    m_OrbitalBody = orbitalBody;
 }
 
-void GravityModel::AddExternalBody(const std::shared_ptr<OrbitalBody>& orbitalBody)
+void GravityModel::AddExternalBody(const OrbitalBodyPointer& orbitalBody)
 {
    m_ExternalBodies.push_back(orbitalBody);
 }
@@ -31,7 +31,7 @@ void GravityModel::Update(const Time& deltaTime)
    double myMass = m_OrbitalBody->GetMass();
    const auto& myPosition = m_OrbitalBody->GetPosition();
 
-   for (auto& externalBody : m_ExternalBodies)
+   for (const auto& externalBody : m_ExternalBodies)
    {
       double otherMass = externalBody->GetMass();
       const auto& otherPosition = externalBody->GetPosition();
@@ -46,15 +46,28 @@ void GravityModel::Update(const Time& deltaTime)
    m_Forces *= m_GravitationalParameter * myMass;
 }
 
-
-SolarPressureModel::SolarPressureModel()
+SolarPressureModel::SolarPressureModel(const RadiationSourcePointer& radiationSource, const SpacecraftPointer& spacecraft)
 {
-
+    m_RadiationSource = radiationSource;
+	m_Spacecraft = spacecraft;
 }
 
 void SolarPressureModel::Update(const Time& deltaTime)
 {
+    const auto& sourcePosition = m_RadiationSource->GetPosition();
+    const auto& radiationPressure = m_RadiationSource->GetRadiationPressure();
 
+    const auto& myPosition = m_Spacecraft->GetPosition();
+    const auto& radiationPressureArea = m_Spacecraft->GetRadiationPressureArea();
+    const auto& radiationPressureCoefficient = m_Spacecraft->GetRadiationPressureCoefficient();
+
+    Vector3d incidentVector = sourcePosition - myPosition;
+    incidentVector.Normalize();
+
+    m_Forces = radiationPressure *
+               radiationPressureCoefficient *
+               radiationPressureArea *
+               incidentVector;
 }
 
 }

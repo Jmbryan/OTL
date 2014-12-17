@@ -26,8 +26,8 @@ set(SRC
 	${INCROOT}/Flyby.hpp
 	${SRCROOT}/FlybyUnpowered.cpp
 	${INCROOT}/FlybyUnpowered.hpp
-	${SRCROOT}/ForceModel.cpp
-	${INCROOT}/ForceModel.hpp
+	#${SRCROOT}/ForceModel.cpp
+	#${INCROOT}/ForceModel.hpp
 	${SRCROOT}/KeplersEquations.cpp
 	${INCROOT}/KeplersEquations.hpp
 	${INCROOT}/KeplersEquations.inl

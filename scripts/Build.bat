@@ -13,7 +13,7 @@ cmake .. -G "Visual Studio 12" -DCMAKE_BUILD_TYPE=%2
 if not defined DevEnvDir (
 call "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat"
 )
-msbuild otl.sln /verbosity:minimal /maxcpucount:4 /property:Configuration=%2
+msbuild otl.sln /property:Configuration=%2
 goto End
 
 :BuildMinGW
