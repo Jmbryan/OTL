@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/FlybyUnpowered.hpp>
-#include <OTL/Core/OrbitalBody.hpp>
+#include <OTL/Core/NaturalBody.h>
 
 namespace otl
 {
@@ -33,12 +33,12 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
-                         const OrbitalBody& orbitalBody,
+                         const NaturalBody& naturalBody,
                          double altitude,
                          double BPlaneAngle,
                          Vector3d& departureVelocity)
 {
-   const Vector3d& planetVelocity = orbitalBody.GetVelocity();
+   const Vector3d& planetVelocity = naturalBody.GetVelocity();
 
    // VInfinityIn is the relative velocity of the object
    // as it approaches the planet.
@@ -57,8 +57,8 @@ void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
    m_B3.Normalize();
 
    // Flyby hyperbola
-   double radiusOfPeriapsis = orbitalBody.GetRadius() + altitude;
-   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / orbitalBody.GetMu();
+   double radiusOfPeriapsis = naturalBody.GetRadius() + altitude;
+   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / naturalBody.GetMu();
 
    double turnAngle = 2.0 * asin(1.0 / eccentricity);
 

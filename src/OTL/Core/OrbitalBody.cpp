@@ -22,89 +22,95 @@
 //
 ////////////////////////////////////////////////////////////
 
+#include <OTL/Core/OrbitalBody.hpp>
+
+namespace otl
+{
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::SetMu(double mu)
+OrbitalBody::OrbitalBody() :
+m_name(""),
+m_orbit(1.0 * ASTRO_GRAVITATIONAL_CONSTANT)
 {
-   m_mu = mu;
-}
-
-////////////////////////////////////////////////////////////
-inline void Orbit::SetStateVector(const StateVector& stateVector)
-{
-   m_stateVector = stateVector;  
-   UpdateOrbitalElements();
-   UpdateRadius();
-   UpdateOrbitType();
 }
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
+OrbitalBody::OrbitalBody(const std::string& name, double mass) :
+m_name(name),
+m_orbit(mass * ASTRO_GRAVITATIONAL_CONSTANT)
 {
-   m_orbitalElements = orbitalElements;  
-   UpdateStateVector();
-   UpdateRadius();
-   UpdateOrbitType();
 }
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::SetTrueAnomaly(double trueAnomaly)
+void OrbitalBody::SetName(const std::string& name)
 {
-   m_orbitalElements.trueAnomaly = trueAnomaly;
-   UpdateStateVector();
-   UpdateRadius();
-   UpdateOrbitType();
+   m_name = name;
 }
 
 ////////////////////////////////////////////////////////////
-inline double Orbit::GetMu() const
+void OrbitalBody::SetMass(double mass)
 {
-   return m_mu;
+   m_orbit.SetMu(mass * ASTRO_GRAVITATIONAL_CONSTANT);
 }
 
 ////////////////////////////////////////////////////////////
-inline const StateVector& Orbit::GetStateVector() const
+void OrbitalBody::SetMu(double mu)
 {
-   return m_stateVector;
-}
-////////////////////////////////////////////////////////////
-inline const OrbitalElements& Orbit::GetOrbitalElements() const
-{
-   return m_orbitalElements;
+   m_orbit.SetMu(mu);
 }
 
 ////////////////////////////////////////////////////////////
-inline double Orbit::GetRadius() const
+const std::string& OrbitalBody::GetName() const
 {
-   return m_radius;
+   return m_name;
 }
 
 ////////////////////////////////////////////////////////////
-inline Orbit::Type Orbit::GetType() const
+double OrbitalBody::GetMass() const
 {
-   return m_orbitType;
+   return m_orbit.GetMu() / ASTRO_GRAVITATIONAL_CONSTANT;
 }
 
 ////////////////////////////////////////////////////////////
-inline bool Orbit::IsType(Type orbitType) const
+double OrbitalBody::GetMu() const
 {
-   return (m_orbitType == orbitType); 
+   return m_orbit.GetMu();
 }
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::UpdateStateVector()
+double OrbitalBody::GetOrbitRadius() const
 {
-   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector, m_mu);
+   return m_orbit.GetOrbitRadius();
 }
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::UpdateOrbitalElements()
+const Vector3d& OrbitalBody::GetPosition() const
 {
-   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements, m_mu);
+   return m_orbit.GetStateVector().position;
 }
 
 ////////////////////////////////////////////////////////////
-inline void Orbit::UpdateRadius()
+const Vector3d& OrbitalBody::GetVelocity() const
 {
-   m_radius = sqrt(SQR(m_stateVector.position.x) * SQR(m_stateVector.position.y) + SQR(m_stateVector.position.z));
+   return m_orbit.GetStateVector().velocity;
 }
+
+////////////////////////////////////////////////////////////
+const StateVector& OrbitalBody::GetStateVector() const
+{
+   return m_orbit.GetStateVector();
+}
+
+////////////////////////////////////////////////////////////
+const OrbitalElements& OrbitalBody::GetOrbitalElements() const
+{
+   return m_orbit.GetOrbitalElements();
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::Propagate(const Time& timeDelta)
+{
+   m_orbit.Propagate(timeDelta);
+}
+
+} // namespace otl

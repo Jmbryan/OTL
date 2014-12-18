@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Orbit.hpp>
+#include <OTL/Core/Conversion.hpp>
 #include <OTL/Core/PropagateLagrangian.hpp>
 
 namespace otl
@@ -33,34 +34,46 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit() :
-m_mu(0.0f),
-m_radius(0.0f),
-m_orbitType(Type::Invalid)
+m_mu(0.0),
+m_orbitRadius(0.0),
+m_orbitType(Type::Invalid),
+m_stateVectorDirty(false),
+m_orbitalElementsDirty(false),
+m_propagator(new PropagateLagrangian())
 {
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu) :
 m_mu(mu),
-m_radius(0.0f),
-m_orbitType(Type::Invalid)
+m_orbitRadius(0.0),
+m_orbitType(Type::Invalid),
+m_stateVectorDirty(false),
+m_orbitalElementsDirty(false),
+m_propagator(new PropagateLagrangian())
 {
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const StateVector& stateVector, double mu) :
+Orbit::Orbit(double mu, const StateVector& stateVector) :
 m_mu(mu),
-m_radius(0.0f),
-m_orbitType(Type::Invalid)
+m_orbitRadius(0.0),
+m_orbitType(Type::Invalid),
+m_stateVectorDirty(false),
+m_orbitalElementsDirty(false),
+m_propagator(new PropagateLagrangian())
 {
    SetStateVector(stateVector);
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(const OrbitalElements& orbitalElements, double mu) :
+Orbit::Orbit(double mu, const OrbitalElements& orbitalElements) :
 m_mu(mu),
-m_radius(0.0f),
-m_orbitType(Type::Invalid)
+m_orbitRadius(0.0),
+m_orbitType(Type::Invalid),
+m_stateVectorDirty(false),
+m_orbitalElementsDirty(false),
+m_propagator(new PropagateLagrangian())
 {
    SetOrbitalElements(orbitalElements);
 }
@@ -71,10 +84,152 @@ Orbit::~Orbit()
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::UpdateOrbitType()
+void Orbit::SetMu(double mu)
 {
-   double eccentricity = m_orbitalElements.eccentricity;
-   
+   m_mu = mu;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::SetStateVector(const StateVector& stateVector)
+{
+   m_stateVector = stateVector;
+   UpdateOrbitRadius();
+
+   m_stateVectorDirty = false;
+   m_orbitalElementsDirty = true;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
+{
+   m_orbitalElements = orbitalElements;
+   UpdateOrbitType();
+
+   m_stateVectorDirty = true;
+   m_orbitalElementsDirty = false; 
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::SetPropagator(const PropagatorPointer& propagator)
+{
+   m_propagator = propagator;
+}
+
+////////////////////////////////////////////////////////////
+double Orbit::GetMu() const
+{
+   return m_mu;
+}
+
+////////////////////////////////////////////////////////////
+double Orbit::GetOrbitRadius() const
+{
+   if (m_stateVectorDirty)
+   {
+      UpdateStateVector();
+      UpdateOrbitRadius();
+   }
+   return m_orbitRadius;
+}
+
+////////////////////////////////////////////////////////////
+Orbit::Type Orbit::GetOrbitType() const
+{
+   if (m_orbitalElementsDirty)
+   {
+      UpdateOrbitalElements();
+      UpdateOrbitType();
+   }
+   return m_orbitType;
+}
+
+////////////////////////////////////////////////////////////
+const Vector3d& Orbit::GetPosition() const
+{
+   return GetStateVector().position;
+}
+
+////////////////////////////////////////////////////////////
+const Vector3d& Orbit::GetVelocity() const
+{
+   return GetStateVector().velocity;
+}
+
+////////////////////////////////////////////////////////////
+const StateVector& Orbit::GetStateVector() const
+{
+   if (m_stateVectorDirty)
+   {
+      UpdateStateVector();
+      UpdateOrbitRadius();
+   }
+   return m_stateVector;
+}
+
+////////////////////////////////////////////////////////////
+const OrbitalElements& Orbit::GetOrbitalElements() const
+{
+   if (m_orbitalElementsDirty)
+   {
+      UpdateOrbitalElements();
+      UpdateOrbitType();
+   }
+   return m_orbitalElements;
+}
+
+////////////////////////////////////////////////////////////
+bool Orbit::IsType(Type orbitType) const
+{
+   return (GetOrbitType() == orbitType);
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::Propagate(const Time& timeDelta)
+{
+   if (m_propagator)
+   {
+      StateVector newStateVector;
+      m_propagator->Propagate(m_stateVector, m_mu, timeDelta, newStateVector);
+      SetStateVector(newStateVector);
+   }
+   else
+   {
+      //throw NullPointerException
+   }
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::PropagateTrueAnomaly(double trueAnomaly, const Orbit::Direction& direction)
+{
+   OrbitalElements newOrbitalElements = m_orbitalElements;
+   newOrbitalElements.trueAnomaly = trueAnomaly;
+   SetOrbitalElements(newOrbitalElements);
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateStateVector() const
+{
+   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector, m_mu);
+   m_stateVectorDirty = false;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateOrbitalElements() const
+{
+   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements, m_mu);
+   m_orbitalElementsDirty = false;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateOrbitRadius() const
+{
+   m_orbitRadius = sqrt(SQR(m_stateVector.position.x) * SQR(m_stateVector.position.y) + SQR(m_stateVector.position.z));
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateOrbitType() const
+{
+   double eccentricity = m_orbitalElements.eccentricity;  
    if (eccentricity == ASTRO_ECC_CIRCULAR)
    {
       m_orbitType = Type::Circular;
@@ -95,16 +250,6 @@ void Orbit::UpdateOrbitType()
    else
    {
       m_orbitType = Type::Invalid;
-   }
-}
-
-////////////////////////////////////////////////////////////
-void Orbit::Propagate(const Time& timeDelta)
-{
-   if (m_propagator)
-   {
-      m_propagator->Propagate(m_stateVector, m_mu, timeDelta, m_stateVector);
-      SetStateVector(m_stateVector);
    }
 }
 

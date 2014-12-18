@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Epoch.hpp>
+#include <OTL/Core/Orbit.hpp>
 
 namespace otl
 {
@@ -39,28 +39,30 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Constructs the orbital body
    ///
+   /// If a mass is not specified it will be
+   /// initialized to 1.0.
+   ///
    /// \param name Name of the orbital body
-   /// \param radius Radius of the orbital body
-   /// \param mu Gravitational parameter of the orbital body
+   /// \param mass Mass of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   OrbitalBody(const std::string& name, double radius, double mu);
-
+   OrbitalBody(const std::string& name, double mass);
+ 
    ////////////////////////////////////////////////////////////
    /// \brief Set the name of the orbital body
    ///
-   /// \param name Name of the orbital body 
+   /// \param name Name of the orbital body
    ///
    ////////////////////////////////////////////////////////////
    void SetName(const std::string& name);
-   
+
    ////////////////////////////////////////////////////////////
-   /// \brief Set the radius of the orbital body
+   /// \brief Set the mass of the orbital body
    ///
-   /// \param radius Radius of the orbital body 
+   /// \param mass Mass of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   void SetRadius(double radius);
+   void SetMass(double mass);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the gravitational parameter of the orbital body
@@ -71,28 +73,12 @@ public:
    void SetMu(double mu);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the epoch of the orbital body
-   ///
-   /// \param epoch epoch of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetEpoch(const Epoch& epoch);
-
-   ////////////////////////////////////////////////////////////
    /// \brief Get the name of the orbital body
    ///
    /// \return Name of the orbital body 
    ///
    ////////////////////////////////////////////////////////////
-   std::string GetName() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the radius of the orbital body
-   ///
-   /// \return Radius of the orbital body 
-   ///
-   ////////////////////////////////////////////////////////////
-   double GetRadius() const;
+   const std::string& GetName() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the mass of the orbital body
@@ -111,23 +97,12 @@ public:
    double GetMu() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the current epoch of the orbital body
+   /// \brief Get the orbit radius of the orbital body
    ///
-   /// \return Current epoch of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   const Epoch& GetEpoch() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the current state vector of the orbital body
-   ///
-   /// If SetEpoch has not been called, then this function will
-   /// return a state vector of all zeros.
-   ///
-   /// \return Current state vector of the orbital body
+   /// \return Orbit radius of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   const StateVector& GetStateVector() const;
+   double GetOrbitRadius() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current position vector of the orbital body
@@ -141,7 +116,7 @@ public:
    const Vector3d& GetPosition() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the velocity position vector of the orbital body
+   /// \brief Get the current velocity vector of the orbital body
    ///
    /// If SetEpoch has not been called, then this function will
    /// return a velocity vector of all zeros.
@@ -150,6 +125,42 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    const Vector3d& GetVelocity() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current state vector of the orbital body
+   ///
+   /// If SetEpoch has not been called, then this function will
+   /// return a state vector of all zeros.
+   ///
+   /// \return Current state vector of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   const StateVector& GetStateVector() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the orbital elements of the orbital body
+   ///
+   /// Returns the current orbital elementso f the orbital body.
+   ///
+   /// \param orbitalElements Resulting orbital elements computed at the specified Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   const OrbitalElements& GetOrbitalElements() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital body in time
+   ///
+   /// The time can be positive or negative for
+   /// forewards and backwards propagation respectively.
+   ///
+   /// This function is virtual and may be re-implemented
+   /// by subclasses in order to utilize different propagation
+   /// techniques such as querying an ephemeris database.
+   ///
+   /// \param timeDelta Time object for specifying the propagation duration
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void Propagate(const Time& timeDelta);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the state vector of the orbital body at an Epoch
@@ -163,7 +174,7 @@ public:
    /// \param stateVector Resulting state vector computed at the specified Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector) = 0;
+   //virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector) = 0;
    
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the orbital body at an Epoch
@@ -177,20 +188,14 @@ public:
    /// \param orbitalElements Resulting orbital elements computed at the specified Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
+   //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
 protected:
-   std::string m_name;        ///< Name of the orbital body
-   double m_radius;           ///< Radius of the orbital body
-   double m_mass;             ///< Mass of the orbital body
-   double m_mu;               ///< Gravitational parameter of the orbital body
-   Epoch m_epoch;             ///< Current epoch of the orbital body
-   StateVector m_stateVector; ///< Current state vector of the orbital body
+   std::string m_name;        ///< Name of the orbital body 
+   keplerian::Orbit m_orbit;  ///< Keplerian orbit of the orbital body
 };
 
 typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
-
-#include <OTL/Core/OrbitalBody.inl>
 
 } // namespace otl
 

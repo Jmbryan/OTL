@@ -58,7 +58,7 @@ private:
 class RadiationSource : public OrbitalBody
 {
 public:
-    RadiationSource(double radiationPressure) { m_RadiationPressure = radiationPressure; }
+    RadiationSource(double radiationPressure) : OrbitalBody("RadiationSource", 1.0) { m_RadiationPressure = radiationPressure; }
     virtual ~RadiationSource() {}
 
     virtual void Update(const Time& deltaTime) {}
@@ -86,7 +86,7 @@ public:
    virtual void Update(const Time& deltaTime);
 
 private:
-    RadiationSourcePointer m_RadiationSource;
+   RadiationSourcePointer m_RadiationSource;
 	SpacecraftPointer m_Spacecraft;
 };
 

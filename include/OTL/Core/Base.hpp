@@ -157,6 +157,7 @@ const Vector3d MATH_UNIT_VEC_J      = Vector3d(0.0, 1.0, 0.0);
 const Vector3d MATH_UNIT_VEC_K      = Vector3d(0.0, 0.0, 1.0);
 
 // Astrodynamics
+const double ASTRO_GRAVITATIONAL_CONSTANT = 6.67384e-11;      // Universal gravitational constant (m^3 kg^-1 s^-2)
 const double ASTRO_AU_TO_KM         = 149597870.66;     // Convert Astronomical Units (AU) to km
 const double ASTRO_ER_TO_KM         = 6378.137;         // Mean equitorial radius of Earth (ER) to km
 const double ASTRO_ECC_CIRCULAR     = 0.0;              // Eccentricity of a ciruclar orbit

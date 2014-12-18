@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Conversion.hpp>
 #include <OTL/Core/Base.hpp>
 
 namespace otl
@@ -34,6 +33,7 @@ namespace keplerian
 
 // Forward declarations
 class IPropagateAlgorithm;
+typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
 
 class Orbit
 {
@@ -85,7 +85,7 @@ public:
    /// \param stateVector State vector of the orbit at this time
    ///
    ////////////////////////////////////////////////////////////
-   Orbit(const StateVector& stateVector, double mu);
+   Orbit(double mu, const StateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the fully defined orbit
@@ -96,7 +96,7 @@ public:
    /// \param orbitalElements Orbital elements of the orbit at this time
    ///
    ////////////////////////////////////////////////////////////
-   Orbit(const OrbitalElements& orbitalElements, double mu);
+   Orbit(double mu, const OrbitalElements& orbitalElements);
    
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
@@ -112,36 +112,68 @@ public:
    void SetMu(double mu);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the state vector of the orbit at this time
+   /// \brief Set the new position vector of the orbit
    ///
-   /// The orbital elements are automatically updated.
-   /// 
-   /// \param stateVector State vector of the orbit at this time
+   /// The orbit radius is automatically updated.
+   ///
+   /// The orbital elements and orbit type are not updated
+   /// until the GetOrbitalElements(), GetOrbitType(),
+   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   ///
+   /// \param position New position vector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetPosition(const Vector3d& position);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the new velocity vector of the orbit
+   ///
+   /// The orbit radius is automatically updated.
+   ///
+   /// The orbital elements and orbit type are not updated
+   /// until the GetOrbitalElements(), GetOrbitType(),
+   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   ///
+   /// \param velocity New velocity vector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetVelocity(const Vector3d& velocity);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set thea new state vector of the orbit
+   ///
+   /// The orbit radius is automatically updated.
+   ///
+   /// The orbital elements and orbit type are not updated
+   /// until the GetOrbitalElements(), GetOrbitType(),
+   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   ///
+   /// \param stateVector New state vector of the orbit
    ///
    ////////////////////////////////////////////////////////////
    void SetStateVector(const StateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the orbital elements of the orbit at this time
+   /// \brief Set the new orbital elements of the orbit
    ///
-   /// The state vector is automatically updated.
-   /// 
-   /// \param orbitalElements Orbital elements of the orbit at this time
+   /// The orbit type is automatically updated.
+   ///
+   /// The state vector and orbit radius are not updated
+   /// until the GetStateVector(), GetOrbitRadius(), or
+   /// Propagate() functions are called.
+   ///
+   /// \param orbitalElements New orbital elements of the orbit
    ///
    ////////////////////////////////////////////////////////////
    void SetOrbitalElements(const OrbitalElements& orbitalElements);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the true anomaly orbital element
+   /// \brief Set the algorithm used for orbit propagation
    ///
-   /// The true anomaly is the only orbital element that varies with
-   /// time (assuming a non-perturbed orbit).
-   /// The state vector is automatically updated.
-   /// 
-   /// \param orbitalElements Orbital elements of the orbit at this time
+   /// \param propagator Smart pointer to the propagation algorithm
    ///
    ////////////////////////////////////////////////////////////
-   void SetTrueAnomaly(double trueAnomaly);
+   void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of the central body
@@ -150,43 +182,78 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    double GetMu() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the state vector of the orbit at this time
-   ///
-   /// \return State vector of the orbit at this time
-   ///
-   ////////////////////////////////////////////////////////////
-   const StateVector& GetStateVector() const;
-   
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the orbital elements of the orbit at this time
-   ///
-   /// \return Orbital elements of the orbit at this time
-   ///
-   ////////////////////////////////////////////////////////////
-   const OrbitalElements& GetOrbitalElements() const;
-   
+ 
    ////////////////////////////////////////////////////////////
    /// \brief Get the radius of the orbit
    ///
    /// \return Radius of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   double GetRadius() const;
+   double GetOrbitRadius() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
    ///
-   /// \return Type of the orbit
+   /// Returns an OrbitType enumerator which indicates the type
+   /// of the orbit (circular, elliptical, hyperbolic, etc.)
+   ///
+   /// \return OrbitType enumerator
    ///
    ////////////////////////////////////////////////////////////
-   Type GetType() const;
+   Type GetOrbitType() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current position vector of the orbit
+   ///
+   /// If the StateVector or OrbitalElements have not been specified
+   /// through the constructor or the Set methods, then this
+   /// function will return a Vector3d of all zeros.
+   ///
+   /// \return Current position vector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   const Vector3d& GetPosition() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current velocity vector of the orbit
+   ///
+   /// If the StateVector or OrbitalElements have not been specified
+   /// through the constructor or the Set methods, then this
+   /// function will return a Vector3d of all zeros.
+   ///
+   /// \return Current velocity vector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   const Vector3d& GetVelocity() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current state vector of the orbit
+   ///
+   /// If the StateVector or OrbitalElements have not been specified
+   /// through the constructor or the Set methods, then this
+   /// function will return StateVector of all zeros.
+   ///
+   /// \return Current state vector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   const StateVector& GetStateVector() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current orbital elements of the orbit
+   ///
+   /// If the StateVector or OrbitalElements have not been specified
+   /// through the constructor or the Set methods, then this
+   /// function will return an OrbitalElements of all zeros.
+   ///
+   /// \return Current orbital elements of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   const OrbitalElements& GetOrbitalElements() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Is the orbit of this type
    ///
-   /// \return True if the orbit is this type
+   /// \return True if the orbit matches the orbit type
    ///
    ////////////////////////////////////////////////////////////
    bool IsType(Type orbitType) const;
@@ -197,10 +264,24 @@ public:
    /// The time can be positive or negative for
    /// forewards and backwards propagation respectively.
    ///
-   /// \param timeDelta Time object for specifying the propagation duration
+   /// \param timeDelta Time object which specifies the propagation duration
    ///
    ////////////////////////////////////////////////////////////
    void Propagate(const Time& timeDelta);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbit to the true anomaly
+   ///
+   /// The true anomaly is the only orbital element that varies with
+   /// time (assuming a non-perturbed orbit). This function
+   /// propagates the orbit to the desired true anomaly either
+   /// in the Prograde or Retrograde direction.
+   /// 
+   /// \param trueAnomaly Desired true anomaly of the orbit
+   /// \param direction Enumerator which specifies the propagation direction (Prograde or Retrograde)
+   ///
+   ////////////////////////////////////////////////////////////
+   void PropagateTrueAnomaly(double trueAnomaly, const Direction& direction);
 
 private:
    ////////////////////////////////////////////////////////////
@@ -210,7 +291,7 @@ private:
    /// based on the orbital elements.
    ///
    ////////////////////////////////////////////////////////////
-   void UpdateStateVector();
+   void UpdateStateVector() const;
    
    ////////////////////////////////////////////////////////////
    /// \brief Update the orbital elements of the orbit
@@ -219,7 +300,7 @@ private:
    /// based on the state vector.
    ///
    ////////////////////////////////////////////////////////////
-   void UpdateOrbitalElements();
+   void UpdateOrbitalElements() const;
    
    ////////////////////////////////////////////////////////////
    /// \brief Update the radius of the orbit
@@ -228,7 +309,7 @@ private:
    /// the position vector.
    ///
    ////////////////////////////////////////////////////////////
-   void UpdateRadius();
+   void UpdateOrbitRadius() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Update the type of the orbit
@@ -237,20 +318,18 @@ private:
    /// the eccentricity.
    ///
    ////////////////////////////////////////////////////////////
-   void UpdateOrbitType();
+   void UpdateOrbitType() const;
 
 private:
-   StateVector m_stateVector;          ///< State Vector representing the orbit
-   OrbitalElements m_orbitalElements;  ///< Orbital Elements representing the orbit
-
-   double m_mu;                        ///< Gravitational parameter of the central body (kg^2/m^3)
-   double m_radius;                    ///< Radius of the orbit (m)
-   Type m_orbitType;                   ///< Type of orbit (prograde or retrograde)
-
-   std::unique_ptr<IPropagateAlgorithm> m_propagator; ///< Pointer to the propagate algorithm
+   double m_mu;                                 ///< Gravitational parameter of the central body (kg^2/m^3)
+   mutable double m_orbitRadius;                ///< Radius of the orbit (m)
+   mutable Type m_orbitType;                    ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   mutable StateVector m_stateVector;           ///< State Vector representing the orbit
+   mutable OrbitalElements m_orbitalElements;   ///< Orbital Elements representing the orbit  
+   mutable bool m_stateVectorDirty;             ///< Flag which when TRUE indicates the state vector needs to be updated
+   mutable bool m_orbitalElementsDirty;         ///< Flag which when TRUE indicates the orbital elements need to be updated
+   PropagatorPointer m_propagator;              ///< Pointer to the propagation algorithm
 };
-
-#include <OTL/Core/Orbit.inl>
 
 } // namespace keplerian
 
@@ -266,13 +345,23 @@ private:
 ///
 /// Usage example:
 /// \code
-/// otl::keplerian::Orbit orbit(ASTRO_MU_EARTH);
+/// using otl::keplerian
+///
+/// // Create the orbit and define the current state vector
+/// Orbit orbit(ASTRO_MU_EARTH);
 /// orbit.SetStateVector(myStateVector);
 ///
+/// // Orbital elements and orbital radius are computed from state vector
 /// myOrbitalElements = orbit.GetOrbitalElements();
 /// myRadius = orbit.GetRadius();
 ///
-/// orbit.Propagate(600.0f); // propagate forward 10 minutes
+/// // Propagate forward 10 minutes
+/// orbit.Propagate(Time::Minutes(10.0));
+///
+/// // Propagate in retrograde direction to true anomaly of 60 degrees
+/// orbit.PropagateTrueAnomaly(60.0 * MATH_DEG_TO_RAD, Orbit::Retrograde);
+///
+/// // Get updated state vector and orbital elements
 /// myNewStateVector = orbit.GetStateVector();
 /// myNewOrbitalElements = orbit.GetOrbitalElements();
 ///

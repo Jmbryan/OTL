@@ -43,14 +43,14 @@ public:
    /// hyperbola respectively.
    ///
    /// \param approachVelocity Absolute velocity before the flyby
-   /// \param orbitalBody Orbital body to flyby
+   /// \param naturalBody Natural astrodynamic body to flyby
    /// \param altitude Minimum altitude of the flyby hyperbola
    /// \param BPlaneAngle Orientation of the flyby hyperbola
    /// \param [out] departureVelocity Absolute velocity after the flyby
    ///
    ////////////////////////////////////////////////////////////
    virtual void Evaluate(const Vector3d& approachVelocity,
-                         const OrbitalBody& orbitalBody,
+                         const NaturalBody& orbitalBody,
                          double altitude,
                          double BPlaneAngle,
                          Vector3d& departureVelocity) override;

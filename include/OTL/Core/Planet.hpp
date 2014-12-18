@@ -23,13 +23,13 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/OrbitalBody.hpp>
+#include <OTL/Core/NaturalBody.h>
 #include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {
 
-class Planet : public OrbitalBody
+class Planet : public NaturalBody
 {
 public:
 
@@ -167,8 +167,6 @@ private:
    PlanetId m_id; ///< Planet identifier
    static const PlanetDictionary m_planetInfo; // Planet info lookup table
 };
-
-#include <OTL/Core/Planet.inl>
 
 } // namespace otl
 

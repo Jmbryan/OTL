@@ -26,6 +26,7 @@
 #include <OTL/Core/PropagateLagrangian.hpp>
 #include <OTL/Core/LambertExponentialSinusoid.hpp>
 #include <OTL/Core/FlybyUnpowered.hpp>
+#include <OTL/Core/Conversion.hpp>
 //#include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl
