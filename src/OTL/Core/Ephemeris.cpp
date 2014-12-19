@@ -22,46 +22,48 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/NaturalBody.h>
+#include <OTL/Core/Ephemeris.h>
 
 namespace otl
 {
 
-////////////////////////////////////////////////////////////
-void NaturalBody::SetRadius(double radius)
+IEphemeris::IEphemeris() :
+m_initialized(false)
 {
-   m_radius = radius;
+
 }
 
-////////////////////////////////////////////////////////////
-void NaturalBody::SetEpoch(const Epoch& epoch)
+IEphemeris::~IEphemeris()
 {
-   m_epoch = epoch;
+
 }
 
-////////////////////////////////////////////////////////////
-double NaturalBody::GetRadius() const
+void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
-   return m_radius;
-}
+    std::lock_guard<std::mutex> lock(m_mutex);
 
-////////////////////////////////////////////////////////////
-const Epoch& NaturalBody::GetEpoch() const
-{
-   return m_epoch;
-}
-
-////////////////////////////////////////////////////////////
-void NaturalBody::Propagate(const Time& timeDelta)
-{
-    if (m_ephemeris)
+    if (!m_initialized)
     {
+        Initialize();
+    }
+    VQueryDatabase(name, epoch, stateVector);
+}
 
-    }
-    else
+void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (!m_initialized)
     {
-        //throw NullPointerException
+        Initialize();
     }
+    VQueryDatabase(name, epoch, orbitalElements);
+}
+
+void IEphemeris::Initialize()
+{
+    VInitialize();
+    m_initialized = true;
 }
 
 } // namespace otl

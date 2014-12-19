@@ -22,46 +22,22 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/NaturalBody.h>
+#pragma once
+#include <OTL/Core/Ephemeris.h>
 
 namespace otl
 {
 
-////////////////////////////////////////////////////////////
-void NaturalBody::SetRadius(double radius)
+class JplEphemeris : public IEphemeris
 {
-   m_radius = radius;
-}
+public:
+    JplEphemeris();
+    virtual ~JplEphemeris();
+    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
-////////////////////////////////////////////////////////////
-void NaturalBody::SetEpoch(const Epoch& epoch)
-{
-   m_epoch = epoch;
-}
-
-////////////////////////////////////////////////////////////
-double NaturalBody::GetRadius() const
-{
-   return m_radius;
-}
-
-////////////////////////////////////////////////////////////
-const Epoch& NaturalBody::GetEpoch() const
-{
-   return m_epoch;
-}
-
-////////////////////////////////////////////////////////////
-void NaturalBody::Propagate(const Time& timeDelta)
-{
-    if (m_ephemeris)
-    {
-
-    }
-    else
-    {
-        //throw NullPointerException
-    }
-}
+private:
+    virtual void Initialize();
+};
 
 } // namespace otl

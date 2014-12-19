@@ -197,4 +197,33 @@ Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta
     return vec * magnitude;
 }
 
+////////////////////////////////////////////////////////////
+double ConvertEccentricAnomaly2TrueAnomaly(double eccentricAnomaly, double eccentricity)
+{
+    double trueAnomaly = 0.0;
+
+    // Convert elliptical eccentric anomaly to true anomaly
+    if (eccentricity > 0.0 && eccentricity <= 1.0)
+    {
+        double sinTA = sqrt(1.0 - std::pow(eccentricity, 2.0)) * std::sin(eccentricAnomaly) / (1.0 - eccentricity * cos(eccentricAnomaly));
+        double cosTA = (cos(eccentricAnomaly) - eccentricity) / (1.0 - eccentricity * cos(eccentricAnomaly));
+        trueAnomaly = atan2(sinTA, cosTA);
+    }
+
+    // Convert hyperbolic eccentric anomaly to true anomaly
+    else if (eccentricity > 1.0)
+    {
+        double sinTA = std::sqrt(std::pow(eccentricity, 2.0) - 1.0) * std::sinh(eccentricAnomaly) / (eccentricity * cosh(eccentricAnomaly) - 1.0);
+        double cosTA = (eccentricity - cosh(eccentricAnomaly)) / (eccentricity - cosh(eccentricAnomaly) - 1.0);
+    }
+
+    // Convert parabolic eccentric anomaly to true anomaly
+    else
+    {
+        //throw NotImplementedException("Parabolic orbits have not yet been implemented");
+    }
+
+    return trueAnomaly;
+}
+
 } // namespace otl

@@ -110,4 +110,15 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
 ////////////////////////////////////////////////////////////
 Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta, double normPhi);
 
+////////////////////////////////////////////////////////////
+/// \brief Converts eccentric anomaly to true anomaly
+/// \ingroup otl
+///
+/// \param eccentricAnomaly Eccentric anomaly in radians
+/// \param eccentricy Eccentricity
+/// \returns True anomaly in radians
+///
+////////////////////////////////////////////////////////////
+double ConvertEccentricAnomaly2TrueAnomaly(double eccentricAnomaly, double eccentricity);
+
 } // namespace otl

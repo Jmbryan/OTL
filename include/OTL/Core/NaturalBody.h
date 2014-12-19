@@ -83,6 +83,21 @@ public:
    ////////////////////////////////////////////////////////////
    const Epoch& GetEpoch() const;
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital body in time
+   ///
+   /// The time can be positive or negative for
+   /// forewards and backwards propagation respectively.
+   ///
+   /// This function is virtual and may be re-implemented
+   /// by subclasses in order to utilize different propagation
+   /// techniques such as querying an ephemeris database.
+   ///
+   /// \param timeDelta Time object for specifying the propagation duration
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void Propagate(const Time& timeDelta);
+
 private:
    double m_radius;              ///< Radius of the orbital body
    Epoch m_epoch;                ///< Current epoch of the orbital body

@@ -212,4 +212,8 @@ inline double acosh(double x)
 inline double atanh(double x)
 { return 0.5f*log((1.0f+x)/(1.0f-x)); }
 
+/// Returns the modulo of the floating point number
+inline double Modulo(double dividend, double divisor)
+{ return dividend - divisor * std::floor(dividend / divisor); }
+
 } // namespace otl

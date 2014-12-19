@@ -47,6 +47,11 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    OrbitalBody(const std::string& name, double mass);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
+   virtual ~OrbitalBody();
  
    ////////////////////////////////////////////////////////////
    /// \brief Set the name of the orbital body
@@ -129,8 +134,8 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Get the current state vector of the orbital body
    ///
-   /// If SetEpoch has not been called, then this function will
-   /// return a state vector of all zeros.
+   /// If SetEpoch() has not been called, then this function will
+   /// return a StateVector of all zeros.
    ///
    /// \return Current state vector of the orbital body
    ///
@@ -140,9 +145,10 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the orbital body
    ///
-   /// Returns the current orbital elementso f the orbital body.
+   /// If SetEpoch() has not been called, then this function will
+   /// return a OrbitalElements of all zeros. 
    ///
-   /// \param orbitalElements Resulting orbital elements computed at the specified Epoch
+   /// \return Current orbital elements of the orbital body
    ///
    ////////////////////////////////////////////////////////////
    const OrbitalElements& GetOrbitalElements() const;
