@@ -47,6 +47,9 @@ public:
     ////////////////////////////////////////////////////////////
     virtual ~JplApproximateEphemeris();
 
+protected:
+   virtual void VInitialize();
+
     ////////////////////////////////////////////////////////////
     /// \brief Query the database for the state vector of a planet at a given epoch
     ///
@@ -57,7 +60,7 @@ public:
     /// \param [out] stateVector Resulting StateVector computed at the given Epoch
     ///
     ////////////////////////////////////////////////////////////
-    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
 
     ////////////////////////////////////////////////////////////
     /// \brief Query the database for the orbital elements of a planet at a given epoch
@@ -69,11 +72,8 @@ public:
     /// \param [out] orbitalElements Resulting OrbitalElements computed at the given Epoch
     ///
     ////////////////////////////////////////////////////////////
-    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
-
-private:
-    virtual void Initialize();
-
+    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+    
 private:
     keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly
 };

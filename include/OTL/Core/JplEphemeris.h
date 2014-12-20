@@ -33,11 +33,12 @@ class JplEphemeris : public IEphemeris
 public:
     JplEphemeris();
     virtual ~JplEphemeris();
-    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
-    virtual void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
-private:
-    virtual void Initialize();
+protected:
+    virtual void VInitialize();
+    virtual bool VIsNameValid(const std::string& name);
+    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 };
 
 } // namespace otl

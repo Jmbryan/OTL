@@ -30,27 +30,6 @@
 namespace otl
 {
 
-namespace Impl
-{
-    // Hidden singleton ephemeris database object
-    class EphemerisDatabase
-    {
-    public:
-        static EphemerisDatabase Create()
-        {
-            //m_instance.reset(new DE405Ephemeris())
-        }
-
-        static void Destroy()
-        {
-            m_instance.reset();
-        }
-
-    private:
-        static std::unique_ptr<EphemerisDatabase> m_instance;
-    };
-}
-
 // Static global initialization
 typedef DE405Ephemeris EphemerisDatabase;
 typedef std::unique_ptr<EphemerisDatabase> EphemerisDatabasePointer;
@@ -62,7 +41,7 @@ static EphemerisDatabasePointer InitializeEphemerisDatabase()
 }
 
 typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary;
-static AstroEntityDictionary g_astroEntityDictionary;
+static AstroEntityDictionary g_entityDictionary;
 static AstroEntityDictionary InitializeAstroEntityDictionary()
 {
     AstroEntityDictionary dictionary;
@@ -94,41 +73,47 @@ JplEphemeris::~JplEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void JplEphemeris::VInitialize()
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
+   g_ephemerisDatabase.reset(new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data"));
 
-    if (!m_initialized)
-    {
-        Initialize();
-    }
-
-    if (g_ephemerisDatabase)
-    {
-        AstroEntityDictionary::const_iterator it = g_astroEntityDictionary.find(name);
-        if (it == g_astroEntityDictionary.end())
-        {
-            //throw InvalidArgumentException("Name not found");
-        }
-        DE405Ephemeris::AstroEntity entity = it->second;
-
-        double pos[3], vel[3];
-        g_ephemerisDatabase->getPosVel(epoch.GetJD(), entity, pos, vel);
-
-        for (int i = 0; i < 3; ++i)
-        {
-            stateVector.position[i] = pos[i];
-            stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
-        }
-    }
-    else
-    {
-        //throw NullPointerException("Database not valid");
-    }
+   g_entityDictionary["Mercury"] = DE405Ephemeris::Mercury;
+   g_entityDictionary["Venus"] = DE405Ephemeris::Venus;
+   g_entityDictionary["Earth"] = DE405Ephemeris::EarthMoonBarycenter;
+   g_entityDictionary["Mars"] = DE405Ephemeris::Mars;
+   g_entityDictionary["Jupiter"] = DE405Ephemeris::JupiterBarycenter;
+   g_entityDictionary["Saturn"] = DE405Ephemeris::SaturnBarycenter;
+   g_entityDictionary["Uranus"] = DE405Ephemeris::UranusBarycenter;
+   g_entityDictionary["Neptune"] = DE405Ephemeris::NeptuneBarycenter;
+   g_entityDictionary["Pluto"] = DE405Ephemeris::PlutoBarycenter;
+   g_entityDictionary["Sun"] = DE405Ephemeris::Sun;
+   g_entityDictionary["Moon"] = DE405Ephemeris::Moon;
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+bool JplEphemeris::VIsNameValid(const std::string& name)
+{
+   std::map<std::string, DE405Ephemeris::AstroEntity>::const_iterator it = g_entityDictionary.find(name);
+   return (it != g_entityDictionary.end());
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+{
+   DE405Ephemeris::AstroEntity entity = g_entityDictionary[name];
+
+   double pos[3], vel[3];
+   g_ephemerisDatabase->getPosVel(epoch.GetJD(), entity, pos, vel);
+
+   for (int i = 0; i < 3; ++i)
+   {
+      stateVector.position[i] = pos[i];
+      stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
+   }
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
     // Query the state vector at the given epoch
     StateVector stateVector;
@@ -136,14 +121,6 @@ void JplEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Or
 
     // Convert state vector to orbital elements
     ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);
-}
-
-////////////////////////////////////////////////////////////
-void JplEphemeris::Initialize()
-{
-    g_ephemerisDatabase = InitializeEphemerisDatabase();
-    g_astroEntityDictionary = InitializeAstroEntityDictionary();
-    m_initialized = true;
 }
 
 } // namespace otl

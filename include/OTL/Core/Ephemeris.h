@@ -30,6 +30,9 @@ namespace otl
 {
 
 class Epoch;
+class IEphemeris;
+typedef std::shared_ptr<IEphemeris> EphemerisPointer;
+
 
 class IEphemeris
 {
@@ -37,7 +40,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ////////////////////////////////////////////////////////////
-    IEphemeris();
+    //IEphemeris();
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
@@ -70,17 +73,26 @@ public:
     ////////////////////////////////////////////////////////////
     void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
+    static EphemerisPointer GetInstance();
+
 protected:
     virtual void VInitialize() = 0;
+    virtual bool VIsNameValid(const std::string& name) = 0;
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
+    IEphemeris();
+    IEphemeris(const IEphemeris& other) = delete;
+    IEphemeris& operator=(const IEphemeris&) = delete;
+
 private:
     void Initialize();
+    bool IsNameValid(const std::string& name);
 
-protected:
+private:
     bool m_initialized;
     std::mutex m_mutex;
+    static EphemerisPointer instance;
 };
 
 } // namespace otl

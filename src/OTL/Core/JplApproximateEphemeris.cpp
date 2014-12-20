@@ -133,7 +133,7 @@ JplApproximateEphemeris::~JplApproximateEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void JplApproximateEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
     // Query the orbital elements at the given epoch
     OrbitalElements orbitalElements;
@@ -144,7 +144,7 @@ void JplApproximateEphemeris::QueryDatabase(const std::string& name, const Epoch
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+void JplApproximateEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
     // Number of centuries since J2000
     double T = (epoch.GetJD() - 2451545.0) / 36525.0;
@@ -204,10 +204,9 @@ void JplApproximateEphemeris::QueryDatabase(const std::string& name, const Epoch
     orbitalElements.trueAnomaly         = ta;
 }
 
-void JplApproximateEphemeris::Initialize()
+void JplApproximateEphemeris::VInitialize()
 {
     g_ephemerisDatabase = InitializeEphemerisDatabase();
-    m_initialized = true;
 }
 
 } // namespace otl
