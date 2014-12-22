@@ -23,9 +23,35 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/NaturalBody.h>
+#include <OTL/Core/Ephemeris.h>
 
 namespace otl
 {
+
+////////////////////////////////////////////////////////////
+NaturalBody::NaturalBody() :
+OrbitalBody(),
+m_radius(1.0),
+m_useEphemerisForPropagation(false)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+NaturalBody::NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch) :
+OrbitalBody(name, mass),
+m_radius(radius),
+m_epoch(epoch),
+m_useEphemerisForPropagation(false)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+NaturalBody::~NaturalBody()
+{
+
+}
 
 ////////////////////////////////////////////////////////////
 void NaturalBody::SetRadius(double radius)
@@ -37,6 +63,18 @@ void NaturalBody::SetRadius(double radius)
 void NaturalBody::SetEpoch(const Epoch& epoch)
 {
    m_epoch = epoch;
+}
+
+////////////////////////////////////////////////////////////
+void NaturalBody::SetEphemeris(const EphemerisPointer& ephemeris)
+{
+    m_ephemeris = ephemeris;
+}
+
+////////////////////////////////////////////////////////////
+void NaturalBody::UseEphemerisForPropagation(bool useEphemerisForPropagation)
+{
+    m_useEphemerisForPropagation = useEphemerisForPropagation;
 }
 
 ////////////////////////////////////////////////////////////
@@ -54,13 +92,23 @@ const Epoch& NaturalBody::GetEpoch() const
 ////////////////////////////////////////////////////////////
 void NaturalBody::Propagate(const Time& timeDelta)
 {
-    if (m_ephemeris)
+    if (m_useEphemerisForPropagation)
     {
-
+        if (m_ephemeris)
+        {
+            Epoch newEpoch = m_epoch + timeDelta;
+            StateVector newStateVector;
+            m_ephemeris->QueryDatabase(GetName(), newEpoch, newStateVector);
+            SetStateVector(newStateVector);
+        }
+        else
+        {
+            //throw InvalidPointerExeption("Ephemeris invalid");
+        }
     }
     else
     {
-        //throw NullPointerException
+        OrbitalBody::Propagate(timeDelta);
     }
 }
 

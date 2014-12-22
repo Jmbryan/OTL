@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Time.hpp>
+#include <OTL/Core/Time.h>
 
 namespace otl
 {

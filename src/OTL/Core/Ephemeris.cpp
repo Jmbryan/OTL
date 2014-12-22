@@ -27,17 +27,20 @@
 namespace otl
 {
 
+////////////////////////////////////////////////////////////
 IEphemeris::IEphemeris() :
 m_initialized(false)
 {
 
 }
 
+////////////////////////////////////////////////////////////
 IEphemeris::~IEphemeris()
 {
 
 }
 
+////////////////////////////////////////////////////////////
 void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    std::lock_guard<std::mutex> lock(m_mutex);
@@ -47,16 +50,24 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Stat
       Initialize();
    }
 
-   if (IsNameValid(name))
+   if (VIsNameValid(name))
    {
-      VQueryDatabase(name, epoch, stateVector);
+      if (VIsEpochValid(epoch))
+      {
+         VQueryDatabase(name, epoch, stateVector);
+      }
+      else
+      {
+         //throw InvalidArgumentException("Epoch invalid");
+      }
    }
    else
    {
-      //throw InvalidArgumentException("Name not found");
+      //throw InvalidArgumentException("Name invalid");
    }
 }
 
+////////////////////////////////////////////////////////////
 void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
    std::lock_guard<std::mutex> lock(m_mutex);
@@ -66,30 +77,35 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Orbi
       Initialize();
    }
 
-   if (IsNameValid(name))
+   if (VIsNameValid(name))
    {
-      VQueryDatabase(name, epoch, orbitalElements);
+      if (VIsEpochValid(epoch))
+      {
+         VQueryDatabase(name, epoch, orbitalElements);
+      }
+      else
+      {
+         //throw InvalidArgument("Epoch invalid");
+      }
    }
    else
    {
-      //throw InvalidArgumentException("Name not found");
+      //throw InvalidArgumentException("Name invalid");
    }
 }
 
+////////////////////////////////////////////////////////////
 EphemerisPointer IEphemeris::GetInstance()
 {
    return instance;
 }
 
+////////////////////////////////////////////////////////////
 void IEphemeris::Initialize()
 {
+    VLoad();
     VInitialize();
     m_initialized = true;
-}
-
-bool IEphemeris::IsNameValid(const std::string& name)
-{
-   return VIsNameValid(name);
 }
 
 } // namespace otl

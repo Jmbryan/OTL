@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/OrbitalBody.hpp>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {
@@ -57,6 +57,30 @@ void OrbitalBody::SetMass(double mass)
 void OrbitalBody::SetMu(double mu)
 {
    m_orbit.SetMu(mu);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetPosition(const Vector3d& position)
+{
+    m_orbit.SetPosition(position);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetVelocity(const Vector3d& velocity)
+{
+    m_orbit.SetVelocity(velocity);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetStateVector(const StateVector& stateVector)
+{
+    m_orbit.SetStateVector(stateVector);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetOrbitalElements(const OrbitalElements& orbitalElements)
+{
+    m_orbit.SetOrbitalElements(orbitalElements);
 }
 
 ////////////////////////////////////////////////////////////

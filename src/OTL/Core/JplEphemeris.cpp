@@ -23,41 +23,20 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/JplEphemeris.h>
-#include <OTL/Core/Epoch.hpp>
-#include <OTL/Core/Conversion.hpp>
+#include <OTL/Core/Epoch.h>
+#include <OTL/Core/Conversion.h>
 #include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {
 
-// Static global initialization
+// Static globals
 typedef DE405Ephemeris EphemerisDatabase;
 typedef std::unique_ptr<EphemerisDatabase> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
-static EphemerisDatabasePointer InitializeEphemerisDatabase()
-{
-    EphemerisDatabasePointer ephemerisDatabase(new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data"));
-    return ephemerisDatabase;
-}
 
 typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary;
 static AstroEntityDictionary g_entityDictionary;
-static AstroEntityDictionary InitializeAstroEntityDictionary()
-{
-    AstroEntityDictionary dictionary;
-    dictionary["Mercury"] = DE405Ephemeris::Mercury;
-    dictionary["Venus"] = DE405Ephemeris::Venus;
-    dictionary["Earth"] = DE405Ephemeris::EarthMoonBarycenter;
-    dictionary["Mars"] = DE405Ephemeris::Mars;
-    dictionary["Jupiter"] = DE405Ephemeris::JupiterBarycenter;
-    dictionary["Saturn"] = DE405Ephemeris::SaturnBarycenter;
-    dictionary["Uranus"] = DE405Ephemeris::UranusBarycenter;
-    dictionary["Neptune"] = DE405Ephemeris::NeptuneBarycenter;
-    dictionary["Pluto"] = DE405Ephemeris::PlutoBarycenter;
-    dictionary["Sun"] = DE405Ephemeris::Sun;
-    dictionary["Moon"] = DE405Ephemeris::Moon;
-    return dictionary;
-}
 
 ////////////////////////////////////////////////////////////
 JplEphemeris::JplEphemeris() :
@@ -72,11 +51,14 @@ JplEphemeris::~JplEphemeris()
 
 }
 
+void JplEphemeris::VLoad()
+{
+    g_ephemerisDatabase.reset(new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data"));
+}
+
 ////////////////////////////////////////////////////////////
 void JplEphemeris::VInitialize()
 {
-   g_ephemerisDatabase.reset(new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data"));
-
    g_entityDictionary["Mercury"] = DE405Ephemeris::Mercury;
    g_entityDictionary["Venus"] = DE405Ephemeris::Venus;
    g_entityDictionary["Earth"] = DE405Ephemeris::EarthMoonBarycenter;
@@ -98,6 +80,13 @@ bool JplEphemeris::VIsNameValid(const std::string& name)
 }
 
 ////////////////////////////////////////////////////////////
+bool JplEphemeris::VIsEpochValid(const Epoch& epoch)
+{
+    int year = epoch.GetGregorian().year;
+    return (year >= 1800 && year <= 2200);
+}
+
+////////////////////////////////////////////////////////////
 void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    DE405Ephemeris::AstroEntity entity = g_entityDictionary[name];
@@ -108,7 +97,7 @@ void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, S
    for (int i = 0; i < 3; ++i)
    {
       stateVector.position[i] = pos[i];
-      stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
+      stateVector.velocity[i] = vel[i] / MATH_DAY_TO_SEC;
    }
 }
 

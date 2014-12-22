@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Orbit.hpp>
+#include <OTL/Core/Orbit.h>
 
 namespace otl
 {
@@ -76,6 +76,38 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void SetMu(double mu);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the new position vector of the orbital body
+   ///
+   /// \param position New position vector of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetPosition(const Vector3d& position);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the new velocity vector of the orbital body
+   ///
+   /// \param position New velocity vector of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetVelocity(const Vector3d& velocity);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the new state vector of the orbital body
+   ///
+   /// \param position New state vector of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetStateVector(const StateVector& stateVector);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the new orbital elements of the orbital body
+   ///
+   /// \param position New orbital elements of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetOrbitalElements(const OrbitalElements& orbitalElements);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the name of the orbital body
@@ -196,9 +228,9 @@ public:
    ////////////////////////////////////////////////////////////
    //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
-protected:
-   std::string m_name;        ///< Name of the orbital body 
-   keplerian::Orbit m_orbit;  ///< Keplerian orbit of the orbital body
+private:
+    std::string m_name;        ///< Name of the orbital body
+    keplerian::Orbit m_orbit;  ///< Keplerian orbit of the orbital body 
 };
 
 typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;

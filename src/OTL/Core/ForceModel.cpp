@@ -1,5 +1,5 @@
-#include <OTL/Core/ForceModel.hpp>
-#include <OTL/Core/OrbitalBody.hpp>
+#include <OTL/Core/ForceModel.h>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {

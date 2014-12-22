@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Flyby.hpp>
+#include <OTL/Core/Flyby.h>
 
 namespace otl
 {

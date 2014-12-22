@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/LambertExponentialSinusoid.hpp>
+#include <OTL/Core/LambertExponentialSinusoid.h>
 
 namespace otl
 {

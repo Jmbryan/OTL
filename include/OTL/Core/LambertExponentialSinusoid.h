@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Lambert.hpp>
+#include <OTL/Core/Lambert.h>
 
 namespace otl
 {

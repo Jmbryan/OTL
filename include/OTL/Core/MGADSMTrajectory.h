@@ -20,11 +20,11 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/MGADSMNodes.hpp>
-#include <OTL/Core/Planet.hpp>
-#include <OTL/Core/Propagate.hpp>
-#include <OTL/Core/Lambert.hpp>
-#include <OTL/Core/Flyby.hpp>
+#include <OTL/Core/MGADSMNodes.h>
+#include <OTL/Core/Planet.h>
+#include <OTL/Core/Propagate.h>
+#include <OTL/Core/Lambert.h>
+#include <OTL/Core/Flyby.h>
 
 namespace otl
 {

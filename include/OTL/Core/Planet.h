@@ -24,7 +24,6 @@
 
 #pragma once
 #include <OTL/Core/NaturalBody.h>
-#include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {
@@ -111,7 +110,7 @@ public:
    /// \param stateVector Resulting state vector 
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector);
+   //virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector);
    
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the planet at the the epoch
@@ -120,7 +119,7 @@ public:
    /// \param orbitalElements Resulting orbital elements 
    ///
    ////////////////////////////////////////////////////////////
-   virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements);
+   //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements);
 
    ////////////////////////////////////////////////////////////
    /// \brief Convert a planet name into an planet identifier

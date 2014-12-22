@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/KeplersEquations.hpp>
+#include <OTL/Core/KeplersEquations.h>
 
 namespace otl
 {

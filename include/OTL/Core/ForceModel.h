@@ -1,7 +1,7 @@
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Base.h>
 
-#include <OTL/Core/OrbitalBody.hpp>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {

@@ -22,8 +22,8 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Conversion.hpp>
-#include <OTL/Core/Transformation.hpp>
+#include <OTL/Core/Conversion.h>
+#include <OTL/Core/Transformation.h>
 
 namespace otl
 {

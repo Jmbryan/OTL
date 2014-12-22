@@ -36,7 +36,7 @@ typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
 
 class JplApproximateEphemeris : public IEphemeris
 {
-public:
+protected:
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ////////////////////////////////////////////////////////////
@@ -47,8 +47,12 @@ public:
     ////////////////////////////////////////////////////////////
     virtual ~JplApproximateEphemeris();
 
-protected:
-   virtual void VInitialize();
+    JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
+    JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
+    virtual void VLoad();
+    virtual void VInitialize();
+    virtual bool VIsNameValid(const std::string& name);
+    virtual bool VIsEpochValid(const Epoch& epoch);
 
     ////////////////////////////////////////////////////////////
     /// \brief Query the database for the state vector of a planet at a given epoch

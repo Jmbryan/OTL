@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Epoch.hpp>
+#include <OTL/Core/Epoch.h>
 
 namespace otl
 {

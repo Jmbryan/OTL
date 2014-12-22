@@ -17,45 +17,51 @@ set (EPHEM_SRCROOT ${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem)
 
 # all source files
 set(SRC
-	${INCROOT}/Base.hpp
+	${INCROOT}/Base.h
 	${SRCROOT}/Conversion.cpp
-	${INCROOT}/Conversion.hpp
+	${INCROOT}/Conversion.h
+	${SRCROOT}/Ephemeris.cpp
+	${INCROOT}/Ephemeris.h
 	${SRCROOT}/Epoch.cpp
-	${INCROOT}/Epoch.hpp
+	${INCROOT}/Epoch.h
 	${INCROOT}/Epoch.inl
-	${INCROOT}/Flyby.hpp
+	${INCROOT}/Flyby.h
 	${SRCROOT}/FlybyUnpowered.cpp
-	${INCROOT}/FlybyUnpowered.hpp
-	#${SRCROOT}/ForceModel.cpp
-	#${INCROOT}/ForceModel.hpp
+	${INCROOT}/FlybyUnpowered.h
+	${SRCROOT}/ForceModel.cpp
+	${INCROOT}/ForceModel.h
+	${SRCROOT}/JplApproximateEphemeris.cpp
+	${INCROOT}/JplApproximateEphemeris.h
+	${SRCROOT}/JplEphemeris.cpp
+	${INCROOT}/JplEphemeris.h
 	${SRCROOT}/KeplersEquations.cpp
-	${INCROOT}/KeplersEquations.hpp
+	${INCROOT}/KeplersEquations.h
 	${INCROOT}/KeplersEquations.inl
-	${INCROOT}/Lambert.hpp
+	${INCROOT}/Lambert.h
 	${SRCROOT}/LambertExponentialSinusoid.cpp
-	${INCROOT}/LambertExponentialSinusoid.hpp
-	${INCROOT}/Matrix3.hpp
+	${INCROOT}/LambertExponentialSinusoid.h
+	${INCROOT}/Matrix3.h
 	${INCROOT}/Matrix3.inl
-	${INCROOT}/MGADSMNodes.hpp
+	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp
-	${INCROOT}/MGADSMTrajectory.hpp
+	${INCROOT}/MGADSMTrajectory.h
+	${SRCROOT}/NaturalBody.cpp
+	${INCROOT}/NaturalBody.h
 	${SRCROOT}/Orbit.cpp
-	${INCROOT}/Orbit.hpp
-	${INCROOT}/Orbit.inl
-	${INCROOT}/OrbitalBody.hpp
-	${INCROOT}/OrbitalBody.inl
+	${INCROOT}/Orbit.h
+	${SRCROOT}/OrbitalBody.cpp	
+	${INCROOT}/OrbitalBody.h
 	${SRCROOT}/Planet.cpp
-	${INCROOT}/Planet.hpp
-	${INCROOT}/Planet.inl
-	${INCROOT}/Propagate.hpp
+	${INCROOT}/Planet.h
+	${INCROOT}/Propagate.h
 	${SRCROOT}/PropagateLagrangian.cpp
-	${INCROOT}/PropagateLagrangian.hpp
+	${INCROOT}/PropagateLagrangian.h
 	${SRCROOT}/Time.cpp
-	${INCROOT}/Time.hpp
+	${INCROOT}/Time.h
 	${SRCROOT}/Transformation.cpp
-	${INCROOT}/Transformation.hpp
-	${INCROOT}/Vector3.hpp
+	${INCROOT}/Transformation.h
+	${INCROOT}/Vector3.h
 	${INCROOT}/Vector3.inl
 	${EPHEM_SRCROOT}/DE405Ephemeris.cpp
 	#${EPHEM_INCROOT}/DE405Ephemeris.h

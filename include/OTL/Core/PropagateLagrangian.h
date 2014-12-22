@@ -20,7 +20,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Propagate.hpp>
+#include <OTL/Core/Propagate.h>
 
 namespace otl
 {

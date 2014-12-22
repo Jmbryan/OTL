@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/OrbitalBody.hpp>
-#include <OTL/Core/Epoch.hpp>
+#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/Epoch.h>
 
 namespace otl
 {
@@ -52,6 +52,11 @@ public:
    NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
+   virtual ~NaturalBody();
+
+   ////////////////////////////////////////////////////////////
    /// \brief Set the radius of the orbital body
    ///
    /// \param radius Radius of the orbital body 
@@ -67,6 +72,30 @@ public:
    ////////////////////////////////////////////////////////////
    void SetEpoch(const Epoch& epoch);
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Set an ephemeris database of the natural body
+   ///
+   /// \param ephemeris Smart pointer to the IEphemeris database
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetEphemeris(const EphemerisPointer& ephemeris);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Use an ephemeris database to propagate the natural body
+   ///
+   /// If this option is set to true, then the natural body
+   /// will use an IEphemeris database instead of the IPropagator
+   /// to propagate the natural body.
+   ///
+   /// \warning If this option is true, the SetEphemeris() function
+   /// must be called prior to propagating the natural body. Failure
+   /// to do so will result in a InvalidPointerException to be thrown.
+   ///
+   /// \param bool true to use ephemeris for propagation
+   ///
+   ////////////////////////////////////////////////////////////
+   void UseEphemerisForPropagation(bool useEphemerisForPropagation);
+       
    ////////////////////////////////////////////////////////////
    /// \brief Get the radius of the orbital body
    ///
@@ -99,9 +128,10 @@ public:
    virtual void Propagate(const Time& timeDelta);
 
 private:
-   double m_radius;              ///< Radius of the orbital body
-   Epoch m_epoch;                ///< Current epoch of the orbital body
-   EphemerisPointer m_ephemeris; ///< Smart pointer to ephemeris database
+   double m_radius;                     ///< Radius of the orbital body
+   Epoch m_epoch;                       ///< Current epoch of the orbital body
+   EphemerisPointer m_ephemeris;        ///< Smart pointer to ephemeris database
+   bool m_useEphemerisForPropagation;   ///< If true, ephemeris is used to propagate orbit
 };
 
 } // namespace otl

@@ -20,8 +20,8 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
-#include <OTL/Core/Epoch.hpp>
+#include <OTL/Core/Base.h>
+#include <OTL/Core/Epoch.h>
 
 namespace otl
 {

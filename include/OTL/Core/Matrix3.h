@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Vector3.hpp>
+#include <OTL/Core/Vector3.h>
 
 namespace otl
 {

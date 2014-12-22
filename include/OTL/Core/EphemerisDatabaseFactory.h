@@ -1,5 +1,5 @@
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Base.h>
 
 // temporary - should be in .cpp
 #include <OTL/Core/EphemerisDatabase.h>

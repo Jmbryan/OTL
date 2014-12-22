@@ -1,10 +1,10 @@
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Base.h>
 #include <mutex>
 
 // temporary - should be in .cpp
-#include <OTL/Core/Epoch.hpp>
-#include <OTL/Core/Conversion.hpp>
+#include <OTL/Core/Epoch.h>
+#include <OTL/Core/Conversion.h>
 #include <niek-ephem/DE405Ephemeris.h>
 
 typedef DE405Ephemeris JplEphemerisDB;

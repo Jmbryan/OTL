@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
+#include <OTL/Core/Base.h>
 #include <mutex>
 
 namespace otl
@@ -76,8 +76,10 @@ public:
     static EphemerisPointer GetInstance();
 
 protected:
+    virtual void VLoad() = 0;
     virtual void VInitialize() = 0;
     virtual bool VIsNameValid(const std::string& name) = 0;
+    virtual bool VIsEpochValid(const Epoch& epoch) = 0;
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
@@ -87,7 +89,6 @@ protected:
 
 private:
     void Initialize();
-    bool IsNameValid(const std::string& name);
 
 private:
     bool m_initialized;

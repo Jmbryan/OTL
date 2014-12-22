@@ -22,9 +22,9 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Orbit.hpp>
-#include <OTL/Core/Conversion.hpp>
-#include <OTL/Core/PropagateLagrangian.hpp>
+#include <OTL/Core/Orbit.h>
+#include <OTL/Core/Conversion.h>
+#include <OTL/Core/PropagateLagrangian.h>
 
 namespace otl
 {

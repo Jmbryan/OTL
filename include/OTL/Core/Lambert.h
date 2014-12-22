@@ -23,8 +23,9 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.hpp>
-#include <OTL/Core/Orbit.hpp>
+#include <OTL/Core/Base.h>
+#include <OTL/Core/Orbit.h>
+#include <OTL/Core/Time.h>
 
 namespace otl
 {
@@ -32,54 +33,46 @@ namespace otl
 namespace keplerian
 {
 
-class IPropagateAlgorithm
+class ILambertAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
-   IPropagateAlgorithm() {}
+   ILambertAlgorithm() {}
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
-   virtual ~IPropagateAlgorithm() {}
+   virtual ~ILambertAlgorithm() {}
 
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the orbital elements in time
+   /// \brief Evaluate Lambert's Problem
    ///
-   /// Calculates the final orbital elements after propagating
-   /// forwards or backwards in time. Backwards propgation is
-   /// achieved by setting a negative timeDelta.
-   ///
-   /// This is a pure virtual function that must be re-implemented
-   /// by the derived class.
-   ///
-   /// \param initialOrbitalElements OrbitalElements before propagation
-   /// \param mu Gravitational parameter of the central body
-   /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalOrbitalElements OrbitalElements after propagation
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements) = 0;
-   
-   ////////////////////////////////////////////////////////////
-   /// \brief Propagate the state vector in time
-   ///
-   /// Calculates the final state vector after propagating
-   /// forwards or backwards in time. Backwards propgation is
-   /// achieved by setting a negative timeDelta.
+   /// Calculates the initial and final velocity vectors given
+   /// an initial position, final position, and time delta.  
    ///
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
    ///
-   /// \param initialStateVector StateVector before propagation
+   /// \param initialPosition Vector3d consisting of the initial position
+   /// \param finalPosition Vector3d consisting of the final position
+   /// \param timeDelta Total time of flight between initial and final positions
+   /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
+   /// \param maxRevolutions Maximum number of revolutions allowed
    /// \param mu Gravitational parameter of the central body
-   /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalStateVector StateVector after propagation
+   /// \param [out] initialVelocity Vector3d consisting of computed initial velocity
+   /// \param [out] finalVelocity Vector3d consisting of computed final velocity
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector) = 0;
+   virtual void Evaluate(const Vector3d& initialPosition,
+                         const Vector3d& finalPosition,
+                         const Time& timeDelta,
+                         const Orbit::Direction& orbitDirection,
+                         int maxRevolutions,
+                         double mu,
+                         Vector3d& initialVelocity,
+                         Vector3d& finalVelocity) = 0;
 };
 
 } // namespace keplerian
@@ -87,10 +80,10 @@ public:
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::IPropagateAlgorithm
+/// \class otl::keplerian::ILambertAlgorithm
 /// \ingroup keplerian
 ///
-/// Interface class for all propagation algorithms.  
+/// Interface class for all Lambert algorithms.  
 ///
 /// This class is an abstract base class and cannot be instantiated.
 /// 

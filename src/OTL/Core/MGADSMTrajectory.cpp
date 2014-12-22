@@ -22,11 +22,11 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/MGADSMTrajectory.hpp>
-#include <OTL/Core/PropagateLagrangian.hpp>
-#include <OTL/Core/LambertExponentialSinusoid.hpp>
-#include <OTL/Core/FlybyUnpowered.hpp>
-#include <OTL/Core/Conversion.hpp>
+#include <OTL/Core/MGADSMTrajectory.h>
+#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/LambertExponentialSinusoid.h>
+#include <OTL/Core/FlybyUnpowered.h>
+#include <OTL/Core/Conversion.h>
 //#include <OTL/Core/KeplersEquations.hpp>
 
 namespace otl

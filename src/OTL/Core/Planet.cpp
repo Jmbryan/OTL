@@ -22,7 +22,8 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Planet.hpp>
+#include <OTL/Core/Planet.h>
+#include <OTL/Core/JplApproximateEphemeris.h>
 
 namespace otl
 {
@@ -77,57 +78,22 @@ std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 }
 
 ////////////////////////////////////////////////////////////
-void Planet::GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector)
-{
-   static DE405Ephemeris* ephem = new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data");
-
-   DE405Ephemeris::AstroEntity entity;
-   if (m_id == PlanetId::Mercury)
-   {
-      entity = DE405Ephemeris::Mercury;
-   }
-   else if (m_id == PlanetId::Venus)
-   {
-      entity = DE405Ephemeris::Venus;
-   }
-   else if (m_id == PlanetId::Earth)
-   {
-      entity = DE405Ephemeris::EarthMoonBarycenter;
-   }
-   else if (m_id == PlanetId::Mars)
-   {
-      entity = DE405Ephemeris::Mars;
-   }
-
-   double pos[3];
-   double vel[3];
-   ephem->getPosVel(epoch.GetJD(), entity, pos, vel);
-
-   for (int i = 0; i < 3; ++i)
-   {
-      stateVector.position[i] = pos[i];
-      stateVector.velocity[i] = vel[i] / (24.0 * 60.0 * 60.0);
-   }
-
-   m_orbit.SetStateVector(stateVector);
-}
-
-////////////////////////////////////////////////////////////
-void Planet::GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements)
-{
-
-}
-
-////////////////////////////////////////////////////////////
 void Planet::Initialize(Planet::PlanetId planetId)
 {
-   assert(planetId > PlanetId::Invalid && planetId < PlanetId::Count);
-   
-   const PlanetInfo& planetInfo = m_planetInfo.at(planetId);
+    PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
+    if (it == m_planetInfo.end())
+    {
+        //throw InvalidArgumentException("Invalid planet ID");
+    }
+   const PlanetInfo& planetInfo = it->second;
 
    SetName(planetInfo.name);
    SetRadius(planetInfo.radius);
    SetMu(planetInfo.mu);
+
+   // Initialize ephemeris
+   UseEphemerisForPropagation(true);
+   SetEphemeris(JplApproximateEphemeris::GetInstance());
 }
 
 ////////////////////////////////////////////////////////////

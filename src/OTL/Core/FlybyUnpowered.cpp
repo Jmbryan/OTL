@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/FlybyUnpowered.hpp>
+#include <OTL/Core/FlybyUnpowered.h>
 #include <OTL/Core/NaturalBody.h>
 
 namespace otl

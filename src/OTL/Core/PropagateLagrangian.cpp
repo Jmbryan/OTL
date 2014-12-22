@@ -19,9 +19,9 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/Orbit.hpp>
-#include <OTL/Core/PropagateLagrangian.hpp>
-#include <OTL/Core/KeplersEquations.hpp>
+#include <OTL/Core/Orbit.h>
+#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplersEquations.h>
 
 namespace otl
 {

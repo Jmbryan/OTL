@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Matrix3.hpp>
-#include <OTL/Core/Time.hpp>
+#include <OTL/Core/Matrix3.h>
+#include <OTL/Core/Time.h>
 #include <iostream>
 #include <memory>
 #include <string>
