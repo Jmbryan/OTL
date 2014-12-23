@@ -1,5 +1,6 @@
-#include <OTL/Test/BaseTest.hpp>
-#include <OTL/Core/PropagateLagrangian.hpp>
+#include <OTL/Test/BaseTest.h>
+#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/Conversion.h>
 #include <memory>
 
 const double TOL_PCT = 0.001;

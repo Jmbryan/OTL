@@ -48,6 +48,17 @@ m_useEphemerisForPropagation(false)
 }
 
 ////////////////////////////////////////////////////////////
+NaturalBody::NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch, const EphemerisPointer& ephemeris) :
+OrbitalBody(name, mass),
+m_radius(radius),
+m_epoch(epoch),
+m_ephemeris(ephemeris),
+m_useEphemerisForPropagation(true)
+{
+
+}
+
+////////////////////////////////////////////////////////////
 NaturalBody::~NaturalBody()
 {
 

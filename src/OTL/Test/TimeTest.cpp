@@ -1,6 +1,6 @@
-#include <OTL/Test/BaseTest.hpp>
-#include <OTL/Core/Time.hpp>
-#include <OTL/Core/Vector3.hpp>
+#include <OTL/Test/BaseTest.h>
+#include <OTL/Core/Time.h>
+#include <OTL/Core/Vector3.h>
 
 const double TOL_PCT = 0.1;
 #define OTL_APPROX(x) Approx(x, TOL_PCT)

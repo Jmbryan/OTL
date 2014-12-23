@@ -36,19 +36,20 @@ typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
 
 class JplApproximateEphemeris : public IEphemeris
 {
-protected:
+public:
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ////////////////////////////////////////////////////////////
     JplApproximateEphemeris();
+    //JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
+    //JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
     ////////////////////////////////////////////////////////////
     virtual ~JplApproximateEphemeris();
 
-    JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
-    JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
+protected:  
     virtual void VLoad();
     virtual void VInitialize();
     virtual bool VIsNameValid(const std::string& name);

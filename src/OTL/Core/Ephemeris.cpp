@@ -95,12 +95,6 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Orbi
 }
 
 ////////////////////////////////////////////////////////////
-EphemerisPointer IEphemeris::GetInstance()
-{
-   return instance;
-}
-
-////////////////////////////////////////////////////////////
 void IEphemeris::Initialize()
 {
     VLoad();

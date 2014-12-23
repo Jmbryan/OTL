@@ -2,11 +2,13 @@
 #include <assert.h>
 #include <chrono>
 
-#include <OTL/Core/MGADSMTrajectory.hpp>
-#include <OTL/Core/Planet.hpp>
-#include <OTL/Core/Orbit.hpp>
+#include <OTL/Core/MGADSMTrajectory.h>
+#include <OTL/Core/Planet.h>
+#include <OTL/Core/Orbit.h>
 
-#include <OTL/Core/LambertExponentialSinusoid.hpp>
+#include <OTL/Core/LambertExponentialSinusoid.h>
+#include <OTL/Core/JplApproximateEphemeris.h>
+#include <OTL/Core/JplEphemeris.h>
 
 #include <numeric>
 

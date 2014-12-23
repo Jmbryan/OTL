@@ -40,7 +40,9 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ////////////////////////////////////////////////////////////
-    //IEphemeris();
+    IEphemeris();
+    //IEphemeris(const IEphemeris& other) = delete;
+    //IEphemeris& operator=(const IEphemeris&) = delete;
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
@@ -73,8 +75,6 @@ public:
     ////////////////////////////////////////////////////////////
     void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
-    static EphemerisPointer GetInstance();
-
 protected:
     virtual void VLoad() = 0;
     virtual void VInitialize() = 0;
@@ -83,17 +83,12 @@ protected:
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
-    IEphemeris();
-    IEphemeris(const IEphemeris& other) = delete;
-    IEphemeris& operator=(const IEphemeris&) = delete;
-
 private:
     void Initialize();
 
 private:
     bool m_initialized;
     std::mutex m_mutex;
-    static EphemerisPointer instance;
 };
 
 } // namespace otl

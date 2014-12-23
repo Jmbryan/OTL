@@ -30,11 +30,13 @@ namespace otl
 
 class JplEphemeris : public IEphemeris
 {
-protected:
-    JplEphemeris();
+public:
+    JplEphemeris();   
+    //JplEphemeris(const JplEphemeris& other) = delete;
+    //JplEphemeris& operator=(const JplEphemeris&) = delete;
     virtual ~JplEphemeris();
-    JplEphemeris(const JplEphemeris& other) = delete;
-    JplEphemeris& operator=(const JplEphemeris&) = delete;
+
+protected:
     virtual void VLoad();
     virtual void VInitialize();
     virtual bool VIsNameValid(const std::string& name);

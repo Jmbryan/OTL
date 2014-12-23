@@ -617,7 +617,8 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
     // Trajectory initial conditions
     m_finalEpoch.SetMJD2000(states[iState++]);
-    m_legs.front().initialPlanet.GetStateVectorAtEpoch(m_finalEpoch, m_finalStateVector);
+    m_legs.front().initialPlanet.SetEpoch(m_finalEpoch);
+    m_finalStateVector = m_legs.front().initialPlanet.GetStateVector();
 
    // Calculate the trajectory one leg at a time
    for (std::size_t iLeg = 0; iLeg < m_legs.size(); ++iLeg)
@@ -651,7 +652,8 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
 
    // Leg final conditions
    m_finalEpoch = m_initialEpoch + Time::Seconds(timeOfFlightLeg);
-   planet.GetStateVectorAtEpoch(m_finalEpoch, m_planetStateVector);
+   planet.SetEpoch(m_finalEpoch);
+   m_planetStateVector = planet.GetStateVector();
    m_finalStateVector = m_planetStateVector;
 
    // Handle departure event

@@ -71,10 +71,33 @@ m_id(PlanetId::Invalid)
 }
 
 ////////////////////////////////////////////////////////////
+Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
+{
+    PlanetId planetId = PlanetId::Invalid;
+    for (auto it = m_planetInfo.begin(); it != m_planetInfo.end(); ++it)
+    {
+        if (it->second.name == name)
+        {
+            planetId = it->first;
+            break;
+        }
+    }
+    if (planetId == PlanetId::Invalid)
+    {
+        //throw InvalidArgumentException("Invalid planet name");
+    }
+    return planetId;
+}
+
+////////////////////////////////////////////////////////////
 std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
 {
-   assert(planetId > PlanetId::Invalid && planetId < PlanetId::Count);
-   return m_planetInfo.at(planetId).name;
+    PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
+    if (it == m_planetInfo.end())
+    {
+        //throw InvalidArgumentException("Invalid planet ID");
+    }
+    return it->second.name;
 }
 
 ////////////////////////////////////////////////////////////
@@ -93,24 +116,7 @@ void Planet::Initialize(Planet::PlanetId planetId)
 
    // Initialize ephemeris
    UseEphemerisForPropagation(true);
-   SetEphemeris(JplApproximateEphemeris::GetInstance());
-}
-
-////////////////////////////////////////////////////////////
-Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
-{
-   PlanetId planetId = PlanetId::Invalid;
-
-   for (auto it = m_planetInfo.begin(); it != m_planetInfo.end(); ++it)
-   {
-      if (it->second.name == name)
-      {
-         planetId = it->first;
-         break;
-      }
-   }
-
-   return planetId;
+   SetEphemeris(EphemerisPointer(new JplApproximateEphemeris()));
 }
 
 ////////////////////////////////////////////////////////////

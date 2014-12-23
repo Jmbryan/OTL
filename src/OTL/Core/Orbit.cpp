@@ -90,6 +90,36 @@ void Orbit::SetMu(double mu)
 }
 
 ////////////////////////////////////////////////////////////
+void Orbit::SetPosition(const Vector3d& position)
+{
+    if (m_stateVectorDirty)
+    {
+        UpdateStateVector();
+    }
+
+    m_stateVector.position = position;
+    UpdateOrbitRadius();
+
+    m_stateVectorDirty = false;
+    m_orbitalElementsDirty = true;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::SetVelocity(const Vector3d& velocity)
+{
+    if (m_stateVectorDirty)
+    {
+        UpdateStateVector();
+    }
+
+    m_stateVector.velocity = velocity;
+    UpdateOrbitRadius();
+
+    m_stateVectorDirty = false;
+    m_orbitalElementsDirty = true;
+}
+
+////////////////////////////////////////////////////////////
 void Orbit::SetStateVector(const StateVector& stateVector)
 {
    m_stateVector = stateVector;

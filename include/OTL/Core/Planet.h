@@ -177,19 +177,46 @@ private:
 /// state vector and orbital elements of the planet at a
 /// desired Epoch can be obtained by calling the inherited
 /// member functions:
-/// \li GetStateVectorAtEpoch()
-/// \li GetOrbitalElementsAtEpoch()
+/// \li SetEpoch()
+/// \li GetStateVector()
+/// \li GetOrbitalElements()
 ///
 /// Internally, the state vector and orbital elements are
 /// determined based on the ephemeris algorithm specified.
+/// By default, each planet instantiates its own instance
+/// of the JplApproximateEphemeris. However, a different
+/// ephemeris can be used by calling the inherited
+/// SetEphemeris() member function.
+///
+/// \note By default, the UseEphemerisForPropagation option
+/// is enabled which uses the IEphemeris object instead of
+/// the IPropagator object for propagation. This option can
+/// be toggled by calling the inherited UseEphemerisForPropagation()
+/// member function.
 ///
 /// Usage example:
 /// \code
 /// otl::Planet planet(Planet::Earth);
 /// myName = planet.GetName();
 ///
-/// planet.GetStateVectorAtEpoch(myEpoch1, myStateVector);
-/// planet.GetOrbitalElementsAtEpoch(myEpoch2, myOrbitalElements); 
+/// Epoch myEpoch = Epoch::GregorianDateTime(2014, 1, 10); // Set date to Jan 10, 2014
+/// planet.SetEpoch(myEpoch);
+///
+/// Query the state vector at the current epoch.
+/// StateVector myStateVector;
+/// planet.GetStateVector(myStateVector);
+///
+/// // Propagate the planet forward 30 days.
+/// // Internally, since the UseEphemerisForPropagation option
+/// // is enabled by default, this will add 30 days to the current
+/// // epoch and then query the ephemeris database for the state
+/// // vector at the new epoch.
+/// planet.Propagate(Time::Days(30));
+///
+/// Retrieve the orbital elements by automatically converting
+/// the state vector.
+/// OrbitalElements myOrbitalElements;
+/// planet.GetOrbitalElements(myOrbitalElements); 
 /// \endcode
 ///
 /// \see OrbitalBody, Ephemeris, StateVector, OrbitalElements

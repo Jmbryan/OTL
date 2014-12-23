@@ -43,13 +43,25 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Constructs the natural body
    ///
-   /// \param name Name of the natural body 
+   /// \param name std::string represeting the name of the natural body 
    /// \param mass Mass of the natural body
    /// \param radius Radius of the natural body
-   /// \param 
+   /// \param Epoch of the natural body
    ///
    ////////////////////////////////////////////////////////////
    NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Constructs the natural body
+   ///
+   /// \param name std::string represeting the name of the natural body 
+   /// \param mass Mass of the natural body
+   /// \param radius Radius of the natural body
+   /// \param Epoch of the natural body
+   /// \param EphemerisPointer Smart pointer to the ephemeris database
+   ///
+   ////////////////////////////////////////////////////////////
+   NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch, const EphemerisPointer& ephemeris);
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor

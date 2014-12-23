@@ -42,6 +42,12 @@ m_orbit(mass * ASTRO_GRAVITATIONAL_CONSTANT)
 }
 
 ////////////////////////////////////////////////////////////
+OrbitalBody::~OrbitalBody()
+{
+
+}
+
+////////////////////////////////////////////////////////////
 void OrbitalBody::SetName(const std::string& name)
 {
    m_name = name;

@@ -1,5 +1,5 @@
-#include <OTL/Test/BaseTest.hpp>
-#include <OTL/Core/Conversion.hpp>
+#include <OTL/Test/BaseTest.h>
+#include <OTL/Core/Conversion.h>
 
 const double TOL_PCT = 0.0001;
 #define OTL_APPROX(x) Approx(x, TOL_PCT)
