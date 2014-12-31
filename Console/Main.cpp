@@ -10,12 +10,56 @@
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/JplEphemeris.h>
 
+#include <OTL/Core/Logger.h>
+
 #include <numeric>
 
 using namespace otl;
 
 int main()
 {
+    //Logger logger;
+    //logger.Init();
+    //logger.AddMessage(1, "This is a test message");
+
+    //gLogger.SetLogLevel(LogLevel::Fatal);
+    //gLogger.SetThrowLevel(LogLevel::Error);
+
+    OTL_INFO() << "Hello.";
+    try
+    {
+        OTL_WARN() << "This is" << " my warning!" << 1;
+        OTL_ERROR() << "This " << 1 << " is " << 2.5f << " my " << 3.55 << " error!!";
+    }
+    catch (std::runtime_error re)
+    {
+        std::cout << "Runtime Error caught: " << re.what() << std::endl;
+    }
+    
+    try
+    {
+        OTL_INFO() << "Hello.";
+        OTL_WARN() << "This is" << " a warning!";
+        OTL_ERROR() << "This is " << "an error!!";
+        OTL_FATAL() << "This is a fatal error!!!";
+    }
+    catch (std::runtime_error re)
+    {
+        std::cout << "Runtime Error caught: " << re.what() << std::endl;
+    }
+    
+    Planet q("Quantix");
+    try
+    {
+        Planet p("Krypton");
+    }
+    catch (std::runtime_error re)
+    {
+        std::cout << "Runtime Error caught: " << re.what() << std::endl;
+    }
+
+    double d = 1.0;
+
     //DE405Ephemeris* ephem = nullptr;
 
     //ephem = new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data");

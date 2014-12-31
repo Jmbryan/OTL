@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/Epoch.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -58,12 +60,12 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Stat
       }
       else
       {
-         //throw InvalidArgumentException("Epoch invalid");
+          OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
       }
    }
    else
    {
-      //throw InvalidArgumentException("Name invalid");
+       OTL_ERROR() << "Name [" << name << "] not found";
    }
 }
 
@@ -85,12 +87,12 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Orbi
       }
       else
       {
-         //throw InvalidArgument("Epoch invalid");
+          OTL_ERROR() << "Epoch is outside the accepted range";
       }
    }
    else
    {
-      //throw InvalidArgumentException("Name invalid");
+       OTL_ERROR() << "Name [" << name << "] not found";
    }
 }
 

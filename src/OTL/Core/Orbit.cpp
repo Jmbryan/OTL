@@ -25,6 +25,7 @@
 #include <OTL/Core/Orbit.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -224,7 +225,7 @@ void Orbit::Propagate(const Time& timeDelta)
    }
    else
    {
-      //throw NullPointerException
+       OTL_ERROR() << "Propagator pointer invalid";
    }
 }
 

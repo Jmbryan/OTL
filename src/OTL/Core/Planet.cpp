@@ -24,6 +24,7 @@
 
 #include <OTL/Core/Planet.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -84,7 +85,7 @@ Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
     }
     if (planetId == PlanetId::Invalid)
     {
-        //throw InvalidArgumentException("Invalid planet name");
+        OTL_ERROR() << "Planet name [" << name << "] not found";
     }
     return planetId;
 }
@@ -95,7 +96,7 @@ std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
     PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
     if (it == m_planetInfo.end())
     {
-        //throw InvalidArgumentException("Invalid planet ID");
+        OTL_ERROR() << "Planet name not found for id [" << planetId << "]";
     }
     return it->second.name;
 }
@@ -106,7 +107,7 @@ void Planet::Initialize(Planet::PlanetId planetId)
     PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
     if (it == m_planetInfo.end())
     {
-        //throw InvalidArgumentException("Invalid planet ID");
+        OTL_ERROR() << "Invalid planet ID [" << planetId << "]";
     }
    const PlanetInfo& planetInfo = it->second;
 

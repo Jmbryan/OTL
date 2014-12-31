@@ -24,6 +24,7 @@
 
 #include <OTL/Core/NaturalBody.h>
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -114,7 +115,7 @@ void NaturalBody::Propagate(const Time& timeDelta)
         }
         else
         {
-            //throw InvalidPointerExeption("Ephemeris invalid");
+            OTL_ERROR() << "Ephemeris pointer invalid";
         }
     }
     else

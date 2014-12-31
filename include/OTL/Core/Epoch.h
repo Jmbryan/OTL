@@ -182,6 +182,26 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Epoch
+///
+/// The epoch is converted to a string in the following format:
+/// "year-month-date hour:min:sec" e.g. "2014-1-15 11:30:0"
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const Epoch& epoch)
+{
+    const auto& gregorian = epoch.GetGregorian();
+    stream << gregorian.year << "-" << gregorian.month << "-" << gregorian.day << " "
+        << gregorian.hour << ":" << gregorian.min << ":" << gregorian.sec;
+    return stream;
+}
+
+////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Julian Date.
 /// \relates Epoch
 ///

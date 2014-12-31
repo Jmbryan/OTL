@@ -167,6 +167,21 @@ private:
    static const PlanetDictionary m_planetInfo; // Planet info lookup table
 };
 
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Planet
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template <typename T>
+T& operator<<(T& stream, const Planet::PlanetId& planetId)
+{
+    stream << static_cast<int>(planetId);
+    return stream;
+}
+
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
