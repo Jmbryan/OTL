@@ -1,20 +1,35 @@
 #pragma once
-#include <OTL/Core/Details/SpdlogWrapper.h>
-#include <string>
-#include <memory>
+#include <OTL/Core/Base.h>
+#include <sstream>
 
 namespace otl
 {
 
-enum class LogLevel
+// Forward declarations
+class Logger;
+typedef std::shared_ptr<Logger> LoggerPointer;
+
+////////////////////////////////////////////////////////////
+class LineLogger
 {
-    Invalid = -1,
-    Info,
-    Warning,
-    Error,
-    Fatal
+public:
+   LineLogger(const LoggerPointer& logger, const LogLevel& logLevel);
+   ~LineLogger();
+
+   template<typename T>
+   LineLogger& operator<<(const T& what)
+   {
+      m_stream << what;
+      return *this;
+   }
+
+private:
+   LoggerPointer m_logger;
+   LogLevel m_logLevel;
+   std::stringstream m_stream;
 };
 
+////////////////////////////////////////////////////////////
 class Logger
 {
 public:
@@ -34,17 +49,18 @@ public:
     void SetThrowLevel(LogLevel throwLevel);
 
 protected:
-    bool ShouldLog(LogLevel logLevel);
-    bool ShouldThrow(LogLevel throwLevel);
     virtual void VInitialize();
+    virtual void VLog(const std::stringstream& stream, const LogLevel& logLevel);
 
-protected:
-    LogPointer m_log;
-
+private:
+   bool ShouldLog(LogLevel logLevel);
+   bool ShouldThrow(LogLevel throwLevel);
+    
 private:
     bool m_initialized;
     LogLevel m_logLevel;
     LogLevel m_throwLevel;
+    friend LineLogger;
 };
 
 extern Logger gLogger;

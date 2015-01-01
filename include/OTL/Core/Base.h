@@ -36,6 +36,15 @@
 namespace otl
 {
 
+enum class LogLevel
+{
+   Invalid = -1,
+   Info,
+   Warning,
+   Error,
+   Fatal
+};
+
 enum class State
 {
    Invalid = -1,

@@ -40,7 +40,7 @@ int main()
     {
         OTL_INFO() << "Hello.";
         OTL_WARN() << "This is" << " a warning!";
-        OTL_ERROR() << "This is " << "an error!!";
+        //OTL_ERROR() << "This is " << "an error!!";
         OTL_FATAL() << "This is a fatal error!!!";
     }
     catch (std::runtime_error re)
