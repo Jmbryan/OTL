@@ -12,7 +12,7 @@ namespace otl
 class LoggerImpl
 {
 public:
-   static void Init();
+   static void Init(const std::string& logDirectory, const std::string& logFilename, int maxFileSize, int numRotatingFiles);
    static void Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException);
 
 private:

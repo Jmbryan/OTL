@@ -4,6 +4,7 @@
 #else
    #include <OTL/Core/Spdlog/LoggerImpl.h>
 #endif
+#include <OTL/Core/System.h>
 
 namespace otl
 {
@@ -33,7 +34,11 @@ Logger::Logger() :
     m_logLevel(LogLevel::Fatal),
     m_throwLevel(LogLevel::Error)
 {
-
+    std::string currentDirectory = gSystem.GetCurrentDirectory();
+    m_logDirectory = currentDirectory + "\\logs";
+    m_logFilename = "otl_log";
+    m_maxFileSize = 10 * 1024 * 1024;
+    m_numRotatingFiles = 5;
 }
 
 ////////////////////////////////////////////////////////////
@@ -94,6 +99,30 @@ void Logger::SetThrowLevel(LogLevel throwLevel)
 }
 
 ////////////////////////////////////////////////////////////
+void Logger::SetLogDirectory(const std::string& logDirectory)
+{
+    m_logDirectory = logDirectory;
+}
+
+////////////////////////////////////////////////////////////
+void Logger::SetLogFilename(const std::string& logFilename)
+{
+    m_logFilename = logFilename;
+}
+
+////////////////////////////////////////////////////////////
+void Logger::SetMaxFileSize(int maxFileSize)
+{
+    m_maxFileSize = maxFileSize;
+}
+
+////////////////////////////////////////////////////////////
+void Logger::SetNumRotatingFiles(int numRotatingFiles)
+{
+    m_numRotatingFiles = numRotatingFiles;
+}
+
+////////////////////////////////////////////////////////////
 bool Logger::ShouldLog(LogLevel logLevel)
 {
     return logLevel <= m_logLevel;
@@ -114,7 +143,7 @@ void Logger::VLog(const std::string& message, const LogLevel& logLevel)
 ////////////////////////////////////////////////////////////
 void Logger::VInitialize()
 {
-   LoggerImpl::Init();
+   LoggerImpl::Init(m_logDirectory, m_logFilename, m_maxFileSize, m_numRotatingFiles);
 }
 
 } // namespace otl

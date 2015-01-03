@@ -48,6 +48,11 @@ public:
     // Throw an exception if greater than or equal to this level
     void SetThrowLevel(LogLevel throwLevel);
 
+    void SetLogDirectory(const std::string& logDirectory);
+    void SetLogFilename(const std::string& logFilename);
+    void SetMaxFileSize(int maxFileSize);
+    void SetNumRotatingFiles(int numRotatingFiles);
+
 protected:
     virtual void VInitialize();
     virtual void VLog(const std::string& message, const LogLevel& logLevel);
@@ -60,6 +65,10 @@ private:
     bool m_initialized;
     LogLevel m_logLevel;
     LogLevel m_throwLevel;
+    std::string m_logDirectory;
+    std::string m_logFilename;
+    int m_maxFileSize;
+    int m_numRotatingFiles;
     friend LineLogger;
 };
 

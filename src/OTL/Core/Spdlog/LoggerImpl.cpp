@@ -9,12 +9,11 @@ SpdLoggerPointer LoggerImpl::m_log;
 
 static std::map<LogLevel, spdlog::level::level_enum> gLogLevelMap;
 
-void LoggerImpl::Init()
+void LoggerImpl::Init(const std::string& logDirectory, const std::string& logFilename, int maxFileSize, int numRotatingFiles)
 {
-   std::string loggerName = "otl_log";
-   int file_size = 30 * 1024 * 1024;
-   int rotating_files = 5;
+   std::string loggerName = "OTL";
    bool auto_flush = true;
+   std::string logFile = logDirectory + "\\" + logFilename;
 
    gLogLevelMap[LogLevel::Info] = spdlog::level::info;
    gLogLevelMap[LogLevel::Warning] = spdlog::level::warn;
@@ -30,10 +29,10 @@ void LoggerImpl::Init()
       // Log file
       auto logfileSink = std::shared_ptr<spdlog::sinks::rotating_file_sink_mt>(
          new spdlog::sinks::rotating_file_sink_mt(
-         "D:/Dev/OTL/build/logs/otl_log",
+         logFile,
          "txt",
-         file_size,
-         rotating_files,
+         maxFileSize,
+         numRotatingFiles,
          auto_flush));
 
       m_log = spdlog::create(loggerName, { consoleSink, logfileSink });
@@ -48,16 +47,21 @@ void LoggerImpl::Init()
 
 void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException)
 {
-   auto msg_level = gLogLevelMap[logLevel];
-   if (enabled)
-   {
-      spdlog::details::line_logger line_logger(m_log.get(), msg_level, true);
-      line_logger << message;
-   }
-   if (throwException)
-   {
-      throw Exception(message);
-   }
+    auto it = gLogLevelMap.find(logLevel);
+    if (it == gLogLevelMap.end())
+    {
+        throw Exception("Invalid log level");
+    }
+    auto msg_level = it->second;
+    if (enabled)
+    {
+        spdlog::details::line_logger line_logger(m_log.get(), msg_level, true);
+        line_logger << message;
+    }
+    if (throwException)
+    {
+        throw Exception(message);
+    }
 }
 
 } // namespace otl
