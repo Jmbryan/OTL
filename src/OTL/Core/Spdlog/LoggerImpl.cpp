@@ -5,7 +5,7 @@
 namespace otl
 {
 
-SpdLoggerPointer LoggerImpl::m_log;
+SpdLogPointer LoggerImpl::m_log;
 
 static std::map<LogLevel, spdlog::level::level_enum> gLogLevelMap;
 
@@ -50,6 +50,7 @@ void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool 
     auto it = gLogLevelMap.find(logLevel);
     if (it == gLogLevelMap.end())
     {
+        std::cout << "Invalid log level [" << static_cast<int>(logLevel) << "]" << std::endl;
         throw Exception("Invalid log level");
     }
     auto msg_level = it->second;

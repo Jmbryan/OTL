@@ -1,10 +1,9 @@
 #pragma once
 #include <OTL/Core/Base.h>
-#include <sstream>
 
 // Forward declarations
 namespace spdlog { class logger; }
-typedef std::shared_ptr<spdlog::logger> SpdLoggerPointer;
+typedef std::shared_ptr<spdlog::logger> SpdLogPointer;
 
 namespace otl
 {
@@ -16,7 +15,7 @@ public:
    static void Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException);
 
 private:
-   static SpdLoggerPointer m_log;
+   static SpdLogPointer m_log;
 };
 
 } // namespace otl
