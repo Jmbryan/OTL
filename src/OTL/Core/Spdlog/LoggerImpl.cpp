@@ -30,7 +30,7 @@ void LoggerImpl::Init()
       // Log file
       auto logfileSink = std::shared_ptr<spdlog::sinks::rotating_file_sink_mt>(
          new spdlog::sinks::rotating_file_sink_mt(
-         "E:/Dev/OTL/build/logs/otl_log",
+         "D:/Dev/OTL/build/logs/otl_log",
          "txt",
          file_size,
          rotating_files,
@@ -39,25 +39,24 @@ void LoggerImpl::Init()
       m_log = spdlog::create(loggerName, { consoleSink, logfileSink });
       m_log->set_level(spdlog::level::trace);
    }
-   catch (std::exception e)
+   catch (spdlog::spdlog_ex ex)
    {
-      std::cout << "Exception caught while trying to initialize log file: " << e.what() << std::endl;
+      std::cout << "Exception caught while trying to initialize log file: " << ex.what() << std::endl;
       throw Exception("Failed to initialize log file");
    }
 }
 
-void LoggerImpl::Log(const std::stringstream& stream, const LogLevel& logLevel, bool enabled, bool throwException)
+void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException)
 {
-   const auto& msg = stream.str();
    auto msg_level = gLogLevelMap[logLevel];
    if (enabled)
    {
       spdlog::details::line_logger line_logger(m_log.get(), msg_level, true);
-      line_logger << msg;
+      line_logger << message;
    }
    if (throwException)
    {
-      throw Exception(msg);
+      throw Exception(message);
    }
 }
 

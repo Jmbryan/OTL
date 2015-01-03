@@ -13,7 +13,7 @@ class LoggerImpl
 {
 public:
    static void Init();
-   static void Log(const std::stringstream& stream, const LogLevel& logLevel, bool enabled, bool throwException);
+   static void Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException);
 
 private:
    static SpdLoggerPointer m_log;

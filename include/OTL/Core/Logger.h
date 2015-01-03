@@ -50,7 +50,7 @@ public:
 
 protected:
     virtual void VInitialize();
-    virtual void VLog(const std::stringstream& stream, const LogLevel& logLevel);
+    virtual void VLog(const std::string& message, const LogLevel& logLevel);
 
 private:
    bool ShouldLog(LogLevel logLevel);

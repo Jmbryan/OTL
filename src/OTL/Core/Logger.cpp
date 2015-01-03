@@ -23,7 +23,7 @@ LineLogger::~LineLogger()
 {
    if (m_logger)
    {
-      m_logger->VLog(m_stream, m_logLevel);
+      m_logger->VLog(m_stream.str(), m_logLevel);
    }
 }
 
@@ -106,9 +106,9 @@ bool Logger::ShouldThrow(LogLevel throwLevel)
 }
 
 ////////////////////////////////////////////////////////////
-void Logger::VLog(const std::stringstream& stream, const LogLevel& logLevel)
+void Logger::VLog(const std::string& message, const LogLevel& logLevel)
 {
-   LoggerImpl::Log(stream, logLevel, ShouldLog(logLevel), ShouldThrow(logLevel));
+   LoggerImpl::Log(message, logLevel, ShouldLog(logLevel), ShouldThrow(logLevel));
 }
 
 ////////////////////////////////////////////////////////////
