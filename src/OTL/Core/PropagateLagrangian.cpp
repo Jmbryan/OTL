@@ -22,6 +22,7 @@
 #include <OTL/Core/Orbit.h>
 #include <OTL/Core/PropagateLagrangian.h>
 #include <OTL/Core/KeplersEquations.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -121,7 +122,7 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
     const int MAX_ITER = 100;
     double r;
     double psi, c2, c3;
-    while (fabs(x - xPrev) >= 1.0e-6 && iter++ < MAX_ITER)
+    while (fabs(x - xPrev) >= MATH_TOLERANCE && iter++ < MAX_ITER)
     {
         psi = SQR(x) * alpha;
         CalculateC2C3(psi, c2, c3);
@@ -140,7 +141,7 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
     double sanityCheck = (f * gDot - fDot * g) - 1.0;
     if (abs(sanityCheck) > MATH_TOLERANCE)
     {
-        std::cout << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check failed!" << std::endl;
+        OTL_WARN() << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check [" << abs(sanityCheck) << "] failed!";
     }
 
     finalStateVector.position = f * R + g * V;
@@ -173,9 +174,9 @@ double PropagateLagrangian::CalculateUniversalVariable(double r0, double vr0, do
         x -= ratio;
     }
     if (iteration >= MAX_ITERATIONS)
-   {
-      std::cout << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations exceeded!" << std::endl;
-   }
+    {
+       OTL_WARN() << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations [" << MAX_ITERATIONS << "] exceeded!";
+    }
 
     return x;
 }

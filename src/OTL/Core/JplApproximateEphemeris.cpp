@@ -159,7 +159,7 @@ void JplApproximateEphemeris::VQueryDatabase(const std::string& name, const Epoc
 {
     // Query the orbital elements at the given epoch
     OrbitalElements orbitalElements;
-    QueryDatabase(name, epoch, orbitalElements);
+    VQueryDatabase(name, epoch, orbitalElements);
 
     // Convert orbital elements to state vector
     ConvertOrbitalElements2StateVector(orbitalElements, stateVector, ASTRO_MU_SUN);

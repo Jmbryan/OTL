@@ -8,8 +8,8 @@ namespace otl
 class SystemImpl
 {
 public:
-    static std::string GetCurrentDirectory();
-    static Time GetCurrentTime();
+   static std::string GetCurrentDirectory();
+   static Time GetCurrentTime();
 };
 
 } // namespace otl

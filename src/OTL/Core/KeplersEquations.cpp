@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/KeplersEquations.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
@@ -40,15 +41,23 @@ IKeplersEquation::IKeplersEquation(int maxIterations, double tolerance)
 ////////////////////////////////////////////////////////////
 void IKeplersEquation::SetMaxIterations(int maxIterations)
 {
-   OTL_ASSERT(maxIterations > 0, "Max iterations must be greater than zero");
-   m_maxIterations = maxIterations;
+    if (maxIterations <= 0)
+    {
+        OTL_ERROR() << "Max iterations [" << maxIterations << "] must be greater than zero. Setting to 1000.";
+        maxIterations = 0;
+    }
+    m_maxIterations = maxIterations;
 }
 
 ////////////////////////////////////////////////////////////
 void IKeplersEquation::SetTolerance(double tolerance)
 {
-   OTL_ASSERT(tolerance > 0.0, "Tolerance must be greater than zero");
-   m_tolerance = tolerance;
+    if (tolerance <= 0.0)
+    {
+        OTL_ERROR() << "Tolerance [" << tolerance << "] must be greater than zero. Setting to 1e-8";
+        tolerance = 1e-8;
+    }
+    m_tolerance = tolerance;
 }
 
 ////////////////////////////////////////////////////////////
@@ -71,14 +80,14 @@ double IKeplersEquation::Evaluate(double eccentricity,
       }
       else
       {
-         std::cout << "IKeplersEquation::Evaluate: SolveInverseDerivative() returned zero!" << std::endl;
-         break;
+          OTL_WARN() << "IKeplersEquation::Evaluate: SolveInverseDerivative() must return greater than or equal to zero, but returned [" << denominator << "].";
+          break;
       }
       anomaly -= ratio;
    }
    if (iteration >= m_maxIterations)
    {
-      std::cout << "IKeplersEquation::Evaluate: Max iterations exceeded!" << std::endl;
+       OTL_WARN() << "IKeplersEquation::Evaluate: Max iterations [" << m_maxIterations << "] exceeded!";
    }
 
    return anomaly;

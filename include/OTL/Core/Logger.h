@@ -37,6 +37,8 @@ public:
     virtual ~Logger();
     void Initialize();
 
+    void Log(const std::string& message, const LogLevel& logLevel);
+
     LineLogger Info();
     LineLogger Warn();
     LineLogger Error();
@@ -56,10 +58,8 @@ public:
 protected:
     virtual void VInitialize();
     virtual void VLog(const std::string& message, const LogLevel& logLevel);
-
-private:
-   bool ShouldLog(LogLevel logLevel);
-   bool ShouldThrow(LogLevel throwLevel);
+    bool ShouldLog(LogLevel logLevel);
+    bool ShouldThrow(LogLevel throwLevel);
     
 private:
     bool m_initialized;
@@ -73,6 +73,7 @@ private:
 };
 
 extern Logger gLogger;
+#define OTL_LOG(message, level) gLogger.Log(message, level)
 #define OTL_INFO() gLogger.Info()
 #define OTL_WARN() gLogger.Warn()
 #define OTL_ERROR() gLogger.Error()

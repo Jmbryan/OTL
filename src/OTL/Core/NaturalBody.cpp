@@ -75,6 +75,19 @@ void NaturalBody::SetRadius(double radius)
 void NaturalBody::SetEpoch(const Epoch& epoch)
 {
    m_epoch = epoch;
+   if (m_useEphemerisForPropagation)
+   {
+      if (m_ephemeris)
+      {
+         StateVector newStateVector;
+         m_ephemeris->QueryDatabase(GetName(), m_epoch, newStateVector);
+         SetStateVector(newStateVector);
+      }
+      else
+      {
+         OTL_ERROR() << "Ephemeris pointer invalid";
+      }
+   }
 }
 
 ////////////////////////////////////////////////////////////

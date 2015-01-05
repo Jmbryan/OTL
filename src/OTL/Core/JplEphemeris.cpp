@@ -106,7 +106,7 @@ void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, O
 {
     // Query the state vector at the given epoch
     StateVector stateVector;
-    QueryDatabase(name, epoch, stateVector);
+    VQueryDatabase(name, epoch, stateVector);
 
     // Convert state vector to orbital elements
     ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);

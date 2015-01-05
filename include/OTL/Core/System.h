@@ -8,9 +8,9 @@ namespace otl
 class System
 {
 public:
+   void CreateDirectory(const std::string& directory);
     std::string GetCurrentDirectory();
     Time GetCurrentTime();
-    
 };
 
 extern System gSystem;

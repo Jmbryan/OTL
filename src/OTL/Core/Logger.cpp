@@ -39,6 +39,8 @@ Logger::Logger() :
     m_logFilename = "otl_log";
     m_maxFileSize = 10 * 1024 * 1024;
     m_numRotatingFiles = 5;
+
+    gSystem.CreateDirectory(m_logDirectory);
 }
 
 ////////////////////////////////////////////////////////////
@@ -52,6 +54,14 @@ void Logger::Initialize()
 {
     VInitialize();
     m_initialized = true;
+}
+
+////////////////////////////////////////////////////////////
+void Logger::Log(const std::string& message, const LogLevel& logLevel)
+{
+    if (!m_initialized)
+        Initialize();
+    VLog(message, logLevel);
 }
 
 ////////////////////////////////////////////////////////////
