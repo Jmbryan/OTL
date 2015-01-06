@@ -751,7 +751,7 @@ private:
 /// total change in velocity (deltaV) required to achieve the
 /// trajectory. The total deltaV is the sum of each individual
 /// deltaV required throughout the trajectory. Calling the
-/// Evaluate() function returns this vector of deltaVs:
+/// Evaluate() function returns the vector of deltaVs:
 ///
 /// \code
 /// std::vector<double> deltaVs = trajectory.Evaluate();
@@ -775,7 +775,7 @@ private:
 ///
 /// Here, the state vector is constructed internally as the
 /// trajectory is defined. The function signatures are helpful
-/// tools in determining which states are required by each node
+/// in determining which states are required by each node
 /// type and and which order they must be defined.
 ///
 ////////////////////////////////////////////////////////////

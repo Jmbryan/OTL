@@ -1,6 +1,7 @@
 #include <OTL/Core/Logger.h>
 #ifdef USE_GLOG
-   #include <OTL/Core/Glog/LoggerImpl.h>
+   #error "GLog support not implemented yet"
+   //#include <OTL/Core/Glog/LoggerImpl.h>
 #else
    #include <OTL/Core/Spdlog/LoggerImpl.h>
 #endif
@@ -24,7 +25,7 @@ LineLogger::~LineLogger()
 {
    if (m_logger)
    {
-      m_logger->VLog(m_stream.str(), m_logLevel);
+      m_logger->Log(m_stream.str(), m_logLevel);
    }
 }
 
@@ -36,11 +37,11 @@ Logger::Logger() :
 {
     std::string currentDirectory = gSystem.GetCurrentDirectory();
     m_logDirectory = currentDirectory + "\\logs";
+    gSystem.CreateDirectory(m_logDirectory);
+
     m_logFilename = "otl_log";
     m_maxFileSize = 10 * 1024 * 1024;
-    m_numRotatingFiles = 5;
-
-    gSystem.CreateDirectory(m_logDirectory);
+    m_numRotatingFiles = 5; 
 }
 
 ////////////////////////////////////////////////////////////

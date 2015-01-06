@@ -63,6 +63,26 @@ int main()
        }
     }
 
+    if (true)
+    {
+       Planet p("Earth");
+       
+       auto currentDirectory = gSystem.GetCurrentDirectory();
+       auto dataFile = currentDirectory + "\\..\\data\\jpl_eph\\de405\\de405.data";
+       EphemerisPointer ephemeris(new JplEphemeris(dataFile));
+       p.SetEphemeris(ephemeris);
+
+       GregorianDateTime date;
+       date.day = 1;
+       date.month = 1;
+       date.year = 2015;
+       date.hour = date.min = 0;
+       date.sec = 0.0;
+       p.SetEpoch(Epoch::Gregorian(date));
+
+       auto sv = p.GetStateVector();
+    }
+
     double d = 1.0;
 
     //DE405Ephemeris* ephem = nullptr;

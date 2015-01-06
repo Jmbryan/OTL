@@ -69,7 +69,6 @@ private:
     std::string m_logFilename;
     int m_maxFileSize;
     int m_numRotatingFiles;
-    friend LineLogger;
 };
 
 extern Logger gLogger;

@@ -28,22 +28,20 @@
 namespace otl
 {
 
-class JplEphemeris : public IEphemeris
+class SpiceEphemeris : public IEphemeris
 {
 public:
-    JplEphemeris(const std::string& dataFile);   
-    //JplEphemeris(const JplEphemeris& other) = delete;
-    //JplEphemeris& operator=(const JplEphemeris&) = delete;
-    virtual ~JplEphemeris();
-    void SetDataFile(const std::string& dataFile);
+   SpiceEphemeris(const std::string& dataFile);
+   virtual ~SpiceEphemeris();
+   void SetDataFile(const std::string& dataFile);
 
 protected:
-    virtual void VLoad();
-    virtual void VInitialize();
-    virtual bool VIsNameValid(const std::string& name);
-    virtual bool VIsEpochValid(const Epoch& epoch);
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+   virtual void VLoad();
+   virtual void VInitialize();
+   virtual bool VIsNameValid(const std::string& name);
+   virtual bool VIsEpochValid(const Epoch& epoch);
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
 private:
    std::string m_dataFile;

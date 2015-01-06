@@ -25,22 +25,23 @@
 #include <OTL/Core/JplEphemeris.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
+#include <OTL/Core/Logger.h>
 #include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {
 
 // Static globals
-typedef DE405Ephemeris EphemerisDatabase;
-typedef std::unique_ptr<EphemerisDatabase> EphemerisDatabasePointer;
+typedef std::unique_ptr<DE405Ephemeris> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
 
 typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary;
 static AstroEntityDictionary g_entityDictionary;
 
 ////////////////////////////////////////////////////////////
-JplEphemeris::JplEphemeris() :
-IEphemeris()
+JplEphemeris::JplEphemeris(const std::string& dataFile) :
+IEphemeris(),
+m_dataFile(dataFile)
 {
     
 }
@@ -51,9 +52,23 @@ JplEphemeris::~JplEphemeris()
 
 }
 
+////////////////////////////////////////////////////////////
+void JplEphemeris::SetDataFile(const std::string& dataFile)
+{
+   m_dataFile = dataFile;
+}
+
+////////////////////////////////////////////////////////////
 void JplEphemeris::VLoad()
 {
-    g_ephemerisDatabase.reset(new DE405Ephemeris("E:/Dev/OTL/data/jpl_eph/de405/de405.data"));
+   try
+   {
+      g_ephemerisDatabase.reset(new DE405Ephemeris(m_dataFile));
+   }
+   catch (std::exception ex)
+   {
+      OTL_FATAL() << "Exception caught when trying to create ephemeris database using datafile [" << m_dataFile << "]: [" << ex.what() << "].";
+   } 
 }
 
 ////////////////////////////////////////////////////////////
@@ -75,7 +90,7 @@ void JplEphemeris::VInitialize()
 ////////////////////////////////////////////////////////////
 bool JplEphemeris::VIsNameValid(const std::string& name)
 {
-   std::map<std::string, DE405Ephemeris::AstroEntity>::const_iterator it = g_entityDictionary.find(name);
+   AstroEntityDictionary::const_iterator it = g_entityDictionary.find(name);
    return (it != g_entityDictionary.end());
 }
 
