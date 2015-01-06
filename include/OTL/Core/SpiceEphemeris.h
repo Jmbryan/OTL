@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifdef OTL_SPICE_EPHEMERIS
+
 #pragma once
 #include <OTL/Core/Ephemeris.h>
 
@@ -45,6 +47,11 @@ protected:
 
 private:
    std::string m_dataFile;
+   std::string m_referenceFrame;
+   std::string m_abberationCorrections;
+   std::string m_observerBody;
 };
 
 } // namespace otl
+
+#endif

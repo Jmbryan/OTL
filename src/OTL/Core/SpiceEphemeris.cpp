@@ -22,14 +22,16 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifdef OTL_SPICE_EPHEMERIS
+
 #include <OTL/Core/SpiceEphemeris.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
-//extern "C"
-//{
-//#include  "cspice/include/SpiceUsr.h"
-//}
+extern "C"
+{
+#include  "cspice/SpiceUsr.h"
+}
 
 namespace otl
 {
@@ -63,7 +65,7 @@ void SpiceEphemeris::VLoad()
 {
    try
    {
-      //furnsh_c(m_dataFile.c_str());
+      furnsh_c(m_dataFile.c_str());
    }
    catch (std::exception ex)
    {
@@ -75,11 +77,17 @@ void SpiceEphemeris::VLoad()
 void SpiceEphemeris::VInitialize()
 {
    g_bodyDictionary["Mercury"] = "Mercury";
+   g_bodyDictionary["Earth"] = "Earth";
+
+   m_referenceFrame = "GSE";
+   m_abberationCorrections = "NONE";
+   m_observerBody = "Earth";
 }
 
 ////////////////////////////////////////////////////////////
 bool SpiceEphemeris::VIsNameValid(const std::string& name)
 {
+   return true;
    BodyDictionary::const_iterator it = g_bodyDictionary.find(name);
    return (it != g_bodyDictionary.end());
 }
@@ -87,29 +95,29 @@ bool SpiceEphemeris::VIsNameValid(const std::string& name)
 ////////////////////////////////////////////////////////////
 bool SpiceEphemeris::VIsEpochValid(const Epoch& epoch)
 {
-
+   return true;
 }
 
 ////////////////////////////////////////////////////////////
 void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    std::string targetBody = g_bodyDictionary[name];
-   //double ephemerisTime = (epoch.GetJD() - j2000_c()) * spd_c();
-   double sv[6];
+   double ephemerisTime = (epoch.GetJD() - j2000_c()) * spd_c();
+   double state[6];
    double lightTime;
 
-   //spkezr_c(name.c_str(),
-   //         ephemerisTime,
-   //         m_referenceFrame.c_str(),
-   //         m_abberationCorrections.c_str(),
-   //         m_observerBody.c_str(),
-   //         sv,
-   //         &lightTime);
+   spkezr_c(name.c_str(),
+            ephemerisTime,
+            m_referenceFrame.c_str(),
+            m_abberationCorrections.c_str(),
+            m_observerBody.c_str(),
+            state,
+            &lightTime);
 
    for (int i = 0; i < 3; ++i)
    {
-      stateVector.position[i] = sv[i];
-      stateVector.velocity[i] = sv[i + 3];
+      stateVector.position[i] = state[i];
+      stateVector.velocity[i] = state[i + 3];
    }
 }
 
@@ -125,3 +133,5 @@ void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch,
 }
 
 } // namespace otl
+
+#endif

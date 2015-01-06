@@ -9,6 +9,7 @@
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/JplEphemeris.h>
+#include <OTL/Core/SpiceEphemeris.h>
 
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
@@ -24,9 +25,9 @@ int main()
 
     if (false)
     {
-       Time currentTime = gSystem.GetCurrentTime();
-       _sleep(1000);
-       Time currentTime2 = gSystem.GetCurrentTime();
+       //Time currentTime = gSystem.GetCurrentTime();
+       //_sleep(1000);
+       //Time currentTime2 = gSystem.GetCurrentTime();
 
        OTL_LOG("This is a log message!", LogLevel::Info);
        OTL_INFO() << "Hello.";
@@ -65,21 +66,26 @@ int main()
 
     if (true)
     {
-       Planet p("Earth");
-       
        auto currentDirectory = gSystem.GetCurrentDirectory();
+
+       //auto kernalFile = currentDirectory + "\\..\\data\\spice\\test.spk";
+       //EphemerisPointer spiceEphemeris(new SpiceEphemeris(kernalFile));
+       //StateVector state;
+       //spiceEphemeris->QueryDatabase("Earth", Epoch::Gregorian(date), state);
+       
        auto dataFile = currentDirectory + "\\..\\data\\jpl_eph\\de405\\de405.data";
        EphemerisPointer ephemeris(new JplEphemeris(dataFile));
-       p.SetEphemeris(ephemeris);
-
+       
        GregorianDateTime date;
        date.day = 1;
        date.month = 1;
        date.year = 2015;
        date.hour = date.min = 0;
        date.sec = 0.0;
-       p.SetEpoch(Epoch::Gregorian(date));
 
+       Planet p("Earth");
+       p.SetEphemeris(ephemeris);
+       p.SetEpoch(Epoch::Gregorian(date));
        auto sv = p.GetStateVector();
     }
 
