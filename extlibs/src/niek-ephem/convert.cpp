@@ -138,7 +138,7 @@ int main( int argc, char* argv[] ) {
      */
     // Directory in which ASCII data files are stashed
     //const std::string dataDir = "/dirs/static/JPL_DE405/";
-    const std::string dataDir = "E:/Dev/OTL/data//pl_eph/de405/";
+    const std::string dataDir = "E:/Dev/OTL/data/jpl_eph/de405/";
 
     // Name of file to output
     const std::string outputFilename = "de405.data";

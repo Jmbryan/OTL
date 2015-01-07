@@ -9,6 +9,7 @@
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/JplEphemeris.h>
+#include <OTL/Core/MpcorbEphemerisIO.h>
 #include <OTL/Core/SpiceEphemeris.h>
 
 #include <OTL/Core/System.h>
@@ -67,6 +68,11 @@ int main()
     if (true)
     {
        auto currentDirectory = gSystem.GetCurrentDirectory();
+
+       auto mpcorbFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
+       auto mpcorbIO = new MpcorbEphemerisIO(mpcorbFile);
+       mpcorbIO->Initialize();
+       //EphemerisPointer mpcorbEphemeris(new )
 
        //auto kernalFile = currentDirectory + "\\..\\data\\spice\\test.spk";
        //EphemerisPointer spiceEphemeris(new SpiceEphemeris(kernalFile));

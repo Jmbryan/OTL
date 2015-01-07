@@ -61,6 +61,24 @@ void SpiceEphemeris::SetDataFile(const std::string& dataFile)
 }
 
 ////////////////////////////////////////////////////////////
+void SpiceEphemeris::SetReferenceFrame(const std::string& referenceFrame)
+{
+   m_referenceFrame = referenceFrame;
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::SetAbberationCorrections(const std::string& abberationCorrections)
+{
+   m_abberationCorrections = abberationCorrections;
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::SetObserverBody(const std::string& observerBody)
+{
+   m_observerBody = observerBody;
+}
+
+////////////////////////////////////////////////////////////
 void SpiceEphemeris::VLoad()
 {
    try
