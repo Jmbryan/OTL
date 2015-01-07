@@ -24,27 +24,45 @@
 
 #pragma once
 #include <string>
+#include <vector>
+#include <fstream>
 
 namespace otl
 {
 
-// Forward declarations
-struct OrbitalElements;
-
-class MpcorbEphemerisIO
+class JplEphemerisIO
 {
 public:
-   MpcorbEphemerisIO(const std::string& dataFilename);
-
-   void GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements);
+   JplEphemerisIO(const std::string& dataFilename);
+   void GetInterpolationInfo(double julianDay,
+                             int entity,
+                             std::vector<double>& coefficients,
+                             double& setsPerDay,
+                             double& chebyshevTime);
 
 private:
    void Initialize();
-   bool IsNameValid(const std::string& name) const;
+
+   template<typename T>
+   void LoadLayoutInfo(std::vector<T>& layoutInfo, int size);
+
+   template<typename T>
+   void LoadLayoutInfo(T& layoutInfo);
 
 private:
    std::string m_dataFilename;
+   std::ifstream m_dataStream;
+   std::vector<int> m_coefficientOffsets;
+   std::vector<int> m_numCoefficients;
+   std::vector<int> m_numCoefficientSets;
+   int m_numCoefficientsPerRecord;
+   double m_startJulianDay;
+   double m_endJulianDay;
    bool m_initialized;
+
+   static int NUM_COEFFICIENTS;
+   static int NUM_DAYS_PER_RECORD;
+   static int HEADER_SIZE;
 };
 
 } // namespace otl

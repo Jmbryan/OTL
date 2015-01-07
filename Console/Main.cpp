@@ -71,7 +71,7 @@ int main()
 
        auto mpcorbFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
        auto mpcorbIO = new MpcorbEphemerisIO(mpcorbFile);
-       mpcorbIO->Initialize();
+       //mpcorbIO->Initialize();
        //EphemerisPointer mpcorbEphemeris(new )
 
        //auto kernalFile = currentDirectory + "\\..\\data\\spice\\test.spk";

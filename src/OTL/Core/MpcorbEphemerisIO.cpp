@@ -25,26 +25,30 @@
 #include <OTL/Core/MpcorbEphemerisIO.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/Conversion.h>
+#include <OTL/Core/Logger.h>
 #include <OTL/Core/Base.h>
 #include <fstream>
 
 namespace otl
 {
 
-std::map<std::string, OrbitalElements> g_database;
+typedef std::map<std::string, OrbitalElements> MpcorbDatabase;
+MpcorbDatabase g_database;
 
+////////////////////////////////////////////////////////////
 MpcorbEphemerisIO::MpcorbEphemerisIO(const std::string& dataFilename) :
    m_dataFilename(dataFilename)
 {
 
 }
 
+////////////////////////////////////////////////////////////
 void MpcorbEphemerisIO::Initialize()
 {
    std::ifstream ifs(m_dataFilename);
    if (!ifs)
    {
-      std::cerr << "Error: unable to open input file '" << m_dataFilename << "'" << std::endl;
+      OTL_FATAL() << "Error: unable to open mpcorb database input file '" << m_dataFilename;
       return;
    }
 
@@ -52,31 +56,66 @@ void MpcorbEphemerisIO::Initialize()
    int recordsWritten = 0;
    while (ifs >> index)
    {
-      double H, G, M, peri, node, incl, e, n, a;
-      std::string epoch;
-      ifs >> H >> G >> epoch >> M >> peri >> node >> incl >> e >> n >> a;
-
-      int ref, opp, arc;
-      std::string obs, rms;
-      double perts;
-      ifs >> ref >> obs >> opp >> arc >> rms >> perts;
-
+      char tempChar;
       int tempInt;
       std::string tempString;
-      ifs >> tempString >> tempString >> tempString >> tempInt;
 
-      char tempChar;
-      int id;
-      ifs >> tempChar >> id >> tempChar;
+      // Absolute magnitude, slope parameter, epoch (packed form), mean anomaly (degrees)
+      double H, G, M;
+      std::string epoch;
+      ifs >> H >> G >> epoch >> M;
 
-      std::string name;
-      ifs >> name;
+      // Argument of perihelion (degrees), longitude of the ascending node (degrees)
+      double peri, node;
+      ifs >> peri >> node;
 
+      // Inclination to the ecliptic (degrees), orbital eccentricity
+      double incl, e;
+      ifs >> incl >> e;
+
+      // Mean daily motion (deg/day), semimajor axis (AU)
+      double n, a;
+      ifs >> n >> a;
+
+      // ?   
       ifs >> tempInt;
 
+      // Reference, number of observations, number of oppositions
+      std::string ref;
+      int obs, opp;
+      ifs >> ref >> obs >> opp;
+
+      // Arc length (days), r.m.s residual, coarse indicator of perturbers
+      int firstObsYear, lastObsYear;
+      double rms;
+      std::string perts;
+      ifs >> firstObsYear >> tempChar >> lastObsYear >> rms >> perts;
+
+      // ?, computer, ?
+      std::string computer;
+      ifs >> tempString >> computer >> tempInt;
+
+      // Identifier, name     
+      int id;
+      std::string name;
+      ifs >> tempChar >> id >> tempChar >> name;
+
+      // Date of last observation included in orbit solution (YYYYMMDD format)
+      int lastObsDate;
+      ifs >> lastObsDate;
+
       // Convert mean anomaly to eccentric anomaly (radians)
-      keplerian::KeplersEquationElliptical kepler;
-      double E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
+      double E;
+      if (e < 1.0)
+      {
+         keplerian::KeplersEquationElliptical kepler;
+         E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
+      }
+      else
+      {
+         keplerian::KeplersEquationHyperbolic kepler;
+         E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
+      }
 
       // Convert eccentric anomaly to true anomaly (radians)
       double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
@@ -96,8 +135,31 @@ void MpcorbEphemerisIO::Initialize()
       recordsWritten++;
    }
 
-   std::cout << "Wrote " << recordsWritten << " records from " << m_dataFilename << std::endl;
+   OTL_INFO() << "Successfully loaded [" << recordsWritten << "] records from mpcorb database file [" << m_dataFilename << "].";
 }
 
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements)
+{
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (IsNameValid(name))
+   {
+      orbitalElements = g_database[name];
+   }
+   else
+   {
+      OTL_ERROR() << "Name [" << name << "] not found";
+   }
+}
+
+bool MpcorbEphemerisIO::IsNameValid(const std::string& name) const
+{
+   auto it = g_database.find(name);
+   return (it != g_database.end());
+}
 
 } // namespace otl
