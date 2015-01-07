@@ -43,8 +43,13 @@ protected:
    virtual void VInitialize();
    virtual bool VIsNameValid(const std::string& name);
    virtual bool VIsEpochValid(const Epoch& epoch);
+   virtual void GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
+   virtual void GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+
+private:
+   double CalculateEphemerisTime(const Epoch& epoch) const;
 
 private:
    std::string m_dataFile;

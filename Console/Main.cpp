@@ -67,21 +67,6 @@ int main()
 
     if (true)
     {
-       auto currentDirectory = gSystem.GetCurrentDirectory();
-
-       auto mpcorbFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
-       auto mpcorbIO = new MpcorbEphemerisIO(mpcorbFile);
-       //mpcorbIO->Initialize();
-       //EphemerisPointer mpcorbEphemeris(new )
-
-       //auto kernalFile = currentDirectory + "\\..\\data\\spice\\test.spk";
-       //EphemerisPointer spiceEphemeris(new SpiceEphemeris(kernalFile));
-       //StateVector state;
-       //spiceEphemeris->QueryDatabase("Earth", Epoch::Gregorian(date), state);
-       
-       auto dataFile = currentDirectory + "\\..\\data\\jpl_eph\\de405\\de405.data";
-       EphemerisPointer ephemeris(new JplEphemeris(dataFile));
-       
        GregorianDateTime date;
        date.day = 1;
        date.month = 1;
@@ -89,6 +74,21 @@ int main()
        date.hour = date.min = 0;
        date.sec = 0.0;
 
+       auto currentDirectory = gSystem.GetCurrentDirectory();
+
+       auto mpcorbFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
+       auto mpcorbIO = new MpcorbEphemerisIO(mpcorbFile);
+       //mpcorbIO->Initialize();
+       //EphemerisPointer mpcorbEphemeris(new )
+
+       auto kernalFile = currentDirectory + "\\..\\data\\spice\\de430.bsp";
+       EphemerisPointer spiceEphemeris(new SpiceEphemeris(kernalFile));
+       StateVector state;
+       spiceEphemeris->QueryDatabase("Earth", Epoch::Gregorian(date), state);
+       
+       auto dataFile = currentDirectory + "\\..\\data\\jpl_eph\\de405\\de405.data";
+       EphemerisPointer ephemeris(new JplEphemeris(dataFile));
+       
        Planet p("Earth");
        p.SetEphemeris(ephemeris);
        p.SetEpoch(Epoch::Gregorian(date));

@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
+#define OTL_SPICE_EPHEMERIS
 #ifdef OTL_SPICE_EPHEMERIS
 
 #include <OTL/Core/SpiceEphemeris.h>
@@ -94,12 +95,12 @@ void SpiceEphemeris::VLoad()
 ////////////////////////////////////////////////////////////
 void SpiceEphemeris::VInitialize()
 {
-   g_bodyDictionary["Mercury"] = "Mercury";
-   g_bodyDictionary["Earth"] = "Earth";
+   g_bodyDictionary["Mercury"] = "MERCURY";
+   g_bodyDictionary["Earth"] = "EARTH";
 
-   m_referenceFrame = "GSE";
+   m_referenceFrame = "J2000";
    m_abberationCorrections = "NONE";
-   m_observerBody = "Earth";
+   m_observerBody = "SUN";
 }
 
 ////////////////////////////////////////////////////////////
@@ -117,14 +118,47 @@ bool SpiceEphemeris::VIsEpochValid(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
+void SpiceEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+{
+   std::string targetBody = g_bodyDictionary[name];
+   double ephemerisTime = CalculateEphemerisTime(epoch);
+   double pos[3];
+   double lightTime;
+
+   spkpos_c(targetBody.c_str(),
+            ephemerisTime,
+            m_referenceFrame.c_str(),
+            m_abberationCorrections.c_str(),
+            m_observerBody.c_str(),
+            pos,
+            &lightTime);
+
+   for (int i = 0; i < 3; ++i)
+   {
+      position[i] = pos[i];
+   }
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+{
+   // Query the state vector at the given epoch
+   StateVector stateVector;
+   VQueryDatabase(name, epoch, stateVector);
+
+   // Return the velocity vector
+   velocity = stateVector.velocity;
+}
+
+////////////////////////////////////////////////////////////
 void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    std::string targetBody = g_bodyDictionary[name];
-   double ephemerisTime = (epoch.GetJD() - j2000_c()) * spd_c();
+   double ephemerisTime = CalculateEphemerisTime(epoch);
    double state[6];
    double lightTime;
 
-   spkezr_c(name.c_str(),
+   spkezr_c(targetBody.c_str(),
             ephemerisTime,
             m_referenceFrame.c_str(),
             m_abberationCorrections.c_str(),
@@ -148,6 +182,12 @@ void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch,
 
    // Convert state vector to orbital elements
    ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);
+}
+
+////////////////////////////////////////////////////////////
+double SpiceEphemeris::CalculateEphemerisTime(const Epoch& epoch) const
+{
+   return (epoch.GetJD() - j2000_c()) * spd_c();
 }
 
 } // namespace otl
