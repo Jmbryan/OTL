@@ -72,7 +72,7 @@ double IKeplersEquation::Evaluate(double eccentricity,
    double ratio = MATH_INFINITY;
    while (iteration++ < m_maxIterations && fabs(ratio) > m_tolerance)
    {
-      double numerator = meanAnomaly - SolveInverseEquation(eccentricity, anomaly);
+      double numerator = SolveInverseEquation(eccentricity, anomaly) - meanAnomaly;
       double denominator = SolveInverseDerivative(eccentricity, anomaly);
       if (fabs(denominator) > MATH_NEAR_ZERO)
       {

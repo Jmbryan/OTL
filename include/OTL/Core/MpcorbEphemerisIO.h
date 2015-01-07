@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <fstream>
 #include <string>
 
 namespace otl
@@ -37,7 +36,6 @@ public:
 
 private:
    std::string m_dataFilename;
-   mutable std::ifstream m_dataStream;
 };
 
 } // namespace otl

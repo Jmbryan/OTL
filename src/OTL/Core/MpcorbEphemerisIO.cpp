@@ -23,13 +23,10 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/MpcorbEphemerisIO.h>
-#include <OTL/Core/Base.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/Conversion.h>
-
-#include <iostream>
-#include <sstream>
-#include <map>
+#include <OTL/Core/Base.h>
+#include <fstream>
 
 namespace otl
 {
@@ -44,18 +41,6 @@ MpcorbEphemerisIO::MpcorbEphemerisIO(const std::string& dataFilename) :
 
 void MpcorbEphemerisIO::Initialize()
 {
-   //m_dataStream.open(m_dataFilename);
-
-   //m_dataStream.read()
-
-   //std::string outputFilename(currentDirectory + "\\..\\data\\mpcorb\\mpcorb.dat");
-   //std::ofstream ofs(outputFilename, std::ios::binary | std::ios::trunc);
-   //if (!ofs)
-   //{
-   //   std::cerr << "Error: unable to open output file '" << outputFilename << "'" << std::endl;
-   //   return;
-   //}
-
    std::ifstream ifs(m_dataFilename);
    if (!ifs)
    {
@@ -64,7 +49,6 @@ void MpcorbEphemerisIO::Initialize()
    }
 
    int index;
-   double bufD;
    int recordsWritten = 0;
    while (ifs >> index)
    {
