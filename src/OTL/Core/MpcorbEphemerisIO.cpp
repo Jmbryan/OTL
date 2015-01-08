@@ -48,7 +48,7 @@ void MpcorbEphemerisIO::Initialize()
    std::ifstream ifs(m_dataFilename);
    if (!ifs)
    {
-      OTL_FATAL() << "Error: unable to open mpcorb database input file '" << m_dataFilename;
+      OTL_FATAL() << "Failed to open mpcorb database input file " << Bracket(m_dataFilename);
       return;
    }
 
@@ -135,7 +135,7 @@ void MpcorbEphemerisIO::Initialize()
       recordsWritten++;
    }
 
-   OTL_INFO() << "Successfully loaded [" << recordsWritten << "] records from mpcorb database file [" << m_dataFilename << "].";
+   OTL_INFO() << "Successfully loaded " << Bracket(recordsWritten) << " records from mpcorb database file " << Bracket(m_dataFilename);
 }
 
 ////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalEleme
    }
    else
    {
-      OTL_ERROR() << "Name [" << name << "] not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
 }
 

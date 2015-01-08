@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/Vector3.h>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -49,6 +50,10 @@ private:
    template<typename T>
    void LoadLayoutInfo(T& layoutInfo);
 
+   void CalculatePositionPolynomials(double chebyshevTime, unsigned int numCoefficients) const;
+   void CalculateVelocityPolynomials(double chebyshevTime, unsigned int numCoefficients) const;
+   void Calculate(const std::vector<double>& coefficients, const std::vector<double>& polynomials, Vector3d& result) const;
+
 private:
    std::string m_dataFilename;
    std::ifstream m_dataStream;
@@ -59,6 +64,9 @@ private:
    double m_startJulianDay;
    double m_endJulianDay;
    bool m_initialized;
+
+   mutable std::vector<double> m_positionPolynomials;   ///< Chebyshev position polynomial coefficients
+   mutable std::vector<double> m_velocityPolynomials;   ///< Chebyshev velocity polynomial coefficients
 
    static int NUM_COEFFICIENTS;
    static int NUM_DAYS_PER_RECORD;

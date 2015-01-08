@@ -71,6 +71,14 @@ private:
     int m_numRotatingFiles;
 };
 
+template<typename T>
+std::string Bracket(const T& object)
+{
+   std::stringstream ss;
+   ss << "[" << object << "]";
+   return ss.str();
+}
+
 extern Logger gLogger;
 #define OTL_LOG(message, level) gLogger.Log(message, level)
 #define OTL_INFO() gLogger.Info()

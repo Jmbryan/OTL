@@ -55,15 +55,15 @@ void JplEphemerisIO::GetInterpolationInfo(double julianDay,
    // Sanity check on inputs
    if (julianDay < m_startJulianDay)
    {
-      OTL_ERROR() << "Interpolation data request before earliest available date";
+      OTL_ERROR() << "Requested interpolation data is before earliest available date";
    }
    if (julianDay > m_endJulianDay)
    {
-      OTL_ERROR() << "Interpolation data request after latest available date";
+      OTL_ERROR() << "Requested interpolation data is after latest available date";
    }
    if (m_coefficientOffsets[entity] == -1)
    {
-      OTL_ERROR() << "Interpolation data not available for requested entity";
+      OTL_ERROR() << "Requested interpolation data is not available for the given entity " << Bracket(entity);
    }
 
    // Number of coefficients for this entity
@@ -90,7 +90,8 @@ void JplEphemerisIO::GetInterpolationInfo(double julianDay,
    m_dataStream.seekg(offset, std::ios_base::beg);
    if (!m_dataStream)
    {
-      OTL_ERROR() << "Fatal error while seeking file offset [" << offset << "]";
+      OTL_FATAL() << "Fatal error while seeking file offset " << Bracket(offset) <<
+         " for entity " << Bracket(entity) << " at Julian date " << Bracket(julianDay);
    }
 
    int i = 0;
@@ -110,7 +111,7 @@ void JplEphemerisIO::GetInterpolationInfo(double julianDay,
    chebyshevTime = 2.0 * ((julianDay - (recordStartDay + subRecordNum * daysPerSet)) / daysPerSet) - 1;
    if (chebyshevTime < -1.0 || chebyshevTime > 1.0)
    {
-      OTL_ERROR() << "Chebyshev time must be between -1..1 [" << chebyshevTime << "]";
+      OTL_ERROR() << "Chebyshev time must be between -1..1 " << Bracket(chebyshevTime);
    }
 }
 
@@ -120,7 +121,7 @@ void JplEphemerisIO::Initialize()
    m_dataStream.open(m_dataFilename, std::ios::binary);
    if (!m_dataStream)
    {
-      OTL_FATAL() << "Failed to open data file [" << m_dataFilename << "]";
+      OTL_FATAL() << "Failed to open data file " << Bracket(m_dataFilename);
    }
 
    // Load the layout info from the header
@@ -149,7 +150,7 @@ void JplEphemerisIO::LoadLayoutInfo(std::vector<T>& layoutInfo, int size)
    {
       if (!m_dataStream.read(buffer.cdata, sizeof(int)))
       {
-         OTL_ERROR() << "Failed to read layout info";
+         OTL_FATAL() << "Fatal error while reading layout info";
       }
       layoutInfo.push_back(buffer.value);
    }
@@ -166,9 +167,43 @@ void LoadLayoutInfo(T& layoutInfo)
 
    if (!m_dataStream.read(buffer.cdata, sizeof(T)))
    {
-      OTL_ERROR() << "Failed to load layout info";
+      OTL_FATAL() << "Fatal error while reading layout info";
    }
    layoutInfo = buffer.value;
+}
+
+void JplEphemerisIO::CalculatePositionPolynomials(double chebyshevTime, unsigned int numCoefficients) const
+{
+   m_positionPolynomials[1] = chebyshevTime;
+   for (unsigned int i = 2; i < numCoefficients; ++i)
+   {
+      m_positionPolynomials[i] = 2.0 * chebyshevTime * m_positionPolynomials[i - 1] - m_positionPolynomials[i - 2];
+   }
+}
+
+void JplEphemerisIO::CalculateVelocityPolynomials(double chebyshevTime, unsigned int numCoefficients) const
+{
+   m_velocityPolynomials[2] = 4.0 * chebyshevTime;
+   for (unsigned int i = 3; i < numCoefficients; ++i)
+   {
+      m_velocityPolynomials[i] = 2.0 * chebyshevTime * m_velocityPolynomials[i - 1] +
+                                 2.0 * m_positionPolynomials[i - 1] -
+                                 m_positionPolynomials[i - 2];
+   }
+}
+
+void JplEphemerisIO::Calculate(const std::vector<double>& coefficients, const std::vector<double>& polynomials, Vector3d& result) const
+{
+   unsigned int numCoefficientsPerAxis = coefficients.size() / 3;
+   int i = 0;
+   for (unsigned int axis = 0; axis < 3; ++axis)
+   {
+      result[axis] = coefficients[i++];
+      for (unsigned int j = 1; j < numCoefficientsPerAxis; ++j)
+      {
+         result[axis] += coefficients[i++] * polynomials[j];
+      }
+   }
 }
 
 } // namespace otl
