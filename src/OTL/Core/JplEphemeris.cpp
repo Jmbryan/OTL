@@ -26,19 +26,16 @@
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
-#include <OTL/Core/Jpl/JplEphemerisIO.h>
-//#include <niek-ephem/DE405Ephemeris.h>
+#include <niek-ephem/DE405Ephemeris.h>
 
 namespace otl
 {
 
 // Static globals
-typedef std::unique_ptr<JplEphemerisIO> EphemerisDatabasePointer;
-//typedef std::unique_ptr<DE405Ephemeris> EphemerisDatabasePointer;
+typedef std::unique_ptr<DE405Ephemeris> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
 
-typedef std::map<std::string, int> AstroEntityDictionary;
-//typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary;
+typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary;
 static AstroEntityDictionary g_entityDictionary;
 
 ////////////////////////////////////////////////////////////
@@ -66,33 +63,29 @@ void JplEphemeris::VLoad()
 {
    try
    {
-      g_ephemerisDatabase.reset(new JplEphemerisIO(m_dataFile));
-      //g_ephemerisDatabase.reset(new DE405Ephemeris(m_dataFile));
+      g_ephemerisDatabase.reset(new DE405Ephemeris(m_dataFile));
    }
    catch (std::exception ex)
    {
-      OTL_FATAL() << "Exception caught when trying to create ephemeris database using datafile " << Bracket(m_dataFile) << ": " << Bracket(ex.what());
+      OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
+         Bracket(m_dataFile) << ": " << Bracket(ex.what());
    } 
 }
 
 ////////////////////////////////////////////////////////////
 void JplEphemeris::VInitialize()
 {
-   g_entityDictionary["Mercury"] = 0;
-   g_entityDictionary["Venus"] = 1;
-   g_entityDictionary["Earth"] = 2;
-
-   //g_entityDictionary["Mercury"] = DE405Ephemeris::Mercury;
-   //g_entityDictionary["Venus"] = DE405Ephemeris::Venus;
-   //g_entityDictionary["Earth"] = DE405Ephemeris::EarthMoonBarycenter;
-   //g_entityDictionary["Mars"] = DE405Ephemeris::Mars;
-   //g_entityDictionary["Jupiter"] = DE405Ephemeris::JupiterBarycenter;
-   //g_entityDictionary["Saturn"] = DE405Ephemeris::SaturnBarycenter;
-   //g_entityDictionary["Uranus"] = DE405Ephemeris::UranusBarycenter;
-   //g_entityDictionary["Neptune"] = DE405Ephemeris::NeptuneBarycenter;
-   //g_entityDictionary["Pluto"] = DE405Ephemeris::PlutoBarycenter;
-   //g_entityDictionary["Sun"] = DE405Ephemeris::Sun;
-   //g_entityDictionary["Moon"] = DE405Ephemeris::Moon;
+   g_entityDictionary["Mercury"] = DE405Ephemeris::Mercury;
+   g_entityDictionary["Venus"] = DE405Ephemeris::Venus;
+   g_entityDictionary["Earth"] = DE405Ephemeris::EarthMoonBarycenter;
+   g_entityDictionary["Mars"] = DE405Ephemeris::Mars;
+   g_entityDictionary["Jupiter"] = DE405Ephemeris::JupiterBarycenter;
+   g_entityDictionary["Saturn"] = DE405Ephemeris::SaturnBarycenter;
+   g_entityDictionary["Uranus"] = DE405Ephemeris::UranusBarycenter;
+   g_entityDictionary["Neptune"] = DE405Ephemeris::NeptuneBarycenter;
+   g_entityDictionary["Pluto"] = DE405Ephemeris::PlutoBarycenter;
+   g_entityDictionary["Sun"] = DE405Ephemeris::Sun;
+   g_entityDictionary["Moon"] = DE405Ephemeris::Moon;
 }
 
 ////////////////////////////////////////////////////////////
@@ -110,30 +103,59 @@ bool JplEphemeris::VIsEpochValid(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
+void JplEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+{
+   auto entity = g_entityDictionary[name];
+
+   double pos[3];
+   try
+   {
+      g_ephemerisDatabase->getPosition(epoch.GetJD(), entity, pos);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve position vector for " << Bracket(name) <<
+         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
+   }
+
+   for (int i = 0; i < 3; ++i)
+   {
+      position[i] = pos[i];
+   }
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+{
+   // Query the state vector at the given epoch
+   StateVector stateVector;
+   VQueryDatabase(name, epoch, stateVector);
+
+   // Return the velocity vector
+   velocity = stateVector.velocity;
+}
+
+////////////////////////////////////////////////////////////
 void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    auto entity = g_entityDictionary[name];
 
    double pos[3], vel[3];
-   //g_ephemerisDatabase->getPosVel(epoch.GetJD(), entity, pos, vel);
-
-   std::vector<double> coefficients;
-   double setsPerDay;
-   double chebyshevTime;
-   g_ephemerisDatabase->GetInterpolationInfo(epoch.GetJD(), entity, coefficients, setsPerDay, chebyshevTime);
-
-   //ComputePolynominals(chebyshevTime, coefficients.size() / 3, m_positionPolynomials);
+   try
+   {
+      g_ephemerisDatabase->getPosVel(epoch.GetJD(), entity, pos, vel);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve state vector for " << Bracket(name) <<
+         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
+   } 
 
    for (int i = 0; i < 3; ++i)
    {
       stateVector.position[i] = pos[i];
       stateVector.velocity[i] = vel[i] / MATH_DAY_TO_SEC;
    }
-}
-
-void ComputePolynomials()
-{
-   static std::vector<double> m_positionPolynomials;
 }
 
 ////////////////////////////////////////////////////////////
