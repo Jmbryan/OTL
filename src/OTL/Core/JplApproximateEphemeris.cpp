@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/JplApproximateEphemeris.h>
+#include <OTL/Core/Jpl/JplApproximateEphemerisIO.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Epoch.h>
@@ -35,9 +36,13 @@ typedef std::map<std::string, std::vector<double>> EphemerisDatabase;
 typedef std::unique_ptr<EphemerisDatabase> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
 
+typedef std::unique_ptr<JplApproximateEphemerisIO> EphemerisDatabasePointer2;
+static EphemerisDatabasePointer2 g_ephemerisDatabase2;
+
 ////////////////////////////////////////////////////////////
-JplApproximateEphemeris::JplApproximateEphemeris() :
+JplApproximateEphemeris::JplApproximateEphemeris(const std::string& dataFilename) :
 IEphemeris(),
+m_dataFilename(dataFilename),
 m_keplersEquation(new keplerian::KeplersEquationElliptical())
 {
 
@@ -52,6 +57,8 @@ JplApproximateEphemeris::~JplApproximateEphemeris()
 ////////////////////////////////////////////////////////////
 void JplApproximateEphemeris::VLoad()
 {
+   g_ephemerisDatabase2.reset(new JplApproximateEphemerisIO(m_dataFilename));
+
    // Keplerian elements and rates provided by JPL.
    // The first six entries are the keplerian elements
    // The next six entries are the rates expressed in terms of centuries [/cy].
@@ -168,6 +175,8 @@ void JplApproximateEphemeris::VQueryDatabase(const std::string& name, const Epoc
 ////////////////////////////////////////////////////////////
 void JplApproximateEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
+   g_ephemerisDatabase2->GetOrbitalElements(name, epoch, orbitalElements);
+
     // Number of centuries since J2000
     double T = (epoch.GetJD() - 2451545.0) / 36525.0;
 

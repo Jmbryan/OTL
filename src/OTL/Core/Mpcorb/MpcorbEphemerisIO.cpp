@@ -22,9 +22,10 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/MpcorbEphemerisIO.h>
+#include <OTL/Core/Mpcorb/MpcorbEphemerisIO.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/Conversion.h>
+#include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
 #include <OTL/Core/Base.h>
 #include <fstream>
@@ -32,12 +33,13 @@
 namespace otl
 {
 
-typedef std::map<std::string, OrbitalElements> MpcorbDatabase;
+typedef std::map<std::string, std::tuple<Epoch, StateVector, OrbitalElements>> MpcorbDatabase;
 MpcorbDatabase g_database;
 
 ////////////////////////////////////////////////////////////
 MpcorbEphemerisIO::MpcorbEphemerisIO(const std::string& dataFilename) :
-   m_dataFilename(dataFilename)
+m_dataFilename(dataFilename),
+m_initialized(false)
 {
 
 }
@@ -62,8 +64,8 @@ void MpcorbEphemerisIO::Initialize()
 
       // Absolute magnitude, slope parameter, epoch (packed form), mean anomaly (degrees)
       double H, G, M;
-      std::string epoch;
-      ifs >> H >> G >> epoch >> M;
+      std::string epochString;
+      ifs >> H >> G >> epochString >> M;
 
       // Argument of perihelion (degrees), longitude of the ascending node (degrees)
       double peri, node;
@@ -120,6 +122,9 @@ void MpcorbEphemerisIO::Initialize()
       // Convert eccentric anomaly to true anomaly (radians)
       double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
 
+      // Compute the epoch [TODO]
+      Epoch epoch;
+
       // Package the orbital elements after converting to standard units (km, rad)
       OrbitalElements orbitalElements;
       orbitalElements.semiMajorAxis       = a      * ASTRO_AU_TO_KM;
@@ -129,13 +134,53 @@ void MpcorbEphemerisIO::Initialize()
       orbitalElements.lonOfAscendingNode  = node   * MATH_DEG_TO_RAD;
       orbitalElements.trueAnomaly         = ta;
 
+      // Convert orbital elements to state vector
+      StateVector stateVector;
+      ConvertOrbitalElements2StateVector(orbitalElements, stateVector, ASTRO_MU_SUN);
+
       // Add to the database
-      g_database[name] = orbitalElements;
+      g_database[name] = std::make_tuple(epoch, stateVector, orbitalElements);
 
       recordsWritten++;
    }
 
    OTL_INFO() << "Successfully loaded " << Bracket(recordsWritten) << " records from mpcorb database file " << Bracket(m_dataFilename);
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::GetEpoch(const std::string& name, Epoch& epoch)
+{
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (IsNameValid(name))
+   {
+      epoch = std::get<0>(g_database[name]);
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::GetStateVector(const std::string& name, StateVector& stateVector)
+{
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (IsNameValid(name))
+   {
+      stateVector = std::get<1>(g_database[name]);
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
 }
 
 ////////////////////////////////////////////////////////////
@@ -148,7 +193,7 @@ void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalEleme
 
    if (IsNameValid(name))
    {
-      orbitalElements = g_database[name];
+      orbitalElements = std::get<2>(g_database[name]);
    }
    else
    {
@@ -156,10 +201,17 @@ void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalEleme
    }
 }
 
+////////////////////////////////////////////////////////////
 bool MpcorbEphemerisIO::IsNameValid(const std::string& name) const
 {
    auto it = g_database.find(name);
    return (it != g_database.end());
+}
+
+////////////////////////////////////////////////////////////
+bool MpcorbEphemerisIO::IsEpochValid(const Epoch& epoch) const
+{
+   return true;
 }
 
 } // namespace otl

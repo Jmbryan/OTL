@@ -23,27 +23,32 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <string>
+#include <OTL/Core/Base.h>
 
 namespace otl
 {
 
 // Forward declarations
-struct OrbitalElements;
+class Epoch;
 
 class MpcorbEphemerisIO
 {
 public:
    MpcorbEphemerisIO(const std::string& dataFilename);
 
+   void GetEpoch(const std::string& name, Epoch& epoch);
+   void GetStateVector(const std::string& name, StateVector& stateVector);
    void GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements);
+
+   bool IsNameValid(const std::string& name) const;
+   bool IsEpochValid(const Epoch& epoch) const;
 
 private:
    void Initialize();
-   bool IsNameValid(const std::string& name) const;
-
+   
 private:
    std::string m_dataFilename;
+   std::map<std::string, StateVector> m_stateVectors;
    bool m_initialized;
 };
 

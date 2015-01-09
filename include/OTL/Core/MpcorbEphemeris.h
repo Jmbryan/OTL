@@ -24,27 +24,41 @@
 
 #pragma once
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/Epoch.h>
 
 namespace otl
 {
 
-   class MpcorbEphemeris : public IEphemeris
-   {
-   public:
-      MpcorbEphemeris(const std::string& dataFile);
-      virtual ~MpcorbEphemeris();
-      void SetDataFile(const std::string& dataFile);
+// Forward declarations
+namespace keplerian {
+class IPropagateAlgorithm;
+typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
+}
 
-   protected:
-      virtual void VLoad();
-      virtual void VInitialize();
-      virtual bool VIsNameValid(const std::string& name);
-      virtual bool VIsEpochValid(const Epoch& epoch);
-      virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
-      virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+class MpcorbEphemeris : public IEphemeris
+{
+public:
+   MpcorbEphemeris(const std::string& dataFile);
+   virtual ~MpcorbEphemeris();
+   void SetDataFile(const std::string& dataFile);
+   void SetPropagator(const keplerian::PropagatorPointer& propagator);
 
-   private:
-      std::string m_dataFile;
-   };
+protected:
+   virtual void VLoad();
+   virtual void VInitialize();
+   virtual bool VIsNameValid(const std::string& name);
+   virtual bool VIsEpochValid(const Epoch& epoch);
+   virtual void GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
+   virtual void GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+
+private:
+   std::string m_dataFile;
+   keplerian::PropagatorPointer m_propagator;
+   Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
+   StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
+   OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
+};
 
 } // namespace otl

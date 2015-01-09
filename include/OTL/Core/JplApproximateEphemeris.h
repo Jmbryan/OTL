@@ -40,7 +40,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ////////////////////////////////////////////////////////////
-    JplApproximateEphemeris();
+    JplApproximateEphemeris(const std::string& dataFilename);
     //JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
     //JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
 
@@ -80,7 +80,8 @@ protected:
     virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
     
 private:
-    keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly
+   std::string m_dataFilename;
+   keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly   
 };
 
 } // namespace otl
