@@ -43,13 +43,13 @@ public:
    bool IsNameValid(const std::string& name) const;
    bool IsEpochValid(const Epoch& epoch) const;
 
-private:
+   void SetDataFile(const std::string& filename);
+   void Load();
    void Initialize();
    
 private:
    std::string m_dataFilename;
    std::map<std::string, StateVector> m_stateVectors;
-   bool m_initialized;
 };
 
 } // namespace otl

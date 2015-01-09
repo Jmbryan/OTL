@@ -98,8 +98,7 @@ void SpiceEphemeris::VInitialize()
    g_bodyDictionary["Mercury"] = "MERCURY";
    g_bodyDictionary["Earth"] = "EARTH";
 
-   m_referenceFrame = "SSB"; // Solar System Barycenter
-   //m_referenceFrame = "ICRF"; // International Celestial Reference Frame
+   m_referenceFrame = "J2000";
    m_abberationCorrections = "NONE";
    m_observerBody = "SUN";
 }

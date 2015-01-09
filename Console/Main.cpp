@@ -9,7 +9,7 @@
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/JplEphemeris.h>
-#include <OTL/Core/MpcorbEphemerisIO.h>
+#include <OTL/Core/MpcorbEphemeris.h>
 #include <OTL/Core/SpiceEphemeris.h>
 
 #include <OTL/Core/System.h>
@@ -73,24 +73,40 @@ int main()
        date.year = 2015;
        date.hour = date.min = 0;
        date.sec = 0.0;
+       Epoch epoch = Epoch::Gregorian(date);
+
+       Vector3d position;
+       Vector3d velocity;
+       StateVector stateVector1, stateVector2, stateVector3, stateVector4;
+       OrbitalElements orbitalElements1, orbitalElements2, orbitalElements3, orbitalElements4;
+
+       auto planetName = "Earth";
 
        auto currentDirectory = gSystem.GetCurrentDirectory();
 
-       auto mpcorbFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
-       auto mpcorbIO = new MpcorbEphemerisIO(mpcorbFile);
-       //mpcorbIO->Initialize();
-       //EphemerisPointer mpcorbEphemeris(new )
+       auto approxDataFile = currentDirectory + "\\..\\data\\jpl\\approx\\approx3000_3000.data";
+       auto jplApproxEphemeris = new JplApproximateEphemeris(approxDataFile);
+       jplApproxEphemeris->QueryDatabase(planetName, epoch, stateVector1);
+       jplApproxEphemeris->QueryDatabase(planetName, epoch, orbitalElements1);
+
+       auto dataFile = currentDirectory + "\\..\\data\\jpl\\de405\\de405.data";
+       auto jplEphemeris(new JplEphemeris(dataFile));
+       jplEphemeris->QueryDatabase(planetName, epoch, stateVector2);
+       jplEphemeris->QueryDatabase(planetName, epoch, orbitalElements2);
 
        auto kernalFile = currentDirectory + "\\..\\data\\spice\\de430.bsp";
-       EphemerisPointer spiceEphemeris(new SpiceEphemeris(kernalFile));
-       StateVector state;
-       spiceEphemeris->QueryDatabase("Earth", Epoch::Gregorian(date), state);
-       
-       auto dataFile = currentDirectory + "\\..\\data\\jpl_eph\\de405\\de405.data";
-       EphemerisPointer ephemeris(new JplEphemeris(dataFile));
-       
+       auto spiceEphemeris(new SpiceEphemeris(kernalFile));
+       spiceEphemeris->QueryDatabase(planetName, epoch, stateVector3);
+       spiceEphemeris->QueryDatabase(planetName, epoch, orbitalElements3);
+       spiceEphemeris->SetReferenceFrame("J2000");
+
+       auto mpcorbDataFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
+       auto mpcorbEphemeris = new MpcorbEphemeris(mpcorbDataFile);
+       mpcorbEphemeris->QueryDatabase("Ceres", epoch, stateVector4);
+       mpcorbEphemeris->QueryDatabase("Ceres", epoch, orbitalElements4);
+          
        Planet p("Earth");
-       p.SetEphemeris(ephemeris);
+       p.SetEphemeris(std::make_shared<JplEphemeris>(jplEphemeris));
        p.SetEpoch(Epoch::Gregorian(date));
        auto sv = p.GetStateVector();
     }

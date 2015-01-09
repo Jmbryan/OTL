@@ -38,8 +38,9 @@ typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
 class MpcorbEphemeris : public IEphemeris
 {
 public:
-   MpcorbEphemeris(const std::string& dataFile);
+   MpcorbEphemeris(const std::string& dataFilename);
    virtual ~MpcorbEphemeris();
+   void LoadDataFile(const std::string& filename);
    void SetDataFile(const std::string& dataFile);
    void SetPropagator(const keplerian::PropagatorPointer& propagator);
 
@@ -48,13 +49,13 @@ protected:
    virtual void VInitialize();
    virtual bool VIsNameValid(const std::string& name);
    virtual bool VIsEpochValid(const Epoch& epoch);
-   virtual void GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
-   virtual void GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
+   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
+   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
 private:
-   std::string m_dataFile;
+   std::string m_dataFilename;
    keplerian::PropagatorPointer m_propagator;
    Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
    StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector

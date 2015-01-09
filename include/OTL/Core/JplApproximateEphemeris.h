@@ -37,51 +37,56 @@ typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
 class JplApproximateEphemeris : public IEphemeris
 {
 public:
-    ////////////////////////////////////////////////////////////
-    /// \brief Default constructor
-    ////////////////////////////////////////////////////////////
-    JplApproximateEphemeris(const std::string& dataFilename);
-    //JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
-    //JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
+   JplApproximateEphemeris();
+   JplApproximateEphemeris(const std::string& dataFilename);
+   //JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
+   //JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Destructor
-    ////////////////////////////////////////////////////////////
-    virtual ~JplApproximateEphemeris();
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
+   virtual ~JplApproximateEphemeris();
+
+   void LoadDataFile(const std::string& filename);
+   void SetDataFile(const std::string& filename);
 
 protected:  
-    virtual void VLoad();
-    virtual void VInitialize();
-    virtual bool VIsNameValid(const std::string& name);
-    virtual bool VIsEpochValid(const Epoch& epoch);
+   virtual void VLoad();
+   virtual void VInitialize();
+   virtual bool VIsNameValid(const std::string& name);
+   virtual bool VIsEpochValid(const Epoch& epoch);
+   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
+   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Query the database for the state vector of a planet at a given epoch
-    ///
-    /// This function is only applicable to the major planets and Pluto.
-    ///
-    /// \param name std::string which represents the name of the planet
-    /// \param epoch Epoch which represents the time at which the state vector is desired
-    /// \param [out] stateVector Resulting StateVector computed at the given Epoch
-    ///
-    ////////////////////////////////////////////////////////////
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the state vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name std::string which represents the name of the planet
+   /// \param epoch Epoch which represents the time at which the state vector is desired
+   /// \param [out] stateVector Resulting StateVector computed at the given Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Query the database for the orbital elements of a planet at a given epoch
-    ///
-    /// This function is only applicable to the major planets and Pluto.
-    ///
-    /// \param name std::string which represents the name of the planet
-    /// \param epoch Epoch which represents the time at which the state vector is desired
-    /// \param [out] orbitalElements Resulting OrbitalElements computed at the given Epoch
-    ///
-    ////////////////////////////////////////////////////////////
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the orbital elements of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name std::string which represents the name of the planet
+   /// \param epoch Epoch which represents the time at which the state vector is desired
+   /// \param [out] orbitalElements Resulting OrbitalElements computed at the given Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
     
 private:
-   std::string m_dataFilename;
-   keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly   
+   std::string m_dataFilename;  
 };
 
 } // namespace otl

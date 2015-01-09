@@ -41,20 +41,23 @@ namespace keplerian {
 class JplApproximateEphemerisIO
 {
 public:
+   JplApproximateEphemerisIO();
    JplApproximateEphemerisIO(const std::string& dataFilename);
 
-   void GetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector);
    void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
    bool IsNameValid(const std::string& name) const;
    bool IsEpochValid(const Epoch& epoch) const;
 
-private:
+   void SetDataFile(const std::string& filename);
+   void Load();
    void Initialize();
 
 private:
    std::string m_dataFilename;
    bool m_initialized;
+   int m_startYear;
+   int m_endYear;
    keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly 
 };
 

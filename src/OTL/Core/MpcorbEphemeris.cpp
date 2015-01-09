@@ -39,9 +39,10 @@ typedef std::unique_ptr<MpcorbEphemerisIO> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
 
 ////////////////////////////////////////////////////////////
-MpcorbEphemeris::MpcorbEphemeris(const std::string& dataFile) :
-   IEphemeris(),
-   m_dataFile(dataFile)
+MpcorbEphemeris::MpcorbEphemeris(const std::string& dataFilename) :
+IEphemeris(),
+m_dataFilename(dataFilename),
+m_propagator(new keplerian::PropagateLagrangian())
 {
 
 }
@@ -53,9 +54,17 @@ MpcorbEphemeris::~MpcorbEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::SetDataFile(const std::string& dataFile)
+void MpcorbEphemeris::LoadDataFile(const std::string& filename)
 {
-   m_dataFile = dataFile;
+   SetDataFile(filename);
+   g_ephemerisDatabase->SetDataFile(m_dataFilename);
+   g_ephemerisDatabase->Load();
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemeris::SetDataFile(const std::string& dataFilename)
+{
+   m_dataFilename = dataFilename;
 }
 
 ////////////////////////////////////////////////////////////
@@ -67,20 +76,13 @@ void MpcorbEphemeris::SetPropagator(const keplerian::PropagatorPointer& propagat
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
 {
-   try
-   {
-      g_ephemerisDatabase.reset(new MpcorbEphemerisIO(m_dataFile));
-   }
-   catch (std::exception ex)
-   {
-      OTL_FATAL() << "Exception caught when trying to create ephemeris database using datafile [" << m_dataFile << "]: [" << ex.what() << "].";
-   }
+   g_ephemerisDatabase.reset(new MpcorbEphemerisIO(m_dataFilename));
 }
 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VInitialize()
 {
-   m_propagator.reset(new keplerian::PropagateLagrangian());
+   g_ephemerisDatabase->Initialize();
 }
 
 ////////////////////////////////////////////////////////////
@@ -95,9 +97,8 @@ bool MpcorbEphemeris::VIsEpochValid(const Epoch& epoch)
    return g_ephemerisDatabase->IsEpochValid(epoch);
 }
 
-
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+void MpcorbEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
 {
    // Get the state vector at the given epoch
    StateVector stateVector;
@@ -108,7 +109,7 @@ void MpcorbEphemeris::GetPosition(const std::string& name, const Epoch& epoch, V
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+void MpcorbEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
 {
    // Get the state vector at the given epoch
    StateVector stateVector;

@@ -38,19 +38,55 @@ MpcorbDatabase g_database;
 
 ////////////////////////////////////////////////////////////
 MpcorbEphemerisIO::MpcorbEphemerisIO(const std::string& dataFilename) :
-m_dataFilename(dataFilename),
-m_initialized(false)
+m_dataFilename(dataFilename)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::Initialize()
+void MpcorbEphemerisIO::GetEpoch(const std::string& name, Epoch& epoch)
+{
+   epoch = std::get<0>(g_database[name]);
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::GetStateVector(const std::string& name, StateVector& stateVector)
+{
+   stateVector = std::get<1>(g_database[name]);
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements)
+{
+   orbitalElements = std::get<2>(g_database[name]);
+}
+
+////////////////////////////////////////////////////////////
+bool MpcorbEphemerisIO::IsNameValid(const std::string& name) const
+{
+   auto it = g_database.find(name);
+   return (it != g_database.end());
+}
+
+////////////////////////////////////////////////////////////
+bool MpcorbEphemerisIO::IsEpochValid(const Epoch& epoch) const
+{
+   return true;
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::SetDataFile(const std::string& filename)
+{
+   m_dataFilename = filename;
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemerisIO::Load()
 {
    std::ifstream ifs(m_dataFilename);
    if (!ifs)
    {
-      OTL_FATAL() << "Failed to open mpcorb database input file " << Bracket(m_dataFilename);
+      OTL_FATAL() << "Failed to open MPCORB ephemeris data file " << Bracket(m_dataFilename);
       return;
    }
 
@@ -127,12 +163,12 @@ void MpcorbEphemerisIO::Initialize()
 
       // Package the orbital elements after converting to standard units (km, rad)
       OrbitalElements orbitalElements;
-      orbitalElements.semiMajorAxis       = a      * ASTRO_AU_TO_KM;
-      orbitalElements.eccentricity        = e;
-      orbitalElements.inclination         = incl   * MATH_DEG_TO_RAD;
-      orbitalElements.argOfPericenter     = peri   * MATH_DEG_TO_RAD;
-      orbitalElements.lonOfAscendingNode  = node   * MATH_DEG_TO_RAD;
-      orbitalElements.trueAnomaly         = ta;
+      orbitalElements.semiMajorAxis = a      * ASTRO_AU_TO_KM;
+      orbitalElements.eccentricity = e;
+      orbitalElements.inclination = incl   * MATH_DEG_TO_RAD;
+      orbitalElements.argOfPericenter = peri   * MATH_DEG_TO_RAD;
+      orbitalElements.lonOfAscendingNode = node   * MATH_DEG_TO_RAD;
+      orbitalElements.trueAnomaly = ta;
 
       // Convert orbital elements to state vector
       StateVector stateVector;
@@ -144,74 +180,20 @@ void MpcorbEphemerisIO::Initialize()
       recordsWritten++;
    }
 
-   OTL_INFO() << "Successfully loaded " << Bracket(recordsWritten) << " records from mpcorb database file " << Bracket(m_dataFilename);
+   OTL_INFO() << "Sucessfully loaded MPCORB ephemeris data file " << Bracket(m_dataFilename) <<
+      ". " << Bracket(recordsWritten) << " records were loaded";
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::GetEpoch(const std::string& name, Epoch& epoch)
+void MpcorbEphemerisIO::Initialize()
 {
-   if (!m_initialized)
+   if (!m_dataFilename.empty())
    {
-      Initialize();
+      Load();
+      return;
    }
 
-   if (IsNameValid(name))
-   {
-      epoch = std::get<0>(g_database[name]);
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::GetStateVector(const std::string& name, StateVector& stateVector)
-{
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (IsNameValid(name))
-   {
-      stateVector = std::get<1>(g_database[name]);
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements)
-{
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (IsNameValid(name))
-   {
-      orbitalElements = std::get<2>(g_database[name]);
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
-}
-
-////////////////////////////////////////////////////////////
-bool MpcorbEphemerisIO::IsNameValid(const std::string& name) const
-{
-   auto it = g_database.find(name);
-   return (it != g_database.end());
-}
-
-////////////////////////////////////////////////////////////
-bool MpcorbEphemerisIO::IsEpochValid(const Epoch& epoch) const
-{
-   return true;
+   OTL_ERROR() << "Failed to initialize mpcorb ephemeris: no data file specified";
 }
 
 } // namespace otl
