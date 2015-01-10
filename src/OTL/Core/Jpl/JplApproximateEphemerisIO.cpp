@@ -116,82 +116,17 @@ void JplApproximateEphemerisIO::GetOrbitalElements(const std::string& name, cons
 }
 
 ////////////////////////////////////////////////////////////
-bool JplApproximateEphemerisIO::IsNameValid(const std::string& name) const
+bool JplApproximateEphemerisIO::IsValidName(const std::string& name) const
 {
    const auto it = g_database.find(name);
    return (it != g_database.end());
 }
 
 ////////////////////////////////////////////////////////////
-bool JplApproximateEphemerisIO::IsEpochValid(const Epoch& epoch) const
+bool JplApproximateEphemerisIO::IsValidEpoch(const Epoch& epoch) const
 {
    auto year = epoch.GetGregorian().year;
    return (year >= m_startYear && year <= m_endYear);
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemerisIO::SetDataFile(const std::string& filename)
-{
-   m_dataFilename = filename;
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemerisIO::Load()
-{
-   std::ifstream ifs(m_dataFilename);
-   if (!ifs)
-   {
-      OTL_FATAL() << "Failed to open JPL approximate ephemeris data file " << Bracket(m_dataFilename);
-      return;
-   }
-
-   // Start and end year
-   ifs >> m_startYear >> m_endYear;
-
-   unsigned int numPlanets;
-   ifs >> numPlanets;
-
-   std::vector<std::string> planetNames(numPlanets, "");
-   for (unsigned int p = 0; p < numPlanets; ++p)
-   {
-      std::string name;
-      ifs >> name;
-      planetNames[p] = name;
-   }
-
-   // Number of ephemeris data values and additional terms
-   unsigned int numEphemerisValues = 12;
-   unsigned int numAdditionalTerms = 4;
-
-   // Ephemeris data and additional terms for each planet
-   std::vector<std::vector<double>> ephemeris(numPlanets);
-   for (unsigned int p = 0; p < numPlanets; ++p)
-   {
-      for (unsigned int i = 0; i < numEphemerisValues; ++i)
-      {
-         double value;
-         ifs >> value;
-         ephemeris[p].push_back(value);
-      }
-   }
-   for (unsigned int p = 0; p < numPlanets; ++p)
-   {
-      for (unsigned int i = 0; i < numAdditionalTerms; ++i)
-      {
-         double value;
-         ifs >> value;
-         ephemeris[p].push_back(value);
-      }
-   }
-
-   // Save the ephemeris data for each planet to the database
-   g_database.clear();
-   for (unsigned int p = 0; p < numPlanets; ++p)
-   {
-      g_database[planetNames[p]] = ephemeris[p];
-   }
-
-   OTL_INFO() << "Successfully loaded JPL approximate ephemeris data file " << Bracket(m_dataFilename);
 }
 
 ////////////////////////////////////////////////////////////
@@ -286,6 +221,65 @@ void JplApproximateEphemerisIO::Initialize()
    // Ephemeris is valid between 3000 BC and 3000 AD
    m_startYear = -3000;
    m_endYear = 3000;
+}
+
+////////////////////////////////////////////////////////////
+void JplApproximateEphemerisIO::Load()
+{
+   std::ifstream ifs(m_dataFilename);
+   if (!ifs)
+   {
+      OTL_FATAL() << "Failed to open JPL approximate ephemeris data file " << Bracket(m_dataFilename);
+      return;
+   }
+
+   // Start and end year
+   ifs >> m_startYear >> m_endYear;
+
+   unsigned int numPlanets;
+   ifs >> numPlanets;
+
+   std::vector<std::string> planetNames(numPlanets, "");
+   for (unsigned int p = 0; p < numPlanets; ++p)
+   {
+      std::string name;
+      ifs >> name;
+      planetNames[p] = name;
+   }
+
+   // Number of ephemeris data values and additional terms
+   unsigned int numEphemerisValues = 12;
+   unsigned int numAdditionalTerms = 4;
+
+   // Ephemeris data and additional terms for each planet
+   std::vector<std::vector<double>> ephemeris(numPlanets);
+   for (unsigned int p = 0; p < numPlanets; ++p)
+   {
+      for (unsigned int i = 0; i < numEphemerisValues; ++i)
+      {
+         double value;
+         ifs >> value;
+         ephemeris[p].push_back(value);
+      }
+   }
+   for (unsigned int p = 0; p < numPlanets; ++p)
+   {
+      for (unsigned int i = 0; i < numAdditionalTerms; ++i)
+      {
+         double value;
+         ifs >> value;
+         ephemeris[p].push_back(value);
+      }
+   }
+
+   // Save the ephemeris data for each planet to the database
+   g_database.clear();
+   for (unsigned int p = 0; p < numPlanets; ++p)
+   {
+      g_database[planetNames[p]] = ephemeris[p];
+   }
+
+   OTL_INFO() << "Successfully loaded JPL approximate ephemeris data file " << Bracket(m_dataFilename);
 }
 
 } // namespace otl

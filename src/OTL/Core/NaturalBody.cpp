@@ -80,7 +80,7 @@ void NaturalBody::SetEpoch(const Epoch& epoch)
       if (m_ephemeris)
       {
          StateVector newStateVector;
-         m_ephemeris->QueryDatabase(GetName(), m_epoch, newStateVector);
+         m_ephemeris->GetStateVector(GetName(), m_epoch, newStateVector);
          SetStateVector(newStateVector);
       }
       else
@@ -123,7 +123,7 @@ void NaturalBody::Propagate(const Time& timeDelta)
         {
             Epoch newEpoch = m_epoch + timeDelta;
             StateVector newStateVector;
-            m_ephemeris->QueryDatabase(GetName(), newEpoch, newStateVector);
+            m_ephemeris->GetStateVector(GetName(), newEpoch, newStateVector);
             SetStateVector(newStateVector);
         }
         else

@@ -85,28 +85,27 @@ int main()
        auto currentDirectory = gSystem.GetCurrentDirectory();
 
        auto approxDataFile = currentDirectory + "\\..\\data\\jpl\\approx\\approx3000_3000.data";
-       auto jplApproxEphemeris = new JplApproximateEphemeris(approxDataFile);
-       jplApproxEphemeris->QueryDatabase(planetName, epoch, stateVector1);
-       jplApproxEphemeris->QueryDatabase(planetName, epoch, orbitalElements1);
+       auto jplApproxEphemeris = std::make_shared<JplApproximateEphemeris>(approxDataFile);
+       jplApproxEphemeris->GetStateVector(planetName, epoch, stateVector1);
+       jplApproxEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements1);
 
        auto dataFile = currentDirectory + "\\..\\data\\jpl\\de405\\de405.data";
-       auto jplEphemeris(new JplEphemeris(dataFile));
-       jplEphemeris->QueryDatabase(planetName, epoch, stateVector2);
-       jplEphemeris->QueryDatabase(planetName, epoch, orbitalElements2);
+       auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
+       jplEphemeris->GetStateVector(planetName, epoch, stateVector2);
+       jplEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements2);
 
        auto kernalFile = currentDirectory + "\\..\\data\\spice\\de430.bsp";
-       auto spiceEphemeris(new SpiceEphemeris(kernalFile));
-       spiceEphemeris->QueryDatabase(planetName, epoch, stateVector3);
-       spiceEphemeris->QueryDatabase(planetName, epoch, orbitalElements3);
-       spiceEphemeris->SetReferenceFrame("J2000");
+       auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+       spiceEphemeris->GetStateVector(planetName, epoch, stateVector3);
+       spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
 
        auto mpcorbDataFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
-       auto mpcorbEphemeris = new MpcorbEphemeris(mpcorbDataFile);
-       mpcorbEphemeris->QueryDatabase("Ceres", epoch, stateVector4);
-       mpcorbEphemeris->QueryDatabase("Ceres", epoch, orbitalElements4);
+       auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
+       mpcorbEphemeris->GetStateVector("Ceres", epoch, stateVector4);
+       mpcorbEphemeris->GetOrbitalElements("Ceres", epoch, orbitalElements4);
           
        Planet p("Earth");
-       p.SetEphemeris(std::make_shared<JplEphemeris>(jplEphemeris));
+       p.SetEphemeris(jplEphemeris);
        p.SetEpoch(Epoch::Gregorian(date));
        auto sv = p.GetStateVector();
     }

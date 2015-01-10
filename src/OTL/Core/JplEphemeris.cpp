@@ -39,9 +39,9 @@ typedef std::map<std::string, DE405Ephemeris::AstroEntity> AstroEntityDictionary
 static AstroEntityDictionary g_entityDictionary;
 
 ////////////////////////////////////////////////////////////
-JplEphemeris::JplEphemeris(const std::string& dataFile) :
+JplEphemeris::JplEphemeris(const std::string& dataFilename) :
 IEphemeris(),
-m_dataFile(dataFile)
+m_dataFilename(dataFilename)
 {
     
 }
@@ -53,9 +53,16 @@ JplEphemeris::~JplEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::SetDataFile(const std::string& dataFile)
+void JplEphemeris::SetDataFile(const std::string& dataFilename)
 {
-   m_dataFile = dataFile;
+   m_dataFilename = dataFilename;
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::LoadDataFile(const std::string& dataFilename)
+{
+   SetDataFile(dataFilename);
+   VLoad();
 }
 
 ////////////////////////////////////////////////////////////
@@ -63,12 +70,12 @@ void JplEphemeris::VLoad()
 {
    try
    {
-      g_ephemerisDatabase.reset(new DE405Ephemeris(m_dataFile));
+      g_ephemerisDatabase = std::make_unique<DE405Ephemeris>(m_dataFilename); // Loads file in constructor
    }
    catch (std::exception ex)
    {
       OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
-         Bracket(m_dataFile) << ": " << Bracket(ex.what());
+         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
    } 
 }
 
@@ -89,21 +96,21 @@ void JplEphemeris::VInitialize()
 }
 
 ////////////////////////////////////////////////////////////
-bool JplEphemeris::VIsNameValid(const std::string& name)
+bool JplEphemeris::VIsValidName(const std::string& name)
 {
    AstroEntityDictionary::const_iterator it = g_entityDictionary.find(name);
    return (it != g_entityDictionary.end());
 }
 
 ////////////////////////////////////////////////////////////
-bool JplEphemeris::VIsEpochValid(const Epoch& epoch)
+bool JplEphemeris::VIsValidEpoch(const Epoch& epoch)
 {
     int year = epoch.GetGregorian().year;
     return (year >= 1800 && year <= 2200);
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+void JplEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
 {
    auto entity = g_entityDictionary[name];
 
@@ -125,18 +132,18 @@ void JplEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vect
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+void JplEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
 {
    // Query the state vector at the given epoch
    StateVector stateVector;
-   VQueryDatabase(name, epoch, stateVector);
+   VGetStateVector(name, epoch, stateVector);
 
    // Return the velocity vector
    velocity = stateVector.velocity;
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void JplEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    auto entity = g_entityDictionary[name];
 
@@ -159,11 +166,11 @@ void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, S
 }
 
 ////////////////////////////////////////////////////////////
-void JplEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+void JplEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
     // Query the state vector at the given epoch
     StateVector stateVector;
-    VQueryDatabase(name, epoch, stateVector);
+    VGetStateVector(name, epoch, stateVector);
 
     // Convert state vector to orbital elements
     ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);

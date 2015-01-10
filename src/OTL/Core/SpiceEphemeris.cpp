@@ -42,9 +42,9 @@ typedef std::map<std::string, std::string> BodyDictionary;
 static BodyDictionary g_bodyDictionary;
 
 ////////////////////////////////////////////////////////////
-SpiceEphemeris::SpiceEphemeris(const std::string& dataFile) :
+SpiceEphemeris::SpiceEphemeris(const std::string& dataFilename) :
 IEphemeris(),
-m_dataFile(dataFile)
+m_dataFilename(dataFilename)
 {
 
 }
@@ -56,9 +56,9 @@ SpiceEphemeris::~SpiceEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::SetDataFile(const std::string& dataFile)
+void SpiceEphemeris::SetDataFile(const std::string& dataFilename)
 {
-   m_dataFile = dataFile;
+   m_dataFilename = dataFilename;
 }
 
 ////////////////////////////////////////////////////////////
@@ -80,15 +80,24 @@ void SpiceEphemeris::SetObserverBody(const std::string& observerBody)
 }
 
 ////////////////////////////////////////////////////////////
+void SpiceEphemeris::LoadDataFile(const std::string& dataFilename)
+{
+   SetDataFile(dataFilename);
+   VLoad();
+}
+
+////////////////////////////////////////////////////////////
 void SpiceEphemeris::VLoad()
 {
+   // SPICE doesn't throw exceptions...
    try
    {
-      furnsh_c(m_dataFile.c_str());
+      furnsh_c(m_dataFilename.c_str());
    }
    catch (std::exception ex)
    {
-      OTL_FATAL() << "Exception caught when trying to create ephemeris database using datafile [" << m_dataFile << "]: [" << ex.what() << "].";
+      OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
+         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
    }  
 }
 
@@ -104,7 +113,7 @@ void SpiceEphemeris::VInitialize()
 }
 
 ////////////////////////////////////////////////////////////
-bool SpiceEphemeris::VIsNameValid(const std::string& name)
+bool SpiceEphemeris::VIsValidName(const std::string& name)
 {
    return true;
    BodyDictionary::const_iterator it = g_bodyDictionary.find(name);
@@ -112,13 +121,13 @@ bool SpiceEphemeris::VIsNameValid(const std::string& name)
 }
 
 ////////////////////////////////////////////////////////////
-bool SpiceEphemeris::VIsEpochValid(const Epoch& epoch)
+bool SpiceEphemeris::VIsValidEpoch(const Epoch& epoch)
 {
    return true;
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+void SpiceEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
 {
    std::string targetBody = g_bodyDictionary[name];
    double ephemerisTime = CalculateEphemerisTime(epoch);
@@ -140,18 +149,18 @@ void SpiceEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Ve
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+void SpiceEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
 {
    // Query the state vector at the given epoch
    StateVector stateVector;
-   VQueryDatabase(name, epoch, stateVector);
+   VGetStateVector(name, epoch, stateVector);
 
    // Return the velocity vector
    velocity = stateVector.velocity;
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    std::string targetBody = g_bodyDictionary[name];
    double ephemerisTime = CalculateEphemerisTime(epoch);
@@ -174,11 +183,11 @@ void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch,
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+void SpiceEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
    // Query the state vector at the given epoch
    StateVector stateVector;
-   VQueryDatabase(name, epoch, stateVector);
+   VGetStateVector(name, epoch, stateVector);
 
    // Convert state vector to orbital elements
    ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);

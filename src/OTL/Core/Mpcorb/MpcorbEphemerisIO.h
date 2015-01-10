@@ -34,18 +34,21 @@ class Epoch;
 class MpcorbEphemerisIO
 {
 public:
-   MpcorbEphemerisIO(const std::string& dataFilename);
+   explicit MpcorbEphemerisIO(const std::string& dataFilename);
+   MpcorbEphemerisIO(const MpcorbEphemerisIO& other) = delete;
+   MpcorbEphemerisIO& operator=(const MpcorbEphemerisIO&) = delete;
 
    void GetEpoch(const std::string& name, Epoch& epoch);
    void GetStateVector(const std::string& name, StateVector& stateVector);
    void GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements);
 
-   bool IsNameValid(const std::string& name) const;
-   bool IsEpochValid(const Epoch& epoch) const;
+   bool IsValidName(const std::string& name) const;
+   bool IsValidEpoch(const Epoch& epoch) const;
 
-   void SetDataFile(const std::string& filename);
-   void Load();
    void Initialize();
+
+private:
+   void Load();
    
 private:
    std::string m_dataFilename;

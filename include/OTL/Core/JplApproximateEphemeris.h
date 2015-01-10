@@ -28,12 +28,6 @@
 namespace otl
 {
 
-// Forward declarations
-namespace keplerian {
-class IKeplersEquation;
-typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
-}
-
 class JplApproximateEphemeris : public IEphemeris
 {
 public:
@@ -41,52 +35,135 @@ public:
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
    JplApproximateEphemeris();
-   JplApproximateEphemeris(const std::string& dataFilename);
-   //JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
-   //JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Constructor using data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   explicit JplApproximateEphemeris(const std::string& dataFilename);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable copy constructor
+   ////////////////////////////////////////////////////////////
+   JplApproximateEphemeris(const JplApproximateEphemeris& other) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable assignment operator
+   ////////////////////////////////////////////////////////////
+   JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
    virtual ~JplApproximateEphemeris();
 
-   void LoadDataFile(const std::string& filename);
-   void SetDataFile(const std::string& filename);
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the ephemeris data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetDataFile(const std::string& dataFilename);
 
-protected:  
-   virtual void VLoad();
-   virtual void VInitialize();
-   virtual bool VIsNameValid(const std::string& name);
-   virtual bool VIsEpochValid(const Epoch& epoch);
-   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
-   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void LoadDataFile(const std::string& dataFilename);
+   
+protected:
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// Performs database file IO. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// before VInitialize().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VLoad() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Initialize the ephemeris
+   ///
+   /// Performs post-initialization. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// after VLoad().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VInitialize() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the planet name valid
+   ///
+   /// \param name Name of the planet in question
+   /// \return True if the planet valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidName(const std::string& name) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the epoch valid
+   ///
+   /// \param epoch Epoch in question
+   /// \return True if the epoch valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidEpoch(const Epoch& epoch) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the position vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the position vector is desired
+   /// \param [out] position Resulting position vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the velocity vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the velocity vector is desired
+   /// \param [out] velocity Resulting velocity vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Query the database for the state vector of a planet at a given epoch
    ///
    /// This function is only applicable to the major planets and Pluto.
    ///
-   /// \param name std::string which represents the name of the planet
-   /// \param epoch Epoch which represents the time at which the state vector is desired
-   /// \param [out] stateVector Resulting StateVector computed at the given Epoch
+   /// \param name Planet name
+   /// \param epoch Time at which the state vector is desired
+   /// \param [out] stateVector Resulting state vector
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Query the database for the orbital elements of a planet at a given epoch
    ///
    /// This function is only applicable to the major planets and Pluto.
    ///
-   /// \param name std::string which represents the name of the planet
-   /// \param epoch Epoch which represents the time at which the state vector is desired
-   /// \param [out] orbitalElements Resulting OrbitalElements computed at the given Epoch
+   /// \param name Planet name
+   /// \param epoch Time at which the state vector is desired
+   /// \param [out] orbitalElements Resulting orbital elements
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
     
 private:
-   std::string m_dataFilename;  
+   std::string m_dataFilename; ///< Full path to the ephemeris data file
 };
 
 } // namespace otl
@@ -116,13 +193,17 @@ private:
 /// can greatly benefity from the speedup offered by an analytical ephemeris
 /// alternative.
 ///
-/// The state vector and orbital elements of the planet
-/// at a desired Epoch can be obtained by calling
-/// the inherited overloaded member function QueryDatabase().
+/// The position, velocity, state vector, and orbital elements
+/// of a planet at a desired Epoch can be obtained by calling
+/// the inherited member functions:
+/// \li GetPosition()
+/// \li GetVelocity()
+/// \li GetStateVector()
+/// \li GetOrbitalElements()
 ///
-/// This routine is only valid for the major planets and Pluto. Calling
-/// the QueryDatabase() functions with any name other than those listed
-/// below will cause a InvalidArguementException to be thrown:
+/// This routine is only valid for the major planets and Pluto. Querying
+/// the database with any name other than those listed below will result
+/// in an OTL_ERROR:
 /// \li Mercury
 /// \li Venus
 /// \li Earth (Earth-Moon barycenter)

@@ -31,24 +31,142 @@ namespace otl
 class JplEphemeris : public IEphemeris
 {
 public:
-    JplEphemeris(const std::string& dataFile);   
-    //JplEphemeris(const JplEphemeris& other) = delete;
-    //JplEphemeris& operator=(const JplEphemeris&) = delete;
-    virtual ~JplEphemeris();
-    void SetDataFile(const std::string& dataFile);
+   ////////////////////////////////////////////////////////////
+   /// \brief Constructor using data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   explicit JplEphemeris(const std::string& dataFilename);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable copy constructor
+   ////////////////////////////////////////////////////////////
+   JplEphemeris(const JplEphemeris& other) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable assignment operator
+   ////////////////////////////////////////////////////////////
+   JplEphemeris& operator=(const JplEphemeris&) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
+   virtual ~JplEphemeris();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the ephemeris data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetDataFile(const std::string& dataFilename);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void LoadDataFile(const std::string& dataFilename);
 
 protected:
-    virtual void VLoad();
-    virtual void VInitialize();
-    virtual bool VIsNameValid(const std::string& name);
-    virtual bool VIsEpochValid(const Epoch& epoch);
-    virtual void GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
-    virtual void GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// Performs database file IO. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// before VInitialize().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VLoad() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Initialize the ephemeris
+   ///
+   /// Performs post-initialization. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// after VLoad().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VInitialize() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the planet name valid
+   ///
+   /// \param name Name of the planet in question
+   /// \return True if the planet valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidName(const std::string& name) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the epoch valid
+   ///
+   /// \param epoch Epoch in question
+   /// \return True if the epoch valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidEpoch(const Epoch& epoch) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the position vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the position vector is desired
+   /// \param [out] position Resulting position vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the velocity vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the velocity vector is desired
+   /// \param [out] velocity Resulting velocity vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the state vector of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the state vector is desired
+   /// \param [out] stateVector Resulting state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the orbital elements of a planet at a given epoch
+   ///
+   /// This function is only applicable to the major planets and Pluto.
+   ///
+   /// \param name Planet name
+   /// \param epoch Time at which the state vector is desired
+   /// \param [out] orbitalElements Resulting orbital elements
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
 private:
-   std::string m_dataFile;
+   std::string m_dataFilename; ///< Full path to the ephemeris data file
 };
+
+////////////////////////////////////////////////////////////
+/// \class otl::JplEphemeris
+/// \ingroup otl
+///
+/// \see IEphemeris, Epoch, StateVector, OrbitalElements
+///
+////////////////////////////////////////////////////////////
 
 } // namespace otl

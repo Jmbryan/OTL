@@ -54,14 +54,6 @@ MpcorbEphemeris::~MpcorbEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::LoadDataFile(const std::string& filename)
-{
-   SetDataFile(filename);
-   g_ephemerisDatabase->SetDataFile(m_dataFilename);
-   g_ephemerisDatabase->Load();
-}
-
-////////////////////////////////////////////////////////////
 void MpcorbEphemeris::SetDataFile(const std::string& dataFilename)
 {
    m_dataFilename = dataFilename;
@@ -74,27 +66,43 @@ void MpcorbEphemeris::SetPropagator(const keplerian::PropagatorPointer& propagat
 }
 
 ////////////////////////////////////////////////////////////
+void MpcorbEphemeris::LoadDataFile(const std::string& dataFilename)
+{
+   SetDataFile(dataFilename);
+   VLoad();
+}
+
+////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
 {
-   g_ephemerisDatabase.reset(new MpcorbEphemerisIO(m_dataFilename));
+   g_ephemerisDatabase = std::make_unique<MpcorbEphemerisIO>(m_dataFilename);
+   try
+   {
+      g_ephemerisDatabase->Initialize();
+   }
+   catch (std::exception ex)
+   {
+      OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
+         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
+   }
 }
 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VInitialize()
 {
-   g_ephemerisDatabase->Initialize();
+   
 }
 
 ////////////////////////////////////////////////////////////
-bool MpcorbEphemeris::VIsNameValid(const std::string& name)
+bool MpcorbEphemeris::VIsValidName(const std::string& name)
 {
-   return g_ephemerisDatabase->IsNameValid(name);
+   return g_ephemerisDatabase->IsValidName(name);
 }
 
 ////////////////////////////////////////////////////////////
-bool MpcorbEphemeris::VIsEpochValid(const Epoch& epoch)
+bool MpcorbEphemeris::VIsValidEpoch(const Epoch& epoch)
 {
-   return g_ephemerisDatabase->IsEpochValid(epoch);
+   return g_ephemerisDatabase->IsValidEpoch(epoch);
 }
 
 ////////////////////////////////////////////////////////////
@@ -102,7 +110,7 @@ void MpcorbEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, 
 {
    // Get the state vector at the given epoch
    StateVector stateVector;
-   VQueryDatabase(name, epoch, stateVector);
+   VGetStateVector(name, epoch, stateVector);
 
    // Return the position vector
    position = stateVector.position;
@@ -113,14 +121,14 @@ void MpcorbEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, 
 {
    // Get the state vector at the given epoch
    StateVector stateVector;
-   VQueryDatabase(name, epoch, stateVector);
+   VGetStateVector(name, epoch, stateVector);
 
    // Return the velocity vector
    velocity = stateVector.velocity;
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
    // Get the reference epoch and state vector
    try
@@ -149,7 +157,7 @@ void MpcorbEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
    // Get the reference epoch and orbital elements
    try

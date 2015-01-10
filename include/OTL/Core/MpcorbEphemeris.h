@@ -38,28 +38,146 @@ typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
 class MpcorbEphemeris : public IEphemeris
 {
 public:
-   MpcorbEphemeris(const std::string& dataFilename);
+   ////////////////////////////////////////////////////////////
+   /// \brief Constructor using data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   explicit MpcorbEphemeris(const std::string& dataFilename);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable copy constructor
+   ////////////////////////////////////////////////////////////
+   MpcorbEphemeris(const MpcorbEphemeris& other) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Disable assignment operator
+   ////////////////////////////////////////////////////////////
+   MpcorbEphemeris& operator=(const MpcorbEphemeris&) = delete;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
    virtual ~MpcorbEphemeris();
-   void LoadDataFile(const std::string& filename);
-   void SetDataFile(const std::string& dataFile);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the ephemeris data file
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetDataFile(const std::string& dataFilename);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the propagator algorithm
+   ///
+   /// \param propagator Smart pointer to the propagator
+   ///
+   ////////////////////////////////////////////////////////////
    void SetPropagator(const keplerian::PropagatorPointer& propagator);
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// \param dataFilename Full path to ephemeris data file
+   ///
+   ////////////////////////////////////////////////////////////
+   void LoadDataFile(const std::string& dataFilename);
+   
 protected:
-   virtual void VLoad();
-   virtual void VInitialize();
-   virtual bool VIsNameValid(const std::string& name);
-   virtual bool VIsEpochValid(const Epoch& epoch);
-   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
-   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
-   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
-   virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+   ////////////////////////////////////////////////////////////
+   /// \brief Load the ephemeris data file into memory
+   ///
+   /// Performs database file IO. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// before VInitialize().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VLoad() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Initialize the ephemeris
+   ///
+   /// Performs post-initialization. This function lazily
+   /// evalulated when the first ephemeris query is made and
+   /// after VLoad().
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VInitialize() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the entity name valid
+   ///
+   /// \param name Name of the entity in question
+   /// \return True if the entity valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidName(const std::string& name) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the epoch valid
+   ///
+   /// \param epoch Epoch in question
+   /// \return True if the epoch valid
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual bool VIsValidEpoch(const Epoch& epoch) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the position vector of an entity at a given epoch
+   ///
+   /// \param name Entity name
+   /// \param epoch Time at which the position vector is desired
+   /// \param [out] position Resulting position vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the velocity vector of an entity at a given epoch
+   ///
+   /// \param name Entity name
+   /// \param epoch Time at which the velocity vector is desired
+   /// \param [out] velocity Resulting velocity vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the state vector of an entity at a given epoch
+   ///
+   /// \param name Entity name
+   /// \param epoch Time at which the state vector is desired
+   /// \param [out] state Resulting state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the database for the orbital elements of an entity at a given epoch
+   ///
+   /// \param name Entity name
+   /// \param epoch Time at which the orbital elements is desired
+   /// \param [out] orbitalElements Resulting orbital elements
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
 private:
-   std::string m_dataFilename;
-   keplerian::PropagatorPointer m_propagator;
+   std::string m_dataFilename;                  ///< Full path to the ephemeris data file
+   keplerian::PropagatorPointer m_propagator;   ///< Smart pointer to propagator algorithm for propagating the reference orbits
    Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
    StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
    OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
 };
+
+////////////////////////////////////////////////////////////
+/// \class otl::MpcorbEphemeris
+/// \ingroup otl
+///
+/// \see IEphemeris, Epoch, StateVector, OrbitalElements
+///
+////////////////////////////////////////////////////////////
 
 } // namespace otl

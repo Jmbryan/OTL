@@ -23,16 +23,13 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <string>
-#include <memory>
+#include <OTL/Core/Base.h>
 
 namespace otl
 {
 
 // Forward declarations
 class Epoch;
-struct StateVector;
-struct OrbitalElements;
 namespace keplerian {
    class IKeplersEquation;
    typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
@@ -42,16 +39,19 @@ class JplApproximateEphemerisIO
 {
 public:
    JplApproximateEphemerisIO();
-   JplApproximateEphemerisIO(const std::string& dataFilename);
+   explicit JplApproximateEphemerisIO(const std::string& dataFilename);
+   JplApproximateEphemerisIO(const JplApproximateEphemerisIO& other) = delete;
+   JplApproximateEphemerisIO& operator=(const JplApproximateEphemerisIO&) = delete;
 
    void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
-   bool IsNameValid(const std::string& name) const;
-   bool IsEpochValid(const Epoch& epoch) const;
+   bool IsValidName(const std::string& name) const;
+   bool IsValidEpoch(const Epoch& epoch) const;
 
-   void SetDataFile(const std::string& filename);
-   void Load();
    void Initialize();
+
+private:
+   void Load();
 
 private:
    std::string m_dataFilename;

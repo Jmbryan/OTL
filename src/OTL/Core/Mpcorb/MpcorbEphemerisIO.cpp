@@ -62,22 +62,28 @@ void MpcorbEphemerisIO::GetOrbitalElements(const std::string& name, OrbitalEleme
 }
 
 ////////////////////////////////////////////////////////////
-bool MpcorbEphemerisIO::IsNameValid(const std::string& name) const
+bool MpcorbEphemerisIO::IsValidName(const std::string& name) const
 {
    auto it = g_database.find(name);
    return (it != g_database.end());
 }
 
 ////////////////////////////////////////////////////////////
-bool MpcorbEphemerisIO::IsEpochValid(const Epoch& epoch) const
+bool MpcorbEphemerisIO::IsValidEpoch(const Epoch& epoch) const
 {
    return true;
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::SetDataFile(const std::string& filename)
+void MpcorbEphemerisIO::Initialize()
 {
-   m_dataFilename = filename;
+   if (!m_dataFilename.empty())
+   {
+      Load();
+      return;
+   }
+
+   OTL_ERROR() << "Failed to initialize mpcorb ephemeris: no data file specified";
 }
 
 ////////////////////////////////////////////////////////////
@@ -182,18 +188,6 @@ void MpcorbEphemerisIO::Load()
 
    OTL_INFO() << "Sucessfully loaded MPCORB ephemeris data file " << Bracket(m_dataFilename) <<
       ". " << Bracket(recordsWritten) << " records were loaded";
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemerisIO::Initialize()
-{
-   if (!m_dataFilename.empty())
-   {
-      Load();
-      return;
-   }
-
-   OTL_ERROR() << "Failed to initialize mpcorb ephemeris: no data file specified";
 }
 
 } // namespace otl

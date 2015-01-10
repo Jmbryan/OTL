@@ -43,7 +43,7 @@ IEphemeris::~IEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+void IEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
 {
    std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -52,11 +52,65 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Stat
       Initialize();
    }
 
-   if (VIsNameValid(name))
+   if (VIsValidName(name))
    {
-      if (VIsEpochValid(epoch))
+      if (VIsValidEpoch(epoch))
       {
-         VQueryDatabase(name, epoch, stateVector);
+         VGetPosition(name, epoch, position);
+      }
+      else
+      {
+         OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
+      }
+   }
+   else
+   {
+      OTL_ERROR() << "Name [" << name << "] not found";
+   }
+}
+
+////////////////////////////////////////////////////////////
+void IEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+{
+   std::lock_guard<std::mutex> lock(m_mutex);
+
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (VIsValidName(name))
+   {
+      if (VIsValidEpoch(epoch))
+      {
+         VGetVelocity(name, epoch, velocity);
+      }
+      else
+      {
+         OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
+      }
+   }
+   else
+   {
+      OTL_ERROR() << "Name [" << name << "] not found";
+   }
+}
+
+////////////////////////////////////////////////////////////
+void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+{
+   std::lock_guard<std::mutex> lock(m_mutex);
+
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (VIsValidName(name))
+   {
+      if (VIsValidEpoch(epoch))
+      {
+         VGetStateVector(name, epoch, stateVector);
       }
       else
       {
@@ -70,7 +124,7 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Stat
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+void IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
    std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -79,11 +133,11 @@ void IEphemeris::QueryDatabase(const std::string& name, const Epoch& epoch, Orbi
       Initialize();
    }
 
-   if (VIsNameValid(name))
+   if (VIsValidName(name))
    {
-      if (VIsEpochValid(epoch))
+      if (VIsValidEpoch(epoch))
       {
-         VQueryDatabase(name, epoch, orbitalElements);
+         VGetOrbitalElements(name, epoch, orbitalElements);
       }
       else
       {

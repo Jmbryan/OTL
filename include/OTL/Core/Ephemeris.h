@@ -50,38 +50,66 @@ public:
     virtual ~IEphemeris();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Query the database for the state vector of a natural body at a given epoch
+    /// \brief Query the ephemeris database for the position vector at a given epoch
     ///
     /// This is a pure virtual method which must be reimplemented by
     /// the derived class.
     ///
-    /// \param name std::string which represents the name of the natural body
-    /// \param epoch Epoch which represents the time at which the state vector is desired
-    /// \param [out] stateVector Resulting StateVector computed at the given Epoch
+    /// \param name Entity name
+    /// \param epoch Time at which the position vector is desired
+    /// \param [out] position Resulting position vector
     ///
     ////////////////////////////////////////////////////////////
-    void QueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+    void GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Query the database for the orbital elements of a natural body at a given epoch
+    /// \brief Query the ephemeris database for the velocity vector at a given epoch
     ///
     /// This is a pure virtual method which must be reimplemented by
     /// the derived class.
     ///
-    /// \param name std::string which represents the name of the natural body
-    /// \param epoch Epoch which represents the time at which the state vector is desired
-    /// \param [out] orbitalElements Resulting OrbitalElements computed at the given Epoch
+    /// \param name Entity name
+    /// \param epoch Time at which the velocity vector is desired
+    /// \param [out] velocity Resulting velocity vector
     ///
     ////////////////////////////////////////////////////////////
-    void QueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+    void GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Query the ephemeris database for the state vector at a given epoch
+    ///
+    /// This is a pure virtual method which must be reimplemented by
+    /// the derived class.
+    ///
+    /// \param name Entity name
+    /// \param epoch Time at which the position vector is desired
+    /// \param [out] stateVector Resulting state vector
+    ///
+    ////////////////////////////////////////////////////////////
+    void GetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Query the ephemeris database for the orbital elements at a given epoch
+    ///
+    /// This is a pure virtual method which must be reimplemented by
+    /// the derived class.
+    ///
+    /// \param name Entity name
+    /// \param epoch Time at which the orbital elements is desired
+    /// \param [out] orbitalElements Resulting orbital elements
+    ///
+    ////////////////////////////////////////////////////////////
+    void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
 protected:
     virtual void VLoad() = 0;
     virtual void VInitialize() = 0;
-    virtual bool VIsNameValid(const std::string& name) = 0;
-    virtual bool VIsEpochValid(const Epoch& epoch) = 0;
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
-    virtual void VQueryDatabase(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
+    virtual bool VIsValidName(const std::string& name) = 0;
+    virtual bool VIsValidEpoch(const Epoch& epoch) = 0;
+    virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) = 0;
+    virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) = 0;
+    virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
+    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
 private:
     void Initialize();
