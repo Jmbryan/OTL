@@ -42,7 +42,7 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Disable copy constructor
    ////////////////////////////////////////////////////////////
-   SpiceEphemeris(const SpiceEphemeris& other) = delete;
+   SpiceEphemeris(const SpiceEphemeris&) = delete;
 
    ////////////////////////////////////////////////////////////
    /// \brief Disable assignment operator
@@ -189,6 +189,8 @@ private:
    std::string m_observerBody;            ///< Name of observer body
 };
 
+} // namespace otl
+
 ////////////////////////////////////////////////////////////
 /// \class otl::SpiceEphemeris
 /// \ingroup otl
@@ -196,5 +198,3 @@ private:
 /// \see IEphemeris, Epoch, StateVector, OrbitalElements
 ///
 ////////////////////////////////////////////////////////////
-
-} // namespace otl

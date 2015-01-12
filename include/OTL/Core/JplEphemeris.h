@@ -42,7 +42,7 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Disable copy constructor
    ////////////////////////////////////////////////////////////
-   JplEphemeris(const JplEphemeris& other) = delete;
+   JplEphemeris(const JplEphemeris&) = delete;
 
    ////////////////////////////////////////////////////////////
    /// \brief Disable assignment operator
@@ -161,6 +161,8 @@ private:
    std::string m_dataFilename; ///< Full path to the ephemeris data file
 };
 
+} // namespace otl
+
 ////////////////////////////////////////////////////////////
 /// \class otl::JplEphemeris
 /// \ingroup otl
@@ -168,5 +170,3 @@ private:
 /// \see IEphemeris, Epoch, StateVector, OrbitalElements
 ///
 ////////////////////////////////////////////////////////////
-
-} // namespace otl

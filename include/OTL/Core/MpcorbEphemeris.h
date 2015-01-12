@@ -49,7 +49,7 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Disable copy constructor
    ////////////////////////////////////////////////////////////
-   MpcorbEphemeris(const MpcorbEphemeris& other) = delete;
+   MpcorbEphemeris(const MpcorbEphemeris&) = delete;
 
    ////////////////////////////////////////////////////////////
    /// \brief Disable assignment operator
@@ -172,6 +172,8 @@ private:
    OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
 };
 
+} // namespace otl
+
 ////////////////////////////////////////////////////////////
 /// \class otl::MpcorbEphemeris
 /// \ingroup otl
@@ -179,5 +181,3 @@ private:
 /// \see IEphemeris, Epoch, StateVector, OrbitalElements
 ///
 ////////////////////////////////////////////////////////////
-
-} // namespace otl

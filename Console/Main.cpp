@@ -12,10 +12,14 @@
 #include <OTL/Core/MpcorbEphemeris.h>
 #include <OTL/Core/SpiceEphemeris.h>
 
+#include <OTL/Core/Matrix.h>
+
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
 
 #include <numeric>
+
+//#include <Eigen/Dense>
 
 using namespace otl;
 
@@ -23,6 +27,95 @@ int main()
 {
     gLogger.SetLogLevel(LogLevel::Fatal);
     gLogger.SetThrowLevel(LogLevel::Error);
+
+    if (true)
+    {
+       temp::Matrix3d m3d(3.0);
+       temp::Matrix3d m3d2(2.0);
+       temp::Matrixd md;
+       temp::Matrixd md2;
+       temp::Vector3d v3d(3.0);
+       temp::Vector3d v3d2(2.0);
+
+       auto subResult = m3d - m3d2;
+       auto addResult = m3d + m3d2;
+       auto multResult = m3d * m3d2;
+
+       m3d += m3d2;
+       m3d -= m3d2;
+       m3d *= m3d2;
+
+       auto multScalarResult1 = m3d * 10.0;
+       auto multScalarResult2 = 10.0 * m3d;
+       auto divScalarResult = m3d / 10.0;
+
+       auto isEqual = m3d == m3d2;
+       auto isNotEqual = m3d != m3d2;
+
+       auto result = temp::Cross(v3d, v3d2);
+       auto mag = m3d.GetMagnitude();
+       m3d.Transpose();
+       m3d.Normalize();
+       auto m3dT = Transpose(m3d);
+       auto dot = v3d.Dot(v3d2);
+       auto cross = v3d.Cross(v3d2);
+
+       Eigen::VectorXf ea(50), eb(50), ec(50), ed(50);
+       temp::Vectorf oa(50), ob(50), oc(50), od(50);
+
+       ea = 3 * eb + 4 * ec + 5 * ed;
+       oa = 3 * ob + 4 * oc + 5 * od;
+
+       double d = 1.0;
+
+       //arma::Mat<double>::fixed<3, 3> a;
+       ////double a00 = a(0, 0) = (double)1.0;
+
+       //arma::Mat<double> ad(3, 3);
+       //double ad00 = ad(0, 0) = 1.0;
+
+       //Eigen::Matrix<double, 3, 3> b;
+       //double b00 = b(0, 0) = 1.0;
+
+       ////temp::MatMat<double, 3, 3, Eigen::Matrix<double, 3, 3>> eigenM3;
+       ////temp::ArmaMatMat3d armaM3;
+
+       ////temp::MatMat<double, 3, 3, arma::Mat<double>::fixed<3, 3>> armaM3;
+       //temp::EigenMatMat3d eigenM3;
+
+       ////double armga00 = armaM3(0, 0) = 1.0;
+       //double eigen00 = eigenM3(0, 0) = 1.0;
+
+       //temp::Matd mat(3, 3, 3.0);
+       //mat.foo();
+
+       ////temp::Mat2<double, 2, 2> mm;
+
+       //temp::Matrixd m(3, 3, 3.0);
+
+       //auto mcopyctor(m);
+       //temp::Matrixd  massign;
+       //massign = m;
+
+       //temp::Matrix2d m2(2.0);
+       //temp::Matrix3d m3(3.0);
+       //temp::Matrix6d m6(6.0);
+
+       //temp::Vector2d v2(2.0);
+       //temp::Vector3d v3(3.0);
+       //temp::Vector6d v6(6.0);
+
+       //temp::Matrixd* pv6 = new temp::Vector6d(6.0);
+       //delete pv6;
+
+       //temp::Matrixi mi100(100, 100, 100);
+       //temp::Matrixf mf2(2, 2, 2.0);
+       //temp::Matrixd m10(10, 10, 10.0);
+
+       //temp::Vector<unsigned short> vus10(10, 10);
+
+       //double d = 1.0;
+    }
 
     if (false)
     {

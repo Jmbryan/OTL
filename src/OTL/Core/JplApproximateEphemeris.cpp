@@ -27,7 +27,6 @@
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
-#include <OTL/Core/Exceptions.h>
 
 namespace otl
 {
@@ -143,7 +142,7 @@ void JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const
    {
       g_ephemerisDatabase->GetOrbitalElements(name, epoch, orbitalElements);
    }
-   catch (Exception ex)
+   catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while trying to retrieve orbital elements for " << Bracket(name) <<
          " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());

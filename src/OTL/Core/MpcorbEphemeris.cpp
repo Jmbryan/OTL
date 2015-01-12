@@ -27,7 +27,6 @@
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
-#include <OTL/Core/Exceptions.h>
 
 #include <OTL/Core/PropagateLagrangian.h>
 
@@ -136,7 +135,7 @@ void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoc
       g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
       g_ephemerisDatabase->GetStateVector(name, m_referenceStateVector);
    }
-   catch (Exception ex)
+   catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while retrieving reference epoch and state vector for " << Bracket(name);
       return;
@@ -165,7 +164,7 @@ void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& 
       g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
       g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
    }
-   catch (Exception ex)
+   catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
       return;
