@@ -32,6 +32,10 @@ namespace otl
 
 namespace temp {
 
+template<typename T, int NumRows, int NumCols> using UnaryOp = Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>>;
+template<typename OpType, typename LhsType, typename RhsType> using BinaryOp = Eigen::CwiseBinaryOp<OpType, const LhsType, const RhsType>;
+template<typename T, typename LhsType, typename RhsType> using BinaryOpAdd = Eigen::CwiseBinaryOp<Eigen::internal::scalar_sum_op<T>, const LhsType, const RhsType>;
+
 template<typename T, int NumRows, int NumCols>
 class Matrix
 {
@@ -43,6 +47,8 @@ public:
    Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix);
    Matrix& operator =(const Matrix& other);
    Matrix& operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other);
+   //template<typename OtherType>
+   //Matrix& operator =(const OtherType& other);
 
    T& operator()(unsigned int row, unsigned int col);
    const T& operator()(unsigned int row, unsigned int col) const;
@@ -64,6 +70,17 @@ public:
    static Matrix Identity();
    static Matrix Constant(const T& value);
 
+   //BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, Eigen::Matrix<T, NumRows, NumCols>> operator +(const Matrix& other)
+   //{
+   //   return (m_matrix + other.GetImpl());
+   //}
+
+   //template<typename OtherType>
+   //BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, OtherType> operator +(const OtherType& other)
+   //{
+   //   return (m_matrix + other);
+   //}
+
 private:
    Eigen::Matrix<T, NumRows, NumCols> m_matrix;
 };
@@ -78,8 +95,19 @@ Matrix<T, NumRows, NumCols> Transpose(const Matrix<T, NumRows, NumCols>& other);
 
 // Operator overloads
 
+//template<typename T, typename OtherType, int NumRows, int NumCols>
+//BinaryOpAdd<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right);
+
+// HERE
 template<typename T, int NumRows, int NumCols>
-Eigen::Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
+const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, Eigen::Matrix<T, NumRows, NumCols>> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
+
+template<typename T, typename OtherType, int NumRows, int NumCols>
+const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, OtherType> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right);
+
+template<typename T, typename OtherType, int NumRows, int NumCols> 
+const BinaryOp<Eigen::internal::scalar_sum_op<T>, OtherType, Eigen::Matrix<T, NumRows, NumCols>> operator +(const OtherType& left, const Matrix<T, NumRows, NumCols>& right);
+
 
 template<typename T, int NumRows, int NumCols>
 Eigen::Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
@@ -101,7 +129,7 @@ template<typename S, typename T, int NumRows, int NumCols>
 Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right);
 
 template<typename S, typename T, int NumRows, int NumCols>
-Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
+UnaryOp<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
 //template<typename S, typename T, int NumRows, int NumCols>
 //Eigen::Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
 

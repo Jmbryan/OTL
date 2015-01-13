@@ -91,6 +91,17 @@ inline Matrix<T, NumRows, NumCols>& Matrix<T, NumRows, NumCols>::operator =(cons
    return *this;
 }
 
+//template<typename T, int NumRows, int NumCols>
+//template<typename OtherType>
+//Matrix<T, NumRows, NumCols>& Matrix<T, NumRows, NumCols>::operator =(const OtherType& other)
+//{
+//   if (&m_matrix != &other)
+//   {
+//      m_matrix = Eigen::Matrix<T, NumRows, NumCols>(other);
+//   }
+//   return *this;
+//}
+
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
 inline T& Matrix<T, NumRows, NumCols>::operator()(unsigned int row, unsigned int col)
@@ -219,12 +230,54 @@ Matrix<T, NumRows, NumCols> Matrix<T, NumRows, NumCols>::Constant(const T& value
 
 // Operator overloads
 
+//template<typename T, int NumRows, int NumCols>
+//BinaryOpAdd<T, NumRows, NumCols, Matrix<T, NumRows, NumCols>> Matrix<T, NumRows, NumCols>::operator +(const Matrix<T, NumRows, NumCols>& other)
+//{
+//   return (m_matrix + other.GetImpl());
+//}
+
+//template<typename T, int NumRows, int NumCols>
+//inline Matrix<T, NumRows, NumCols> Matrix<T, NumRows, NumCols>::operator +(const Matrix<T, NumRows, NumCols>& other)
+//{
+//   return (m_matrix + other.GetImpl());
+//}
+
+//template<typename T, int NumRows, int NumCols>
+//template<typename OtherType>
+//inline BinaryOpAdd<T, NumRows, NumCols, Matrix<T, NumRows, NumCols>> Matrix<T, NumRows, NumCols>::operator +(const OtherType& other)
+//{
+   //return BinaryOpAdd<T, NumRows, NumCols, Matrix<T, NumRows, NumCols>>();
+   //return (m_matrix + other);
+//}
+
+//template<typename T, typename OtherType, int NumRows, int NumCols>
+//inline BinaryOpAdd<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right)
+//{
+//   return (left.GetImpl() + right);
+//}
+
 ////////////////////////////////////////////////////////////
+// HERE
 template<typename T, int NumRows, int NumCols>
-inline Eigen::Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
+const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, Eigen::Matrix<T, NumRows, NumCols>> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
 {
    return (left.GetImpl() + right.GetImpl());
-   //return Matrix<T, NumRows, NumCols>(left.GetImpl() + right.GetImpl());
+}
+
+template<typename T, typename OtherType, int NumRows, int NumCols>
+const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, OtherType> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right)
+{
+   return (left.GetImpl() + right);
+}
+
+template<typename T, typename OtherType, int NumRows, int NumCols>
+inline const BinaryOp<Eigen::internal::scalar_sum_op<T>, OtherType, Eigen::Matrix<T, NumRows, NumCols>> operator +(const OtherType& left, const Matrix<T, NumRows, NumCols>& right)
+////inline Eigen::Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
+{
+   return (left + right.GetImpl());
+//   return (right.GetImpl() + left);
+//   //return (left.GetImpl() + right.GetImpl());
+//   //return Matrix<T, NumRows, NumCols>(left.GetImpl() + right.GetImpl());
 }
 
 ////////////////////////////////////////////////////////////
@@ -277,13 +330,11 @@ inline Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, Nu
 
 ////////////////////////////////////////////////////////////
 template<typename S, typename T, int NumRows, int NumCols>
-inline Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
-//template<typename S, typename T, int NumRows, int NumCols>
+inline UnaryOp<T, NumRows, NumCols > operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
 //inline Eigen::Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
 {
-   const Eigen::Matrix<T, NumRows, NumCols>& mat = right.GetImpl();
-   return Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>>(mat, Eigen::internal::scalar_multiple_op<T>(static_cast<T>(left)));
-   //return (static_cast<T>(left) * right.GetImpl());
+   //return UnaryOp<T, NumRows, NumCols>(right.GetImpl(), Eigen::internal::scalar_multiple_op<T>(static_cast<T>(left)));
+   return (static_cast<T>(left) * right.GetImpl());
    //return Matrix<T, NumRows, NumCols>(static_cast<T>(left) * right.GetImpl());
 }
 

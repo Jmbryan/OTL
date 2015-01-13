@@ -48,7 +48,7 @@ int main()
        v3d2.Fill(2.0);
 
        temp::Matrix3d subResult = m3d - m3d2;
-       auto addResult = m3d + m3d2;
+       //auto addResult = m3d + m3d2;
        auto multResult = m3d * m3d2;
 
        m3d += m3d2;
@@ -80,7 +80,11 @@ int main()
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
+          //auto tst = 3 * eb;
+          //double d = 1.0;
           //ea = 3 * eb;
+          //ea = 4 * (3 * eb) + ec;
+          //ea = 3 * eb + 4 * ec;
           ea = 3 * eb + 4 * ec + 5 * ed;
        }     
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();     
@@ -96,6 +100,9 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           //oa = 3 * ob;
+          //oa = eb + oc + od;
+          //oa = 3 * ob + oc;
+          //oa = 4 * (3 * ob) + oc;
           oa = 3 * ob + 4 * oc + 5 * od;
        }    
        std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
