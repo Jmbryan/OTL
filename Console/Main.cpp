@@ -30,14 +30,24 @@ int main()
 
     if (true)
     {
-       temp::Matrix3d m3d(3.0);
-       temp::Matrix3d m3d2(2.0);
+       Eigen::Matrix3d eigenTemp3;
+       eigenTemp3.fill(3.0);
+       temp::Matrix3d otlTemp3;
+       otlTemp3 = eigenTemp3;
+
+       temp::Matrix3d m3d;
+       temp::Matrix3d m3d2;
        temp::Matrixd md;
        temp::Matrixd md2;
-       temp::Vector3d v3d(3.0);
-       temp::Vector3d v3d2(2.0);
+       temp::Vector3d v3d;
+       temp::Vector3d v3d2;
 
-       auto subResult = m3d - m3d2;
+       m3d.Fill(3.0);
+       m3d2.Fill(2.0);
+       v3d.Fill(3.0);
+       v3d2.Fill(2.0);
+
+       temp::Matrix3d subResult = m3d - m3d2;
        auto addResult = m3d + m3d2;
        auto multResult = m3d * m3d2;
 
@@ -46,7 +56,7 @@ int main()
        m3d *= m3d2;
 
        auto multScalarResult1 = m3d * 10.0;
-       auto multScalarResult2 = 10.0 * m3d;
+       //auto multScalarResult2 = 10.0 * m3d;
        auto divScalarResult = m3d / 10.0;
 
        auto isEqual = m3d == m3d2;
@@ -60,12 +70,42 @@ int main()
        auto dot = v3d.Dot(v3d2);
        auto cross = v3d.Cross(v3d2);
 
+       auto zeroMatrix6 = temp::Matrix6d::Zero();
+       auto eyeMatrix6 = temp::Matrix6d::Identity();
+
+       int numIter = 1000;
+
        Eigen::VectorXf ea(50), eb(50), ec(50), ed(50);
+       ea.fill(2.0); eb.fill(2.0); ec.fill(2.0); ed.fill(2.0);     
+       std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          //ea = 3 * eb;
+          ea = 3 * eb + 4 * ec + 5 * ed;
+       }     
+       std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();     
+       auto duration1 = t2 - t1;
+       auto seconds1 = std::chrono::duration_cast<std::chrono::seconds>(duration1);
+       auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+       auto micro1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1);
+       auto nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration1);
+
        temp::Vectorf oa(50), ob(50), oc(50), od(50);
-
-       ea = 3 * eb + 4 * ec + 5 * ed;
-       oa = 3 * ob + 4 * oc + 5 * od;
-
+       oa.Fill(2.0); ob.Fill(2.0); oc.Fill(2.0); od.Fill(2.0);
+       std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          //oa = 3 * ob;
+          oa = 3 * ob + 4 * oc + 5 * od;
+       }    
+       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+       auto duration2 = t4 - t2;
+       auto seconds2 = std::chrono::duration_cast<std::chrono::seconds>(duration2);
+       auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+       auto micro2 = std::chrono::duration_cast<std::chrono::microseconds>(duration2);
+       auto nano2 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration2);
+       
+       std::cout << "Eigen: " << milli1.count() << " ms. OTL: " << milli2.count() << "ms" << std::endl;
        double d = 1.0;
 
        //arma::Mat<double>::fixed<3, 3> a;

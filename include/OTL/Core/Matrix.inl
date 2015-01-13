@@ -34,9 +34,25 @@ namespace temp {
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols>::Matrix(T defaultValue)
+inline Matrix<T, NumRows, NumCols>::Matrix() :
+m_matrix()
 {
-   m_matrix.setConstant(defaultValue);
+   //m_matrix.setConstant(defaultValue);
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline Matrix<T, NumRows, NumCols>::Matrix(unsigned int numElements) :
+m_matrix(numElements)
+{
+
+}
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline Matrix<T, NumRows, NumCols>::Matrix(unsigned int numRows, unsigned int numCols) :
+m_matrix(numRows, numCols)
+{
+
 }
 
 ////////////////////////////////////////////////////////////
@@ -60,6 +76,17 @@ inline Matrix<T, NumRows, NumCols>& Matrix<T, NumRows, NumCols>::operator =(cons
    if (this != &other)
    {
       m_matrix = other.GetImpl();
+   }
+   return *this;
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline Matrix<T, NumRows, NumCols>& Matrix<T, NumRows, NumCols>::operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other)
+{
+   if (&m_matrix != &other)
+   {
+      m_matrix = other;
    }
    return *this;
 }
@@ -91,6 +118,13 @@ void Matrix<T, NumRows, NumCols>::Resize(unsigned int numRows, unsigned int numC
    {
       OTL_ERROR() << "Failed to resize matrix. Each matrix axis must have dynamic size or remain constant";
    }
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+void Matrix<T, NumRows, NumCols>::Fill(T fillValue)
+{
+   m_matrix.fill(fillValue);
 }
 
 ////////////////////////////////////////////////////////////
@@ -160,27 +194,53 @@ Matrix<T, NumRows, NumCols> Transpose(const Matrix<T, NumRows, NumCols>& other)
    return Matrix<T, NumRows, NumCols>(other.GetImpl().transpose());
 }
 
+// Static methods
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+Matrix<T, NumRows, NumCols> Matrix<T, NumRows, NumCols>::Zero()
+{
+   return Matrix(Eigen::Matrix<T, NumRows, NumCols>::Zero());
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+Matrix<T, NumRows, NumCols> Matrix<T, NumRows, NumCols>::Identity()
+{
+   return Matrix(Eigen::Matrix<T, NumRows, NumCols>::Identity());
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+Matrix<T, NumRows, NumCols> Matrix<T, NumRows, NumCols>::Constant(const T& value)
+{
+   return Matrix(Eigen::Matrix<T, NumRows, NumCols>::Constant(T));
+}
+
 // Operator overloads
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
+inline Eigen::Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
 {
-   return Matrix<T, NumRows, NumCols>(left.GetImpl() + right.GetImpl());
+   return (left.GetImpl() + right.GetImpl());
+   //return Matrix<T, NumRows, NumCols>(left.GetImpl() + right.GetImpl());
 }
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
+inline Eigen::Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
 {
-   return Matrix<T, NumRows, NumCols>(left.GetImpl() - right.GetImpl());
+   return (left.GetImpl() - right.GetImpl());
+   //return Matrix<T, NumRows, NumCols>(left.GetImpl() - right.GetImpl());
 }
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
+inline Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right)
 {
-   return Matrix<T, NumRows, NumCols>(left.GetImpl() * right.GetImpl());
+   return (left.GetImpl() * right.GetImpl());
+   //return Matrix<T, NumRows, NumCols>(left.GetImpl() * right.GetImpl());
 }
 
 ////////////////////////////////////////////////////////////
@@ -209,23 +269,30 @@ inline Matrix<T, NumRows, NumCols>& operator*=(Matrix<T, NumRows, NumCols>& left
 
 ////////////////////////////////////////////////////////////
 template<typename S, typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right)
+inline Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right)
 {
-   return Matrix<T, NumRows, NumCols>(left.GetImpl() * right);
+   return (left.GetImpl() * right);
+   //return Matrix<T, NumRows, NumCols>(left.GetImpl() * right);
 }
 
 ////////////////////////////////////////////////////////////
 template<typename S, typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
+inline Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
+//template<typename S, typename T, int NumRows, int NumCols>
+//inline Eigen::Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right)
 {
-   return Matrix<T, NumRows, NumCols>(static_cast<float>(left) * right.GetImpl());
+   const Eigen::Matrix<T, NumRows, NumCols>& mat = right.GetImpl();
+   return Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>>(mat, Eigen::internal::scalar_multiple_op<T>(static_cast<T>(left)));
+   //return (static_cast<T>(left) * right.GetImpl());
+   //return Matrix<T, NumRows, NumCols>(static_cast<T>(left) * right.GetImpl());
 }
 
 ////////////////////////////////////////////////////////////
 template<typename S, typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const S& right)
+inline Eigen::Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const S& right)
 {
-   return Matrix<T, NumRows, NumCols>(left.GetImpl() / right);
+   return (left.GetImpl() / right);
+   //return Matrix<T, NumRows, NumCols>(left.GetImpl() / right);
 }
 
 ////////////////////////////////////////////////////////////

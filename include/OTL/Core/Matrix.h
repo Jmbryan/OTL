@@ -24,6 +24,8 @@
 
 #pragma once
 #include <Eigen/Dense>
+#include <Eigen/src/Core/CwiseBinaryOp.h>
+//#include <Eigen/src/Plugins/CommonCwiseUnaryOps.h>
 
 namespace otl
 {
@@ -34,15 +36,20 @@ template<typename T, int NumRows, int NumCols>
 class Matrix
 {
 public:
-   Matrix(T defaultValue = T());
+   Matrix();
+   explicit Matrix(unsigned int numElements);
+   Matrix(unsigned int numRows, unsigned int numCols);
    Matrix(const Matrix& other);
-   explicit Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix);
+   Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix);
    Matrix& operator =(const Matrix& other);
+   Matrix& operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other);
 
    T& operator()(unsigned int row, unsigned int col);
    const T& operator()(unsigned int row, unsigned int col) const;
 
    void Resize(unsigned int numRows, unsigned int numCols);
+   void Fill(T fillValue);
+
    T GetMagnitude() const;
    void Transpose();
    void Normalize();
@@ -52,6 +59,10 @@ public:
 
    Eigen::Matrix<T, NumRows, NumCols>& GetImpl();
    const Eigen::Matrix<T, NumRows, NumCols>& GetImpl() const;
+
+   static Matrix Zero();
+   static Matrix Identity();
+   static Matrix Constant(const T& value);
 
 private:
    Eigen::Matrix<T, NumRows, NumCols> m_matrix;
@@ -68,13 +79,13 @@ Matrix<T, NumRows, NumCols> Transpose(const Matrix<T, NumRows, NumCols>& other);
 // Operator overloads
 
 template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
+Eigen::Matrix<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
 
 template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
+Eigen::Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
 
 template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
+Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
 
 template<typename T, int NumRows, int NumCols>
 Matrix<T, NumRows, NumCols>& operator+=(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
@@ -87,13 +98,15 @@ Matrix<T, NumRows, NumCols>& operator*=(Matrix<T, NumRows, NumCols>& left, const
 
 // Scalar
 template<typename S, typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right);
+Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right);
 
 template<typename S, typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
+Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
+//template<typename S, typename T, int NumRows, int NumCols>
+//Eigen::Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
 
 template<typename S, typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const S& right);
+Eigen::Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const S& right);
 
 // Boolean
 template<typename T, int NumRows, int NumCols>
