@@ -30,7 +30,7 @@ int main()
 
     if (true)
     {
-       auto cm1 = temp::Matrix3d::Constant(10.0);
+       auto cm1 = Matrix3d::Constant(10.0);
        auto element0 = cm1(0);
 
        Eigen::Matrix3d em3dd;
@@ -41,19 +41,20 @@ int main()
 
        Eigen::Matrix3d eigenTemp3;
        eigenTemp3.fill(3.0);
-       temp::Matrix3d otlTemp3;
+       auto lshdfsd = eigenTemp3 * 3;
+       Matrix3d otlTemp3;
        otlTemp3 = eigenTemp3;
 
-       temp::Matrix3d m3d;
-       temp::Matrix3d m3d2;
-       temp::Matrixd md;
-       temp::Matrixd md2;
-       temp::Vector3d v3d;
-       temp::Vector3d v3d2;
+       Matrix3d m3d;
+       Matrix3d m3d2;
+       Matrixd md;
+       Matrixd md2;
+       Vector3d v3d;
+       Vector3d v3d2;
 
-       temp::RowVector3d orow0 = m3d.Row(0);
+       RowVector3d orow0 = m3d.Row(0);
        auto ocol0 = m3d.Col(0);
-       temp::Vector3d ocol1 = m3d.Col(2);
+       Vector3d ocol1 = m3d.Col(2);
        //auto oxxx = m3d[0];
        auto oyyy = v3d[0];
 
@@ -62,7 +63,7 @@ int main()
        v3d.Fill(3.0);
        v3d2.Fill(2.0);
 
-       temp::Matrix3d subResult = m3d - m3d2;
+       Matrix3d subResult = m3d - m3d2;
        auto addResult = m3d + m3d2;
        auto multResult = m3d * m3d2;
 
@@ -88,8 +89,8 @@ int main()
        Eigen::Vector3d ev3d;
        auto cross2 = v3d.Cross(ev3d);
 
-       auto zeroMatrix6 = temp::Matrix6d::Zero();
-       auto eyeMatrix6 = temp::Matrix6d::Identity();
+       auto zeroMatrix6 = Matrix6d::Zero();
+       auto eyeMatrix6 = Matrix6d::Identity();
 
        int numIter = 1000;
 
@@ -112,7 +113,7 @@ int main()
        auto micro1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1);
        auto nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration1);
 
-       temp::Matrixf oa(50, 50), ob(50, 50), oc(50, 50), od(50, 50);
+       Matrixf oa(50, 50), ob(50, 50), oc(50, 50), od(50, 50);
        oa.Fill(2.0); ob.Fill(2.0); oc.Fill(2.0); od.Fill(2.0);
        std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
@@ -133,54 +134,6 @@ int main()
        
        OTL_INFO() << "Eigen: " << milli1.count() << " ms. OTL: " << milli2.count() << "ms";
        double d = 1.0;
-
-       //arma::Mat<double>::fixed<3, 3> a;
-       ////double a00 = a(0, 0) = (double)1.0;
-
-       //arma::Mat<double> ad(3, 3);
-       //double ad00 = ad(0, 0) = 1.0;
-
-       //Eigen::Matrix<double, 3, 3> b;
-       //double b00 = b(0, 0) = 1.0;
-
-       ////temp::MatMat<double, 3, 3, Eigen::Matrix<double, 3, 3>> eigenM3;
-       ////temp::ArmaMatMat3d armaM3;
-
-       ////temp::MatMat<double, 3, 3, arma::Mat<double>::fixed<3, 3>> armaM3;
-       //temp::EigenMatMat3d eigenM3;
-
-       ////double armga00 = armaM3(0, 0) = 1.0;
-       //double eigen00 = eigenM3(0, 0) = 1.0;
-
-       //temp::Matd mat(3, 3, 3.0);
-       //mat.foo();
-
-       ////temp::Mat2<double, 2, 2> mm;
-
-       //temp::Matrixd m(3, 3, 3.0);
-
-       //auto mcopyctor(m);
-       //temp::Matrixd  massign;
-       //massign = m;
-
-       //temp::Matrix2d m2(2.0);
-       //temp::Matrix3d m3(3.0);
-       //temp::Matrix6d m6(6.0);
-
-       //temp::Vector2d v2(2.0);
-       //temp::Vector3d v3(3.0);
-       //temp::Vector6d v6(6.0);
-
-       //temp::Matrixd* pv6 = new temp::Vector6d(6.0);
-       //delete pv6;
-
-       //temp::Matrixi mi100(100, 100, 100);
-       //temp::Matrixf mf2(2, 2, 2.0);
-       //temp::Matrixd m10(10, 10, 10.0);
-
-       //temp::Vector<unsigned short> vus10(10, 10);
-
-       //double d = 1.0;
     }
 
     if (false)
@@ -349,8 +302,8 @@ int main()
 otl::keplerian::LambertExponentialSinusoid lambert;
 
 //Setup the inputs
-otl::Vector3d initialPosition(15945.34, 0.0, 0.0);
-otl::Vector3d finalPosition(12214.83899, 10249.46731, 0.0);
+otl::Vector3d initialPosition({ 15945.34, 0.0, 0.0 });
+otl::Vector3d finalPosition({ 12214.83899, 10249.46731, 0.0 });
 otl::Time timeDelta = Time::Minutes(76.0);
 otl::keplerian::Orbit::Direction orbitDirection = otl::keplerian::Orbit::Direction::Prograde;
 int maxRevolutions = 0;
@@ -370,12 +323,12 @@ lambert.Evaluate(initialPosition,
                  initialVelocity,
                  finalVelocity);
 
-std::cout << "Initial velocity (kms/s): [" << initialVelocity.x << ", "
-                                           << initialVelocity.y << ", "
-                                           << initialVelocity.z << "]" << std::endl;
-std::cout << "Final velocity (kms/s): [" << finalVelocity.x << ", "
-                                         << finalVelocity.y << ", "
-                                         << finalVelocity.z << "]" << std::endl;
+std::cout << "Initial velocity (kms/s): [" << initialVelocity.X() << ", "
+                                           << initialVelocity.Y() << ", "
+                                           << initialVelocity.Z() << "]" << std::endl;
+std::cout << "Final velocity (kms/s): [" << finalVelocity.X() << ", "
+                                         << finalVelocity.Y() << ", "
+                                         << finalVelocity.Z() << "]" << std::endl;
 
    }
 

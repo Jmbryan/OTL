@@ -1,6 +1,6 @@
 #pragma once
-#include <OTL/Core/Base.h>
 #include <sstream>
+#include <memory>
 
 namespace otl
 {
@@ -8,6 +8,15 @@ namespace otl
 // Forward declarations
 class Logger;
 typedef std::shared_ptr<Logger> LoggerPointer;
+
+enum class LogLevel
+{
+   Invalid = -1,
+   Info,
+   Warning,
+   Error,
+   Fatal
+};
 
 ////////////////////////////////////////////////////////////
 class LineLogger

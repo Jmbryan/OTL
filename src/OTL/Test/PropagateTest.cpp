@@ -23,8 +23,8 @@ TEST_CASE("PropagateAnalytical", "Propagate")
         /// Test PropagateAnalytical.Propagate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-4.
         SECTION("Truth Case: Vallado 2-4")
         {
-            initialStateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423); // [km]
-            initialStateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);    // [km/s]
+           initialStateVector.position = otl::Vector3d({ 1131.340, -2282.343, 6672.423 }); // [km]
+           initialStateVector.velocity = otl::Vector3d({ -5.64305, 4.30333, 2.42879 });    // [km/s]
             mu = otl::ASTRO_MU_EARTH;                                                   // [km^3/s^2]
             timeOfFlight = otl::Time::Minutes(40.0);                                    // [s]                                           
             
@@ -40,32 +40,32 @@ TEST_CASE("PropagateAnalytical", "Propagate")
                                                         finalStateVector,
                                                         mu);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-4219.7527)); // [km]
-                CHECK(finalStateVector.position.y == OTL_APPROX(4363.0292));  // [km]
-                CHECK(finalStateVector.position.z == OTL_APPROX(-3958.7666)); // [km]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(3.689866));   // [km/s]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-1.916735));  // [km/s]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(-6.112511));  // [km/s]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-4219.7527)); // [km]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(4363.0292));  // [km]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(-3958.7666)); // [km]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(3.689866));   // [km/s]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-1.916735));  // [km/s]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-6.112511));  // [km/s]
             }
 
             SECTION("StateVector")
             {
                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-4219.7527)); // [km]
-                CHECK(finalStateVector.position.y == OTL_APPROX(4363.0292));  // [km]
-                CHECK(finalStateVector.position.z == OTL_APPROX(-3958.7666)); // [km]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(3.689866));   // [km/s]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-1.916735));  // [km/s]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(-6.112511));  // [km/s]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-4219.7527)); // [km]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(4363.0292));  // [km]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(-3958.7666)); // [km]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(3.689866));   // [km/s]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-1.916735));  // [km/s]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-6.112511));  // [km/s]
             }   
         }
 
         /// Test PropagateAnalytical.Propagate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-4.
         SECTION("Truth Case: Vallado 2-4 (canonical)")
         {
-            initialStateVector.position = otl::Vector3d(0.177378, -0.357838, 1.046140); // [ER]
-            initialStateVector.velocity = otl::Vector3d(-0.713825, 0.544356, 0.307233); // [ER/TU]
+           initialStateVector.position = otl::Vector3d({ 0.177378, -0.357838, 1.046140 }); // [ER]
+           initialStateVector.velocity = otl::Vector3d({ -0.713825, 0.544356, 0.307233 }); // [ER/TU]
             mu = 1.0;                                                                   // [ER^3/TU^2]
             timeOfFlight = otl::Time::Seconds(2.974674);                                // [TU] 
 
@@ -81,24 +81,24 @@ TEST_CASE("PropagateAnalytical", "Propagate")
                                                         finalStateVector,
                                                         mu);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-0.661596)); // [ER]
-                CHECK(finalStateVector.position.y == OTL_APPROX(0.684060));  // [ER]
-                CHECK(finalStateVector.position.z == OTL_APPROX(-0.620678)); // [ER]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(0.466755));  // [ER/TU]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-0.242460)); // [ER/TU]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(-0.773210)); // [ER/TU]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(-0.620678)); // [ER]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(0.466755));  // [ER/TU]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.242460)); // [ER/TU]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-0.773210)); // [ER/TU]
             }
 
             SECTION("StateVector")
             {
                 propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-0.661596)); // [ER]
-                CHECK(finalStateVector.position.y == OTL_APPROX(0.684060));  // [ER]
-                CHECK(finalStateVector.position.z == OTL_APPROX(-0.620678)); // [ER]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(0.466755));  // [ER/TU]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-0.242460)); // [ER/TU]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(-0.773210)); // [ER/TU]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(-0.620678)); // [ER]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(0.466755));  // [ER/TU]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.242460)); // [ER/TU]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-0.773210)); // [ER/TU]
             }
         }
 
@@ -179,8 +179,8 @@ TEST_CASE("PropagateAnalytical", "Propagate")
         /// Test PropagateAnalytical.Propagate() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 3.7.
         SECTION("Truth Case: Curtis 3.7")
         {
-            initialStateVector.position = otl::Vector3d(7000.0, -12124.0, 0.0); // [km]
-            initialStateVector.velocity = otl::Vector3d(2.6679, 4.6210, 0.0);   // [km/s]
+           initialStateVector.position = otl::Vector3d({ 7000.0, -12124.0, 0.0 }); // [km]
+           initialStateVector.velocity = otl::Vector3d({ 2.6679, 4.6210, 0.0 });   // [km/s]
             mu = 398600.0;                                                      // [km^3/s^2]
             timeOfFlight = otl::Time::Minutes(60.0);                            // [s]
             
@@ -196,24 +196,24 @@ TEST_CASE("PropagateAnalytical", "Propagate")
                                                         finalStateVector,
                                                         mu);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-3296.8));  // [km]
-                CHECK(finalStateVector.position.y == OTL_APPROX(7413.9));   // [km]
-                CHECK(finalStateVector.position.z == OTL_APPROX(0.0));      // [km]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(-8.2977));  // [km/s]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-0.96309)); // [km/s]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(0.0));      // [km/s]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(0.0));      // [km]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(-8.2977));  // [km/s]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.96309)); // [km/s]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(0.0));      // [km/s]
             }
 
             SECTION("StateVector")
             {
                 propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
 
-                CHECK(finalStateVector.position.x == OTL_APPROX(-3296.8));  // [km]
-                CHECK(finalStateVector.position.y == OTL_APPROX(7413.9));   // [km]
-                CHECK(finalStateVector.position.z == OTL_APPROX(0.0));      // [km]
-                CHECK(finalStateVector.velocity.x == OTL_APPROX(-8.2977));  // [km/s]
-                CHECK(finalStateVector.velocity.y == OTL_APPROX(-0.96309)); // [km/s]
-                CHECK(finalStateVector.velocity.z == OTL_APPROX(0.0));      // [km/s]
+                CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(0.0));      // [km]
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(-8.2977));  // [km/s]
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.96309)); // [km/s]
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(0.0));      // [km/s]
             }      
         }
     }

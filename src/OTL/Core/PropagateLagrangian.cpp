@@ -81,10 +81,10 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
 
     Vector3d R = initialStateVector.position;
     Vector3d V = initialStateVector.velocity;
-    double r0 = R.Magnitude();
-    double v0 = V.Magnitude();
+    double r0 = R.GetNorm();
+    double v0 = V.GetNorm();
 
-    double rDotv = Vector3d::Dot(R, V);
+    double rDotv = R.Dot(V);
 
     // Specific Angular Momentum
     double h = 0.5 * SQR(v0) - mu / r0;
@@ -110,11 +110,10 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
     // Parabola
     else
     {
-        Vector3d H;
-        Vector3d::Cross(R, V, H);
-        double h = H.Magnitude();
-
-        double p = SQR(h) / mu;
+       Vector3d H = R.Cross(V);
+       double h = H.GetNorm();
+       double p = SQR(h) / mu;
+       //double p = SQR(R.Cross(V).GetNorm()) / mu;
     }
     
     double xPrev = MATH_INFINITY;

@@ -1,6 +1,5 @@
 #include <OTL/Test/BaseTest.h>
 #include <OTL/Core/Time.h>
-#include <OTL/Core/Vector3.h>
 
 const double TOL_PCT = 0.1;
 #define OTL_APPROX(x) Approx(x, TOL_PCT)
@@ -13,16 +12,18 @@ struct SomeInterface
 
 TEST_CASE("Time", "Time")
 {
-   auto time = otl::Time::Days(1);
+   //auto time = otl::Time::Days(1);
 
-   fakeit::Mock<otl::Vector3d> mock;
-   fakeit::When(Method(mock, Magnitude)).Return(1.0);
+   //fakeit::Mock<otl::Vector3d> mock;
+   //fakeit::When(Method(mock, GetNorm)).Return(1.0);
 
-   otl::Vector3d& i = mock.get();
+   //otl::Vector3d& i = mock.get();
 
-   double result = i.Magnitude();
+   //double result = i.GetNorm();
 
-   fakeit::Verify(Method(mock, Magnitude)).Exactly(1);
+   //fakeit::Verify(Method(mock, GetNorm)).Exactly(1);
+
+
 
    //fakeit::Mock<SomeInterface> mock;
    //fakeit::When(Method(mock, foo)).AlwaysReturn(1);

@@ -29,15 +29,17 @@
 namespace otl
 {
 
-namespace temp {
-
 template<typename T, int NumRows, int NumCols>
 class Matrix
 {
 public:
    // Aliases
                                                             using MatrixImpl = Eigen::Matrix<T, NumRows, NumCols>;
+                                                            using ScalarType = typename Eigen::MatrixBase<MatrixImpl>::Scalar;
+                                                            using RowReturnValue = typename Eigen::MatrixBase<MatrixImpl>::RowXpr;
+                                                            using ColumnReturnValue = typename Eigen::MatrixBase<MatrixImpl>::ColXpr;
                                                             using TransposeReturnType = Eigen::Transpose<MatrixImpl>;
+                                                            using ConstTransposeReturnType = typename Eigen::DenseBase<MatrixImpl>::ConstTransposeReturnType;
    template<typename DerivedType>                           using MatrixBase = Eigen::MatrixBase<DerivedType>;
                                                             using CrossProductReturnType = typename MatrixBase<MatrixImpl>::template cross_product_return_type<MatrixImpl>::type;
    template<typename OtherType>                             using DotProductReturnType = typename Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<MatrixImpl>::Scalar, typename Eigen::internal::traits<OtherType>::Scalar>::ReturnType;
@@ -47,9 +49,6 @@ public:
    template<typename T, typename LhsType, typename RhsType> using BinaryOpDifference = Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<T>, const LhsType, const RhsType>;
    template<typename T, typename LhsType, typename RhsType> using ProductReturnType = typename Eigen::ProductReturnType<LhsType, RhsType>::Type;
    
-   using RowReturnValue = typename Eigen::MatrixBase<MatrixImpl>::RowXpr;
-   using ColumnReturnValue = typename Eigen::MatrixBase<MatrixImpl>::ColXpr;
-
    ////////////////////////////////////////////////////////////
    // Creation
    ////////////////////////////////////////////////////////////
@@ -84,12 +83,18 @@ public:
    ColumnReturnValue Col(unsigned int col);
    ColumnReturnValue Col(unsigned int col) const;
 
+   T& X() { return m_matrix[0]; }
+   const T& X() const { return m_matrix[0]; }
+   T& Y() { return m_matrix[1]; }
+   const T& Y() const { return m_matrix[1]; }
+   T& Z() { return m_matrix[2]; }
+   const T& Z() const { return m_matrix[2]; }
+
    ////////////////////////////////////////////////////////////
    // Utility
    ////////////////////////////////////////////////////////////
 
    void Resize(unsigned int numRows, unsigned int numCols);
-   template<typename ScalarType>
    void Fill(const ScalarType& value);
 
    T GetNorm() const;
@@ -97,6 +102,7 @@ public:
    void NormalizeInPlace();
    void TransposeInPlace();
    TransposeReturnType Transpose();
+   ConstTransposeReturnType Transpose() const;
 
    DotProductReturnType<MatrixImpl> Dot(const Matrix& other) const;
    template<typename OtherType>
@@ -112,7 +118,6 @@ public:
 
    static Matrix Zero();
    static Matrix Identity();
-   template<typename ScalarType>
    static Matrix Constant(const ScalarType& value);
 
    ////////////////////////////////////////////////////////////
@@ -131,7 +136,8 @@ public:
    template<typename OtherType>
    friend const BinaryOpDifference<T, OtherType, MatrixImpl> operator -(const MatrixBase<OtherType>& left, const Matrix& right) { return left - right.m_matrix; }
 
-   friend const ProductReturnType<T, MatrixImpl, MatrixImpl> operator *(const Matrix& left, const Matrix& right) { return left.m_matrix * right.m_matrix; }
+   template<typename OtherType>
+   friend const ProductReturnType<T, MatrixImpl, typename OtherType::MatrixImpl> operator *(const Matrix& left, const OtherType& right) { return left.m_matrix * right(); }
    template<typename OtherType>
    friend const ProductReturnType<T, MatrixImpl, OtherType> operator *(const Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix * right; }
    template<typename OtherType>
@@ -166,15 +172,10 @@ public:
    friend bool operator!=(MatrixBase<OtherType>& left, const Matrix& right) { return left != right.m_matrix; }
 
    // Scalar
-   template<typename ScalarType>
    friend const UnaryOpScalarProduct<T, MatrixImpl> operator *(const Matrix& left, const ScalarType& right) { return left.m_matrix * static_cast<T>(right); }
-   template<typename ScalarType>
    friend const UnaryOpScalarProduct<T, MatrixImpl> operator *(const ScalarType& left, const Matrix& right) { return static_cast<T>(left)* right.m_matrix; }
-   template<typename ScalarType>
    friend const UnaryOpScalarQuotient<T, MatrixImpl> operator /(const Matrix& left, const ScalarType& right) { return left.m_matrix / static_cast<T>(right); }
-   template<typename ScalarType>
    friend Matrix& operator*=(Matrix& left, const ScalarType& right) { left.m_matrix *= static_cast<T>(right); return left; }
-   template<typename ScalarType>
    friend Matrix& operator/=(Matrix& left, const ScalarType& right) { left.m_matrix /= static_cast<T>(right); return left; }
 
 private:
@@ -200,8 +201,6 @@ OTL_MAKE_DYNAMIC_TYPEDEF(Type, TypeSuffix)
 OTL_MAKE_TYPEDEFS_ALL_SIZES(int,    i)
 OTL_MAKE_TYPEDEFS_ALL_SIZES(float,  f)
 OTL_MAKE_TYPEDEFS_ALL_SIZES(double, d)
-
-} // namespace temp
 
 } // namespace otl
 

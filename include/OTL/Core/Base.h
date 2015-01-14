@@ -23,7 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Matrix3.h>
+#include <OTL/Core/Logger.h>
+#include <OTL/Core/Matrix.h>
 #include <OTL/Core/Time.h>
 #include <iostream>
 #include <memory>
@@ -35,15 +36,6 @@
 
 namespace otl
 {
-
-enum class LogLevel
-{
-   Invalid = -1,
-   Info,
-   Warning,
-   Error,
-   Fatal
-};
 
 enum class State
 {
@@ -161,9 +153,9 @@ const double MATH_DAY_TO_SEC        = 86400.0;
 const double MATH_HOUR_TO_SEC       = 3600.0;
 const double MATH_MIN_TO_SEC        = 60.0;
 const double MATH_SEC_TO_DAY        = 1.0 / MATH_DAY_TO_SEC;
-const Vector3d MATH_UNIT_VEC_I      = Vector3d(1.0, 0.0, 0.0);
-const Vector3d MATH_UNIT_VEC_J      = Vector3d(0.0, 1.0, 0.0);
-const Vector3d MATH_UNIT_VEC_K      = Vector3d(0.0, 0.0, 1.0);
+const Vector3d MATH_UNIT_VEC_I      = Vector3d({ 1.0, 0.0, 0.0 });
+const Vector3d MATH_UNIT_VEC_J      = Vector3d({ 0.0, 1.0, 0.0 });
+const Vector3d MATH_UNIT_VEC_K      = Vector3d({ 0.0, 0.0, 1.0 });
 
 // Astrodynamics
 const double ASTRO_GRAVITATIONAL_CONSTANT = 6.67384e-11;      // Universal gravitational constant (m^3 kg^-1 s^-2)

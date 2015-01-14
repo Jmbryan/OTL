@@ -50,24 +50,21 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    // Position and velocity
    const Vector3d& R = stateVector.position;
    const Vector3d& V = stateVector.velocity;
-   double r = R.Magnitude();
-   double v = V.Magnitude();
-
-   double rDotv = Vector3d::Dot(R, V);
+   double r = R.GetNorm();
+   double v = V.GetNorm();
+   double rDotv = R.Dot(V);
 
    // Specific Angular Momentum
-   Vector3d H;
-   Vector3d::Cross(R, V, H);
-   double h = H.Magnitude();
+   Vector3d H = R.Cross(V);
+   double h = H.GetNorm();
 
    // Node Vector
-   Vector3d N;
-   Vector3d::Cross(MATH_UNIT_VEC_K, H, N);
-   double n = N.Magnitude();
+   Vector3d N = MATH_UNIT_VEC_K.Cross(H);
+   double n = N.GetNorm();
 
    // Eccentricity
    Vector3d Ecc = (SQR(v) / mu - 1.0 / r) * R - (rDotv / mu) * V;
-   double ecc = Ecc.Magnitude();
+   double ecc = Ecc.GetNorm();
 
    // Semimajor axis and semiparameter
    double a, p;
@@ -87,15 +84,15 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    double incl = 0.0;
    if (h > 0.0)
    {
-      incl = acos(H.z / h);
+      incl = acos(H.Z() / h);
    }
 
    // Longitude of the ascending node
    double lan = 0.0;
    if (n > 0.0)
    {
-      lan = acos(N.x / n);
-      if (N.y < 0.0)
+      lan = acos(N.X() / n);
+      if (N.Y() < 0.0)
       {
          lan = MATH_2_PI - lan;
       }
@@ -105,23 +102,23 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    double aop = 0.0;
    if (ecc != ASTRO_ECC_CIRCULAR && incl != ASTRO_INCL_EQUATORIAL) // non-circular non-equatorial orbit
    {
-      double nDotecc = Vector3d::Dot(N, Ecc);
+      double nDotecc = N.Dot(Ecc);
       aop = acos(nDotecc / n / ecc);
-      if (Ecc.z < 0.0)
+      if (Ecc.Z() < 0.0)
       {
          aop = MATH_2_PI - aop;
       }
    }
    else if (ecc != ASTRO_ECC_CIRCULAR) // non-circular equatorial orbit (line of nodes is undefined)
    {
-      aop = acos(Ecc.x / ecc);
+      aop = acos(Ecc.X() / ecc);
    }
 
    // True Anomaly
    double ta;
    if (ecc != ASTRO_ECC_CIRCULAR) // non-circular orbit
    {
-      double eccDotr = Vector3d::Dot(Ecc, R);
+      double eccDotr = Ecc.Dot(R);
       ta = acos(eccDotr / ecc / r);
       if (rDotv < 0.0)
       {
@@ -130,8 +127,8 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    }
    else if (incl != ASTRO_INCL_EQUATORIAL) // circular non-equatorial orbit
    {
-      double nDotr = Vector3d::Dot(N, R);
-      double nDotv = Vector3d::Dot(N, V);
+      double nDotr = N.Dot(R);
+      double nDotv = N.Dot(V);
       ta = acos(nDotr / n / r);
       if (nDotv > 0.0)
       {
@@ -140,8 +137,8 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
    }
    else // circular equatorial orbit (line of nodes is undefined)
    {
-      ta = acos(R.x / r); // true longitude
-      if (V.x > 0.0)
+      ta = acos(R.X() / r); // true longitude
+      if (V.X() > 0.0)
       {
          ta = MATH_2_PI - ta;
       }
@@ -176,12 +173,12 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
 
    // Build the state vectors in perifical coordinates.
    Vector3d Rp, Vp;
-   Rp.x = p * cosTa / (1.0 + ecc * cosTa);
-   Rp.y = p * sinTa / (1.0 + ecc * cosTa);
-   Rp.z = 0.0;
-   Vp.x = -sqrt(mu / p) * sinTa;
-   Vp.y =  sqrt(mu / p) * (ecc + cosTa);
-   Vp.z = 0.0;
+   Rp.X() = p * cosTa / (1.0 + ecc * cosTa);
+   Rp.Y() = p * sinTa / (1.0 + ecc * cosTa);
+   Rp.Z() = 0.0;
+   Vp.X() = -sqrt(mu / p) * sinTa;
+   Vp.Y() =  sqrt(mu / p) * (ecc + cosTa);
+   Vp.Z() = 0.0;
 
    // Transform the state vectors into inertial coordinates.
    TransformPerifocal2Inertial(Rp, incl, aop, lan, stateVector.position);
@@ -193,7 +190,7 @@ Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta
 {
     double theta = MATH_2_PI * normTheta;
     double phi = acos(2.0 * normPhi - 1.0);
-    Vector3d vec(-sin(phi) * cos(theta), sin(phi) * sin(theta), -cos(phi));
+    Vector3d vec({ -sin(phi) * cos(theta), sin(phi) * sin(theta), -cos(phi) });
     return vec * magnitude;
 }
 

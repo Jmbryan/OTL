@@ -515,9 +515,9 @@ void MGADSMTrajectory::CalculateLegs()
          // Only if followed by a DSM
          if (m_nodes[i+1]->GetType() == TrajectoryNode::Type::DSM)
          {
-            AddState(depNode->deltaV.x);
-            AddState(depNode->deltaV.y);
-            AddState(depNode->deltaV.z);
+            AddState(depNode->deltaV.X());
+            AddState(depNode->deltaV.Y());
+            AddState(depNode->deltaV.Z());
          }
       }
 
@@ -533,9 +533,9 @@ void MGADSMTrajectory::CalculateLegs()
          // Only for more than one DSM
          if (leg.numDSM > 1)
          {
-            AddState(dsmNode->deltaV.x);
-            AddState(dsmNode->deltaV.y);
-            AddState(dsmNode->deltaV.z);
+            AddState(dsmNode->deltaV.X());
+            AddState(dsmNode->deltaV.Y());
+            AddState(dsmNode->deltaV.Z());
          }
       }
 
@@ -583,9 +583,9 @@ void MGADSMTrajectory::CalculateLegs()
 
          if (m_nodes[i+1]->GetType() == TrajectoryNode::Type::DSM)
          {
-            AddState(insNode->deltaV.x);
-            AddState(insNode->deltaV.y);
-            AddState(insNode->deltaV.z);
+            AddState(insNode->deltaV.X());
+            AddState(insNode->deltaV.Y());
+            AddState(insNode->deltaV.Z());
          }
       }
 
@@ -669,7 +669,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
          Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
          m_initialStateVector.velocity += deltaV;
 
-         deltaVs.push_back(deltaV.Magnitude());
+         deltaVs.push_back(deltaV.GetNorm());
       }
    }
 
@@ -692,7 +692,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
             Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
             m_initialStateVector.velocity += deltaV;
 
-            deltaVs.push_back(deltaV.Magnitude());
+            deltaVs.push_back(deltaV.GetNorm());
          }
 
          m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, Time::Seconds(timeOfFlight), m_initialStateVector);
@@ -712,12 +712,12 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
                            m_initialStateVector.velocity,
                            m_finalStateVector.velocity);
 
-         deltaVs.push_back((m_initialStateVector.velocity - preLambertVelocity).Magnitude());
+         deltaVs.push_back(Vector3d(m_initialStateVector.velocity - preLambertVelocity).GetNorm()); // MATRIX_BUG
 
          // This is the end of the trajectory
          if (!leg.flyby && !leg.insertion && (iLeg == numLegs - 1))
          {
-            deltaVs.push_back((m_finalStateVector.velocity - m_planetStateVector.velocity).Magnitude());
+            deltaVs.push_back(Vector3d(m_finalStateVector.velocity - m_planetStateVector.velocity).GetNorm()); // MATRIX_BUG
          }
    }
 
@@ -747,7 +747,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
       double h  = 0;//
       double e  = leg.insertionOrbit.eccentricity;
       double rp = h * h / mu / (1 + e);
-      double vinf = (m_finalStateVector.velocity -  m_planetStateVector.velocity).Magnitude();
+      double vinf = Vector3d(m_finalStateVector.velocity -  m_planetStateVector.velocity).GetNorm(); // MATRIX_BUG
       double vper = sqrt(vinf * vinf + 2.0 * mu / rp);
       double vper2 = sqrt(mu / rp * (1 + e));
 
@@ -775,7 +775,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
          Vector3d deltaV = ConvertNormalizedSpherical2Cartesian(vinf, delta, theta);
          m_finalStateVector.velocity += deltaV;
 
-         deltaVs.push_back(deltaV.Magnitude());
+         deltaVs.push_back(deltaV.GetNorm());
       }
    }
 

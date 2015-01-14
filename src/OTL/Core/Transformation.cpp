@@ -44,15 +44,15 @@ void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
    
    // Build the rotation matrix.
    Matrix3d matrix;
-   matrix.row1.x =  (cosLan  * cosAop) - (sinLan * sinAop  * cosIncl);
-   matrix.row1.y = -(cosLan  * sinAop) - (sinLan * cosIncl * cosAop);
-   matrix.row1.z =  (sinLan  * sinIncl);
-   matrix.row2.x =  (sinLan  * cosAop) + (cosLan * cosIncl * sinAop);
-   matrix.row2.y = -(sinLan  * sinAop) + (cosLan * cosIncl * cosAop);
-   matrix.row2.z = -(cosLan  * sinIncl);
-   matrix.row3.x =  (sinIncl * sinAop);
-   matrix.row3.y =  (sinIncl * cosAop);
-   matrix.row3.z =  (cosIncl);
+   matrix(0,0) =  (cosLan  * cosAop) - (sinLan * sinAop  * cosIncl);
+   matrix(0,1) = -(cosLan  * sinAop) - (sinLan * cosIncl * cosAop);
+   matrix(0,2) =  (sinLan  * sinIncl);
+   matrix(1,0) =  (sinLan  * cosAop) + (cosLan * cosIncl * sinAop);
+   matrix(1,1) = -(sinLan  * sinAop) + (cosLan * cosIncl * cosAop);
+   matrix(1,2) = -(cosLan  * sinIncl);
+   matrix(2,0) =  (sinIncl * sinAop);
+   matrix(2,1) =  (sinIncl * cosAop);
+   matrix(2,2) =  (cosIncl);
 
    // Rotate the perifocal vector to inertial coordinates.
    inertialVector = matrix * perifocalVector;

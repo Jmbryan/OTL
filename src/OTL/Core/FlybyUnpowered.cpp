@@ -45,16 +45,16 @@ void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
    m_VInfinityIn = approachVelocity - planetVelocity;
 
    // The magnitude of this velocity vector remains constant throughout the flyby.
-   double vInfinity = m_VInfinityIn.Magnitude();
+   double vInfinity = m_VInfinityIn.GetNorm();
 
    m_B1 = m_VInfinityIn;
-   m_B1.Normalize();
+   m_B1.NormalizeInPlace();
 
-   Vector3d::Cross(m_B1, planetVelocity / planetVelocity.Magnitude(), m_B2);
-   m_B2.Normalize();
+   m_B2 = m_B1.Cross(planetVelocity / planetVelocity.GetNorm());
+   m_B2.NormalizeInPlace();
 
-   Vector3d::Cross(m_B1, m_B2, m_B3);
-   m_B3.Normalize();
+   m_B3 = m_B1.Cross(m_B2);
+   m_B3.NormalizeInPlace();
 
    // Flyby hyperbola
    double radiusOfPeriapsis = naturalBody.GetRadius() + altitude;

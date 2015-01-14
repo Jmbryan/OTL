@@ -28,8 +28,6 @@
 namespace otl
 {
 
-namespace temp {
-
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
 inline Matrix<T, NumRows, NumCols>::Matrix() :
@@ -216,7 +214,7 @@ Matrix<T, NumRows, NumCols>::Resize(unsigned int numRows, unsigned int numCols)
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-template<typename ScalarType>
+//template<typename ScalarType>
 inline void
 Matrix<T, NumRows, NumCols>::Fill(const ScalarType& value)
 {
@@ -259,6 +257,14 @@ Matrix<T, NumRows, NumCols>::TransposeInPlace()
 template<typename T, int NumRows, int NumCols>
 inline typename Matrix<T, NumRows, NumCols>::TransposeReturnType
 Matrix<T, NumRows, NumCols>::Transpose()
+{
+   return m_matrix.transpose();
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline typename Matrix<T, NumRows, NumCols>::ConstTransposeReturnType
+Matrix<T, NumRows, NumCols>::Transpose() const
 {
    return m_matrix.transpose();
 }
@@ -317,13 +323,11 @@ Matrix<T, NumRows, NumCols>::Identity()
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
-template<typename ScalarType>
+//template<typename ScalarType>
 Matrix<T, NumRows, NumCols>
 Matrix<T, NumRows, NumCols>::Constant(const ScalarType& value)
 {
    return Matrix(Eigen::Matrix<T, NumRows, NumCols>::Constant(static_cast<T>(value)));
 }
-
-} // namespace temp
 
 } // namespace otl
