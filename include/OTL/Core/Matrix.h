@@ -24,125 +24,162 @@
 
 #pragma once
 #include <Eigen/Dense>
-#include <Eigen/src/Core/CwiseBinaryOp.h>
-//#include <Eigen/src/Plugins/CommonCwiseUnaryOps.h>
+#include <Eigen/src/Core/MatrixBase.h>
 
 namespace otl
 {
 
 namespace temp {
 
-template<typename T, int NumRows, int NumCols> using UnaryOp = Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const Eigen::Matrix<T, NumRows, NumCols>>;
-template<typename OpType, typename LhsType, typename RhsType> using BinaryOp = Eigen::CwiseBinaryOp<OpType, const LhsType, const RhsType>;
-template<typename T, typename LhsType, typename RhsType> using BinaryOpAdd = Eigen::CwiseBinaryOp<Eigen::internal::scalar_sum_op<T>, const LhsType, const RhsType>;
-
 template<typename T, int NumRows, int NumCols>
 class Matrix
 {
 public:
+   // Aliases
+                                                            using MatrixImpl = Eigen::Matrix<T, NumRows, NumCols>;
+                                                            using TransposeReturnType = Eigen::Transpose<MatrixImpl>;
+   template<typename DerivedType>                           using MatrixBase = Eigen::MatrixBase<DerivedType>;
+                                                            using CrossProductReturnType = typename MatrixBase<MatrixImpl>::template cross_product_return_type<MatrixImpl>::type;
+   template<typename OtherType>                             using DotProductReturnType = typename Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<MatrixImpl>::Scalar, typename Eigen::internal::traits<OtherType>::Scalar>::ReturnType;
+   template<typename T, typename LhsType>                   using UnaryOpScalarProduct = Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<T>, const LhsType>;
+   template<typename T, typename LhsType>                   using UnaryOpScalarQuotient = Eigen::CwiseUnaryOp<Eigen::internal::scalar_quotient1_op<T>, const LhsType>;
+   template<typename T, typename LhsType, typename RhsType> using BinaryOpSum = Eigen::CwiseBinaryOp<Eigen::internal::scalar_sum_op<T>, const LhsType, const RhsType>;
+   template<typename T, typename LhsType, typename RhsType> using BinaryOpDifference = Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<T>, const LhsType, const RhsType>;
+   template<typename T, typename LhsType, typename RhsType> using ProductReturnType = typename Eigen::ProductReturnType<LhsType, RhsType>::Type;
+   
+   using RowReturnValue = typename Eigen::MatrixBase<MatrixImpl>::RowXpr;
+   using ColumnReturnValue = typename Eigen::MatrixBase<MatrixImpl>::ColXpr;
+
+   ////////////////////////////////////////////////////////////
+   // Creation
+   ////////////////////////////////////////////////////////////
+
    Matrix();
    explicit Matrix(unsigned int numElements);
    Matrix(unsigned int numRows, unsigned int numCols);
    Matrix(const Matrix& other);
-   Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix);
+   Matrix(const MatrixImpl& matrix);
    Matrix& operator =(const Matrix& other);
-   Matrix& operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other);
-   //template<typename OtherType>
-   //Matrix& operator =(const OtherType& other);
+   Matrix& operator =(const MatrixImpl&  other);
+   ~Matrix();
+
+   ////////////////////////////////////////////////////////////
+   // Access
+   ////////////////////////////////////////////////////////////
+
+   MatrixImpl& operator()();
+   const MatrixImpl& operator()() const;
+
+   T& operator()(unsigned int index);
+   const T& operator()(unsigned int index) const;
 
    T& operator()(unsigned int row, unsigned int col);
    const T& operator()(unsigned int row, unsigned int col) const;
 
+   T& operator[](unsigned int index);
+   const T& operator[](unsigned int index) const;
+
+   RowReturnValue Row(unsigned int row);
+   RowReturnValue Row(unsigned int row) const;
+   ColumnReturnValue Col(unsigned int col);
+   ColumnReturnValue Col(unsigned int col) const;
+
+   ////////////////////////////////////////////////////////////
+   // Utility
+   ////////////////////////////////////////////////////////////
+
    void Resize(unsigned int numRows, unsigned int numCols);
-   void Fill(T fillValue);
+   template<typename ScalarType>
+   void Fill(const ScalarType& value);
 
-   T GetMagnitude() const;
-   void Transpose();
-   void Normalize();
+   T GetNorm() const;
+   T GetSquaredNorm() const;
+   void NormalizeInPlace();
+   void TransposeInPlace();
+   TransposeReturnType Transpose();
 
-   T Dot(const Matrix& other) const;
-   Matrix Cross(const Matrix& other) const;
+   DotProductReturnType<MatrixImpl> Dot(const Matrix& other) const;
+   template<typename OtherType>
+   DotProductReturnType<OtherType> Dot(const MatrixBase<OtherType>& other) const;
 
-   Eigen::Matrix<T, NumRows, NumCols>& GetImpl();
-   const Eigen::Matrix<T, NumRows, NumCols>& GetImpl() const;
+   CrossProductReturnType Cross(const Matrix& other) const;
+   template<typename OtherType>
+   CrossProductReturnType Cross(const MatrixBase<OtherType>& other) const;
+
+   ////////////////////////////////////////////////////////////
+   // Static methods
+   ////////////////////////////////////////////////////////////
 
    static Matrix Zero();
    static Matrix Identity();
-   static Matrix Constant(const T& value);
+   template<typename ScalarType>
+   static Matrix Constant(const ScalarType& value);
 
-   //BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, Eigen::Matrix<T, NumRows, NumCols>> operator +(const Matrix& other)
-   //{
-   //   return (m_matrix + other.GetImpl());
-   //}
+   ////////////////////////////////////////////////////////////
+   // Operator overloads
+   ////////////////////////////////////////////////////////////
 
-   //template<typename OtherType>
-   //BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, OtherType> operator +(const OtherType& other)
-   //{
-   //   return (m_matrix + other);
-   //}
+   friend const BinaryOpSum<T, MatrixImpl, MatrixImpl> operator +(const Matrix& left, const Matrix& right) { return left.m_matrix + right.m_matrix; }
+   template<typename OtherType>
+   friend const BinaryOpSum<T, MatrixImpl, OtherType> operator +(const Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix + right; }
+   template<typename OtherType>
+   friend const BinaryOpSum<T, OtherType, MatrixImpl> operator +(const MatrixBase<OtherType>& left, const Matrix& right) { return left + right.m_matrix; }
+
+   friend const BinaryOpDifference<T, MatrixImpl, MatrixImpl> operator -(const Matrix& left, const Matrix& right) { return left.m_matrix - right.m_matrix; }
+   template<typename OtherType>
+   friend const BinaryOpDifference<T, MatrixImpl, OtherType> operator -(const Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix - right; }
+   template<typename OtherType>
+   friend const BinaryOpDifference<T, OtherType, MatrixImpl> operator -(const MatrixBase<OtherType>& left, const Matrix& right) { return left - right.m_matrix; }
+
+   friend const ProductReturnType<T, MatrixImpl, MatrixImpl> operator *(const Matrix& left, const Matrix& right) { return left.m_matrix * right.m_matrix; }
+   template<typename OtherType>
+   friend const ProductReturnType<T, MatrixImpl, OtherType> operator *(const Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix * right; }
+   template<typename OtherType>
+   friend const ProductReturnType<T, OtherType, MatrixImpl> operator *(const MatrixBase<OtherType>& left, const Matrix& right) { return left * right.m_matrix; }
+
+   friend Matrix& operator+=(Matrix& left, const Matrix<T, NumRows, NumCols>& right) { left.m_matrix += right.m_matrix; return left; }
+   template<typename OtherType>
+   friend Matrix& operator+=(Matrix& left, const MatrixBase<OtherType>& right) { left.m_matrix += right; return left; }
+   template<typename OtherType>
+   friend OtherType& operator+=(const MatrixBase<OtherType>& left, Matrix& right) { left += right.m_matrix; return left; }
+   friend Matrix& operator-=(Matrix& left, const Matrix& right) { left.m_matrix -= right.m_matrix; return left; }
+   template<typename OtherType>
+   friend Matrix& operator-=(Matrix& left, const MatrixBase<OtherType>& right) { left.m_matrix -= right; return left; }
+   template<typename OtherType>
+   friend OtherType& operator-=(const MatrixBase<OtherType>& left, Matrix& right) { left -= right.m_matrix; return left; }
+   friend Matrix& operator*=(Matrix& left, const Matrix& right) { left.m_matrix *= right.m_matrix; return left; }
+   template<typename OtherType>
+   friend Matrix& operator*=(Matrix& left, const MatrixBase<OtherType>& right) { left.m_matrix *= right; return left; }
+   template<typename OtherType>
+   friend OtherType& operator*=(const MatrixBase<OtherType>& left, Matrix& right) { left *= right.m_matrix; return left; }
+
+   // Boolean
+   friend bool operator==(Matrix& left, const Matrix& right) { return left.m_matrix == right.m_matrix; }
+   template<typename OtherType>
+   friend bool operator==(Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix == right; }
+   template<typename OtherType>
+   friend bool operator==(MatrixBase<OtherType>& left, const Matrix& right) { return left == right.m_matrix; }
+   friend bool operator!=(Matrix& left, const Matrix& right) { return left.m_matrix != right.m_matrix; }
+   template<typename OtherType>
+   friend bool operator!=(Matrix& left, const MatrixBase<OtherType>& right) { return left.m_matrix != right; }
+   template<typename OtherType>
+   friend bool operator!=(MatrixBase<OtherType>& left, const Matrix& right) { return left != right.m_matrix; }
+
+   // Scalar
+   template<typename ScalarType>
+   friend const UnaryOpScalarProduct<T, MatrixImpl> operator *(const Matrix& left, const ScalarType& right) { return left.m_matrix * static_cast<T>(right); }
+   template<typename ScalarType>
+   friend const UnaryOpScalarProduct<T, MatrixImpl> operator *(const ScalarType& left, const Matrix& right) { return static_cast<T>(left)* right.m_matrix; }
+   template<typename ScalarType>
+   friend const UnaryOpScalarQuotient<T, MatrixImpl> operator /(const Matrix& left, const ScalarType& right) { return left.m_matrix / static_cast<T>(right); }
+   template<typename ScalarType>
+   friend Matrix& operator*=(Matrix& left, const ScalarType& right) { left.m_matrix *= static_cast<T>(right); return left; }
+   template<typename ScalarType>
+   friend Matrix& operator/=(Matrix& left, const ScalarType& right) { left.m_matrix /= static_cast<T>(right); return left; }
 
 private:
-   Eigen::Matrix<T, NumRows, NumCols> m_matrix;
+   MatrixImpl m_matrix;
 };
-
-// Free functions
-
-template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> Cross(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols> Transpose(const Matrix<T, NumRows, NumCols>& other);
-
-// Operator overloads
-
-//template<typename T, typename OtherType, int NumRows, int NumCols>
-//BinaryOpAdd<T, NumRows, NumCols> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right);
-
-// HERE
-template<typename T, int NumRows, int NumCols>
-const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, Eigen::Matrix<T, NumRows, NumCols>> operator +(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, typename OtherType, int NumRows, int NumCols>
-const BinaryOp<Eigen::internal::scalar_sum_op<T>, Eigen::Matrix<T, NumRows, NumCols>, OtherType> operator +(const Matrix<T, NumRows, NumCols>& left, const OtherType& right);
-
-template<typename T, typename OtherType, int NumRows, int NumCols> 
-const BinaryOp<Eigen::internal::scalar_sum_op<T>, OtherType, Eigen::Matrix<T, NumRows, NumCols>> operator +(const OtherType& left, const Matrix<T, NumRows, NumCols>& right);
-
-
-template<typename T, int NumRows, int NumCols>
-Eigen::Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols>& operator+=(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols>& operator-=(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-Matrix<T, NumRows, NumCols>& operator*=(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-// Scalar
-template<typename S, typename T, int NumRows, int NumCols>
-Eigen::Matrix<T, NumRows, NumCols> operator *(const Matrix<T, NumRows, NumCols>& left, const S& right);
-
-template<typename S, typename T, int NumRows, int NumCols>
-UnaryOp<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
-//template<typename S, typename T, int NumRows, int NumCols>
-//Eigen::Matrix<T, NumRows, NumCols> operator *(const S& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename S, typename T, int NumRows, int NumCols>
-Eigen::Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const S& right);
-
-// Boolean
-template<typename T, int NumRows, int NumCols>
-bool operator==(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
-template<typename T, int NumRows, int NumCols>
-bool operator!=(Matrix<T, NumRows, NumCols>& left, const Matrix<T, NumRows, NumCols>& right);
-
 
 #define OTL_MAKE_TYPEDEFS(Type, TypeSuffix, Size, SizeSuffix)        \
 typedef Matrix<Type, Size, Size> Matrix##SizeSuffix##TypeSuffix;     \
