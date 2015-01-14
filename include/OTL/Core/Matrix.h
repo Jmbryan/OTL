@@ -56,6 +56,7 @@ public:
    Matrix();
    explicit Matrix(unsigned int numElements);
    Matrix(unsigned int numRows, unsigned int numCols);
+   Matrix(T x, T y, T z);
    Matrix(const Matrix& other);
    Matrix(const MatrixImpl& matrix);
    Matrix& operator =(const Matrix& other);
@@ -83,12 +84,12 @@ public:
    ColumnReturnValue Col(unsigned int col);
    ColumnReturnValue Col(unsigned int col) const;
 
-   T& X() { return m_matrix[0]; }
-   const T& X() const { return m_matrix[0]; }
-   T& Y() { return m_matrix[1]; }
-   const T& Y() const { return m_matrix[1]; }
-   T& Z() { return m_matrix[2]; }
-   const T& Z() const { return m_matrix[2]; }
+   T& X();
+   const T& X() const;
+   T& Y();
+   const T& Y() const;
+   T& Z();
+   const T& Z() const;
 
    ////////////////////////////////////////////////////////////
    // Utility

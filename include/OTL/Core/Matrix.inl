@@ -28,6 +28,8 @@
 namespace otl
 {
 
+#define FIXED_VECTOR_THREE_ONLY "THIS_FUNCTION_IS_ONLY_FOR_FIXED_SIZE_VECTORS_OF_SIZE_THREE"
+
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
 inline Matrix<T, NumRows, NumCols>::Matrix() :
@@ -49,6 +51,14 @@ inline Matrix<T, NumRows, NumCols>::Matrix(unsigned int numRows, unsigned int nu
 m_matrix(numRows, numCols)
 {
 
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline Matrix<T, NumRows, NumCols>::Matrix(T x, T y, T z)
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   m_matrix(0) = x; m_matrix(1) = y; m_matrix(2) = z;
 }
 
 ////////////////////////////////////////////////////////////
@@ -192,6 +202,60 @@ inline typename Matrix<T, NumRows, NumCols>::ColumnReturnValue
 Matrix<T, NumRows, NumCols>::Col(unsigned int col) const
 {
    return m_matrix.col(col);
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline T&
+Matrix<T, NumRows, NumCols>::X()
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[0];
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline const T&
+Matrix<T, NumRows, NumCols>::X() const
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[0];
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline T&
+Matrix<T, NumRows, NumCols>::Y()
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[1];
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline const T&
+Matrix<T, NumRows, NumCols>::Y() const
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[1];
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline T&
+Matrix<T, NumRows, NumCols>::Z()
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[2];
+}
+
+////////////////////////////////////////////////////////////
+template<typename T, int NumRows, int NumCols>
+inline const T&
+Matrix<T, NumRows, NumCols>::Z() const
+{
+   static_assert((NumRows == 3 || NumCols == 3) && (NumRows == 1 || NumCols == 1), FIXED_VECTOR_THREE_ONLY);
+   return m_matrix[2];
 }
 
 // Utility

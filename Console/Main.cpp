@@ -30,6 +30,9 @@ int main()
 
     if (true)
     {
+       Vector3d v123(1.0, 2.0, 3.0);
+       //Matrix3d v6(1.0, 2.0, 3.0);
+
        auto cm1 = Matrix3d::Constant(10.0);
        auto element0 = cm1(0);
 
