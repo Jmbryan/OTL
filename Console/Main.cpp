@@ -13,6 +13,7 @@
 #include <OTL/Core/SpiceEphemeris.h>
 
 #include <OTL/Core/Matrix.h>
+#include <OTL/Core/Mat.h>
 
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
@@ -32,6 +33,63 @@ int main()
     {
        Vector3d v123(1.0, 2.0, 3.0);
        //Matrix3d v6(1.0, 2.0, 3.0);
+
+       if (true)
+       {
+          int numIter = 10000;
+
+          Eigen::Vector3d ev1, ev2, ev3, ev4, ev5, ev6, ev7, ev8, ev9, ev10;
+          Eigen::Matrix3d mv1;
+          std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+          for (int i = 0; i < numIter; ++i)
+          {
+             auto xprod = ev1.cross(ev2).cross(ev3).cross(ev4).cross(ev5).cross(ev6).cross(ev7).cross(ev8).cross(ev9).cross(ev10);
+             auto row0 = mv1.row(0);
+             auto dot = ev1.dot(ev2);
+             auto z = ev1.cross(ev2.cross(mv1.row(0))).dot(ev4);
+          }
+          std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+          Vec3d v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
+          Mat3d m1;
+          std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+          for (int i = 0; i < numIter; ++i)
+          {
+             auto xprod = v1.Cross(v2).Cross(v3).Cross(v4).Cross(v5).Cross(v6).Cross(v7).Cross(v8).Cross(v9).Cross(v10);
+             auto row0 = m1.Row(0);
+             auto dot = v1.Dot(v2);
+             auto z = v1.Cross(v2.Cross(m1.Row(0))).Dot(v4);
+          }
+          std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+
+          auto duration1 = t2 - t1;
+          auto seconds1 = std::chrono::duration_cast<std::chrono::seconds>(duration1);
+          auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+          auto micro1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1);
+          auto nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration1);
+
+          auto duration2 = t4 - t3;
+          auto seconds2 = std::chrono::duration_cast<std::chrono::seconds>(duration2);
+          auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+          auto micro2 = std::chrono::duration_cast<std::chrono::microseconds>(duration2);
+          auto nano2 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration2);
+
+          OTL_INFO() << "Eigen: " << milli1.count() << " ms. OTL: " << milli2.count() << "ms";
+          double d = 1.0;
+       }
+
+       if (true)
+       {
+          Eigen::Matrix3d em31;
+          Eigen::Matrix3d em32;
+          Eigen::Matrix3d em33;
+          double ed = (em31 * em32).norm();
+          //em31.cross(em32).cross(em33);
+
+          Matrix3d om31;
+          Matrix3d om32;
+          double od = Matrix3d(om31 * om32).GetNorm();
+       }
 
        auto cm1 = Matrix3d::Constant(10.0);
        auto element0 = cm1(0);

@@ -69,11 +69,11 @@ inline Matrix<T, NumRows, NumCols>::Matrix(const Matrix<T, NumRows, NumCols>& ot
 }
 
 ////////////////////////////////////////////////////////////
-template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols>::Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix)
-{
-   m_matrix = matrix;
-}
+//template<typename T, int NumRows, int NumCols>
+//inline Matrix<T, NumRows, NumCols>::Matrix(const Eigen::Matrix<T, NumRows, NumCols>& matrix)
+//{
+//   m_matrix = matrix;
+//}
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
@@ -88,16 +88,16 @@ Matrix<T, NumRows, NumCols>::operator =(const Matrix<T, NumRows, NumCols>& other
 }
 
 ////////////////////////////////////////////////////////////
-template<typename T, int NumRows, int NumCols>
-inline Matrix<T, NumRows, NumCols>&
-Matrix<T, NumRows, NumCols>::operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other)
-{
-   if (&m_matrix != &other)
-   {
-      m_matrix = other;
-   }
-   return *this;
-}
+//template<typename T, int NumRows, int NumCols>
+//inline Matrix<T, NumRows, NumCols>&
+//Matrix<T, NumRows, NumCols>::operator =(const Eigen::Matrix<T, NumRows, NumCols>&  other)
+//{
+//   if (&m_matrix != &other)
+//   {
+//      m_matrix = other;
+//   }
+//   return *this;
+//}
 
 ////////////////////////////////////////////////////////////
 template<typename T, int NumRows, int NumCols>
