@@ -213,6 +213,14 @@ inline double acosh(double x)
 inline double atanh(double x)
 { return 0.5f*log((1.0f+x)/(1.0f-x)); }
 
+/// Returns the cotangent of x
+inline double cot(double x)
+{ return 1.0; }
+
+/// Returns the inverse cotangent of x
+inline double acot(double x)
+{ return 1.0; }
+
 /// Returns the modulo of the floating point number
 inline double Modulo(double dividend, double divisor)
 { return dividend - divisor * std::floor(dividend / divisor); }

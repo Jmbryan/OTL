@@ -53,6 +53,8 @@ public:
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
+   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
+   ///
    /// \param initialStateVector StateVector before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)

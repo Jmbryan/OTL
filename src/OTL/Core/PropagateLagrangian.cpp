@@ -79,70 +79,75 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
 {
    double seconds = timeDelta.Seconds();
 
-    Vector3d R = initialStateVector.position;
-    Vector3d V = initialStateVector.velocity;
+   // Unpack the initial state vector and compute frequently used variables
+    const Vector3d& R = initialStateVector.position;
+    const Vector3d& V = initialStateVector.velocity;
     double r0 = R.GetNorm();
     double v0 = V.GetNorm();
-
     double rDotv = R.Dot(V);
+    double muSqrRoot = sqrt(mu);
 
-    // Specific Angular Momentum
+    // Specific angular momentum
     double h = 0.5 * SQR(v0) - mu / r0;
 
-    double alpha = -SQR(v0) / mu + 2.0 / r0;
+    // Reciprocal of semi-major axis
+    double alpha = 2.0 / r0 - SQR(v0) / mu;
 
-    double x;
-
-    // Circle or Ellipse
-    double alphaThreshold = 0.000001 * (ASTRO_MU_EARTH / mu);
-    if (alpha >alphaThreshold)
+    // Compute universal variable initial guess depending on orbit type
+    double x = 1.0;
+    double alphaThreshold = 0.000001 * (ASTRO_MU_EARTH / mu); // Reference?
+    if (alpha > alphaThreshold) // Circle or Ellipse
     {
-        x = sqrt(mu) * seconds * alpha;
+       x = muSqrRoot * seconds * alpha;
     }
-    // Hyperbola
-    else if (alpha < -alphaThreshold)
+    else if (alpha < -alphaThreshold) // Hyperbola
     {
         double a = 1.0 / alpha;
-
         x = Sign(seconds) * sqrt(-a) * log((-2.0 * mu * alpha * seconds) /
                                            (rDotv + Sign(seconds) * sqrt(-mu * a) * (1.0 - r0 * alpha)));
     }
-    // Parabola
-    else
+    else // Parabola
     {
-       Vector3d H = R.Cross(V);
-       double h = H.GetNorm();
+       double h = R.Cross(V).norm();
        double p = SQR(h) / mu;
-       //double p = SQR(R.Cross(V).GetNorm()) / mu;
+       double s = 0.5 * acot(3.0 * sqrt(mu / pow(p, 3.0)) * seconds);
+       double w = pow(tan(s), 1.0 / 3.0);
+       x = 2.0 * sqrt(p) * cot(2.0 * w);
     }
     
+    // Solve for the universal variable using Newton-Raphson iteration
     double xPrev = MATH_INFINITY;
     int iter = 0;
-    const int MAX_ITER = 100;
+    const int MAX_ITER = 1000;
     double r;
     double psi, c2, c3;
     while (fabs(x - xPrev) >= MATH_TOLERANCE && iter++ < MAX_ITER)
     {
-        psi = SQR(x) * alpha;
-        CalculateC2C3(psi, c2, c3);
-
-        r = SQR(x) * c2 + (rDotv / sqrt(mu)) * x * (1.0 - psi * c3) + r0 * (1.0 - psi * c2);
-
-        xPrev = x;
-        x += (sqrt(mu) * seconds - pow(x, 3.0) * c3 - rDotv / sqrt(mu) * SQR(x) * c2 - r0 * x * (1.0 - psi * c3)) / r;
+      xPrev = x;
+      psi = SQR(x) * alpha;
+      CalculateC2C3(psi, c2, c3);
+      r = SQR(x) * c2 + (rDotv / muSqrRoot) * x * (1.0 - psi * c3) + r0 * (1.0 - psi * c2);
+      x += (muSqrRoot * seconds - pow(x, 3.0) * c3 - rDotv / muSqrRoot * SQR(x) * c2 - r0 * x * (1.0 - psi * c3)) / r;
     }
 
+    if (iter == MAX_ITER)
+    {
+       OTL_WARN() << "PropagateLagrangian::Propagate(): Max iterations reached for universal variable with error " << Bracket(abs(x - xPrev));
+    }
+
+    // Compute the resulting Lagrange coefficients
     double f    = 1.0 - SQR(x) / r0 * c2;
-    double fDot = sqrt(mu) / r / r0 * x * (psi * c3 - 1.0);
-    double g    = seconds - pow(x, 3.0) / sqrt(mu) * c3;
+    double fDot = muSqrRoot / r / r0 * x * (psi * c3 - 1.0);
+    double g = seconds - pow(x, 3.0) / muSqrRoot * c3;
     double gDot = 1.0 - SQR(x) / r * c2;
 
     double sanityCheck = (f * gDot - fDot * g) - 1.0;
     if (abs(sanityCheck) > MATH_TOLERANCE)
     {
-        OTL_WARN() << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check [" << abs(sanityCheck) << "] failed!";
+        OTL_WARN() << "PropagateLagrangian::Propagate(): Lagrange coefficient sanity check " << Bracket(abs(sanityCheck)) << " failed!";
     }
 
+    // Return the state vector
     finalStateVector.position = f * R + g * V;
     finalStateVector.velocity = fDot * R + gDot * V;
 
