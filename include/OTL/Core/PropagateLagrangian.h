@@ -21,6 +21,7 @@
 
 #pragma once
 #include <OTL/Core/Propagate.h>
+#include <OTL/Core/KeplersEquations.h>
 
 namespace otl
 {
@@ -32,7 +33,7 @@ class PropagateLagrangian : public IPropagateAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the orbital elements in time
+   /// \brief Propagate the orbital elements in time using Kepler's equations
    ///
    /// Calculates the final orbital elements after propagating
    /// forwards or backwards in time. Backwards propgation is
@@ -43,22 +44,24 @@ public:
    /// \param timeDelta Propgation time (may be negative)
    /// \param [out] finalOrbitalElements OrbitalElements after propagation
    ///
+   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 7, section 2.3, page 89
+   ///
    ////////////////////////////////////////////////////////////
    virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements);
    
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the state vector in time
+   /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients
    ///
    /// Calculates the final state vector after propagating
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
-   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
-   ///
    /// \param initialStateVector StateVector before propagation
    /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
    /// \param [out] finalStateVector StateVector after propagation
+   ///
+   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
    ///
    ////////////////////////////////////////////////////////////
    virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector);
@@ -103,6 +106,10 @@ private:
    ///
    ////////////////////////////////////////////////////////////
    void CalculateC2C3(double psi, double& c2, double& c3);
+
+private:
+   keplerian::KeplersEquationElliptical m_keplerElliptical;
+   keplerian::KeplersEquationHyperbolic m_keplerHyperbolic;
 };
 
 } // namespace keplerian

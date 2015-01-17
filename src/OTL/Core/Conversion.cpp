@@ -195,32 +195,99 @@ Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta
 }
 
 ////////////////////////////////////////////////////////////
-double ConvertEccentricAnomaly2TrueAnomaly(double eccentricAnomaly, double eccentricity)
+double ConvertTrueAnomaly2Anomaly(double eccentricity, double trueAnomaly)
 {
-    double trueAnomaly = 0.0;
+   if (eccentricity < (1.0 - MATH_TOLERANCE))
+   {
+      return ConvertTrueAnomaly2EccentricAnomaly(eccentricity, trueAnomaly);
+   }
+   else if (eccentricity > (1.0 + MATH_TOLERANCE))
+   {
+      return ConvertTrueAnomaly2HyperbolicAnomaly(eccentricity, trueAnomaly);
+   }
+   else
+   {
+      return ConvertTrueAnomaly2ParabolicAnomaly(trueAnomaly);
+   }
+}
 
-    // Convert elliptical eccentric anomaly to true anomaly
-    if (eccentricity > 0.0 && eccentricity <= 1.0)
-    {
-        double sinTA = sqrt(1.0 - std::pow(eccentricity, 2.0)) * std::sin(eccentricAnomaly) / (1.0 - eccentricity * cos(eccentricAnomaly));
-        double cosTA = (cos(eccentricAnomaly) - eccentricity) / (1.0 - eccentricity * cos(eccentricAnomaly));
-        trueAnomaly = atan2(sinTA, cosTA);
-    }
+////////////////////////////////////////////////////////////
+double ConvertTrueAnomaly2EccentricAnomaly(double eccentricity, double trueAnomaly)
+{
+   double sinE = (sin(trueAnomaly) * sqrt(1.0 - SQR(eccentricity))) /
+                 (1.0 + eccentricity * cos(trueAnomaly));
+   double cosE = (eccentricity + cos(trueAnomaly)) /
+                 (1.0 + eccentricity * cos(trueAnomaly));
+   return atan2(sinE, cosE);
+   //return 2.0 * atan(sqrt((1.0 - eccentricity) / (1.0 + eccentricity)) * tan(0.5 * trueAnomaly)); // requires quadrant check?
+}
 
-    // Convert hyperbolic eccentric anomaly to true anomaly
-    else if (eccentricity > 1.0)
-    {
-        double sinTA = std::sqrt(std::pow(eccentricity, 2.0) - 1.0) * std::sinh(eccentricAnomaly) / (eccentricity * cosh(eccentricAnomaly) - 1.0);
-        double cosTA = (eccentricity - cosh(eccentricAnomaly)) / (eccentricity - cosh(eccentricAnomaly) - 1.0);
-    }
+////////////////////////////////////////////////////////////
+double ConvertTrueAnomaly2HyperbolicAnomaly(double eccentricity, double trueAnomaly)
+{
+   double sinH = (sin(trueAnomaly) * sqrt(SQR(eccentricity) - 1.0)) /
+                 (1.0 + eccentricity * cos(trueAnomaly));
+   double cosH = (eccentricity + cos(trueAnomaly)) /
+                 (1.0 + eccentricity * cos(trueAnomaly));
 
-    // Convert parabolic eccentric anomaly to true anomaly
-    else
-    {
-        //throw NotImplementedException("Parabolic orbits have not yet been implemented");
-    }
+   return atanh(sinH / cosH); // requires quadrant check?
+   //return 2.0 * atanh(sqrt((eccentricity - 1.0) / (eccentricity + 1.0)) * tan(0.5 * trueAnomaly)); // requires quadrant check?
+}
 
-    return trueAnomaly;
+////////////////////////////////////////////////////////////
+double ConvertTrueAnomaly2ParabolicAnomaly(double trueAnomaly)
+{
+   return tan(0.5 * trueAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double ConvertAnomaly2TrueAnomaly(double eccentricity, double anomaly)
+{
+   if (eccentricity < (1.0 - MATH_TOLERANCE))
+   {
+      return ConvertEccentricAnomaly2TrueAnomaly(eccentricity, anomaly);
+   }
+   else if (eccentricity > (1.0 + MATH_TOLERANCE))
+   {
+      return ConvertHyperbolicAnomaly2TrueAnomaly(eccentricity, anomaly);
+   }
+   else
+   {
+      return ConvertParabolicAnomaly2TrueAnomaly(anomaly);
+   }
+}
+
+////////////////////////////////////////////////////////////
+double ConvertEccentricAnomaly2TrueAnomaly(double eccentricity, double eccentricAnomaly)
+{
+   double sinTA = (sin(eccentricAnomaly) * sqrt(1.0 - SQR(eccentricity))) /
+                  (1.0 - eccentricity * cos(eccentricAnomaly));
+   double cosTA = (cos(eccentricAnomaly) - eccentricity) /
+                  (1.0 - eccentricity * cos(eccentricAnomaly));
+   return atan2(sinTA, cosTA);
+   //return 2.0 * atan(sqrt((1.0 + eccentricity) / (1.0 - eccentricity)) * tan(0.5 * eccentricAnomaly)); // requires quadrant check?
+}
+
+////////////////////////////////////////////////////////////
+double ConvertHyperbolicAnomaly2TrueAnomaly(double eccentricity, double hyperbolicAnomaly)
+{
+   double sinTA = (-sinh(hyperbolicAnomaly) * sqrt(SQR(eccentricity) - 1.0)) /
+                  (1.0 - eccentricity * cosh(hyperbolicAnomaly));
+   double cosTA = (cosh(hyperbolicAnomaly) - eccentricity) /
+                  (1.0 - eccentricity * cosh(hyperbolicAnomaly));
+   
+   return atan2(sinTA, cosTA);
+   //return 2.0 * atan(sqrt((eccentricity + 1.0) / (eccentricity - 1.0)) * tanh(0.5 * hyperbolicAnomaly)); // requires quadrant check?
+}
+
+////////////////////////////////////////////////////////////
+double ConvertParabolicAnomaly2TrueAnomaly(double parabolicAnomaly)
+{
+   OTL_ERROR() << "ConvertParabolicAnomaly2TrueAnomaly not implemented yet";
+   double p = 0, r = 0;
+   double sinTA = parabolicAnomaly * (p / r);
+   double cosTA = (parabolicAnomaly - r) / r;
+   return atan2(sinTA, cosTA);
 }
 
 } // namespace otl

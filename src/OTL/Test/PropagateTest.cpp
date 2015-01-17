@@ -13,8 +13,10 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
     otl::OrbitalElements initialOrbitalElements;
     otl::OrbitalElements finalOrbitalElements;
+    otl::OrbitalElements finalExpectedOrbitalElements;
     otl::StateVector initialStateVector;
     otl::StateVector finalStateVector;
+    otl::StateVector finalExpectedStateVector;
     otl::Time timeOfFlight = otl::Time::Days(1);
     double mu;
 
@@ -23,41 +25,56 @@ TEST_CASE("PropagateAnalytical", "Propagate")
         /// Test PropagateAnalytical.Propagate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-4.
         SECTION("Truth Case: Vallado 2-4")
         {
-           initialStateVector.position = otl::Vector3d({ 1131.340, -2282.343, 6672.423 }); // [km]
-           initialStateVector.velocity = otl::Vector3d({ -5.64305, 4.30333, 2.42879 });    // [km/s]
-            mu = otl::ASTRO_MU_EARTH;                                                   // [km^3/s^2]
-            timeOfFlight = otl::Time::Minutes(40.0);                                    // [s]                                           
+            initialStateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423);            // [km]
+            initialStateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);               // [km/s]
+            finalExpectedStateVector.position = otl::Vector3d(-4219.7527, 4363.0292, -3958.7666);  // [km]
+            finalExpectedStateVector.velocity = otl::Vector3d(3.689866, -1.916735, -6.112511);     // [km/s]
+            mu = otl::ASTRO_MU_EARTH;                                                              // [km^3/s^2]
+            timeOfFlight = otl::Time::Minutes(40.0);                                               // [s]
             
+            otl::ConvertStateVector2OrbitalElements(initialStateVector, initialOrbitalElements, mu);
+            otl::ConvertStateVector2OrbitalElements(finalExpectedStateVector, finalExpectedOrbitalElements, mu);
+
             SECTION("OrbitalElements")
             {
-                otl::ConvertStateVector2OrbitalElements(initialStateVector,
-                                                        initialOrbitalElements,
-                                                        mu);
-
                 propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
 
-                otl::ConvertOrbitalElements2StateVector(finalOrbitalElements,
-                                                        finalStateVector,
-                                                        mu);
+                CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));
+                CHECK(finalOrbitalElements.eccentricity       == OTL_APPROX(finalExpectedOrbitalElements.eccentricity));
+                CHECK(finalOrbitalElements.inclination        == OTL_APPROX(finalExpectedOrbitalElements.inclination));
+                CHECK(finalOrbitalElements.argOfPericenter    == OTL_APPROX(finalExpectedOrbitalElements.argOfPericenter));
+                CHECK(finalOrbitalElements.lonOfAscendingNode == OTL_APPROX(finalExpectedOrbitalElements.lonOfAscendingNode));
+                CHECK(finalOrbitalElements.trueAnomaly        == OTL_APPROX(finalExpectedOrbitalElements.trueAnomaly));
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-4219.7527)); // [km]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(4363.0292));  // [km]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(-3958.7666)); // [km]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(3.689866));   // [km/s]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-1.916735));  // [km/s]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-6.112511));  // [km/s]
+                otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, finalStateVector, mu);
+
+                CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
+                CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
+                CHECK(finalStateVector.position.Z() == OTL_APPROX(finalExpectedStateVector.position.Z()));
+                CHECK(finalStateVector.velocity.X() == OTL_APPROX(finalExpectedStateVector.velocity.X()));
+                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(finalExpectedStateVector.velocity.Y()));
+                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(finalExpectedStateVector.velocity.Z()));
             }
 
             SECTION("StateVector")
             {
                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-4219.7527)); // [km]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(4363.0292));  // [km]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(-3958.7666)); // [km]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(3.689866));   // [km/s]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-1.916735));  // [km/s]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-6.112511));  // [km/s]
+               CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
+               CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
+               CHECK(finalStateVector.position.Z() == OTL_APPROX(finalExpectedStateVector.position.Z()));
+               CHECK(finalStateVector.velocity.X() == OTL_APPROX(finalExpectedStateVector.velocity.X()));
+               CHECK(finalStateVector.velocity.Y() == OTL_APPROX(finalExpectedStateVector.velocity.Y()));
+               CHECK(finalStateVector.velocity.Z() == OTL_APPROX(finalExpectedStateVector.velocity.Z()));
+               
+               otl::ConvertStateVector2OrbitalElements(finalStateVector, finalOrbitalElements, mu);
+
+               CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));
+               CHECK(finalOrbitalElements.eccentricity       == OTL_APPROX(finalExpectedOrbitalElements.eccentricity));
+               CHECK(finalOrbitalElements.inclination        == OTL_APPROX(finalExpectedOrbitalElements.inclination));
+               CHECK(finalOrbitalElements.argOfPericenter    == OTL_APPROX(finalExpectedOrbitalElements.argOfPericenter));
+               CHECK(finalOrbitalElements.lonOfAscendingNode == OTL_APPROX(finalExpectedOrbitalElements.lonOfAscendingNode));
+               CHECK(finalOrbitalElements.trueAnomaly        == OTL_APPROX(finalExpectedOrbitalElements.trueAnomaly));
             }   
         }
 
