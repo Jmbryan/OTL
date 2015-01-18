@@ -31,6 +31,20 @@ namespace otl
 namespace keplerian
 {
 
+//double SolveKeplersEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
+//double SolveKeplersEllipticalEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
+//double SolveKeplersHyperbolicEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
+
+class KeplersEquation
+{
+public:
+   KeplersEquation(int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
+   double Solve(double eccentricity, double meanAnomaly);
+   double CalculateEccentricAnomaly(double eccentricity, double meanAnomaly);
+   double CalculateHyperbolicAnomaly(double eccentricity, double meanAnomaly);
+private:
+};
+
 class IKeplersEquation
 {
 public:

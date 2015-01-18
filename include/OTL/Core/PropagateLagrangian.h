@@ -48,6 +48,7 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements);
+   void PropagateX(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements);
    
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients
@@ -65,8 +66,9 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector);
+   void PropagateX(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector);
 
-private:
+public:
    ////////////////////////////////////////////////////////////
    /// \brief Calculate the universal varable
    ///
@@ -84,7 +86,9 @@ private:
    /// \returns Universal variable
    ///
    ////////////////////////////////////////////////////////////
-   double CalculateUniversalVariable(double r0, double vr0, double alpha, const Time& timeDelta, double mu); 
+   void CalculateUniversalVariable1(double r0, double v0, double rdotv, double seconds, double mu);
+   void CalculateUniversalVariable2(double r0, double v0, double rdotv, double seconds, double mu);
+   double CalculateUniversableVariableInitialGuess(double r0, double v0, double rdotv, double alpha, double seconds, double mu);
 
    ////////////////////////////////////////////////////////////
    /// \brief Calculate C2 and C3 (Stumpff Functions)
@@ -107,9 +111,20 @@ private:
    ////////////////////////////////////////////////////////////
    void CalculateC2C3(double psi, double& c2, double& c3);
 
+   void CalculateLagrangeCoefficientsX(double r0, double seconds, double sqrtMu);
+
 private:
    keplerian::KeplersEquationElliptical m_keplerElliptical;
    keplerian::KeplersEquationHyperbolic m_keplerHyperbolic;
+   double m_psi;
+   double m_c2;
+   double m_c3;
+   double m_r;
+   double m_x;
+   double m_f;
+   double m_g;
+   double m_fDot;
+   double m_gDot;
 };
 
 } // namespace keplerian

@@ -30,46 +30,6 @@ namespace otl
 namespace keplerian
 {
 
-double vToAnomaly(double eccentricity, double trueAnomaly)
-{
-   double anomaly = 0.0;
-   if (eccentricity < 1.0)
-   {
-      anomaly = 2.0 * atan(sqrt((1.0 - eccentricity) / (1.0 + eccentricity)) * tan(0.5 * trueAnomaly));
-   }  
-   else if (eccentricity > 1.0)
-   {
-      anomaly = 2.0 * atanh(sqrt((eccentricity - 1.0) / (eccentricity + 1.0)) * tan(0.5 * trueAnomaly));
-   }
-   else if (eccentricity == 1.0)
-   {
-      anomaly = tan(0.5 * trueAnomaly);
-   }
-   return anomaly;
-}
-
-double anomalyToV(double eccentricity, double anomaly)
-{
-   double trueAnomaly = 0.0;
-   if (eccentricity < 1.0)
-   {
-      trueAnomaly = 2.0 * atan(sqrt((1.0 + eccentricity) / (1.0 - eccentricity)) * tan(0.5 * anomaly));
-   }
-   else if (eccentricity > 1.0)
-   {
-      trueAnomaly = 2.0 * atan(sqrt((eccentricity + 1.0) / (eccentricity - 1.0)) * tanh(0.5 * anomaly));
-   }
-   else if (eccentricity == 1.0)
-   {
-      OTL_FATAL() << "Not implemented yet";
-      double p, r; // ??
-      anomaly = asin(p * anomaly / r);
-   }
-   return trueAnomaly;
-}
-
-//#define CURTIS
-#ifndef CURTIS
 ////////////////////////////////////////////////////////////
 void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements)
 {
@@ -78,7 +38,7 @@ void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElement
    double TA0 = initialOrbitalElements.trueAnomaly;
 
    double TA = 0.0;
-   if (e < (1.0 - MATH_TOLERANCE))
+   if (e < (1.0 - MATH_TOLERANCE)) // Circular or elliptical
    {
       double n = sqrt(mu / pow(a, 3.0));
       double E0 = ConvertTrueAnomaly2EccentricAnomaly(e, TA0);
@@ -87,7 +47,7 @@ void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElement
       double E = m_keplerElliptical.Evaluate(e, M);
       TA = ConvertEccentricAnomaly2TrueAnomaly(e, E);
    }
-   else if (e > (1.0 + MATH_TOLERANCE))
+   else if (e > (1.0 + MATH_TOLERANCE)) // Hyperbolic
    {
       double n = sqrt(mu / pow(-a, 3.0));
       double H0 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA0);
@@ -96,7 +56,7 @@ void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElement
       double H = m_keplerHyperbolic.Evaluate(e, M);
       TA = ConvertHyperbolicAnomaly2TrueAnomaly(e, H);
    }
-   else if (fabs(e - 1.0) < MATH_TOLERANCE)
+   else // Parabolic
    {
       OTL_ERROR() << "Propagate for parabolic orbits is not implemented yet";
       StateVector stateVector;
@@ -108,61 +68,52 @@ void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElement
       double B = 0.0;// m_keplerParabolic.Evaluate(p, timeDelta);
       TA = ConvertParabolicAnomaly2TrueAnomaly(B);
    }
-   else
-   {
-      OTL_ERROR() << "Propagate for circular orbits is not implemented yet";
-      return;
-   }
+
+   //double f = 1.0 - mu * r0 / SQR(h) * (1.0 - cos(TA - TA0));
 
    finalOrbitalElements = initialOrbitalElements;
    finalOrbitalElements.trueAnomaly = TA;
 }
-#endif
 
-#ifdef CURTIS
 ////////////////////////////////////////////////////////////
-void PropagateLagrangian::Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements)
+void PropagateLagrangian::PropagateX(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements)
 {
    const double a = initialOrbitalElements.semiMajorAxis;
    const double e = initialOrbitalElements.eccentricity;
-   double TA = initialOrbitalElements.trueAnomaly;
+   double TA0 = initialOrbitalElements.trueAnomaly;
 
-   double r0 = a * (1.0 - SQR(e)) / (1.0 + e * cos(TA));
+   double r0 = a * (1.0 - SQR(e)) / (1.0 + e * cos(TA0));
    double v0 = sqrt(mu * (2.0 / r0 - 1.0 / a));
-   double vr0 = (sqrt(mu) * e * sin(TA)) / sqrt(a * (1.0 - SQR(e)));
+   double vr0 = (sqrt(mu) * e * sin(TA0)) / sqrt(a * (1.0 - SQR(e)));
+   double rdotv = r0 * vr0;
 
    double alpha = 1.0 / a;
-   double x = CalculateUniversalVariable(r0, vr0, alpha, timeDelta, mu);
+   double x = CalculateUniversalVariable2(r0, v0, rdotv, timeDelta.Seconds(), mu);
 
-   // Ellpitcal orbits
-   if (e > 0.0 && e < 1.0)
+   double TA;
+   if (e < (1.0 - MATH_TOLERANCE)) // Circular or elliptical
    {
-       double E0 = 2.0 * atan(sqrt((1.0 - e) / (1.0 + e)) * tan(0.5 * TA));
-       double E = E0 + x / sqrt(a);
-       TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(0.5 * E));
+      double E0 = ConvertTrueAnomaly2EccentricAnomaly(e, TA0);
+      double E = E0 + x / sqrt(a);
+      TA = ConvertEccentricAnomaly2TrueAnomaly(e, E);
    }
-   // Hyperbolic orbits
-   else if (e > 1.0)
+   else if (e > (1.0 + MATH_TOLERANCE)) // Hyperbolic
    {
-       double F0 = 2.0 * atanh(sqrt((e - 1.0) / (e + 1.0)) * tan(0.5 * TA));
-       double F = F0 + x / sqrt(-a);
-       TA = 2.0 * atan(sqrt((e + 1.0) / (e - 1.0)) * tanh(0.5 * F)); 
+      double H0 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA0);
+      double H = H0 + x / sqrt(-a);
+      TA = ConvertHyperbolicAnomaly2TrueAnomaly(e, H);
    }
-   // Circular orbits
-   else if (e == 0.0)
+   else // Parabolic
    {
-       
-   }
-   // Parabolic orbits
-   else if (e == 1.0)
-   {
-
+      double h = 0.5 * SQR(v0) - mu / r0;
+      double P0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
+      double P = P0 + x * sqrt(mu) / h;
+      TA = ConvertParabolicAnomaly2TrueAnomaly(P);
    }
 
    finalOrbitalElements = initialOrbitalElements;
    finalOrbitalElements.trueAnomaly = TA;
 }
-#endif
 
 ////////////////////////////////////////////////////////////
 void PropagateLagrangian::Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
@@ -176,9 +127,6 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
    double v0 = V.GetNorm();
    double rDotv = R.Dot(V);
    double sqrtMu = sqrt(mu);
-
-   // Specific angular momentum
-   double h = 0.5 * SQR(v0) - mu / r0;
 
    // Reciprocal of semi-major axis
    double alpha = 2.0 / r0 - SQR(v0) / mu;
@@ -198,7 +146,7 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
    }
    else // Parabola
    {
-      double h = R.Cross(V).norm();
+      double h = 0.5 * SQR(v0) - mu / r0;
       double p = SQR(h) / mu;
       double s = 0.5 * acot(3.0 * sqrt(mu / pow(p, 3.0)) * seconds);
       double w = pow(tan(s), 1.0 / 3.0);
@@ -242,36 +190,146 @@ void PropagateLagrangian::Propagate(const StateVector& initialStateVector, doubl
    finalStateVector.velocity = fDot * R + gDot * V;
 }
 
-////////////////////////////////////////////////////////////
-double PropagateLagrangian::CalculateUniversalVariable(double r0, double vr0, double alpha, const Time& timeDelta, double mu)
+void PropagateLagrangian::PropagateX(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
 {
-    const double TOL = 1.e-8;
-    const int MAX_ITERATIONS = 100;
+   // Unpack the inputs
+   const Vector3d& R = initialStateVector.position;
+   const Vector3d& V = initialStateVector.velocity;
+   double seconds = timeDelta.Seconds();
 
-    double dt = timeDelta.Seconds();
-    double x = sqrt(mu) * abs(alpha) * dt;
+   // Compute frequently used variables
+   double sqrtMu = sqrt(mu);
+   double r0 = R.GetNorm();
+   double v0 = V.GetNorm();
+   double rdotv = R.Dot(V);
 
-    int iteration = 0;
-    double ratio = 1.0;
-    double psi, c2, c3;
-    while (abs(ratio) > TOL && iteration++ < MAX_ITERATIONS)
-    {
-        psi = SQR(x) * alpha;
-        CalculateC2C3(psi, c2, c3); 
+   // Compute the universal variable
+   CalculateUniversalVariable1(r0, v0, rdotv, seconds, mu);
 
-        double F = r0 * vr0 / sqrt(mu) * SQR(x) * c2 + (1.0 - alpha * r0) * pow(x, 3.0) * c3 + r0 * x - sqrt(mu) * dt;
+   // Compute the Lagrange coefficients
+   CalculateLagrangeCoefficientsX(r0, seconds, sqrtMu);
 
-        double dFdx = r0 * vr0 / sqrt(mu) * x * (1.0 - alpha * SQR(x) * c3) + (1.0 - alpha * r0) * SQR(x) * c2 + r0;
+   // Compute the final state vector
+   finalStateVector.position = m_f    * R + m_g    * V;
+   finalStateVector.velocity = m_fDot * R + m_gDot * V;
+}
 
-        ratio = F / dFdx;
-        x -= ratio;
-    }
-    if (iteration >= MAX_ITERATIONS)
-    {
-       OTL_WARN() << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations [" << MAX_ITERATIONS << "] exceeded!";
-    }
+void PropagateLagrangian::CalculateLagrangeCoefficientsX(double r0, double seconds, double sqrtMu)
+{
+   m_f    = 1.0 - SQR(m_x) / r0 * m_c2;
+   m_fDot = sqrtMu / m_r / r0 * m_x * (m_psi * m_c3 - 1.0);
+   m_g    = seconds - pow(m_x, 3.0) / sqrtMu * m_c3;
+   m_gDot = 1.0 - SQR(m_x) / m_r * m_c2;
 
-    return x;
+   double sanityCheck = abs((m_f * m_gDot - m_fDot * m_g) - 1.0);
+   if (sanityCheck > MATH_TOLERANCE)
+   {
+      OTL_WARN() << "PropagateLagrangian::CalculateLagrangeCoefficients(): Sanity check failed for " << Bracket(sanityCheck);
+   }
+}
+
+////////////////////////////////////////////////////////////
+// Vallado
+void PropagateLagrangian::CalculateUniversalVariable1(double r0, double v0, double rdotv, double seconds, double mu)
+{
+   // Compute frequently used variables
+   double sqrtMu = sqrt(mu);
+   double alpha = 2.0 / r0 - SQR(v0) / mu; // Reciprocal of semi-major axis
+
+   // Compute the initial guess depending on orbit type
+   m_x = CalculateUniversableVariableInitialGuess(r0, v0, rdotv, alpha, seconds, mu);
+
+   // Solve using Newton-Raphson iteration
+   int iter = 0;
+   const int MAX_ITERATIONS = 100;
+   double xPrev, error = MATH_INFINITY;
+   while (error >= MATH_TOLERANCE && iter++ < MAX_ITERATIONS)
+   {
+      xPrev = m_x;
+      double xSquared = SQR(m_x);
+      m_psi = xSquared * alpha;
+      CalculateC2C3(m_psi, m_c2, m_c3);
+      m_r = xSquared * m_c2 + (rdotv / sqrtMu) * m_x * (1.0 - m_psi * m_c3) + r0 * (1.0 - m_psi * m_c2);
+      m_x += (sqrtMu * seconds - pow(m_x, 3.0) * m_c3 - rdotv / sqrtMu * xSquared * m_c2 - r0 * m_x * (1.0 - m_psi * m_c3)) / m_r;
+      error = fabs(m_x - xPrev);
+   }
+
+   if (iter == MAX_ITERATIONS)
+   {
+      OTL_WARN() << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations reached with error " << Bracket(error);
+   }
+}
+
+////////////////////////////////////////////////////////////
+// Curtis
+void PropagateLagrangian::CalculateUniversalVariable2(double r0, double v0, double rdotv, double seconds, double mu)
+{
+   // Unpack the inputs
+   //double a = orbitalElements.semiMajorAxis;
+   //double e = orbitalElements.eccentricity;
+   //double TA = orbitalElements.trueAnomaly;
+   //double seconds = timeDelta.Seconds();
+
+   // Compute frequently used variables
+   double sqrtMu = sqrt(mu);
+   //double r0 = a * (1.0 - SQR(e)) / (1.0 + e * cos(TA));
+   //double v0 = sqrt(mu * (2.0 / r0 - 1.0 / a));
+   //double vr0 = (sqrtMu * e * sin(TA)) / sqrt(a * (1.0 - SQR(e)));
+   //double rdotv = r0 * vr0;
+   //double alpha = 1.0 / a;
+
+   double alpha = 2.0 / r0 - SQR(v0) / mu; // Reciprocal of semi-major axis
+   double vr0 = rdotv / r0;
+
+   // Compute the initial guess depending on orbit type
+   double x = CalculateUniversableVariableInitialGuess(r0, v0, rdotv, alpha, seconds, mu);
+
+   // Solve using Newton-Raphson iteration
+   int iter = 0;
+   const int MAX_ITERATIONS = 100;
+   double psi, c2, c3, ratio = MATH_INFINITY;
+   while (abs(ratio) > MATH_TOLERANCE && iter++ < MAX_ITERATIONS)
+   {
+      double xSquared = SQR(x);
+      psi = xSquared * alpha;
+      CalculateC2C3(psi, c2, c3); 
+      double F = r0 * vr0 / sqrtMu * xSquared * c2 + (1.0 - alpha * r0) * pow(x, 3.0) * c3 + r0 * x - sqrtMu * seconds;
+      double dFdx = r0 * vr0 / sqrtMu * x * (1.0 - alpha * xSquared * c3) + (1.0 - alpha * r0) * xSquared * c2 + r0;
+      ratio = F / dFdx;
+      x -= ratio;
+   }
+
+   if (iter >= MAX_ITERATIONS)
+   {
+      OTL_WARN() << "PropagateLagrangian::CalculateUniversalVariable(): Max iterations reached with ratio " << Bracket(abs(ratio));
+   }
+}
+
+////////////////////////////////////////////////////////////
+double PropagateLagrangian::CalculateUniversableVariableInitialGuess(double r0, double v0, double rdotv, double alpha, double seconds, double mu)
+{
+   double x = 1.0;
+   double alphaThreshold = 0.000001 * (ASTRO_MU_EARTH / mu); // Reference?
+   if (alpha > alphaThreshold) // Circle or Ellipse
+   {
+      x = sqrt(mu) * alpha * seconds;
+   }
+   else if (alpha < -alphaThreshold) // Hyperbola
+   {
+      double a = 1.0 / alpha;
+      x = Sign(seconds) * sqrt(-a) * log((-2.0 * mu * alpha * seconds) /
+         (rdotv + Sign(seconds) * sqrt(-mu * a) * (1.0 - r0 * alpha)));
+   }
+   else // Parabola
+   {
+      double h = 0.5 * SQR(v0) - mu / r0;
+      double p = SQR(h) / mu;
+      double s = 0.5 * acot(3.0 * sqrt(mu / pow(p, 3.0)) * seconds);
+      double w = pow(tan(s), 1.0 / 3.0);
+      x = 2.0 * sqrt(p) * cot(2.0 * w);
+   }
+
+   return x;
 }
 
 ////////////////////////////////////////////////////////////

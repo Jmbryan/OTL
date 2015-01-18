@@ -6,6 +6,9 @@
 #include <OTL/Core/Planet.h>
 #include <OTL/Core/Orbit.h>
 
+#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/Conversion.h>
+
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/JplEphemeris.h>
@@ -28,6 +31,70 @@ int main()
 {
     gLogger.SetLogLevel(LogLevel::Fatal);
     gLogger.SetThrowLevel(LogLevel::Error);
+
+    if (true)
+    {
+       int numIter = 10000;
+
+       auto propagator = std::make_shared<keplerian::PropagateLagrangian>();
+
+       StateVector stateVector;
+       stateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423);            // [km]
+       stateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);               // [km/s]
+       double mu = otl::ASTRO_MU_EARTH;                                                // [km^3/s^2]
+       Time timeDelta = otl::Time::Minutes(40.0);                                      // [s]
+       //Time timeDelta = otl::Time::Hours(1.0);
+
+       //double r0 = stateVector.position.GetNorm();
+       //double v0 = stateVector.velocity.GetNorm();
+       //double rdotv = stateVector.position.Dot(stateVector.velocity);
+
+       OrbitalElements orbitalElements;
+       //orbitalElements.semiMajorAxis = -19655;
+       //orbitalElements.eccentricity = 1.4682;
+       //orbitalElements.trueAnomaly = 30.0 * MATH_DEG_TO_RAD;
+       ConvertStateVector2OrbitalElements(stateVector, orbitalElements, mu);
+
+       OrbitalElements finalOrbitalElements1, finalOrbitalElements2;
+
+       std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+       double x1;
+       for (int i = 0; i < numIter; ++i)
+       {
+          //x1 = propagator->CalculateUniversalVariable(stateVector, timeDelta, mu);
+          //x1 = propagator->CalculateUniversalVariable1(r0, v0, rdotv, timeDelta.Seconds(), mu);
+          propagator->Propagate(orbitalElements, mu, timeDelta, finalOrbitalElements1);
+       }
+       std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+       
+
+       std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+       double x2;
+       for (int i = 0; i < numIter; ++i)
+       {
+          //x2 = propagator->CalculateUniversalVariable(orbitalElements, timeDelta, mu);
+          //x2 = propagator->CalculateUniversalVariable2(r0, v0, rdotv, timeDelta.Seconds(), mu);
+          propagator->PropagateX(orbitalElements, mu, timeDelta, finalOrbitalElements2);
+       }
+       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+
+       auto duration1 = t2 - t1;
+       auto seconds1 = std::chrono::duration_cast<std::chrono::seconds>(duration1);
+       auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+       auto micro1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1);
+       auto nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration1);
+
+       auto duration2 = t4 - t3;
+       auto seconds2 = std::chrono::duration_cast<std::chrono::seconds>(duration2);
+       auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+       auto micro2 = std::chrono::duration_cast<std::chrono::microseconds>(duration2);
+       auto nano2 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration2);
+
+       OTL_INFO() << "1: " << milli1.count() << " ms. 2: " << milli2.count() << "ms";
+       double d = 1.0;
+    }
+       
 
     if (true)
     {
