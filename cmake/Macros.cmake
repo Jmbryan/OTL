@@ -56,11 +56,12 @@ endmacro()
 # ex: otl_add_library(otl-core
 #                     SOURCES Orbit.cpp Orbit.hpp ...
 #                     DEPENDS 
-#                     EXTERNAL_LIBS sfml-system ...)
+#                     EXTERNAL_LIBS sfml-system ...
+#                     FOLDER "OTL")
 macro(otl_add_library target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;EXTERNAL_LIBS" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;EXTERNAL_LIBS;FOLDER" ${ARGN})
 
     # create the target
     add_library(${target} ${THIS_SOURCES})
@@ -96,7 +97,7 @@ macro(otl_add_library target)
     set_target_properties(${target} PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
 
     # set the target's folder (for IDEs that support it, e.g. Visual Studio)
-    set_target_properties(${target} PROPERTIES FOLDER "OTL")
+    set_target_properties(${target} PROPERTIES FOLDER ${THIS_FOLDER})
 
     # for gcc >= 4.0 on Windows, apply the OTL_USE_STATIC_STD_LIBS option if it is enabled
     if(WINDOWS AND COMPILER_GCC AND OTL_USE_STATIC_STD_LIBS)
@@ -155,14 +156,15 @@ macro(otl_add_library target)
 
 endmacro()
 
-# add a new target which is a OTL example
-# ex: otl_add_example(mercury-rendezvous
+# add a new target which is a OTL project
+# ex: otl_add_project(unit-tests
 #                     SOURCES main.cpp ...
-#                     DEPENDS otl-core)
-macro(otl_add_example target)
+#                     DEPENDS otl-core
+#                     FOLDER "Tests")
+macro(otl_add_project target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;FOLDER" ${ARGN})
 
     # set a source group for the source files
     source_group("" FILES ${THIS_SOURCES})
@@ -174,7 +176,7 @@ macro(otl_add_example target)
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
 
     # set the target's folder (for IDEs that support it, e.g. Visual Studio)
-    set_target_properties(${target} PROPERTIES FOLDER "Examples")
+    set_target_properties(${target} PROPERTIES FOLDER ${THIS_FOLDER})
 
     # for gcc >= 4.0 on Windows, apply the OTL_USE_STATIC_STD_LIBS option if it is enabled
     if(WINDOWS AND COMPILER_GCC AND OTL_USE_STATIC_STD_LIBS)

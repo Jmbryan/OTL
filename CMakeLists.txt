@@ -38,6 +38,7 @@ set(VERSION_PATCH 0)
 # add the OTL include paths
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/cspice)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/FakeIt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
 
@@ -59,6 +60,9 @@ otl_set_option(OTL_BUILD_EXAMPLES FALSE BOOL "TRUE to build the OTL examples, FA
 
 # add an option for building the API documentation
 otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
+
+# add an option for building the SPICE library
+otl_set_option(OTL_BUILD_SPICE TRUE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
 
 # Mac OS X specific options
 if(MACOSX)
@@ -96,7 +100,7 @@ endif()
 
 # define an option for choosing between static and dynamic C runtime (Windows only)
 if(WINDOWS)
-	otl_set_option(OTL_USE_STATIC_STD_LIBS FALSE BOOL "TRUE to statically link to the standard libraries, FALSE to use them as DLLs")
+	otl_set_option(OTL_USE_STATIC_STD_LIBS TRUE BOOL "TRUE to statically link to the standard libraries, FALSE to use them as DLLs")
 	
 	# the following combination of flags is not valid
 	if(BUILD_SHARED_LIBS AND OTL_USE_STATIC_STD_LIBS)
@@ -165,6 +169,10 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 # add the subdirectories
 add_subdirectory(src/OTL)
+add_subdirectory(Console)
+if(OTL_BUILD_SPICE)
+	add_subdirectory(Spice)
+endif()
 if(OTL_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
