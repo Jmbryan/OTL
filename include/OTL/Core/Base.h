@@ -24,7 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Logger.h>
-#include <OTL/Core/Matrix.h>
+#include <OTL/Core/StateVector.h>
 #include <OTL/Core/Time.h>
 #include <iostream>
 #include <memory>
@@ -64,37 +64,6 @@ enum class FlybyType
    Invalid = -1,
    Izzo,
    Count
-};
-
-////////////////////////////////////////////////////////////
-/// \class otl::StateVector
-///
-/// Basic construct representing a three dimensional
-/// position and velocity in space.
-///
-////////////////////////////////////////////////////////////
-struct StateVector
-{
-   Vector3d position;    ///< 3-dimensional position vector
-   Vector3d velocity;    ///< 3-dimensional velocity vector
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Default constructor
-   ////////////////////////////////////////////////////////////
-   StateVector() {}
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Construct a state vector from position and velocity vectors
-   ///
-   /// \param _position Absolute position
-   /// \param _velocity Absolute velocity
-   ///
-   ////////////////////////////////////////////////////////////
-   StateVector(const Vector3d& _position, const Vector3d& _velocity)
-   {
-      position = _position;
-      velocity = _velocity;
-   }
 };
 
 ////////////////////////////////////////////////////////////
