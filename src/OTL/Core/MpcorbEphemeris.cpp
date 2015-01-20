@@ -28,7 +28,7 @@
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
 
-#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplerianPropagator.h>
 
 namespace otl
 {
@@ -41,7 +41,7 @@ static EphemerisDatabasePointer g_ephemerisDatabase;
 MpcorbEphemeris::MpcorbEphemeris(const std::string& dataFilename) :
 IEphemeris(),
 m_dataFilename(dataFilename),
-m_propagator(new keplerian::PropagateLagrangian())
+m_propagator(new keplerian::KeplerianPropagator())
 {
 
 }

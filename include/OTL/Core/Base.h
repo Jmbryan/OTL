@@ -225,4 +225,15 @@ inline double acot(double x)
 inline double Modulo(double dividend, double divisor)
 { return dividend - divisor * std::floor(dividend / divisor); }
 
+/// Returns true if the orbital elements are identical
+inline bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs)
+{
+   return (lhs.semiMajorAxis == rhs.semiMajorAxis &&
+      lhs.eccentricity == rhs.eccentricity &&
+      lhs.inclination == rhs.inclination &&
+      lhs.argOfPericenter == rhs.argOfPericenter &&
+      lhs.lonOfAscendingNode == rhs.lonOfAscendingNode &&
+      lhs.trueAnomaly == rhs.trueAnomaly);
+}
+
 } // namespace otl

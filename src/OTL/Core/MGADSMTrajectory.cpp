@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/MGADSMTrajectory.h>
-#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/FlybyUnpowered.h>
 #include <OTL/Core/Conversion.h>
@@ -395,7 +395,7 @@ void MGADSMTrajectory::SetPropagateType(PropagateType type)
    switch (type)
    {
       case PropagateType::Analytical:
-         m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateLagrangian());
+         m_propagator = std::unique_ptr<IPropagateAlgorithm>(new KeplerianPropagator());
          break;
 
       case PropagateType::Invalid:
@@ -470,7 +470,7 @@ void MGADSMTrajectory::Init()
    m_legsInitialized = false;
 
    // Default algorithms
-   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new PropagateLagrangian());
+   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new KeplerianPropagator());
    m_lambert    = std::unique_ptr<ILambertAlgorithm>(new LambertExponentialSinusoid());
    m_flyby      = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
 }

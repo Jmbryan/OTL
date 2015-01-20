@@ -6,7 +6,7 @@
 #include <OTL/Core/Planet.h>
 #include <OTL/Core/Orbit.h>
 
-#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/Conversion.h>
 
 #include <OTL/Core/LambertExponentialSinusoid.h>
@@ -36,9 +36,9 @@ int main()
     {
        int numIter = 10000;
 
-       auto propagator = std::make_shared<keplerian::PropagateLagrangian>();
+       auto propagator = std::make_shared<keplerian::KeplerianPropagator>();
 
-       StateVector stateVector;
+       StateVector stateVector, finalStateVector1, finalStateVector2, finalStateVector3, finalStateVector4;
        stateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423);            // [km]
        stateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);               // [km/s]
        double mu = otl::ASTRO_MU_EARTH;                                                // [km^3/s^2]
@@ -57,41 +57,55 @@ int main()
 
        OrbitalElements finalOrbitalElements1, finalOrbitalElements2;
 
+       // Propagate (COES)
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
-       double x1;
        for (int i = 0; i < numIter; ++i)
        {
-          //x1 = propagator->CalculateUniversalVariable(stateVector, timeDelta, mu);
-          //x1 = propagator->CalculateUniversalVariable1(r0, v0, rdotv, timeDelta.Seconds(), mu);
-          propagator->Propagate(orbitalElements, mu, timeDelta, finalOrbitalElements1);
+          propagator->PropagateK(orbitalElements, mu, timeDelta, finalOrbitalElements1);
+          ConvertOrbitalElements2StateVector(finalOrbitalElements1, finalStateVector1, mu);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
-       
-
+       // Propagate (SV)
        std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
-       double x2;
        for (int i = 0; i < numIter; ++i)
        {
-          //x2 = propagator->CalculateUniversalVariable(orbitalElements, timeDelta, mu);
-          //x2 = propagator->CalculateUniversalVariable2(r0, v0, rdotv, timeDelta.Seconds(), mu);
-          propagator->PropagateX(orbitalElements, mu, timeDelta, finalOrbitalElements2);
+          propagator->PropagateK(stateVector, mu, timeDelta, finalStateVector2);
        }
        std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
+       // PropagateX (COES)
+       std::chrono::system_clock::time_point t5 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          propagator->Propagate(orbitalElements, mu, timeDelta, finalOrbitalElements2);
+          ConvertOrbitalElements2StateVector(finalOrbitalElements2, finalStateVector3, mu);
+       }
+       std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
+
+       // PropagateX (SV)
+       std::chrono::system_clock::time_point t7 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          propagator->Propagate(stateVector, mu, timeDelta, finalStateVector4);
+       }
+       std::chrono::system_clock::time_point t8 = std::chrono::system_clock::now();
+
        auto duration1 = t2 - t1;
-       auto seconds1 = std::chrono::duration_cast<std::chrono::seconds>(duration1);
        auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
-       auto micro1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1);
-       auto nano1 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration1);
 
        auto duration2 = t4 - t3;
-       auto seconds2 = std::chrono::duration_cast<std::chrono::seconds>(duration2);
        auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
-       auto micro2 = std::chrono::duration_cast<std::chrono::microseconds>(duration2);
-       auto nano2 = std::chrono::duration_cast<std::chrono::nanoseconds>(duration2);
 
-       OTL_INFO() << "1: " << milli1.count() << " ms. 2: " << milli2.count() << "ms";
+       auto duration3 = t6 - t5;
+       auto milli3 = std::chrono::duration_cast<std::chrono::milliseconds>(duration3);
+
+       auto duration4 = t8 - t7;
+       auto milli4 = std::chrono::duration_cast<std::chrono::milliseconds>(duration4);
+
+       bool b1 = finalOrbitalElements1 == finalOrbitalElements2;
+       bool b2 = finalStateVector1.position == finalStateVector2.position;
+       bool b3 = finalStateVector1.velocity == finalStateVector2.velocity;
        double d = 1.0;
     }
        

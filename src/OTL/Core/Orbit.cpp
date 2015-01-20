@@ -24,7 +24,7 @@
 
 #include <OTL/Core/Orbit.h>
 #include <OTL/Core/Conversion.h>
-#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/Logger.h>
 
 namespace otl
@@ -40,7 +40,7 @@ m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
 m_stateVectorDirty(false),
 m_orbitalElementsDirty(false),
-m_propagator(new PropagateLagrangian())
+m_propagator(new KeplerianPropagator())
 {
 }
 
@@ -51,7 +51,7 @@ m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
 m_stateVectorDirty(false),
 m_orbitalElementsDirty(false),
-m_propagator(new PropagateLagrangian())
+m_propagator(new KeplerianPropagator())
 {
 }
 
@@ -62,7 +62,7 @@ m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
 m_stateVectorDirty(false),
 m_orbitalElementsDirty(false),
-m_propagator(new PropagateLagrangian())
+m_propagator(new KeplerianPropagator())
 {
    SetStateVector(stateVector);
 }
@@ -74,7 +74,7 @@ m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
 m_stateVectorDirty(false),
 m_orbitalElementsDirty(false),
-m_propagator(new PropagateLagrangian())
+m_propagator(new KeplerianPropagator())
 {
    SetOrbitalElements(orbitalElements);
 }

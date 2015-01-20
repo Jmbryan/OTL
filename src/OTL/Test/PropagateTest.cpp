@@ -1,5 +1,5 @@
 #include <OTL/Test/BaseTest.h>
-#include <OTL/Core/PropagateLagrangian.h>
+#include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/Conversion.h>
 #include <memory>
 
@@ -8,8 +8,8 @@ const double TOL_PCT = 0.001;
 
 TEST_CASE("PropagateAnalytical", "Propagate")
 {
-   //auto propagator = std::unique_ptr<otl::keplerian::IPropagateAlgorithm>(new otl::keplerian::PropagateLagrangian());
-   auto propagator = otl::keplerian::PropagateLagrangian();
+   //auto propagator = std::unique_ptr<otl::keplerian::IPropagateAlgorithm>(new otl::keplerian::KeplerianPropagator());
+   auto propagator = otl::keplerian::KeplerianPropagator();
 
     otl::OrbitalElements initialOrbitalElements;
     otl::OrbitalElements finalOrbitalElements;

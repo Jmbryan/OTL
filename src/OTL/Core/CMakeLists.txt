@@ -55,8 +55,8 @@ set(SRC
 	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.h
 	${INCROOT}/Propagate.h
-	${SRCROOT}/PropagateLagrangian.cpp
-	${INCROOT}/PropagateLagrangian.h
+	${SRCROOT}/KeplerianPropagator.cpp
+	${INCROOT}/KeplerianPropagator.h
 	${SRCROOT}/Time.cpp
 	${INCROOT}/Time.h
 	${SRCROOT}/Transformation.cpp
