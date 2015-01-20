@@ -32,8 +32,8 @@ namespace keplerian
 {
 
 // Forward declarations
-class IPropagateAlgorithm;
-typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
+class IPropagator;
+typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
 class Orbit
 {

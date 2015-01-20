@@ -308,7 +308,7 @@ Time operator- (const Time& left, const Time& right);
 /// days.AddMinutes(30.0);
 /// totalSeconds = days.Seconds();
 ///
-/// otl::keplerian::IPropagateAlgorithm* propagator = new KeplerianPropagator();
+/// otl::keplerian::IPropagator* propagator = new KeplerianPropagator();
 /// propagator->(myStateVector, myMu, otl::Time::Days(1.0));                        // propagate forward 1 day
 /// propagator->(myStateVector, myMu, otl::Time::Seconds(-1.0 * MATH_DAY_TO_SEC));  // propagate backwards 1 day
 /// OTL_SAFE_DELETE(propagator);

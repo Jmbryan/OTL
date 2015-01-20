@@ -22,7 +22,7 @@
 #pragma once
 #include <OTL/Core/MGADSMNodes.h>
 #include <OTL/Core/Planet.h>
-#include <OTL/Core/Propagate.h>
+#include <OTL/Core/Propagator.h>
 #include <OTL/Core/Lambert.h>
 #include <OTL/Core/Flyby.h>
 
@@ -693,7 +693,7 @@ private:
    std::vector<double> m_states;                      ///< Vector of states
    std::vector<double> m_deltaVs;                     ///< Vector of computed deltaVs
 
-   std::unique_ptr<IPropagateAlgorithm> m_propagator; ///< Propagation algorithm smart pointer
+   std::unique_ptr<IPropagator> m_propagator;         ///< Propagation algorithm smart pointer
    std::unique_ptr<ILambertAlgorithm> m_lambert;      ///< Lambert algorithm smart pointer
    std::unique_ptr<IFlybyAlgorithm> m_flyby;          ///< Flyby algorithm smart pointer
 

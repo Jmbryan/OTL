@@ -31,8 +31,8 @@ namespace otl
 
 // Forward declarations
 namespace keplerian {
-class IPropagateAlgorithm;
-typedef std::shared_ptr<IPropagateAlgorithm> PropagatorPointer;
+class IPropagator;
+typedef std::shared_ptr<IPropagator> PropagatorPointer;
 }
 
 class MpcorbEphemeris : public IEphemeris

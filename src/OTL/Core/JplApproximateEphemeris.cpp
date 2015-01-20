@@ -132,7 +132,7 @@ void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epo
     VGetOrbitalElements(name, epoch, orbitalElements);
 
     // Convert orbital elements to state vector
-    ConvertOrbitalElements2StateVector(orbitalElements, stateVector, ASTRO_MU_SUN);
+    stateVector = ConvertOrbitalElements2StateVector(orbitalElements, ASTRO_MU_SUN);
 }
 
 ////////////////////////////////////////////////////////////

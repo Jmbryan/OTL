@@ -20,7 +20,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Propagate.h>
+#include <OTL/Core/Propagator.h>
 #include <OTL/Core/KeplersEquations.h>
 
 namespace otl
@@ -29,7 +29,7 @@ namespace otl
 namespace keplerian
 {
 
-class KeplerianPropagator : public IPropagateAlgorithm
+class KeplerianPropagator : public IPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -73,6 +73,7 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~KeplerianPropagator();
 
+protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital elements in time using Kepler's equations
    ///
@@ -81,14 +82,14 @@ public:
    /// achieved by setting a negative timeDelta.
    ///
    /// \param initialOrbitalElements OrbitalElements before propagation
-   /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalOrbitalElements OrbitalElements after propagation
+   /// \param mu Gravitational parameter of the central body
+   /// \returns OrbitalElements after propagation
    ///
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 7, section 2.3, page 89
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements);
+   virtual OrbitalElements VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu);
    
    
    ////////////////////////////////////////////////////////////
@@ -99,15 +100,15 @@ public:
    /// achieved by setting a negative timeDelta.
    ///
    /// \param initialStateVector StateVector before propagation
-   /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalStateVector StateVector after propagation
+   /// \param mu Gravitational parameter of the central body
+   /// \returns StateVector after propagation
    ///
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector);
-   
+   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
+
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Calculate the universal variable

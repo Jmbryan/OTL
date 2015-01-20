@@ -147,7 +147,7 @@ void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoc
    // Propagate the state vector to the desired epoch
    if (m_propagator)
    {
-      m_propagator->Propagate(m_referenceStateVector, ASTRO_MU_SUN, timeDelta, stateVector);
+      stateVector = m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
    }
    else
    {
@@ -176,7 +176,7 @@ void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& 
    // Propagate the state vector to the desired epoch
    if (m_propagator)
    {
-      m_propagator->Propagate(m_referenceOrbitalElements, ASTRO_MU_SUN, timeDelta, orbitalElements);
+      orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, timeDelta, ASTRO_MU_SUN);
    }
    else
    {

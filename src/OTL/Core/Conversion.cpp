@@ -43,9 +43,7 @@ void CalculateCanonicalUnits(double radius, double mu,
 }
 
 ////////////////////////////////////////////////////////////
-void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
-                                        OrbitalElements& orbitalElements,
-                                        double mu)
+OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVector, double mu)
 {
    // Position and velocity
    const Vector3d& R = stateVector.position;
@@ -144,18 +142,19 @@ void ConvertStateVector2OrbitalElements(const StateVector& stateVector,
       }
    }
 
+   OrbitalElements orbitalElements;
    orbitalElements.semiMajorAxis       = a;
    orbitalElements.eccentricity        = ecc;
    orbitalElements.inclination         = incl;
    orbitalElements.argOfPericenter     = aop;
    orbitalElements.lonOfAscendingNode  = lan;
    orbitalElements.trueAnomaly         = ta;
+
+   return orbitalElements;
 }
 
 ////////////////////////////////////////////////////////////
-void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
-                                        StateVector& stateVector,
-                                        double mu)
+StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu)
 {
    double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;
@@ -181,8 +180,11 @@ void ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements,
    Vp.Z() = 0.0;
 
    // Transform the state vectors into inertial coordinates.
+   StateVector stateVector;
    TransformPerifocal2Inertial(Rp, incl, aop, lan, stateVector.position);
    TransformPerifocal2Inertial(Vp, incl, aop, lan, stateVector.velocity);
+
+   return stateVector;
 }
 
 ////////////////////////////////////////////////////////////

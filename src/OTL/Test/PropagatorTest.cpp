@@ -1,14 +1,12 @@
 #include <OTL/Test/BaseTest.h>
 #include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/Conversion.h>
-#include <memory>
 
 const double TOL_PCT = 0.001;
 #define OTL_APPROX(x) Approx(x, TOL_PCT)
 
-TEST_CASE("PropagateAnalytical", "Propagate")
+TEST_CASE("KeplerianPropagator", "")
 {
-   //auto propagator = std::unique_ptr<otl::keplerian::IPropagateAlgorithm>(new otl::keplerian::KeplerianPropagator());
    auto propagator = otl::keplerian::KeplerianPropagator();
 
     otl::OrbitalElements initialOrbitalElements;
@@ -32,12 +30,12 @@ TEST_CASE("PropagateAnalytical", "Propagate")
             mu = otl::ASTRO_MU_EARTH;                                                              // [km^3/s^2]
             timeOfFlight = otl::Time::Minutes(40.0);                                               // [s]
             
-            otl::ConvertStateVector2OrbitalElements(initialStateVector, initialOrbitalElements, mu);
-            otl::ConvertStateVector2OrbitalElements(finalExpectedStateVector, finalExpectedOrbitalElements, mu);
+            initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
+            finalExpectedOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalExpectedStateVector, mu);
 
             SECTION("OrbitalElements")
             {
-                propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
+               finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
                 CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));
                 CHECK(finalOrbitalElements.eccentricity       == OTL_APPROX(finalExpectedOrbitalElements.eccentricity));
@@ -46,7 +44,7 @@ TEST_CASE("PropagateAnalytical", "Propagate")
                 CHECK(finalOrbitalElements.lonOfAscendingNode == OTL_APPROX(finalExpectedOrbitalElements.lonOfAscendingNode));
                 CHECK(finalOrbitalElements.trueAnomaly        == OTL_APPROX(finalExpectedOrbitalElements.trueAnomaly));
 
-                otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, finalStateVector, mu);
+                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
                 CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
@@ -58,7 +56,7 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("StateVector")
             {
-               propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
+               finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
                CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
                CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
@@ -67,7 +65,7 @@ TEST_CASE("PropagateAnalytical", "Propagate")
                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(finalExpectedStateVector.velocity.Y()));
                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(finalExpectedStateVector.velocity.Z()));
                
-               otl::ConvertStateVector2OrbitalElements(finalStateVector, finalOrbitalElements, mu);
+               finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
 
                CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));
                CHECK(finalOrbitalElements.eccentricity       == OTL_APPROX(finalExpectedOrbitalElements.eccentricity));
@@ -88,15 +86,11 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("OrbitalElements")
             {
-                otl::ConvertStateVector2OrbitalElements(initialStateVector,
-                                                        initialOrbitalElements,
-                                                        mu);
+               initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
 
-                propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
+                finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
-                otl::ConvertOrbitalElements2StateVector(finalOrbitalElements,
-                                                        finalStateVector,
-                                                        mu);
+                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
                 CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
@@ -108,7 +102,7 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("StateVector")
             {
-                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
+               finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
                 CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
                 CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
@@ -134,22 +128,18 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("OrbitalElements")
             {
-               propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
+               finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
                CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(107.78 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
 
             SECTION("StateVector")
             {
-                otl::ConvertOrbitalElements2StateVector(initialOrbitalElements,
-                                                        initialStateVector,
-                                                        mu);
+               initialStateVector = otl::ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
 
-                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
+                finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                otl::ConvertStateVector2OrbitalElements(finalStateVector,
-                                                        finalOrbitalElements,
-                                                        mu);
+                finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
 
                 CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(107.78 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
@@ -172,22 +162,18 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("OrbitalElements")
             {
-                propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
+               finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
                 CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(100.04 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
 
             SECTION("StateVector")
             {
-                otl::ConvertOrbitalElements2StateVector(initialOrbitalElements,
-                                                        initialStateVector,
-                                                        mu);
+               initialStateVector = otl::ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
 
-                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
+                finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                otl::ConvertStateVector2OrbitalElements(finalStateVector,
-                                                        finalOrbitalElements,
-                                                        mu);
+                finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
 
                 CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(100.04 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
@@ -203,15 +189,11 @@ TEST_CASE("PropagateAnalytical", "Propagate")
             
             SECTION("OrbitalElements")
             {
-                otl::ConvertStateVector2OrbitalElements(initialStateVector,
-                                                        initialOrbitalElements,
-                                                        mu);
+               initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
 
-                propagator.Propagate(initialOrbitalElements, mu, timeOfFlight, finalOrbitalElements);
+                finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
-                otl::ConvertOrbitalElements2StateVector(finalOrbitalElements,
-                                                        finalStateVector,
-                                                        mu);
+                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
                 CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]
@@ -223,7 +205,7 @@ TEST_CASE("PropagateAnalytical", "Propagate")
 
             SECTION("StateVector")
             {
-                propagator.Propagate(initialStateVector, mu, timeOfFlight, finalStateVector);
+               finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
                 CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
                 CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]

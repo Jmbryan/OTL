@@ -173,7 +173,7 @@ void JplEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epo
     VGetStateVector(name, epoch, stateVector);
 
     // Convert state vector to orbital elements
-    ConvertStateVector2OrbitalElements(stateVector, orbitalElements, ASTRO_MU_SUN);
+    orbitalElements = ConvertStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
 }
 
 } // namespace otl

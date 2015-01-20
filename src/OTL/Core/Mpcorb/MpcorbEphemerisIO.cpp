@@ -177,8 +177,7 @@ void MpcorbEphemerisIO::Load()
       orbitalElements.trueAnomaly = ta;
 
       // Convert orbital elements to state vector
-      StateVector stateVector;
-      ConvertOrbitalElements2StateVector(orbitalElements, stateVector, ASTRO_MU_SUN);
+      auto stateVector = ConvertOrbitalElements2StateVector(orbitalElements, ASTRO_MU_SUN);
 
       // Add to the database
       g_database[name] = std::make_tuple(epoch, stateVector, orbitalElements);

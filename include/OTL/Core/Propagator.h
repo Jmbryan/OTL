@@ -24,7 +24,6 @@
 
 #pragma once
 #include <OTL/Core/Base.h>
-#include <OTL/Core/Orbit.h>
 
 namespace otl
 {
@@ -32,19 +31,50 @@ namespace otl
 namespace keplerian
 {
 
-class IPropagateAlgorithm
+class IPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
-   IPropagateAlgorithm() {}
+   IPropagator();
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
-   virtual ~IPropagateAlgorithm() {}
+   virtual ~IPropagator();
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital elements in time
+   ///
+   /// Calculates the final orbital elements after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// \param initialOrbitalElements OrbitalElements before propagation
+   /// \param timeDelta Propgation time (may be negative)
+   /// \param mu Gravitational parameter of the central body
+   /// \returns OrbitalElements after propagation
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalElements Propagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu);
+     
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the state vector in time
+   ///
+   /// Calculates the final state vector after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// \param initialStateVector StateVector before propagation
+   /// \param timeDelta Propgation time (may be negative)
+   /// \param mu Gravitational parameter of the central body
+   /// \returns StateVector after propagation
+   ///
+   ////////////////////////////////////////////////////////////
+   StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
+
+protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital elements in time
    ///
@@ -56,13 +86,13 @@ public:
    /// by the derived class.
    ///
    /// \param initialOrbitalElements OrbitalElements before propagation
-   /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalOrbitalElements OrbitalElements after propagation
+   /// \param mu Gravitational parameter of the central body
+   /// \returns OrbitalElements after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements) = 0;
-   
+   virtual OrbitalElements VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu) = 0;
+
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
    ///
@@ -74,12 +104,12 @@ public:
    /// by the derived class.
    ///
    /// \param initialStateVector StateVector before propagation
-   /// \param mu Gravitational parameter of the central body
    /// \param timeDelta Propgation time (may be negative)
-   /// \param [out] finalStateVector StateVector after propagation
+   /// \param mu Gravitational parameter of the central body
+   /// \returns StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector) = 0;
+   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;
 };
 
 } // namespace keplerian
@@ -87,7 +117,7 @@ public:
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::IPropagateAlgorithm
+/// \class otl::keplerian::IPropagator
 /// \ingroup keplerian
 ///
 /// Interface class for all propagation algorithms.  

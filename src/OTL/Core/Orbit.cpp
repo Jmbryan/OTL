@@ -219,8 +219,7 @@ void Orbit::Propagate(const Time& timeDelta)
 {
    if (m_propagator)
    {
-      StateVector newStateVector;
-      m_propagator->Propagate(m_stateVector, m_mu, timeDelta, newStateVector);
+      auto newStateVector = m_propagator->Propagate(m_stateVector, timeDelta, m_mu);
       SetStateVector(newStateVector);
    }
    else
@@ -240,14 +239,14 @@ void Orbit::PropagateTrueAnomaly(double trueAnomaly, const Orbit::Direction& dir
 ////////////////////////////////////////////////////////////
 void Orbit::UpdateStateVector() const
 {
-   ConvertOrbitalElements2StateVector(m_orbitalElements, m_stateVector, m_mu);
+   m_stateVector = ConvertOrbitalElements2StateVector(m_orbitalElements, m_mu);
    m_stateVectorDirty = false;
 }
 
 ////////////////////////////////////////////////////////////
 void Orbit::UpdateOrbitalElements() const
 {
-   ConvertStateVector2OrbitalElements(m_stateVector, m_orbitalElements, m_mu);
+   m_orbitalElements = ConvertStateVector2OrbitalElements(m_stateVector, m_mu);
    m_orbitalElementsDirty = false;
 }
 

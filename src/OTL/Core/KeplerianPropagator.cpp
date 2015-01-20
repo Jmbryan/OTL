@@ -32,7 +32,7 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 KeplerianPropagator::KeplerianPropagator() :
-IPropagateAlgorithm()
+IPropagator()
 {
 
 }
@@ -44,7 +44,7 @@ KeplerianPropagator::~KeplerianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-void KeplerianPropagator::Propagate(const OrbitalElements& initialOrbitalElements, double mu, const Time& timeDelta, OrbitalElements& finalOrbitalElements)
+OrbitalElements KeplerianPropagator::VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu)
 {
    // Unpack the inputs
    const double a = initialOrbitalElements.semiMajorAxis;
@@ -84,11 +84,13 @@ void KeplerianPropagator::Propagate(const OrbitalElements& initialOrbitalElement
    }
 
    // Compute the final orbital elements
-   finalOrbitalElements = initialOrbitalElements;
+   OrbitalElements finalOrbitalElements = initialOrbitalElements;
    finalOrbitalElements.trueAnomaly = TA;
+
+   return finalOrbitalElements;
 }
 
-void KeplerianPropagator::Propagate(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
+StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
 {
    // Unpack the inputs
    const Vector3d& R = initialStateVector.position;
@@ -108,8 +110,11 @@ void KeplerianPropagator::Propagate(const StateVector& initialStateVector, doubl
    auto coeff = CalculateLagrangeCoefficients(r0, seconds, sqrtMu, results);
 
    // Compute the final state vector
+   StateVector finalStateVector;
    finalStateVector.position = coeff.f    * R + coeff.g    * V;
    finalStateVector.velocity = coeff.fDot * R + coeff.gDot * V;
+
+   return finalStateVector;
 }
 
 ////////////////////////////////////////////////////////////
@@ -275,8 +280,7 @@ void KeplerianPropagator::PropagateK(const OrbitalElements& initialOrbitalElemen
    else // Parabolic
    {
       OTL_ERROR() << "Propagate for parabolic orbits is not implemented yet";
-      StateVector stateVector;
-      ConvertOrbitalElements2StateVector(initialOrbitalElements, stateVector, mu);
+      auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
       double h = stateVector.position.Cross(stateVector.velocity).norm();
       double p = SQR(h) / mu;
       double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
@@ -307,11 +311,11 @@ void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, doub
    double hSquared = SQR(h);
 
    // Convert to orbital elements
-   OrbitalElements initialOrbitalElements, finalOrbitalElements;
-   ConvertStateVector2OrbitalElements(initialStateVector, initialOrbitalElements, mu);
+   auto initialOrbitalElements = ConvertStateVector2OrbitalElements(initialStateVector, mu);
 
    // Propagate the orbital elements
-   Propagate(initialOrbitalElements, mu, timeDelta, finalOrbitalElements);
+   OrbitalElements finalOrbitalElements;
+   PropagateK(initialOrbitalElements, mu, timeDelta, finalOrbitalElements);
 
    double e = initialOrbitalElements.eccentricity;
    double TA0 = initialOrbitalElements.trueAnomaly;

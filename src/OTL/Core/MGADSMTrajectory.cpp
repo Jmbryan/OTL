@@ -395,7 +395,7 @@ void MGADSMTrajectory::SetPropagateType(PropagateType type)
    switch (type)
    {
       case PropagateType::Analytical:
-         m_propagator = std::unique_ptr<IPropagateAlgorithm>(new KeplerianPropagator());
+         m_propagator = std::unique_ptr<IPropagator>(new KeplerianPropagator());
          break;
 
       case PropagateType::Invalid:
@@ -470,9 +470,9 @@ void MGADSMTrajectory::Init()
    m_legsInitialized = false;
 
    // Default algorithms
-   m_propagator = std::unique_ptr<IPropagateAlgorithm>(new KeplerianPropagator());
-   m_lambert    = std::unique_ptr<ILambertAlgorithm>(new LambertExponentialSinusoid());
-   m_flyby      = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
+   m_propagator = std::make_unique<KeplerianPropagator>();
+   m_lambert = std::make_unique<LambertExponentialSinusoid>();
+   m_flyby = std::make_unique<FlybyUnpowered>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -695,7 +695,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
             deltaVs.push_back(deltaV.GetNorm());
          }
 
-         m_propagator->Propagate(m_initialStateVector, ASTRO_MU_SUN, Time::Seconds(timeOfFlight), m_initialStateVector);
+         m_initialStateVector = m_propagator->Propagate(m_initialStateVector, Time::Seconds(timeOfFlight), ASTRO_MU_SUN);
       }      
    }
 
