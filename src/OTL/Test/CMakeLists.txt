@@ -1,15 +1,6 @@
 
-# set the include directory
 set(TEST_INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Test)
-
-# set the source directory
 set(TEST_SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Test)
-
-# set the Catch include directory
-#set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
-
-# set the FakeIt include directory
-#set(FAKEITROOT ${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 
 # all source files
 set(SRC
@@ -22,6 +13,9 @@ set(SRC
 	${TEST_SRCROOT}/TimeTest.cpp
 )
 source_group("" FILES ${SRC})
+
+# add the built-in external libraries paths
+include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 
 # define the otl-test target
 otl_add_project(otl-unit-test

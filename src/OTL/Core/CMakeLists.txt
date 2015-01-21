@@ -1,15 +1,6 @@
 
-# set the include directory
 set(INCROOT ${PROJECT_SOURCE_DIR}/include/OTL/Core)
-
-# set the source directory
 set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
-
-# set the Catch include directory
-#set(CATCHROOT ${PROJECT_SOURCE_DIR}/extlibs/include/Catch)
-
-# set the FakeIt include directory
-#set(FAKEITROOT ${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 
 # all source files
 set(SRC
@@ -105,29 +96,22 @@ else()
 	source_group("unix" FILES ${PLATFORM_SRC})
 endif()
 
+# add the built-in external libraries paths
+include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
+if(OTL_BUILD_SPICE)
+	include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/cspice)
+endif()
 
-	
-# let CMake know about our additional library paths (on Windows and OSX)
-#if(WINDOWS OR MACOSX)
-#	set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/include/SFML")
-#endif()
-#if(MACOSX)
-#	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
-#endif()
+# add the OTL sources path
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
-# find external libraries
-#find_package(SFML REQUIRED)
-#find_package(EPHEMERIS REQUIRED)
-
-# add include paths of external libraries
-#include_directories(${EXTERNAL_INCLUDE_DIR})
-#include_directories(${EPHEMERIS_INCLUDE_DIR})
-
-# build the list of libraries to link
-#set(CORE_EXT_LIBS ${SFML_LIBRARY})
+set(CORE_DEPENDS)
+if(OTL_BUILD_SPICE)
+	set(CORE_DEPENDS cspice)
+endif()
 
 # define the otl-core target
 otl_add_library(otl-core
                 SOURCES ${SRC} ${INTERNAL_SRC} ${PLATFORM_SRC}
-				FOLDER "OTL")
-                #EXTERNAL_LIBS ${CORE_EXT_LIBS})
+				FOLDER "OTL"
+				DEPENDS ${CORE_DEPENDS})

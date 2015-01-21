@@ -8,6 +8,12 @@ set(SRC
 )
 source_group("" FILES ${SRC})
 
+# add the OTL include paths
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# for testing. should be removed
+include_directories(${PROJECT_SOURCE_DIR}/extlibs/include)
+
 # define the otl-test target
 otl_add_project(otl-console
 				SOURCES ${SRC}

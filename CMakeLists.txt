@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 2.8)
 
 # define a macro that helps defining an option
@@ -35,17 +34,6 @@ set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
-# add the OTL include paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include)
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/cspice)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/FakeIt)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extlibs/include/niek-ephem)
-
-# set install directories
-set(CMAKE_INSTALL_PREFIX ./install)
-set(INSTALL_MISC_DIR ./)
-
 # add an option for choosing the build type
 otl_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
 
@@ -63,6 +51,10 @@ otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation,
 
 # add an option for building the SPICE library
 otl_set_option(OTL_BUILD_SPICE TRUE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
+
+# set install directories
+set(CMAKE_INSTALL_PREFIX ./install)
+set(INSTALL_MISC_DIR ./)
 
 # Mac OS X specific options
 if(MACOSX)
@@ -111,16 +103,13 @@ if(WINDOWS)
 	if(COMPILER_MSVC AND OTL_USE_STATIC_STD_LIBS)
 		foreach(flag
 		        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-				  CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+				CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
 			if(${flag} MATCHES "/MD")
 				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
 			endif()
 		endforeach()
 	endif()
 endif()
-
-# disable the rpath stuff
-set(CMAKE_SKIP_BUILD_RPATH TRUE)
 
 # setup Mac OS X stuff
 if(MACOSX)
@@ -144,16 +133,17 @@ if(MACOSX)
 endif()
 
 if(LINUX)
+	set(PKGCONFIG_DIR lib${LIB_SUFFIX}/pkgconfig)
     if(BUILD_SHARED_LIBS)
         otl_set_option(OTL_INSTALL_PKGCONFIG_FILES FALSE BOOL "TRUE to automatically install pkg-config files so other projects can find OTL")
         if(OTL_INSTALL_PKGCONFIG_FILES)
-            foreach(otl_module IN ITEMS core)
+            foreach(otl_module IN ITEMS otl-core)
                 CONFIGURE_FILE(
                     "tools/pkg-config/otl-${otl_module}.pc.in"
                     "tools/pkg-config/otl-${otl_module}.pc"
                     @ONLY)
-	    INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/tools/pkg-config/otl-${otl_module}.pc"
-                    DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig")
+				INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/tools/pkg-config/otl-${otl_module}.pc"
+                    DESTINATION "${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DIR}")
             endforeach()
         endif()
     else()
@@ -183,12 +173,12 @@ endif()
 # setup the install rules
 if(NOT OTL_BUILD_FRAMEWORKS)
 	install(DIRECTORY include
-			  DESTINATION .
-			  COMPONENT devel
-			  PATTERN ".svn" EXCLUDE)
+			DESTINATION .
+			COMPONENT devel
+			PATTERN ".svn" EXCLUDE)
 else()
     # find only "root" headers
-    file(GLOB OTL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} "include/*")
+    file(GLOB OTL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} "include/OTL/*")
 
     # in fact we have to fool cmake to copy all the headers in subdirectories
     # to do that we have to add the "root" headers to the PUBLIC_HEADER
@@ -208,7 +198,7 @@ else()
     set_target_properties(OTL PROPERTIES 
                           FRAMEWORK TRUE
                           FRAMEWORK_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
-                          MACOSX_FRAMEWORK_IDENTIFIER com.otl-dev.OTL
+                          MACOSX_FRAMEWORK_IDENTIFIER org.otl-dev.OTL
                           MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
                           MACOSX_FRAMEWORK_BUNDLE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
                           PUBLIC_HEADER "${OTL_HEADERS}")
@@ -216,13 +206,13 @@ else()
     # add the remaining headers
     add_custom_command(TARGET OTL 
                        POST_BUILD
-                       COMMAND cp -r ${PROJECT_SOURCE_DIR}/include/OTL/* OTL.framework/Versions/${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}/Headers)
+                       COMMAND cp -r ${PROJECT_SOURCE_DIR}/include/OTL/* $<TARGET_FILE_DIR:OTL>/Headers)
 
     # adapt install directory to allow distributing dylibs/frameworks in user’s frameworks/application bundle
-    # NOTE : it's not required to link agains OTL.framework
+    # NOTE : it's not required to link against OTL.framework
     set_target_properties(OTL PROPERTIES 
                           BUILD_WITH_INSTALL_RPATH 1 
-                          INSTALL_NAME_DIR "@executable_path/../Frameworks")
+                          INSTALL_NAME_DIR "@rpath")
 
     # install rule
     install(TARGETS OTL
@@ -230,26 +220,35 @@ else()
             COMPONENT devel)
 endif()
 
-install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 install(FILES license.txt DESTINATION ${INSTALL_MISC_DIR})
 install(FILES README.md DESTINATION ${INSTALL_MISC_DIR})
+install(FILES cmake/Modules/FindOTL.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
+install(FILES cmake/Modules/FindSPICE.cmake DESTINATION ${INSTALL_MISC_DIR}/cmake/Modules)
 
+# install 3rd-party libraries and tools
 if(WINDOWS)
-	if(COMPILER_GCC)
-		if(ARCH_32BITS)
-			install(FILES extlibs/bin-mingw/x86/sfml-system-2.dll DESTINATION bin)
-			install(FILES extlibs/bin-mingw/x86/sfml-system-d-2.dll DESTINATION bin)
-		elseif(ARCH_64BITS)
-		endif()
-	elseif(COMPILER_MSVC)
-		if(ARCH_32BITS)
-			install(FILES extlibs/bin-msvc/x86/sfml-system-2.dll DESTINATION bin)
-			install(FILES extlibs/bin-msvc/x86/sfml-system-d-2.dll DESTINATION bin)
-		elseif(ARCH_64BITS)
-			install(FILES extlibs/bin-msvc/x64/sfml-system-2.dll DESTINATION bin)
-			install(FILES extlibs/bin-msvc/x64/sfml-system-d-2.dll DESTINATION bin)
-		endif()
-	endif()	
+
+	# install the binaries of SFML dependencies
+    if(ARCH_32BITS)
+        install(DIRECTORY extlibs/bin/x86/ DESTINATION bin)
+        if(COMPILER_MSVC)
+            install(DIRECTORY extlibs/libs-msvc/x86/ DESTINATION lib)
+        else()
+            install(DIRECTORY extlibs/libs-mingw/x86/ DESTINATION lib)
+        endif()
+    elseif(ARCH_64BITS)
+        install(DIRECTORY extlibs/bin/x64/ DESTINATION bin)
+        if(COMPILER_MSVC)
+            install(DIRECTORY extlibs/libs-msvc/x64/ DESTINATION lib)
+        else()
+            install(DIRECTORY extlibs/libs-mingw/x64/ DESTINATION lib)
+        endif()
+    endif()
+
 elseif(MACOSX)
-	install(DIRECTORY extlibs/libs-osx/Frameworks/sfml-framework DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX})
+	
+	# install the non-standard frameworks SFML depends on
+    #install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX})
+    #install(DIRECTORY extlibs/libs-osx/Frameworks/freetype.framework DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX})
+
 endif()
