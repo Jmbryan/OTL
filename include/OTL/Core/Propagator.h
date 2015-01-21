@@ -31,7 +31,7 @@ namespace otl
 namespace keplerian
 {
 
-class IPropagator
+class OTL_CORE_API IPropagator
 {
 public:
    ////////////////////////////////////////////////////////////

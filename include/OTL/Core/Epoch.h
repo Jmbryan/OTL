@@ -33,7 +33,7 @@ namespace otl
 /// \ingroup otl
 /// 
 ////////////////////////////////////////////////////////////
-struct GregorianDateTime
+struct OTL_CORE_API GregorianDateTime
 {
    int year;   ///< The year
    int month;  ///< The month
@@ -43,7 +43,7 @@ struct GregorianDateTime
    double sec; ///< The second
 };
 
-class Epoch
+class OTL_CORE_API Epoch
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ T& operator<<(T& stream, const Epoch& epoch)
 /// \returns Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertMJD2JD(double modifiedJulianDate);
+OTL_CORE_API double ConvertMJD2JD(double modifiedJulianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date 2000 to Julian Date
@@ -219,7 +219,7 @@ double ConvertMJD2JD(double modifiedJulianDate);
 /// \returns Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertMJD20002JD(double modifiedJulianDate2000);
+OTL_CORE_API double ConvertMJD20002JD(double modifiedJulianDate2000);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Gregorian Date to Julian Date
@@ -229,7 +229,7 @@ double ConvertMJD20002JD(double modifiedJulianDate2000);
 /// \returns Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertGregorian2JD(const GregorianDateTime& dateTime);
+OTL_CORE_API double ConvertGregorian2JD(const GregorianDateTime& dateTime);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Julian Date to Modified Julian Date
@@ -239,7 +239,7 @@ double ConvertGregorian2JD(const GregorianDateTime& dateTime);
 /// \returns Modified Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertJD2MJD(double julianDate);
+OTL_CORE_API double ConvertJD2MJD(double julianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date 2000 to Modified Julian Date
@@ -249,7 +249,7 @@ double ConvertJD2MJD(double julianDate);
 /// \returns Modified Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertMJD20002MJD(double modifiedJulianDate2000);
+OTL_CORE_API double ConvertMJD20002MJD(double modifiedJulianDate2000);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Gregorian Date to Modified Julian Date
@@ -259,7 +259,7 @@ double ConvertMJD20002MJD(double modifiedJulianDate2000);
 /// \returns Modified Julian date
 ///
 ////////////////////////////////////////////////////////////
-double ConvertGregorian2MJD(const GregorianDateTime& dateTime);
+OTL_CORE_API double ConvertGregorian2MJD(const GregorianDateTime& dateTime);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Julian Date to Modified Julian Date 2000
@@ -269,7 +269,7 @@ double ConvertGregorian2MJD(const GregorianDateTime& dateTime);
 /// \returns Modified Julian date 2000
 ///
 ////////////////////////////////////////////////////////////
-double ConvertJD2MJD2000(double julianDate);
+OTL_CORE_API double ConvertJD2MJD2000(double julianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Modified Julian Date 2000
@@ -279,7 +279,7 @@ double ConvertJD2MJD2000(double julianDate);
 /// \returns Modified Julian date 2000
 ///
 ////////////////////////////////////////////////////////////
-double ConvertMJD2MJD2000(double modifiedJulianDate);
+OTL_CORE_API double ConvertMJD2MJD2000(double modifiedJulianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Gregorian Date to Modified Julian Date 2000
@@ -289,7 +289,7 @@ double ConvertMJD2MJD2000(double modifiedJulianDate);
 /// \returns Modified Julian date 2000
 ///
 ////////////////////////////////////////////////////////////
-double ConvertGregorian2MJD2000(const GregorianDateTime& dateTime);
+OTL_CORE_API double ConvertGregorian2MJD2000(const GregorianDateTime& dateTime);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Julian Date to Gregorian Date
@@ -299,7 +299,7 @@ double ConvertGregorian2MJD2000(const GregorianDateTime& dateTime);
 /// \returns Gregorian date and time
 ///
 ////////////////////////////////////////////////////////////
-GregorianDateTime ConvertJD2Gregorian(double julianDate);
+OTL_CORE_API GregorianDateTime ConvertJD2Gregorian(double julianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Gregorian Date
@@ -309,7 +309,7 @@ GregorianDateTime ConvertJD2Gregorian(double julianDate);
 /// \returns Gregorian date and time
 ///
 ////////////////////////////////////////////////////////////
-GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
+OTL_CORE_API GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date 2000 to Gregorian Date
@@ -319,7 +319,7 @@ GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
 /// \returns Gregorian date and time
 ///
 ////////////////////////////////////////////////////////////
-GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
+OTL_CORE_API GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator +=
@@ -334,7 +334,7 @@ GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
 /// \return Reference to \a left
 ///
 ////////////////////////////////////////////////////////////
-Epoch& operator +=(Epoch& left, const Time& right);
+OTL_CORE_API Epoch& operator +=(Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator -=
@@ -349,7 +349,7 @@ Epoch& operator +=(Epoch& left, const Time& right);
 /// \return Reference to \a left
 ///
 ////////////////////////////////////////////////////////////
-Epoch& operator -=(Epoch& left, const Time& right);
+OTL_CORE_API Epoch& operator -=(Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator +
@@ -364,7 +364,7 @@ Epoch& operator -=(Epoch& left, const Time& right);
 /// \return Instance of Epoch
 ///
 ////////////////////////////////////////////////////////////
-Epoch operator +(const Epoch& left, const Time& right);
+OTL_CORE_API Epoch operator +(const Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator -
@@ -379,7 +379,7 @@ Epoch operator +(const Epoch& left, const Time& right);
 /// \return Instance of Epoch
 ///
 ////////////////////////////////////////////////////////////
-Epoch operator -(const Epoch& left, const Time& right);
+OTL_CORE_API Epoch operator -(const Epoch& left, const Time& right);
 
 #include <OTL/Core/Epoch.inl>
 

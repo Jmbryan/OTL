@@ -23,29 +23,17 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.h>
-
-namespace otl
-{
+#include <OTL/Core/Config.h>
 
 ////////////////////////////////////////////////////////////
-/// \brief Transform a 3D vector from perifocal to inertial reference frames
-/// \ingroup otl
-///
-/// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
-/// Algorthm ?? (X.X)XX, 2007
-///
-/// \param perifocalVector Vector in perifocal coordinates
-/// \param inclinaiton Inclination (radians)
-/// \param argOfPericenter Arguement of Perigee (radians)
-/// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
-/// \param [out] inertialVector Transformed vector in inertial coordinates.
-///
+// Define portable import / export macros
 ////////////////////////////////////////////////////////////
-OTL_CORE_API void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
-                                              double inclination,
-                                              double argOfPericenter,
-                                              double lonOfAscendingNode,
-                                              Vector3d& inertialVector);
+#if defined(OTL_CORE_EXPORTS)
 
-} // namespace otl
+#define OTL_CORE_API OTL_API_EXPORT
+
+#else
+
+#define OTL_CORE_API OTL_API_IMPORT
+
+#endif

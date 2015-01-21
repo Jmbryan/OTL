@@ -348,10 +348,12 @@ int main()
        jplEphemeris->GetStateVector(planetName, epoch, stateVector2);
        jplEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements2);
 
+#if defined(OTL_SPICE)
        auto kernalFile = currentDirectory + "\\..\\data\\spice\\de430.bsp";
        auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
        spiceEphemeris->GetStateVector(planetName, epoch, stateVector3);
        spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
+#endif
 
        auto mpcorbDataFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);

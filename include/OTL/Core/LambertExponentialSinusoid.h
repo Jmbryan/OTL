@@ -31,7 +31,7 @@ namespace otl
 namespace keplerian
 {
 
-class LambertExponentialSinusoid : public ILambertAlgorithm
+class OTL_CORE_API LambertExponentialSinusoid : public ILambertAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////

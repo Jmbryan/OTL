@@ -37,7 +37,7 @@ namespace trajectory
 /// \ingroup trajectory
 /// 
 ////////////////////////////////////////////////////////////
-struct TrajectoryNode
+struct OTL_CORE_API TrajectoryNode
 {
    ////////////////////////////////////////////////////////////
    /// \brief Types of TrajectoryNodes
@@ -96,7 +96,7 @@ typedef std::shared_ptr<TrajectoryNode> TrajectoryNodePtr; ///< Convenience alia
 /// a trajectory.
 /// 
 ////////////////////////////////////////////////////////////
-struct DepartureNode : public TrajectoryNode
+struct OTL_CORE_API DepartureNode : public TrajectoryNode
 {
    std::string orbitalBody;   ///< Name of departure orbital body
    Epoch epoch;               ///< Epoch representing the departure date
@@ -126,7 +126,7 @@ struct DepartureNode : public TrajectoryNode
 /// There may be multiple FlybyNodes in the trajectory.
 ///
 ////////////////////////////////////////////////////////////
-struct FlybyNode : public TrajectoryNode
+struct OTL_CORE_API FlybyNode : public TrajectoryNode
 {
    std::string orbitalBody;   ///< Name of departure orbital body
    double timeOfFlight;       ///< Total time of flight between previous TrajectoryNode and the flyby
@@ -158,7 +158,7 @@ struct FlybyNode : public TrajectoryNode
 /// There may be multiple DSMNodes in the trajectory.
 ///
 ////////////////////////////////////////////////////////////
-struct DSMNode : public TrajectoryNode
+struct OTL_CORE_API DSMNode : public TrajectoryNode
 {
    double alpha;     ///< Fractional time at which the DSM occurs 
    Vector3d deltaV;  ///< Vector3d which represents the relative change deltaV at the DSM
@@ -192,7 +192,7 @@ struct DSMNode : public TrajectoryNode
 /// be important.
 /// 
 ///////////////////////////////////////////////////////////
-struct RendezvousNode : public TrajectoryNode
+struct OTL_CORE_API RendezvousNode : public TrajectoryNode
 {
    std::string orbitalBody;   ///< Name of rendezvous orbital body
    double timeOfFlight;       ///< Total time of flight between previous TrajectoryNode and the rendezvous
@@ -222,7 +222,7 @@ struct RendezvousNode : public TrajectoryNode
 /// into a parking orbit about the orbital body.
 /// 
 ///////////////////////////////////////////////////////////
-struct InsertionNode : public TrajectoryNode
+struct OTL_CORE_API InsertionNode : public TrajectoryNode
 {
    std::string orbitalBody;         ///< Name of insertion orbital body
    OrbitalElements orbitalElements; ///< OrbitalElements that define the parking orbit

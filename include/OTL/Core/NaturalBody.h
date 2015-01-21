@@ -32,7 +32,7 @@ namespace otl
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 
-class NaturalBody : public OrbitalBody
+class OTL_CORE_API NaturalBody : public OrbitalBody
 {
 public:
    ////////////////////////////////////////////////////////////

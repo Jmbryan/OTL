@@ -22,13 +22,14 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifdef OTL_SPICE
 #pragma once
 #include <OTL/Core/Ephemeris.h>
 
 namespace otl
 {
 
-class SpiceEphemeris : public IEphemeris
+class OTL_CORE_API SpiceEphemeris : public IEphemeris
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -190,6 +191,8 @@ private:
 };
 
 } // namespace otl
+
+#endif
 
 ////////////////////////////////////////////////////////////
 /// \class otl::SpiceEphemeris

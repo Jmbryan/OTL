@@ -35,17 +35,17 @@ namespace keplerian
 //double SolveKeplersEllipticalEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
 //double SolveKeplersHyperbolicEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
 
-class KeplersEquation
-{
-public:
-   KeplersEquation(int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
-   double Solve(double eccentricity, double meanAnomaly);
-   double CalculateEccentricAnomaly(double eccentricity, double meanAnomaly);
-   double CalculateHyperbolicAnomaly(double eccentricity, double meanAnomaly);
-private:
-};
+//class OTL_CORE_API KeplersEquation
+//{
+//public:
+//   KeplersEquation(int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
+//   double Solve(double eccentricity, double meanAnomaly);
+//   double CalculateEccentricAnomaly(double eccentricity, double meanAnomaly);
+//   double CalculateHyperbolicAnomaly(double eccentricity, double meanAnomaly);
+//private:
+//};
 
-class IKeplersEquation
+class OTL_CORE_API IKeplersEquation
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -170,7 +170,7 @@ protected:
 /// 
 ////////////////////////////////////////////////////////////
 
-class KeplersEquationElliptical : public IKeplersEquation
+class OTL_CORE_API KeplersEquationElliptical : public IKeplersEquation
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -275,7 +275,7 @@ protected:
 /// 
 ////////////////////////////////////////////////////////////
 
-class KeplersEquationHyperbolic : public IKeplersEquation
+class OTL_CORE_API KeplersEquationHyperbolic : public IKeplersEquation
 {
 public:
    ////////////////////////////////////////////////////////////

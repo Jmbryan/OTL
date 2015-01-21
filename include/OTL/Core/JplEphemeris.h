@@ -28,7 +28,7 @@
 namespace otl
 {
 
-class JplEphemeris : public IEphemeris
+class OTL_CORE_API JplEphemeris : public IEphemeris
 {
 public:
    ////////////////////////////////////////////////////////////

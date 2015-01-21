@@ -35,7 +35,7 @@ class IPropagator;
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
 }
 
-class MpcorbEphemeris : public IEphemeris
+class OTL_CORE_API MpcorbEphemeris : public IEphemeris
 {
 public:
    ////////////////////////////////////////////////////////////

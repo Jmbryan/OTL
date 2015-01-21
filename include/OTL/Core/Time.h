@@ -28,7 +28,7 @@
 namespace otl
 {
 
-class Time
+class OTL_CORE_API Time
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -213,7 +213,7 @@ private:
 /// \returns True if left is equal to right
 ///
 ////////////////////////////////////////////////////////////
-bool operator==(Time& left, const Time& right);
+OTL_CORE_API bool operator==(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator!=.
@@ -225,7 +225,7 @@ bool operator==(Time& left, const Time& right);
 /// \returns True if left is not equal to right
 ///
 ////////////////////////////////////////////////////////////
-bool operator!=(Time& left, const Time& right);
+OTL_CORE_API bool operator!=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator+=.
@@ -237,7 +237,7 @@ bool operator!=(Time& left, const Time& right);
 /// \returns Reference to left
 ///
 ////////////////////////////////////////////////////////////
-Time& operator+=(Time& left, const Time& right);
+OTL_CORE_API Time& operator+=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator-=.
@@ -249,7 +249,7 @@ Time& operator+=(Time& left, const Time& right);
 /// \returns Reference to left
 ///
 ////////////////////////////////////////////////////////////
-Time& operator-=(Time& left, const Time& right);
+OTL_CORE_API Time& operator-=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator-=.
@@ -261,7 +261,7 @@ Time& operator-=(Time& left, const Time& right);
 /// \returns Sum of times
 ///
 ////////////////////////////////////////////////////////////
-Time operator+ (const Time& left, const Time& right);
+OTL_CORE_API Time operator+ (const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator-=.
@@ -273,7 +273,7 @@ Time operator+ (const Time& left, const Time& right);
 /// \returns Difference between times
 ///
 ////////////////////////////////////////////////////////////
-Time operator- (const Time& left, const Time& right);
+OTL_CORE_API Time operator- (const Time& left, const Time& right);
 
 } // namespace otl
 

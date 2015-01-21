@@ -62,7 +62,7 @@ namespace trajectory
 /// requried for calculating the trajectory.
 /// 
 ////////////////////////////////////////////////////////////
-struct TrajectoryLeg
+struct OTL_CORE_API TrajectoryLeg
 {
    Planet initialPlanet;            ///< Initial planet of the leg
    Planet finalPlanet;              ///< Final planet of the leg
@@ -82,7 +82,7 @@ struct TrajectoryLeg
    TrajectoryLeg();
 };
 
-class MGADSMTrajectory
+class OTL_CORE_API MGADSMTrajectory
 {
 public:
    ////////////////////////////////////////////////////////////

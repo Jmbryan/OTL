@@ -31,7 +31,7 @@ namespace otl
 namespace keplerian
 {
 
-class FlybyUnpowered : public IFlybyAlgorithm
+class OTL_CORE_API FlybyUnpowered : public IFlybyAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////

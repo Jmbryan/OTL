@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/Config.h>
+#include <OTL/Core/Export.h>
 #include <OTL/Core/Logger.h>
 #include <OTL/Core/StateVector.h>
 #include <OTL/Core/Time.h>

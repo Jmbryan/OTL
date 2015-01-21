@@ -5,6 +5,7 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 # all source files
 set(SRC
 	${INCROOT}/Base.h
+	${INCROOT}/Config.h
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
@@ -14,6 +15,7 @@ set(SRC
 	${INCROOT}/Epoch.inl
 	${SRCROOT}/Exceptions.cpp	
 	${INCROOT}/Exceptions.h
+	${INCROOT}/Export.h
 	${INCROOT}/Flyby.h
 	${SRCROOT}/FlybyUnpowered.cpp
 	${INCROOT}/FlybyUnpowered.h

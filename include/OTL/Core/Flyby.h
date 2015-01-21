@@ -34,7 +34,7 @@ class NaturalBody;
 namespace keplerian
 {
 
-class IFlybyAlgorithm
+class OTL_CORE_API IFlybyAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////

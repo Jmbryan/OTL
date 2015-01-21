@@ -34,7 +34,7 @@ class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 
 
-class IEphemeris
+class OTL_CORE_API IEphemeris
 {
 public:
     ////////////////////////////////////////////////////////////

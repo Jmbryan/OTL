@@ -33,7 +33,7 @@ namespace otl
 namespace keplerian
 {
 
-class ILambertAlgorithm
+class OTL_CORE_API ILambertAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////

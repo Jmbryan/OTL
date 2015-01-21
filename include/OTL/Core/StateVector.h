@@ -23,12 +23,13 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/Export.h>
 #include <OTL/Core/Matrix.h>
 
 namespace otl
 {
 
-struct StateVector
+struct OTL_CORE_API StateVector
 {
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor

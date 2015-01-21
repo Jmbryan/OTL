@@ -1,4 +1,5 @@
 #pragma once
+#include <OTL/Core/Export.h>
 #include <sstream>
 #include <memory>
 
@@ -19,7 +20,7 @@ enum class LogLevel
 };
 
 ////////////////////////////////////////////////////////////
-class LineLogger
+class OTL_CORE_API LineLogger
 {
 public:
    LineLogger(const LoggerPointer& logger, const LogLevel& logLevel);
@@ -39,7 +40,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
-class Logger
+class OTL_CORE_API Logger
 {
 public:
     Logger();
@@ -88,7 +89,7 @@ std::string Bracket(const T& object)
    return ss.str();
 }
 
-extern Logger gLogger;
+extern Logger OTL_CORE_API gLogger;
 #define OTL_LOG(message, level) gLogger.Log(message, level)
 #define OTL_INFO() gLogger.Info()
 #define OTL_WARN() gLogger.Warn()

@@ -28,7 +28,7 @@
 namespace otl
 {
 
-class Planet : public NaturalBody
+class OTL_CORE_API Planet : public NaturalBody
 {
 public:
 

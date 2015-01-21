@@ -10,7 +10,7 @@ namespace otl
 //typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 
 
-class Spacecraft
+class OTL_CORE_API Spacecraft
 {
 public:
 	Spacecraft();
@@ -28,7 +28,7 @@ private:
 };
 typedef std::shared_ptr<Spacecraft> SpacecraftPointer;
 
-class IForceModel
+class OTL_CORE_API IForceModel
 {
 public:
    IForceModel();
@@ -40,7 +40,7 @@ protected:
    Vector3d m_Forces;
 };
 
-class GravityModel : public IForceModel
+class OTL_CORE_API GravityModel : public IForceModel
 {
 public:
 	GravityModel(const OrbitalBodyPointer& orbitalBody);
@@ -55,7 +55,7 @@ private:
    std::vector<OrbitalBodyPointer> m_ExternalBodies;
 };
 
-class RadiationSource : public OrbitalBody
+class OTL_CORE_API RadiationSource : public OrbitalBody
 {
 public:
     RadiationSource(double radiationPressure) : OrbitalBody("RadiationSource", 1.0) { m_RadiationPressure = radiationPressure; }
@@ -70,7 +70,7 @@ private:
 };
 typedef std::shared_ptr<RadiationSource> RadiationSourcePointer;
 
-class Sun : public RadiationSource
+class OTL_CORE_API Sun : public RadiationSource
 {
 public:
     Sun() : RadiationSource(1.0) {}
@@ -78,7 +78,7 @@ public:
     virtual void Update(const Time& deltaTime) {}
 };
 
-class SolarPressureModel : public IForceModel
+class OTL_CORE_API SolarPressureModel : public IForceModel
 {
 public:
     SolarPressureModel(const RadiationSourcePointer& radiationSource, const SpacecraftPointer& spacecraft);

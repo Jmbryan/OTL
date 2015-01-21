@@ -111,6 +111,13 @@ if(WINDOWS)
 	endif()
 endif()
 
+# Spice options
+if (OTL_BUILD_SPICE AND BUILD_SHARED_LIBS)
+	message(FATAL_ERROR "OTL_BUILD_SPICE and BUILD_SHARED_LIBS cannot be used together")
+elseif(OTL_BUILD_SPICE)
+	add_definitions(-DOTL_SPICE)
+endif()
+
 # setup Mac OS X stuff
 if(MACOSX)
     # OTL_BUILD_FRAMEWORKS needs two things :

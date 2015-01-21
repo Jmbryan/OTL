@@ -28,7 +28,7 @@
 namespace otl
 {
 
-class OrbitalBody
+class OTL_CORE_API OrbitalBody
 {
 public:
    ////////////////////////////////////////////////////////////

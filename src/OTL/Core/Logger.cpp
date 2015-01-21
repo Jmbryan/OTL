@@ -37,7 +37,6 @@ Logger::Logger() :
 {
     std::string currentDirectory = gSystem.GetCurrentDirectory();
     m_logDirectory = currentDirectory + "\\logs";
-    gSystem.CreateDirectory(m_logDirectory);
 
     m_logFilename = "otl_log";
     m_maxFileSize = 10 * 1024 * 1024;
@@ -53,8 +52,9 @@ Logger::~Logger()
 ////////////////////////////////////////////////////////////
 void Logger::Initialize()
 {
-    VInitialize();
-    m_initialized = true;
+   gSystem.CreateDirectory(m_logDirectory);
+   VInitialize();
+   m_initialized = true;
 }
 
 ////////////////////////////////////////////////////////////

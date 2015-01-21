@@ -23,11 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/Export.h>
 
 namespace otl
 {
 
-struct OrbitalElements
+struct OTL_CORE_API OrbitalElements
 {
    double semiMajorAxis;      ///< SemiMajor axis (a)
    double eccentricity;       ///< Eccentricity (e)

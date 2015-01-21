@@ -62,8 +62,8 @@ namespace otl
 /// \param [out] VU Conversion factor from real velocity units to canonical velocity units
 ///
 ////////////////////////////////////////////////////////////
-void CalculateCanonicalUnits(double radius, double mu,
-                             double& DU, double& TU, double& VU);
+OTL_CORE_API void CalculateCanonicalUnits(double radius, double mu,
+                                          double& DU, double& TU, double& VU);
 
 ////////////////////////////////////////////////////////////
 /// \brief Convert state vectors to orbital elements
@@ -79,7 +79,7 @@ void CalculateCanonicalUnits(double radius, double mu,
 /// \returns OrbitalElements after conversion
 ///
 ////////////////////////////////////////////////////////////
-OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVector, double mu);
+OTL_CORE_API OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVector, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Convert orbital elements to state vectors
@@ -95,7 +95,7 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
 /// \param [out] stateVector Computed position and velocity vectors
 ///
 ////////////////////////////////////////////////////////////
-StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu);
+OTL_CORE_API StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts normalized spherical coordinates into a Cartesian vector
@@ -107,7 +107,7 @@ StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalEle
 /// \returns Vector3d representing Cartesian vector
 ///
 ////////////////////////////////////////////////////////////
-Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta, double normPhi);
+OTL_CORE_API Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta, double normPhi);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts true anomaly to anomaly
@@ -126,7 +126,7 @@ Vector3d ConvertNormalizedSpherical2Cartesian(double magnitude, double normTheta
 /// \returns Anomaly in radians
 ///
 ////////////////////////////////////////////////////////////
-double ConvertTrueAnomaly2Anomaly(double eccentricity, double trueAnomaly);
+OTL_CORE_API double ConvertTrueAnomaly2Anomaly(double eccentricity, double trueAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts true anomaly to eccentric anomaly
@@ -145,7 +145,7 @@ double ConvertTrueAnomaly2Anomaly(double eccentricity, double trueAnomaly);
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algoirthm 5, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertTrueAnomaly2EccentricAnomaly(double eccentricity, double trueAnomaly);
+OTL_CORE_API double ConvertTrueAnomaly2EccentricAnomaly(double eccentricity, double trueAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts true anomaly to hyperbolic anomaly
@@ -164,7 +164,7 @@ double ConvertTrueAnomaly2EccentricAnomaly(double eccentricity, double trueAnoma
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algoirthm 5, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertTrueAnomaly2HyperbolicAnomaly(double eccentricity, double trueAnomaly);
+OTL_CORE_API double ConvertTrueAnomaly2HyperbolicAnomaly(double eccentricity, double trueAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts true anomaly to parabolic anomaly
@@ -183,7 +183,7 @@ double ConvertTrueAnomaly2HyperbolicAnomaly(double eccentricity, double trueAnom
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algoirthm 5, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertTrueAnomaly2ParabolicAnomaly(double trueAnomaly);
+OTL_CORE_API double ConvertTrueAnomaly2ParabolicAnomaly(double trueAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts anomaly to true anomaly
@@ -202,7 +202,7 @@ double ConvertTrueAnomaly2ParabolicAnomaly(double trueAnomaly);
 /// \returns True anomaly in radians
 ///
 ////////////////////////////////////////////////////////////
-double ConvertAnomaly2TrueAnomaly(double eccentricity, double anomaly);
+OTL_CORE_API double ConvertAnomaly2TrueAnomaly(double eccentricity, double anomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts eccentric anomaly to true anomaly
@@ -221,7 +221,7 @@ double ConvertAnomaly2TrueAnomaly(double eccentricity, double anomaly);
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 6, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertEccentricAnomaly2TrueAnomaly(double eccentricity, double eccentricAnomaly);
+OTL_CORE_API double ConvertEccentricAnomaly2TrueAnomaly(double eccentricity, double eccentricAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts hyperbolic anomaly to true anomaly
@@ -240,7 +240,7 @@ double ConvertEccentricAnomaly2TrueAnomaly(double eccentricity, double eccentric
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algoirthm 6, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertHyperbolicAnomaly2TrueAnomaly(double eccentricity, double hyperbolicAnomaly);
+OTL_CORE_API double ConvertHyperbolicAnomaly2TrueAnomaly(double eccentricity, double hyperbolicAnomaly);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts parabolic anomaly to true anomaly
@@ -259,6 +259,6 @@ double ConvertHyperbolicAnomaly2TrueAnomaly(double eccentricity, double hyperbol
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algoirthm 6, section 2.2.6, page 85
 ///
 ////////////////////////////////////////////////////////////
-double ConvertParabolicAnomaly2TrueAnomaly(double parabolicAnomaly);
+OTL_CORE_API double ConvertParabolicAnomaly2TrueAnomaly(double parabolicAnomaly);
 
 } // namespace otl

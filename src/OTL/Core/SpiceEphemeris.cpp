@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
+#ifdef OTL_SPICE
 #define OTL_SPICE_EPHEMERIS
 #ifdef OTL_SPICE_EPHEMERIS
 
@@ -201,4 +202,5 @@ double SpiceEphemeris::CalculateEphemerisTime(const Epoch& epoch) const
 
 } // namespace otl
 
+#endif
 #endif

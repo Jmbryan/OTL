@@ -35,8 +35,8 @@ include_directories(${PROJECT_SOURCE_DIR}/extlibs/include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 
 # set the output directory for OTL libraries
-#set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
-#set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
 
 # add the modules subdirectories
 add_subdirectory(Core)

@@ -35,7 +35,7 @@ namespace keplerian
 class IPropagator;
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
-class Orbit
+class OTL_CORE_API Orbit
 {
 public:
 
