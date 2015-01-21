@@ -46,24 +46,24 @@ TEST_CASE("KeplerianPropagator", "")
 
                 finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(finalExpectedStateVector.position.Z()));
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(finalExpectedStateVector.velocity.X()));
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(finalExpectedStateVector.velocity.Y()));
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(finalExpectedStateVector.velocity.Z()));
+                CHECK(finalStateVector.position.x() == OTL_APPROX(finalExpectedStateVector.position.x()));
+                CHECK(finalStateVector.position.y() == OTL_APPROX(finalExpectedStateVector.position.y()));
+                CHECK(finalStateVector.position.z() == OTL_APPROX(finalExpectedStateVector.position.z()));
+                CHECK(finalStateVector.velocity.x() == OTL_APPROX(finalExpectedStateVector.velocity.x()));
+                CHECK(finalStateVector.velocity.y() == OTL_APPROX(finalExpectedStateVector.velocity.y()));
+                CHECK(finalStateVector.velocity.z() == OTL_APPROX(finalExpectedStateVector.velocity.z()));
             }
 
             SECTION("StateVector")
             {
                finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-               CHECK(finalStateVector.position.X() == OTL_APPROX(finalExpectedStateVector.position.X()));
-               CHECK(finalStateVector.position.Y() == OTL_APPROX(finalExpectedStateVector.position.Y()));
-               CHECK(finalStateVector.position.Z() == OTL_APPROX(finalExpectedStateVector.position.Z()));
-               CHECK(finalStateVector.velocity.X() == OTL_APPROX(finalExpectedStateVector.velocity.X()));
-               CHECK(finalStateVector.velocity.Y() == OTL_APPROX(finalExpectedStateVector.velocity.Y()));
-               CHECK(finalStateVector.velocity.Z() == OTL_APPROX(finalExpectedStateVector.velocity.Z()));
+               CHECK(finalStateVector.position.x() == OTL_APPROX(finalExpectedStateVector.position.x()));
+               CHECK(finalStateVector.position.y() == OTL_APPROX(finalExpectedStateVector.position.y()));
+               CHECK(finalStateVector.position.z() == OTL_APPROX(finalExpectedStateVector.position.z()));
+               CHECK(finalStateVector.velocity.x() == OTL_APPROX(finalExpectedStateVector.velocity.x()));
+               CHECK(finalStateVector.velocity.y() == OTL_APPROX(finalExpectedStateVector.velocity.y()));
+               CHECK(finalStateVector.velocity.z() == OTL_APPROX(finalExpectedStateVector.velocity.z()));
                
                finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
 
@@ -92,24 +92,24 @@ TEST_CASE("KeplerianPropagator", "")
 
                 finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(-0.620678)); // [ER]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(0.466755));  // [ER/TU]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.242460)); // [ER/TU]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-0.773210)); // [ER/TU]
+                CHECK(finalStateVector.position.x() == OTL_APPROX(-0.661596)); // [ER]
+                CHECK(finalStateVector.position.y() == OTL_APPROX(0.684060));  // [ER]
+                CHECK(finalStateVector.position.z() == OTL_APPROX(-0.620678)); // [ER]
+                CHECK(finalStateVector.velocity.x() == OTL_APPROX(0.466755));  // [ER/TU]
+                CHECK(finalStateVector.velocity.y() == OTL_APPROX(-0.242460)); // [ER/TU]
+                CHECK(finalStateVector.velocity.z() == OTL_APPROX(-0.773210)); // [ER/TU]
             }
 
             SECTION("StateVector")
             {
                finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-0.661596)); // [ER]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(0.684060));  // [ER]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(-0.620678)); // [ER]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(0.466755));  // [ER/TU]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.242460)); // [ER/TU]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(-0.773210)); // [ER/TU]
+                CHECK(finalStateVector.position.x() == OTL_APPROX(-0.661596)); // [ER]
+                CHECK(finalStateVector.position.y() == OTL_APPROX(0.684060));  // [ER]
+                CHECK(finalStateVector.position.z() == OTL_APPROX(-0.620678)); // [ER]
+                CHECK(finalStateVector.velocity.x() == OTL_APPROX(0.466755));  // [ER/TU]
+                CHECK(finalStateVector.velocity.y() == OTL_APPROX(-0.242460)); // [ER/TU]
+                CHECK(finalStateVector.velocity.z() == OTL_APPROX(-0.773210)); // [ER/TU]
             }
         }
 
@@ -195,24 +195,24 @@ TEST_CASE("KeplerianPropagator", "")
 
                 finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(0.0));      // [km]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(-8.2977));  // [km/s]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.96309)); // [km/s]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(0.0));      // [km/s]
+                CHECK(finalStateVector.position.x() == OTL_APPROX(-3296.8));  // [km]
+                CHECK(finalStateVector.position.y() == OTL_APPROX(7413.9));   // [km]
+                CHECK(finalStateVector.position.z() == OTL_APPROX(0.0));      // [km]
+                CHECK(finalStateVector.velocity.x() == OTL_APPROX(-8.2977));  // [km/s]
+                CHECK(finalStateVector.velocity.y() == OTL_APPROX(-0.96309)); // [km/s]
+                CHECK(finalStateVector.velocity.z() == OTL_APPROX(0.0));      // [km/s]
             }
 
             SECTION("StateVector")
             {
                finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                CHECK(finalStateVector.position.X() == OTL_APPROX(-3296.8));  // [km]
-                CHECK(finalStateVector.position.Y() == OTL_APPROX(7413.9));   // [km]
-                CHECK(finalStateVector.position.Z() == OTL_APPROX(0.0));      // [km]
-                CHECK(finalStateVector.velocity.X() == OTL_APPROX(-8.2977));  // [km/s]
-                CHECK(finalStateVector.velocity.Y() == OTL_APPROX(-0.96309)); // [km/s]
-                CHECK(finalStateVector.velocity.Z() == OTL_APPROX(0.0));      // [km/s]
+                CHECK(finalStateVector.position.x() == OTL_APPROX(-3296.8));  // [km]
+                CHECK(finalStateVector.position.y() == OTL_APPROX(7413.9));   // [km]
+                CHECK(finalStateVector.position.z() == OTL_APPROX(0.0));      // [km]
+                CHECK(finalStateVector.velocity.x() == OTL_APPROX(-8.2977));  // [km/s]
+                CHECK(finalStateVector.velocity.y() == OTL_APPROX(-0.96309)); // [km/s]
+                CHECK(finalStateVector.velocity.z() == OTL_APPROX(0.0));      // [km/s]
             }      
         }
     }

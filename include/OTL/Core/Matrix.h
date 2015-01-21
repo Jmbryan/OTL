@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/EigenMatrixAddons.h>
 #include <Eigen/Dense>
 #include <Eigen/src/Core/MatrixBase.h>
 

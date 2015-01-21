@@ -253,7 +253,7 @@ void Orbit::UpdateOrbitalElements() const
 ////////////////////////////////////////////////////////////
 void Orbit::UpdateOrbitRadius() const
 {
-   m_orbitRadius = m_stateVector.position.GetNorm();
+   m_orbitRadius = m_stateVector.position.norm();
 }
 
 ////////////////////////////////////////////////////////////

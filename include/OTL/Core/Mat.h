@@ -53,24 +53,33 @@ private: \
 Type m_value; \
 };
 
-template<typename Derived>
-OTL_DECLARE_MATRIX_EXPRESSION(RowExpression, typename Eigen::MatrixBase<Derived>::RowXpr)
+//template<typename Derived>
+//OTL_DECLARE_MATRIX_EXPRESSION(RowExpression, typename Eigen::MatrixBase<Derived>::RowXpr)
 template<typename Derived>
 OTL_DECLARE_MATRIX_EXPRESSION(CrossProductExpression, typename Eigen::MatrixBase<Derived>::template cross_product_return_type<Derived>::type)
 template<typename Derived, typename OtherDerived>
 OTL_DECLARE_SCALAR_EXPRESSION(DotProductExpression, typename Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Derived>::Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::ReturnType)
 
-//template<typename Derived>
-//class CrossProductReturnType : public MatBase<typename Eigen::MatrixBase<Derived>::template cross_product_return_type<Derived>::type>
-//{
-//public:
-//   typedef MatBase<typename Eigen::MatrixBase<Derived>::template cross_product_return_type<Derived>::type> Base;
-//   CrossProductReturnType() : Base() {}
-//   template<typename OtherImpl>
-//   CrossProductReturnType(const Eigen::MatrixBase<OtherImpl>& other) : Base(other) {}
-//   template<typename OtherImpl>
-//   CrossProductReturnType& operator =(const Eigen::MatrixBase<OtherImpl>& other) { m_impl = other; return *this; }
-//};
+template<typename Derived>
+class RowExpression : public MatBase<typename Eigen::MatrixBase<Derived>::RowXpr>
+{
+public:
+   typedef MatBase<typename Eigen::MatrixBase<Derived>::RowXpr> Base;
+   RowExpression() : Base()
+   {
+      double d = 1.0;
+   }
+   template<typename OtherImpl>
+   RowExpression(const Eigen::MatrixBase<OtherImpl>& other) : Base(other)
+   {
+      double d = 1.0;
+   }
+   template<typename OtherImpl>
+   RowExpression& operator =(const Eigen::MatrixBase<OtherImpl>& other)
+   {
+      m_impl = other; return *this;
+   }
+};
 
 //template<typename Derived, typename OtherDerived>
 //class DotProductReturnType
@@ -93,7 +102,10 @@ public:
    typedef Eigen::MatrixBase<DerivedImpl> Impl;
    MatBase() : m_impl(DerivedImpl()) {}
    template<typename OtherImpl>
-   MatBase(const Eigen::MatrixBase<OtherImpl>& other) : m_impl(other) {}
+   MatBase(const Eigen::MatrixBase<OtherImpl>& other) :
+   m_impl(other)
+   {
+   }
    template<typename OtherImpl>
    MatBase& operator =(const Eigen::MatrixBase<OtherImpl>& other) { m_impl = other; }
 
@@ -121,11 +133,22 @@ protected:
    Impl m_impl;
 };
 
-template<typename T, int NumRows, int NumCols>
-class Mat : public MatBase<Eigen::Matrix<T, NumRows, NumCols>>
+template<
+   typename _Scalar,
+   int _Rows,
+   int _Cols,
+   int _Options = Eigen::AutoAlign | ((_Rows == 1 && _Cols != 1) ? Eigen::RowMajor
+                                    : (_Cols == 1 && _Rows != 1) ? Eigen::ColMajor
+                                    : Eigen::EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION),
+   int _MaxRows = _Rows,
+   int _MaxCols = _Cols>
+class Mat;
+
+template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+class Mat : public MatBase<Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>>
 {
 public:
-   typedef MatBase<Eigen::Matrix<T, NumRows, NumCols>> Base;
+   typedef MatBase<Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>> Base;
    Mat() : Base() {}
 private:
 };

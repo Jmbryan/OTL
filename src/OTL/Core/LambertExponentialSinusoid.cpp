@@ -45,7 +45,7 @@ void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
     
     // Non-dimensional units
     double DU, VU, TU;
-    DU = initialPosition.GetNorm();
+    DU = initialPosition.norm();
     VU = sqrt(mu / DU);
     TU = DU / VU;
 
@@ -55,24 +55,24 @@ void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
     R1 *= 1.0 / DU;
     R2 *= 1.0 / DU;
 
-    double r2 = R2.GetNorm();
+    double r2 = R2.norm();
 
     // Non-dimensionalize the time of flight
     double tof = seconds / TU;
 
     // Cross product and dot product of initial and final position.
-    Vector3d CrossR1R2 = R1.Cross(R2);
-    double crossR1R2 = CrossR1R2.GetNorm();
-    double dotR1R2 = R1.Dot(R2);
+    Vector3d CrossR1R2 = R1.cross(R2);
+    double crossR1R2 = CrossR1R2.norm();
+    double dotR1R2 = R1.dot(R2);
 
     double trueAnomaly = acos(dotR1R2 / r2);
 
     // Direction of travel
-    if (orbitDirection == Orbit::Direction::Prograde && CrossR1R2.Z() <= 0.0)
+    if (orbitDirection == Orbit::Direction::Prograde && CrossR1R2.z() <= 0.0)
     {
         trueAnomaly = MATH_2_PI - trueAnomaly;
     }
-    else if (orbitDirection == Orbit::Direction::Retrograde && CrossR1R2.Z() >= 0.0)
+    else if (orbitDirection == Orbit::Direction::Retrograde && CrossR1R2.z() >= 0.0)
     {
         trueAnomaly = MATH_2_PI - trueAnomaly;
     }
@@ -155,11 +155,10 @@ void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
     }
 
     Vector3d Ih = (longway / crossR1R2) * CrossR1R2; 
-    Vector3d R2u = R2;
-    R2u.NormalizeInPlace();
+    Vector3d R2u = R2.normalized();
 
-    Vector3d CrossIhR1 = Ih.Cross(R1);
-    Vector3d CrossIhR2u = Ih.Cross(R2u);
+    Vector3d CrossIhR1 = Ih.cross(R1);
+    Vector3d CrossIhR2u = Ih.cross(R2u);
 
     double sinHalfTheta = sin(0.5 * trueAnomaly);
 

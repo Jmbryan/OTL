@@ -36,12 +36,12 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(2.058913));  // [km/s]
-            CHECK(initialVelocity.Y() == OTL_APPROX(2.915965));  // [km/s]
-            CHECK(initialVelocity.Z() == OTL_APPROX(0.0));       // [km/s]
-            CHECK(finalVelocity.X()   == OTL_APPROX(-3.451565)); // [km/s]
-            CHECK(finalVelocity.Y()  == OTL_APPROX(0.910315));  // [km/s]
-            CHECK(finalVelocity.Z()   == OTL_APPROX(0.0));       // [km/s]
+            CHECK(initialVelocity.x() == OTL_APPROX(2.058913));  // [km/s]
+            CHECK(initialVelocity.y() == OTL_APPROX(2.915965));  // [km/s]
+            CHECK(initialVelocity.z() == OTL_APPROX(0.0));       // [km/s]
+            CHECK(finalVelocity.x()   == OTL_APPROX(-3.451565)); // [km/s]
+            CHECK(finalVelocity.y()  == OTL_APPROX(0.910315));  // [km/s]
+            CHECK(finalVelocity.z()   == OTL_APPROX(0.0));       // [km/s]
         }
 
         /// Test ExponentialSinusoidLambert.Evaluate() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 7-5.
@@ -61,12 +61,12 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(0.2604450));  // [ER/TU]
-            CHECK(initialVelocity.Y() == OTL_APPROX(0.3688589));  // [ER/TU]
-            CHECK(initialVelocity.Z() == OTL_APPROX(0.0));        // [ER/TU]
-            CHECK(finalVelocity.X()   == OTL_APPROX(-0.4366104)); // [ER/TU]
-            CHECK(finalVelocity.Y()  == OTL_APPROX(0.1151515));  // [ER/TU]
-            CHECK(finalVelocity.Z()   == OTL_APPROX(0.0));        // [ER/TU]
+            CHECK(initialVelocity.x() == OTL_APPROX(0.2604450));  // [ER/TU]
+            CHECK(initialVelocity.y() == OTL_APPROX(0.3688589));  // [ER/TU]
+            CHECK(initialVelocity.z() == OTL_APPROX(0.0));        // [ER/TU]
+            CHECK(finalVelocity.x()   == OTL_APPROX(-0.4366104)); // [ER/TU]
+            CHECK(finalVelocity.y()  == OTL_APPROX(0.1151515));  // [ER/TU]
+            CHECK(finalVelocity.z()   == OTL_APPROX(0.0));        // [ER/TU]
         }
 
         /// Test ExponentialSinusoidLambert.Evaluate() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 5.2.
@@ -86,12 +86,12 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(-5.9925));  // [km/s]
-            CHECK(initialVelocity.Y() == OTL_APPROX(1.9254));   // [km/s]
-            CHECK(initialVelocity.Z() == OTL_APPROX(3.2456));   // [km/s]
-            CHECK(finalVelocity.X()   == OTL_APPROX(-3.3125));  // [km/s]
-            CHECK(finalVelocity.Y()  == OTL_APPROX(-4.1966));  // [km/s]
-            CHECK(finalVelocity.Z()   == OTL_APPROX(-0.38529)); // [km/s]
+            CHECK(initialVelocity.x() == OTL_APPROX(-5.9925));  // [km/s]
+            CHECK(initialVelocity.y() == OTL_APPROX(1.9254));   // [km/s]
+            CHECK(initialVelocity.z() == OTL_APPROX(3.2456));   // [km/s]
+            CHECK(finalVelocity.x()   == OTL_APPROX(-3.3125));  // [km/s]
+            CHECK(finalVelocity.y()  == OTL_APPROX(-4.1966));  // [km/s]
+            CHECK(finalVelocity.z()   == OTL_APPROX(-0.38529)); // [km/s]
         }
     
         /// Test ExponentialSinusoidLambert.Evaluate() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 5.3.
@@ -111,9 +111,9 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(-2.4356)); // [km/s]
-            CHECK(initialVelocity.Y() == OTL_APPROX(0.26741)); // [km/s]
-            CHECK(initialVelocity.Z() == OTL_APPROX(0.0));     // [km/s]
+            CHECK(initialVelocity.x() == OTL_APPROX(-2.4356)); // [km/s]
+            CHECK(initialVelocity.y() == OTL_APPROX(0.26741)); // [km/s]
+            CHECK(initialVelocity.z() == OTL_APPROX(0.0));     // [km/s]
         }
 
         /// Test ExponentialSinusoidLambert.Evaluate() against Fundamentals of Astrodynamics 1st Edition, Bate Mueller & White, Example 5.3.1.
@@ -134,12 +134,12 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(-0.361677496)); // [VU]
-            CHECK(initialVelocity.Y() == OTL_APPROX(0.76973587));   // [VU]
-            CHECK(initialVelocity.Z() == OTL_APPROX(-0.50634848));  // [VU]
-            CHECK(finalVelocity.X()   == OTL_APPROX(-0.60187442));  // [VU]
-            CHECK(finalVelocity.Y()  == OTL_APPROX(-0.02234181));  // [VU]
-            CHECK(finalVelocity.Z()   == OTL_APPROX(-0.84262419));  // [VU]
+            CHECK(initialVelocity.x() == OTL_APPROX(-0.361677496)); // [VU]
+            CHECK(initialVelocity.y() == OTL_APPROX(0.76973587));   // [VU]
+            CHECK(initialVelocity.z() == OTL_APPROX(-0.50634848));  // [VU]
+            CHECK(finalVelocity.x()   == OTL_APPROX(-0.60187442));  // [VU]
+            CHECK(finalVelocity.y()  == OTL_APPROX(-0.02234181));  // [VU]
+            CHECK(finalVelocity.z()   == OTL_APPROX(-0.84262419));  // [VU]
         }
 
         /// Test ExponentialSinusoidLambert.Evaluate() against Fundamentals of Astrodynamics 1st Edition, Bate Mueller & White, Example 5.3.1.
@@ -160,12 +160,12 @@ TEST_CASE("ExponentialSinusoidLambert", "Lambert")
                              initialVelocity,
                              finalVelocity);
 
-            CHECK(initialVelocity.X() == OTL_APPROX(-0.6304918096));  // [VU]
-            CHECK(initialVelocity.Y() == OTL_APPROX(-1.11392096659)); // [VU]
-            CHECK(initialVelocity.Z() == OTL_APPROX(-0.8826885334));  // [VU] Assuming sign typo
-            CHECK(finalVelocity.X()   == OTL_APPROX(0.1786653974));   // [VU]
-            CHECK(finalVelocity.Y()  == OTL_APPROX(1.5544139777));   // [VU]
-            CHECK(finalVelocity.Z()   == OTL_APPROX(0.250135563));    // [VU]
+            CHECK(initialVelocity.x() == OTL_APPROX(-0.6304918096));  // [VU]
+            CHECK(initialVelocity.y() == OTL_APPROX(-1.11392096659)); // [VU]
+            CHECK(initialVelocity.z() == OTL_APPROX(-0.8826885334));  // [VU] Assuming sign typo
+            CHECK(finalVelocity.x()   == OTL_APPROX(0.1786653974));   // [VU]
+            CHECK(finalVelocity.y()  == OTL_APPROX(1.5544139777));   // [VU]
+            CHECK(finalVelocity.z()   == OTL_APPROX(0.250135563));    // [VU]
         }
     }
 }

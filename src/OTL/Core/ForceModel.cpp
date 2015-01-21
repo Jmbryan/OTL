@@ -37,8 +37,8 @@ void GravityModel::Update(const Time& deltaTime)
       const auto& otherPosition = externalBody->GetPosition();
 
       Vector3d distanceVector = (otherPosition - myPosition);
-      double distanceSquared = std::pow(distanceVector.GetNorm(), 2.0);
-      distanceVector.NormalizeInPlace();
+      double distanceSquared = distanceVector.squaredNorm();
+      distanceVector.normalize();
 
       m_Forces += otherMass / distanceSquared * distanceVector;
    }
@@ -62,7 +62,7 @@ void SolarPressureModel::Update(const Time& deltaTime)
     const auto& radiationPressureCoefficient = m_Spacecraft->GetRadiationPressureCoefficient();
 
     Vector3d incidentVector = sourcePosition - myPosition;
-    incidentVector.NormalizeInPlace();
+    incidentVector.normalize();
 
     m_Forces = radiationPressure *
                radiationPressureCoefficient *

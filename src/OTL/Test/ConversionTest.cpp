@@ -81,12 +81,12 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         
         stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
-        CHECK(stateVector.position.X() == OTL_APPROX(6525.344));  // [km]
-        CHECK(stateVector.position.Y() == OTL_APPROX(6861.535));  // [km]
-        CHECK(stateVector.position.Z() == OTL_APPROX(6449.125));  // [km]
-        CHECK(stateVector.velocity.X() == OTL_APPROX(4.902276));  // [km/s]
-        CHECK(stateVector.velocity.Y() == OTL_APPROX(5.533124));  // [km/s]
-        CHECK(stateVector.velocity.Z() == OTL_APPROX(-1.975709)); // [km/s]
+        CHECK(stateVector.position.x() == OTL_APPROX(6525.344));  // [km]
+        CHECK(stateVector.position.y() == OTL_APPROX(6861.535));  // [km]
+        CHECK(stateVector.position.z() == OTL_APPROX(6449.125));  // [km]
+        CHECK(stateVector.velocity.x() == OTL_APPROX(4.902276));  // [km/s]
+        CHECK(stateVector.velocity.y() == OTL_APPROX(5.533124));  // [km/s]
+        CHECK(stateVector.velocity.z() == OTL_APPROX(-1.975709)); // [km/s]
     }
 
     /// Test OrbitalElements2StateVector() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-6.
@@ -102,12 +102,12 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         
         stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
-        CHECK(stateVector.position.X() == OTL_APPROX(1.02308));  // [ER]
-        CHECK(stateVector.position.Y() == OTL_APPROX(1.07579));  // [ER]
-        CHECK(stateVector.position.Z() == OTL_APPROX(1.01113));  // [ER]
-        CHECK(stateVector.velocity.X() == OTL_APPROX(0.62012));  // [ER/TU]
-        CHECK(stateVector.velocity.Y() == OTL_APPROX(0.69992));  // [ER/TU]
-        CHECK(stateVector.velocity.Z() == OTL_APPROX(-0.24992)); // [ER/TU]
+        CHECK(stateVector.position.x() == OTL_APPROX(1.02308));  // [ER]
+        CHECK(stateVector.position.y() == OTL_APPROX(1.07579));  // [ER]
+        CHECK(stateVector.position.z() == OTL_APPROX(1.01113));  // [ER]
+        CHECK(stateVector.velocity.x() == OTL_APPROX(0.62012));  // [ER/TU]
+        CHECK(stateVector.velocity.y() == OTL_APPROX(0.69992));  // [ER/TU]
+        CHECK(stateVector.velocity.z() == OTL_APPROX(-0.24992)); // [ER/TU]
     }
 
     /// Test OrbitalElements2StateVector() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 4.5.
@@ -127,11 +127,11 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         
         stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
-        CHECK(stateVector.position.X() == OTL_APPROX(-4039.9));  // [km]
-        CHECK(stateVector.position.Y() == OTL_APPROX(4814.56));  // [km]
-        CHECK(stateVector.position.Z() == OTL_APPROX(3628.62));  // [km]
-        CHECK(stateVector.velocity.X() == OTL_APPROX(-10.386));  // [km/s]
-        CHECK(stateVector.velocity.Y() == OTL_APPROX(-4.77192)); // [km/s]
-        CHECK(stateVector.velocity.Z() == OTL_APPROX(1.74388));  // [km/s]
+        CHECK(stateVector.position.x() == OTL_APPROX(-4039.9));  // [km]
+        CHECK(stateVector.position.y() == OTL_APPROX(4814.56));  // [km]
+        CHECK(stateVector.position.z() == OTL_APPROX(3628.62));  // [km]
+        CHECK(stateVector.velocity.x() == OTL_APPROX(-10.386));  // [km/s]
+        CHECK(stateVector.velocity.y() == OTL_APPROX(-4.77192)); // [km/s]
+        CHECK(stateVector.velocity.z() == OTL_APPROX(1.74388));  // [km/s]
     }
 }

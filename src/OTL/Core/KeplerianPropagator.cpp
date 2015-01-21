@@ -99,9 +99,9 @@ StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVecto
 
    // Compute frequently used variables
    double sqrtMu = sqrt(mu);
-   double r0 = R.GetNorm();
-   double v0 = V.GetNorm();
-   double rdotv = R.Dot(V);
+   double r0 = R.norm();
+   double v0 = V.norm();
+   double rdotv = R.dot(V);
 
    // Compute the universal variable results
    auto results = CalculateUniversalVariable(r0, v0, rdotv, seconds, mu);
@@ -281,7 +281,7 @@ void KeplerianPropagator::PropagateK(const OrbitalElements& initialOrbitalElemen
    {
       OTL_ERROR() << "Propagate for parabolic orbits is not implemented yet";
       auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
-      double h = stateVector.position.Cross(stateVector.velocity).norm();
+      double h = stateVector.position.cross(stateVector.velocity).norm();
       double p = SQR(h) / mu;
       double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
       double M0 = B0 + pow(B0, 3.0) / 3.0;
@@ -304,10 +304,10 @@ void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, doub
    const Vector3d& V = initialStateVector.velocity;
 
    // Compute frequently used variables
-   double r0 = R.GetNorm();
-   double v0 = V.GetNorm();
+   double r0 = R.norm();
+   double v0 = V.norm();
    double h = 0.5 * SQR(v0) - mu / r0;
-   double h1 = R.Cross(V).norm();
+   double h1 = R.cross(V).norm();
    double hSquared = SQR(h);
 
    // Convert to orbital elements

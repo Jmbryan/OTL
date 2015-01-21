@@ -48,21 +48,21 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    // Position and velocity
    const Vector3d& R = stateVector.position;
    const Vector3d& V = stateVector.velocity;
-   double r = R.GetNorm();
-   double v = V.GetNorm();
-   double rDotv = R.Dot(V);
+   double r = R.norm();
+   double v = V.norm();
+   double rDotv = R.dot(V);
 
    // Specific Angular Momentum
-   Vector3d H = R.Cross(V);
-   double h = H.GetNorm();
+   Vector3d H = R.cross(V);
+   double h = H.norm();
 
    // Node Vector
-   Vector3d N = MATH_UNIT_VEC_K.Cross(H);
-   double n = N.GetNorm();
+   Vector3d N = MATH_UNIT_VEC_K.cross(H);
+   double n = N.norm();
 
    // Eccentricity
    Vector3d Ecc = (SQR(v) / mu - 1.0 / r) * R - (rDotv / mu) * V;
-   double ecc = Ecc.GetNorm();
+   double ecc = Ecc.norm();
 
    // Semimajor axis and semiparameter
    double a, p;
@@ -82,15 +82,15 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    double incl = 0.0;
    if (h > 0.0)
    {
-      incl = acos(H.Z() / h);
+      incl = acos(H.z() / h);
    }
 
    // Longitude of the ascending node
    double lan = 0.0;
    if (n > 0.0)
    {
-      lan = acos(N.X() / n);
-      if (N.Y() < 0.0)
+      lan = acos(N.x() / n);
+      if (N.y() < 0.0)
       {
          lan = MATH_2_PI - lan;
       }
@@ -100,23 +100,23 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    double aop = 0.0;
    if (ecc != ASTRO_ECC_CIRCULAR && incl != ASTRO_INCL_EQUATORIAL) // non-circular non-equatorial orbit
    {
-      double nDotecc = N.Dot(Ecc);
+      double nDotecc = N.dot(Ecc);
       aop = acos(nDotecc / n / ecc);
-      if (Ecc.Z() < 0.0)
+      if (Ecc.z() < 0.0)
       {
          aop = MATH_2_PI - aop;
       }
    }
    else if (ecc != ASTRO_ECC_CIRCULAR) // non-circular equatorial orbit (line of nodes is undefined)
    {
-      aop = acos(Ecc.X() / ecc);
+      aop = acos(Ecc.x() / ecc);
    }
 
    // True Anomaly
    double ta;
    if (ecc != ASTRO_ECC_CIRCULAR) // non-circular orbit
    {
-      double eccDotr = Ecc.Dot(R);
+      double eccDotr = Ecc.dot(R);
       ta = acos(eccDotr / ecc / r);
       if (rDotv < 0.0)
       {
@@ -125,8 +125,8 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    }
    else if (incl != ASTRO_INCL_EQUATORIAL) // circular non-equatorial orbit
    {
-      double nDotr = N.Dot(R);
-      double nDotv = N.Dot(V);
+      double nDotr = N.dot(R);
+      double nDotv = N.dot(V);
       ta = acos(nDotr / n / r);
       if (nDotv > 0.0)
       {
@@ -135,8 +135,8 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    }
    else // circular equatorial orbit (line of nodes is undefined)
    {
-      ta = acos(R.X() / r); // true longitude
-      if (V.X() > 0.0)
+      ta = acos(R.x() / r); // true longitude
+      if (V.x() > 0.0)
       {
          ta = MATH_2_PI - ta;
       }
@@ -172,12 +172,12 @@ StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalEle
 
    // Build the state vectors in perifical coordinates.
    Vector3d Rp, Vp;
-   Rp.X() = p * cosTa / (1.0 + ecc * cosTa);
-   Rp.Y() = p * sinTa / (1.0 + ecc * cosTa);
-   Rp.Z() = 0.0;
-   Vp.X() = -sqrt(mu / p) * sinTa;
-   Vp.Y() =  sqrt(mu / p) * (ecc + cosTa);
-   Vp.Z() = 0.0;
+   Rp.x() = p * cosTa / (1.0 + ecc * cosTa);
+   Rp.y() = p * sinTa / (1.0 + ecc * cosTa);
+   Rp.z() = 0.0;
+   Vp.x() = -sqrt(mu / p) * sinTa;
+   Vp.y() =  sqrt(mu / p) * (ecc + cosTa);
+   Vp.z() = 0.0;
 
    // Transform the state vectors into inertial coordinates.
    StateVector stateVector;

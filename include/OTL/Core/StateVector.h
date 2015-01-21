@@ -24,10 +24,14 @@
 
 #pragma once
 #include <OTL/Core/Export.h>
-#include <OTL/Core/Matrix.h>
+#define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/MatrixPlugin.h>
+#include <Eigen/Dense>
 
 namespace otl
 {
+
+using Vector3d = Eigen::Vector3d;
+using Matrix3d = Eigen::Matrix3d;
 
 struct OTL_CORE_API StateVector
 {
