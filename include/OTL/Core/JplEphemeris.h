@@ -28,6 +28,10 @@
 namespace otl
 {
 
+// Forward declarations
+class JplEphemerisConverter;
+typedef std::shared_ptr<JplEphemerisConverter> JplEphemerisConverterPointer;
+
 class OTL_CORE_API JplEphemeris : public IEphemeris
 {
 public:
@@ -69,6 +73,10 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void LoadDataFile(const std::string& dataFilename);
+
+   void SetDataDirectory(const std::string& dataDirectory);
+   void SetEntityList(const std::vector<std::string>& entityList);
+   void CreateEphemerisFile(const Epoch& startDate, const Epoch& endDate, const std::string& outputFilename);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -158,7 +166,8 @@ protected:
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
 private:
-   std::string m_dataFilename; ///< Full path to the ephemeris data file
+   std::string m_dataFilename;               ///< Full path to the ephemeris data file
+   JplEphemerisConverterPointer m_converter; ///< Smart pointer to the converter helper object
 };
 
 } // namespace otl

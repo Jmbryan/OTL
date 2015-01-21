@@ -32,6 +32,35 @@ int main()
     gLogger.SetLogLevel(LogLevel::Fatal);
     gLogger.SetThrowLevel(LogLevel::Error);
 
+    if (false)
+    {
+       GregorianDateTime startDate;
+       startDate.day = 1;
+       startDate.month = 1;
+       startDate.year = 2010;
+       startDate.hour = startDate.min = 0;
+       startDate.sec = 0.0;
+       GregorianDateTime endDate = startDate;
+       endDate.year = 2020;
+
+       auto currentDirectory = gSystem.GetCurrentDirectory();
+       auto dataDirectory = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405";
+       auto outputFilename = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405_test.data";
+
+       JplEphemeris jplEphemeris("");
+       jplEphemeris.SetDataDirectory(dataDirectory);
+       jplEphemeris.CreateEphemerisFile(Epoch::Gregorian(startDate), Epoch::Gregorian(endDate), outputFilename);
+       jplEphemeris.SetDataFile(outputFilename);
+
+
+       GregorianDateTime testDate = startDate;
+       testDate.year = 0.5 * (startDate.year + endDate.year);
+       StateVector stateVector;
+       jplEphemeris.GetStateVector("Earth", Epoch::Gregorian(testDate), stateVector);
+
+       double d = 1.0;
+    }
+
     if (true)
     {
        int numIter = 10000;

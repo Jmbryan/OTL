@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/JplEphemeris.h>
+#include <OTL/Core/Jpl/JplEphemerisConverter.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
@@ -41,7 +42,8 @@ static AstroEntityDictionary g_entityDictionary;
 ////////////////////////////////////////////////////////////
 JplEphemeris::JplEphemeris(const std::string& dataFilename) :
 IEphemeris(),
-m_dataFilename(dataFilename)
+m_dataFilename(dataFilename),
+m_converter(new JplEphemerisConverter())
 {
     
 }
@@ -63,6 +65,24 @@ void JplEphemeris::LoadDataFile(const std::string& dataFilename)
 {
    SetDataFile(dataFilename);
    VLoad();
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::SetDataDirectory(const std::string& dataDirectory)
+{
+   m_converter->SetDataDirectory(dataDirectory);
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::SetEntityList(const std::vector<std::string>& entityList)
+{
+   m_converter->SetEntityList(entityList);
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::CreateEphemerisFile(const Epoch& startDate, const Epoch& endDate, const std::string& outputFilename)
+{
+   m_converter->CreateFile(startDate, endDate, outputFilename);
 }
 
 ////////////////////////////////////////////////////////////

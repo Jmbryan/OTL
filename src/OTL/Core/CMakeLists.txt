@@ -70,12 +70,15 @@ source_group("" FILES ${SRC})
 
 # add internal files
 set(INTERNAL_SRC
+	${SRCROOT}/Jpl/JplEphemerisConverter.cpp
+	${SRCROOT}/Jpl/JplEphemerisConverter.h
 	${SRCROOT}/Jpl/JplApproximateEphemerisIO.cpp
 	${SRCROOT}/Jpl/JplApproximateEphemerisIO.h
 	${SRCROOT}/Mpcorb/MpcorbEphemerisIO.cpp
 	${SRCROOT}/Mpcorb/MpcorbEphemerisIO.h
 	${SRCROOT}/Spdlog/LoggerImpl.cpp
 	${SRCROOT}/Spdlog/LoggerImpl.h
+	${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem/convert.cpp
 	${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem/DE405Ephemeris.cpp
 	${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem/DE405Ephemeris.h
 	${PROJECT_SOURCE_DIR}/extlibs/src/niek-ephem/DE405EphemerisIO.cpp

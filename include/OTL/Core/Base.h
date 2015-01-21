@@ -164,6 +164,14 @@ const double ASTRO_RADIUS_PLUTO     = 1151.0;
 inline double SQR(double x)
 {return x*x;}
 
+/// Returns the maximum of x and y
+inline double Max(double x, double y)
+{ return x > y ? x : y; }
+
+/// Returns the minimum of x and y
+inline double Min(double x, double y)
+{ return x < y ? x : y; }
+
 /// Returns positive one if x is positive or negative one otherwise
 inline int Sign(double x)
 { return (x >= 0.0 ? 1 : -1); }
