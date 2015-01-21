@@ -1,10 +1,10 @@
 
 # set the source directory
-set(CONSOLE_SRCROOT ${PROJECT_SOURCE_DIR}/Console)
+set(EXAMPLE_DEMO_SRCROOT ${PROJECT_SOURCE_DIR}/examples/demo)
 
 # all source files
 set(SRC
-	${CONSOLE_SRCROOT}/Main.cpp
+	${EXAMPLE_DEMO_SRCROOT}/Main.cpp
 )
 source_group("" FILES ${SRC})
 
@@ -15,7 +15,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/extlibs/include)
 
 # define the otl-test target
-otl_add_project(otl-console
+otl_add_project(demo
 				SOURCES ${SRC}
 				DEPENDS otl-core
-				FOLDER "Console")
+				FOLDER "Examples")

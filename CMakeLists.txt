@@ -44,7 +44,7 @@ otl_set_option(OTL_BUILD_UNIT_TESTS TRUE BOOL "TRUE to build the OTL unit tests,
 otl_set_option(OTL_BUILD_FUNCTIONAL_TESTS FALSE BOOL "TRUE to build the OTL functional tests, FALSE to ignore them")
 
 # add an option for building the examples
-otl_set_option(OTL_BUILD_EXAMPLES FALSE BOOL "TRUE to build the OTL examples, FALSE to ignore them")
+otl_set_option(OTL_BUILD_EXAMPLES TRUE BOOL "TRUE to build the OTL examples, FALSE to ignore them")
 
 # add an option for building the API documentation
 otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
@@ -159,9 +159,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 # add the subdirectories
 add_subdirectory(src/OTL)
-add_subdirectory(Console)
 if(OTL_BUILD_SPICE)
-	add_subdirectory(Spice)
+	add_subdirectory(spice)
 endif()
 if(OTL_BUILD_EXAMPLES)
 	add_subdirectory(examples)
