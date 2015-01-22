@@ -394,7 +394,7 @@ void MGADSMTrajectory::SetPropagateType(PropagateType type)
 {
    switch (type)
    {
-      case PropagateType::Analytical:
+      case PropagateType::Keplerian:
          m_propagator = std::unique_ptr<IPropagator>(new KeplerianPropagator());
          break;
 
@@ -410,7 +410,7 @@ void MGADSMTrajectory::SetLambertType(LambertType type)
 {
    switch (type)
    {
-      case LambertType::ExponentialSinusoid:
+      case LambertType::MultiRev:
          m_lambert = std::unique_ptr<ILambertAlgorithm>(new LambertExponentialSinusoid());
          break;
 
@@ -426,7 +426,7 @@ void MGADSMTrajectory::SetFlybyType(FlybyType type)
 {
    switch (type)
    {
-      case FlybyType::Izzo:
+      case FlybyType::Unpowered:
          m_flyby = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
          break;
 

@@ -31,9 +31,8 @@ LineLogger::~LineLogger()
 
 ////////////////////////////////////////////////////////////
 Logger::Logger() :
-    m_initialized(false),
-    m_logLevel(LogLevel::Fatal),
-    m_throwLevel(LogLevel::Error)
+m_initialized(false),
+m_logLevel(LogLevel::Info)
 {
     std::string currentDirectory = gSystem.GetCurrentDirectory();
     m_logDirectory = currentDirectory + "\\logs";
@@ -104,12 +103,6 @@ void Logger::SetLogLevel(LogLevel logLevel)
 }
 
 ////////////////////////////////////////////////////////////
-void Logger::SetThrowLevel(LogLevel throwLevel)
-{
-    m_throwLevel = throwLevel;
-}
-
-////////////////////////////////////////////////////////////
 void Logger::SetLogDirectory(const std::string& logDirectory)
 {
     m_logDirectory = logDirectory;
@@ -136,19 +129,25 @@ void Logger::SetNumRotatingFiles(int numRotatingFiles)
 ////////////////////////////////////////////////////////////
 bool Logger::ShouldLog(LogLevel logLevel)
 {
-    return logLevel <= m_logLevel;
+   return (logLevel >= m_logLevel);
 }
 
 ////////////////////////////////////////////////////////////
-bool Logger::ShouldThrow(LogLevel throwLevel)
+bool Logger::ShouldThrow(LogLevel logLevel)
 {
-    return throwLevel >= m_throwLevel;
+   return (logLevel == LogLevel::Error);
+}
+
+////////////////////////////////////////////////////////////
+bool Logger::ShouldAbort(LogLevel logLevel)
+{
+   return (logLevel == LogLevel::Fatal);
 }
 
 ////////////////////////////////////////////////////////////
 void Logger::VLog(const std::string& message, const LogLevel& logLevel)
 {
-   LoggerImpl::Log(message, logLevel, ShouldLog(logLevel), ShouldThrow(logLevel));
+   LoggerImpl::Log(message, logLevel, ShouldLog(logLevel), ShouldAbort(logLevel), ShouldThrow(logLevel));
 }
 
 ////////////////////////////////////////////////////////////

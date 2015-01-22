@@ -27,85 +27,53 @@
 #include <OTL/Core/Export.h>
 #include <OTL/Core/Logger.h>
 #include <OTL/Core/StateVector.h>
+#include <OTL/Core/OrbitalElements.h>
 #include <OTL/Core/Time.h>
 #include <iostream>
-#include <memory>
 #include <string>
+#include <vector>
 #include <map>
 #include <cmath>
-#include <cassert>
-#include <vector>
+#include <numeric>
+#include <memory>
 
 namespace otl
 {
 
-enum class State
+enum class EphemerisType
 {
    Invalid = -1,
-   Dirty,
-   Clean,
+   JplApproximate,
+   Jpl,
+   Spice,
+   Mpcorb,
    Count
 };
 
 enum class PropagateType
 {
    Invalid = -1,
-   Analytical,
+   Keplerian,
    Count
 };
 
 enum class LambertType
 {
    Invalid = -1,
-   ExponentialSinusoid,
+   MultiRev,
+   SingleRev,
    Count
 };
 
 enum class FlybyType
 {
    Invalid = -1,
-   Izzo,
+   Unpowered,
+   Powered,
    Count
 };
 
-////////////////////////////////////////////////////////////
-/// \class otl::OrbitalElements
-///
-/// Basic construct representing a three dimensonal orbit in space.
-///
-/// <ul>
-/// <li>The Semimajor Axis defines the length of the primary axis</li>
-/// <li>The Eccentricity defines the shape of the orbit
-/// <ul>
-/// <li>0 for circular orbits</li>
-/// <li>(0, 1) for elliptical orbits</li>
-/// <li>1 for parabolic orbits</li>
-/// <li>(1, infinity) for hyperbolic orbits</li>
-/// </ul>
-/// <li>The Inclination, Argument of Pericenter, and Longitude
-/// of Ascending Node all define the orientation of the
-/// orbit in 3D space. These parameters are uncessary for 2D orbits.</li>
-/// <li>The true anomaly defines the current point on the orbit. Neglecting
-/// external disturbances, this is the only parameter that varies
-/// in time.</li>
-/// </ul>
-///
-/// The Longitude of Ascending Node is also sometimes referred
-/// to as the Right Ascension of the Ascending Node (RAAN).
-///
-///
-////////////////////////////////////////////////////////////
-struct OrbitalElements
-{
-   double semiMajorAxis;      ///< SemiMajor axis (a)
-   double eccentricity;       ///< Eccentricity (e)
-   double inclination;        ///< Inclination (i)
-   double argOfPericenter;    ///< Argument of pericenter (omega)
-   double lonOfAscendingNode; ///< Longitude of the ascending node ()
-   double trueAnomaly;        ///< True Anomaly (theta)
-};
-
-// Math
+// Math constants
 const double MATH_DEG_TO_RAD        = 0.0174532925;
 const double MATH_RAD_TO_DEG        = 57.29577951;
 const double MATH_DOUBLE_SMALL      = 1.0e-37;
@@ -124,11 +92,11 @@ const double MATH_DAY_TO_SEC        = 86400.0;
 const double MATH_HOUR_TO_SEC       = 3600.0;
 const double MATH_MIN_TO_SEC        = 60.0;
 const double MATH_SEC_TO_DAY        = 1.0 / MATH_DAY_TO_SEC;
-const Vector3d MATH_UNIT_VEC_I      = Vector3d({ 1.0, 0.0, 0.0 });
-const Vector3d MATH_UNIT_VEC_J      = Vector3d({ 0.0, 1.0, 0.0 });
-const Vector3d MATH_UNIT_VEC_K      = Vector3d({ 0.0, 0.0, 1.0 });
+const Vector3d MATH_UNIT_VEC_I      = Vector3d(1.0, 0.0, 0.0);
+const Vector3d MATH_UNIT_VEC_J      = Vector3d(0.0, 1.0, 0.0);
+const Vector3d MATH_UNIT_VEC_K      = Vector3d(0.0, 0.0, 1.0);
 
-// Astrodynamics
+// Astrodynamics constants
 const double ASTRO_GRAVITATIONAL_CONSTANT = 6.67384e-11;      // Universal gravitational constant (m^3 kg^-1 s^-2)
 const double ASTRO_AU_TO_KM         = 149597870.66;     // Convert Astronomical Units (AU) to km
 const double ASTRO_ER_TO_KM         = 6378.137;         // Mean equitorial radius of Earth (ER) to km
@@ -156,41 +124,29 @@ const double ASTRO_RADIUS_URANUS    = 25559.0;
 const double ASTRO_RADIUS_NEPTUNE   = 24764.0;
 const double ASTRO_RADIUS_PLUTO     = 1151.0;
 
-//#define OTL_ASSERT(condition) assert(condition)
-#define OTL_ASSERT(condition, message) assert(condition)
-#define OTL_SAFE_DELETE(x) {if (x) {delete x; x = NULL;}
-
 /// Returns the square of x
 inline double SQR(double x)
-{return x*x;}
-
-/// Returns the maximum of x and y
-inline double Max(double x, double y)
-{ return x > y ? x : y; }
-
-/// Returns the minimum of x and y
-inline double Min(double x, double y)
-{ return x < y ? x : y; }
+{return x * x;}
 
 /// Returns positive one if x is positive or negative one otherwise
 inline int Sign(double x)
 { return (x >= 0.0 ? 1 : -1); }
 
-/// Returns r rounded towards zero
+/// Returns x rounded towards zero
 inline double Round0(double x)
 {return (x < 0.0 ? ceil(x) : floor(x));}
 
 /// Returns the inverse hyperbolic sine of x
 inline double asinh(double x)
-{ return log(x + sqrt(x*x + 1.0f)); }
+{ return log(x + sqrt(x * x + 1.0)); }
 
 /// Returns the inverse hyperbolic cosine of x
 inline double acosh(double x)
-{ return log(x + sqrt(x*x - 1.0)); }
+{ return log(x + sqrt(x * x - 1.0)); }
 
 /// Returns the inverse hyperbolic tangent of x
 inline double atanh(double x)
-{ return 0.5f*log((1.0f+x)/(1.0f-x)); }
+{ return 0.5 * log((1.0 + x) / (1.0 - x)); }
 
 /// Returns the cotangent of x
 inline double cot(double x)
@@ -204,15 +160,8 @@ inline double acot(double x)
 inline double Modulo(double dividend, double divisor)
 { return dividend - divisor * std::floor(dividend / divisor); }
 
-/// Returns true if the orbital elements are identical
-inline bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs)
-{
-   return (lhs.semiMajorAxis == rhs.semiMajorAxis &&
-      lhs.eccentricity == rhs.eccentricity &&
-      lhs.inclination == rhs.inclination &&
-      lhs.argOfPericenter == rhs.argOfPericenter &&
-      lhs.lonOfAscendingNode == rhs.lonOfAscendingNode &&
-      lhs.trueAnomaly == rhs.trueAnomaly);
-}
+/// Returns true if the floating point numbers are approximately the same
+inline bool ApproxEqual(double lhs, double rhs, double epsilon = 2.0 * std::numeric_limits<double>::epsilon())
+{ return std::abs(lhs - rhs) <= std::max({1.0, std::abs(lhs), std::abs(rhs)}) * epsilon; }
 
 } // namespace otl

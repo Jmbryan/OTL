@@ -264,8 +264,8 @@ namespace otl
       // records may be duplicated across 20 yr blocks
       double lastWrittenStart = -1.0;
 
-      int fstart = static_cast<int>(Max(1600, startYear - (startYear % 20)));
-      int fend = static_cast<int>(Min(2200, endYear + 1 - ((endYear + 1) % 20)));
+      int fstart = static_cast<int>(std::max(1600, startYear - (startYear % 20)));
+      int fend = static_cast<int>(std::min(2200, endYear + 1 - ((endYear + 1) % 20)));
 
       for (int fnum = fstart; fnum < fend; fnum += 20) {
 

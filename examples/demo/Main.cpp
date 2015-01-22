@@ -29,8 +29,35 @@ using namespace otl;
 
 int main()
 {
-    gLogger.SetLogLevel(LogLevel::Fatal);
-    gLogger.SetThrowLevel(LogLevel::Error);
+    gLogger.SetLogLevel(LogLevel::Info);
+
+    OrbitalElements coes;
+    std::cout << coes << std::endl;
+    std::cout << HumanReadable(coes) << std::endl;
+    std::cout << std::endl;
+
+    StateVector sv;
+    std::cout << sv << std::endl;
+    std::cout << HumanReadable(sv) << std::endl;
+
+    //OTL_INFO_IF(true) << "Hi";
+
+    //if (true)
+    //OTL_INFO2("Hello " << "there");
+    
+    if (true)
+      OTL_INFO_IF(false, "I'm " << "number " << 10 << "!");
+    else
+      OTL_INFO_IF(false, "I'm " << "number " << 1 << "!");
+
+    if (false)
+      OTL_WARN_IF(false, "My fav number is " << 3.14);
+    else
+      OTL_WARN_IF(false, "My fav number is " << 37);
+
+    OTL_ASSERT(true, "Not " << "a " << "problem " << 1);
+    OTL_ASSERT(1+1==2, "Is " << "a " << "problem " << 2);
+    OTL_ASSERT(1 < 2, "Old school");
 
     if (false)
     {
@@ -383,24 +410,24 @@ int main()
 
        auto currentDirectory = gSystem.GetCurrentDirectory();
 
-       auto approxDataFile = currentDirectory + "\\..\\data\\jpl\\approx\\approx3000_3000.data";
+       auto approxDataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\approx\\approx3000_3000.data";
        auto jplApproxEphemeris = std::make_shared<JplApproximateEphemeris>(approxDataFile);
        jplApproxEphemeris->GetStateVector(planetName, epoch, stateVector1);
        jplApproxEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements1);
 
-       auto dataFile = currentDirectory + "\\..\\data\\jpl\\de405\\de405.data";
+       auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
        jplEphemeris->GetStateVector(planetName, epoch, stateVector2);
        jplEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements2);
 
 #if defined(OTL_SPICE)
-       auto kernalFile = currentDirectory + "\\..\\data\\spice\\de430.bsp";
+       auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
        auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
        spiceEphemeris->GetStateVector(planetName, epoch, stateVector3);
        spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
 #endif
 
-       auto mpcorbDataFile = currentDirectory + "\\..\\data\\mpcorb\\mpcorb.data";
+       auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
        mpcorbEphemeris->GetStateVector("Ceres", epoch, stateVector4);
        mpcorbEphemeris->GetOrbitalElements("Ceres", epoch, orbitalElements4);

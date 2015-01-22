@@ -45,7 +45,7 @@ void LoggerImpl::Init(const std::string& logDirectory, const std::string& logFil
    }
 }
 
-void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException)
+void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool _enabled, bool _abort, bool _throw)
 {
     auto it = gLogLevelMap.find(logLevel);
     if (it == gLogLevelMap.end())
@@ -54,12 +54,16 @@ void LoggerImpl::Log(const std::string& message, const LogLevel& logLevel, bool 
         throw Exception("Invalid log level");
     }
     auto msg_level = it->second;
-    if (enabled)
+    if (_enabled)
     {
         spdlog::details::line_logger line_logger(m_log.get(), msg_level, true);
         line_logger << message;
     }
-    if (throwException)
+    if (_abort)
+    {
+       abort();
+    }
+    if (_throw)
     {
         throw Exception(message);
     }

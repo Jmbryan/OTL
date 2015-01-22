@@ -100,4 +100,20 @@ bool StateVector::operator!=(const StateVector& other)
    return (position != other.position || velocity != other.velocity);
 }
 
+////////////////////////////////////////////////////////////
+std::string HumanReadable(const StateVector& stateVector)
+{
+   std::stringstream ss;
+   ss << "State Vector:" << std::endl;
+   ss << "   Position:" << std::endl;
+   ss << "      X: " << stateVector.position.x() << std::endl;
+   ss << "      Y: " << stateVector.position.y() << std::endl;
+   ss << "      Z: " << stateVector.position.z() << std::endl;
+   ss << "   Velocity:" << std::endl;
+   ss << "      X: " << stateVector.velocity.x() << std::endl;
+   ss << "      Y: " << stateVector.velocity.y() << std::endl;
+   ss << "      Z: " << stateVector.velocity.z();
+   return ss.str();
+}
+
 } // namespace otl

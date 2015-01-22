@@ -12,7 +12,7 @@ class LoggerImpl
 {
 public:
    static void Init(const std::string& logDirectory, const std::string& logFilename, int maxFileSize, int numRotatingFiles);
-   static void Log(const std::string& message, const LogLevel& logLevel, bool enabled, bool throwException);
+   static void Log(const std::string& message, const LogLevel& logLevel, bool _enabled, bool _abort, bool _throw);
 
 private:
    static SpdLogPointer m_log;

@@ -23,8 +23,89 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/OrbitalElements.h>
+#include <OTL/Core/Base.h>
+#include <sstream>
 
 namespace otl
 {
+
+////////////////////////////////////////////////////////////
+OrbitalElements::OrbitalElements() :
+semiMajorAxis(),
+eccentricity(),
+inclination(),
+argOfPericenter(),
+lonOfAscendingNode(),
+trueAnomaly()
+{
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements::OrbitalElements(const OrbitalElements& other) :
+semiMajorAxis(other.semiMajorAxis),
+eccentricity(other.eccentricity),
+inclination(other.inclination),
+argOfPericenter(other.argOfPericenter),
+lonOfAscendingNode(other.lonOfAscendingNode),
+trueAnomaly(other.trueAnomaly)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements::OrbitalElements(const OrbitalElements&& other) :
+semiMajorAxis(std::move(other.semiMajorAxis)),
+eccentricity(std::move(other.eccentricity)),
+inclination(std::move(other.inclination)),
+argOfPericenter(std::move(other.argOfPericenter)),
+lonOfAscendingNode(std::move(other.lonOfAscendingNode)),
+trueAnomaly(std::move(other.trueAnomaly))
+{
+
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements::OrbitalElements(double _semiMajorAxis, double _eccentricity, double _inclination,
+                                 double _argOfPericenter, double _lonOfAscendingNode, double _trueAnomaly) :
+semiMajorAxis(_semiMajorAxis),
+eccentricity(_eccentricity),
+inclination(_inclination),
+argOfPericenter(_argOfPericenter),
+lonOfAscendingNode(_lonOfAscendingNode),
+trueAnomaly(_trueAnomaly)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+std::string HumanReadable(const OrbitalElements& orbitalElements)
+{
+   std::stringstream ss;
+   ss << "Orbital Elements:" << std::endl;
+   ss << "   Semimajor Axis:              " << orbitalElements.semiMajorAxis << std::endl;
+   ss << "   Eccentricity:                " << orbitalElements.eccentricity << std::endl;
+   ss << "   Inclination:                 " << orbitalElements.inclination << std::endl;
+   ss << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter << std::endl;
+   ss << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode << std::endl;
+   ss << "   True Anomaly:                " << orbitalElements.trueAnomaly;
+   return ss.str();
+}
+
+////////////////////////////////////////////////////////////
+bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs)
+{
+   return (ApproxEqual(lhs.semiMajorAxis, rhs.semiMajorAxis) &&
+            ApproxEqual(lhs.eccentricity, rhs.eccentricity) &&
+            ApproxEqual(lhs.inclination, rhs.inclination) &&
+            ApproxEqual(lhs.argOfPericenter, rhs.argOfPericenter) &&
+            ApproxEqual(lhs.lonOfAscendingNode, rhs.lonOfAscendingNode) &&
+            ApproxEqual(lhs.trueAnomaly, rhs.trueAnomaly));
+}
+
+////////////////////////////////////////////////////////////
+bool operator!=(const OrbitalElements& lhs, const OrbitalElements& rhs)
+{
+   return !(lhs == rhs);
+}
 
 } // namespace otl

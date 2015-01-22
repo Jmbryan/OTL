@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Export.h>
+#include <string>
 
 namespace otl
 {
@@ -33,17 +34,47 @@ struct OTL_CORE_API OrbitalElements
    double semiMajorAxis;      ///< SemiMajor axis (a)
    double eccentricity;       ///< Eccentricity (e)
    double inclination;        ///< Inclination (i)
-   double argOfPericenter;    ///< Argument of pericenter (omega)
-   double lonOfAscendingNode; ///< Longitude of the ascending node ()
-   double trueAnomaly;        ///< True Anomaly (theta)
+   double argOfPericenter;    ///< Argument of pericenter (omega, w)
+   double lonOfAscendingNode; ///< Longitude of the ascending node (l)
+   double trueAnomaly;        ///< True Anomaly (theta, t)
+
+   OrbitalElements();
+   OrbitalElements(const OrbitalElements& other);
+   OrbitalElements(const OrbitalElements&& other);
+   OrbitalElements(double _semiMajorAxis, double _eccentricity, double _inclination,
+                   double _argOfPericenter, double _lonOfAscendingNode, double _trueAnomaly);
+   
 };
+
+template<typename T>
+T& operator<<(T& stream, const OrbitalElements& orbitalElements)
+{
+   stream << "a=" << orbitalElements.semiMajorAxis << " "
+      << "e=" << orbitalElements.eccentricity << " "
+      << "i=" << orbitalElements.inclination << " "
+      << "w=" << orbitalElements.argOfPericenter << " "
+      << "l=" << orbitalElements.lonOfAscendingNode << " "
+      << "t=" << orbitalElements.trueAnomaly;
+   return stream;
+}
+
+OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);
+
+/// Returns true if the orbital elements are identical
+OTL_CORE_API bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs);
+OTL_CORE_API bool operator!=(const OrbitalElements& lhs, const OrbitalElements& rhs);
 
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
 /// \class otl::OrbitalElements
 ///
-/// Basic construct representing a three dimensonal orbit in space.
+/// Basic construct representing the six classical orbital elements
+///
+/// In general, six elements are required to completely
+/// define a keplerian orbit in three dimensional space.
+/// The OrbitalElements is one common way of expressing the
+/// six elements, the other being the StateVector.
 ///
 /// <ul>
 /// <li>The Semimajor Axis defines the length of the primary axis</li>
@@ -56,13 +87,14 @@ struct OTL_CORE_API OrbitalElements
 /// </ul>
 /// <li>The Inclination, Argument of Pericenter, and Longitude
 /// of Ascending Node all define the orientation of the
-/// orbit in 3D space. These parameters are uncessary for 2D orbits.</li>
-/// <li>The true anomaly defines the current point on the orbit. Neglecting
-/// external disturbances, this is the only parameter that varies
-/// in time.</li>
+/// orbit in 3D space. These parameters are unecessary for 2D orbits.</li>
+/// <li>The true anomaly defines the current point along the orbit. A true
+/// anomaly of zero occurs at the periapsis of the orbit and a true
+/// anomaly of 180 degrees occurs at the apoapsis of the orbit.</li>
 /// </ul>
 ///
-/// The Longitude of Ascending Node is also sometimes referred
-/// to as the Right Ascension of the Ascending Node (RAAN).
+/// \Note Neglecting external disturbances, the true anomaly is the only parameter that varies in time
+///
+/// \Note The Longitude of Ascending Node is also referred to as the Right Ascension of the Ascending Node (RAAN)
 ///
 ////////////////////////////////////////////////////////////

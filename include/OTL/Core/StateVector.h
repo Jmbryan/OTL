@@ -35,6 +35,9 @@ using Matrix3d = Eigen::Matrix3d;
 
 struct OTL_CORE_API StateVector
 {
+   Vector3d position;   ///< 3-dimensional position vector
+   Vector3d velocity;   ///< 3-dimensional velocity vector
+
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
@@ -113,10 +116,21 @@ struct OTL_CORE_API StateVector
    ///
    ////////////////////////////////////////////////////////////
    bool operator!=(const StateVector& other);
-
-   Vector3d position;   ///< 3-dimensional position vector
-   Vector3d velocity;   ///< 3-dimensional velocity vector
 };
+
+template<typename T>
+T& operator<<(T& stream, const StateVector& stateVector)
+{
+   stream << "x=" << stateVector.position.x() << " "
+      << "y=" << stateVector.position.y() << " "
+      << "z=" << stateVector.position.z() << " "
+      << "vx=" << stateVector.velocity.x() << " "
+      << "vy=" << stateVector.velocity.y() << " "
+      << "vz=" << stateVector.velocity.z();
+   return stream;
+}
+
+OTL_CORE_API std::string HumanReadable(const StateVector& stateVector);
 
 } // namespace otl
 
@@ -125,5 +139,10 @@ struct OTL_CORE_API StateVector
 ///
 /// Basic construct representing a three dimensional
 /// position and velocity in space.
+///
+/// In general, six elements are required to completely
+/// define a keplerian orbit in three dimensional space.
+/// The StateVector is one common way of expressing the
+/// six elements, the other being the OrbitalElements.
 ///
 ////////////////////////////////////////////////////////////
