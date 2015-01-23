@@ -39,7 +39,7 @@ public:
 private:
    LoggerPointer m_logger;
    LogLevel m_logLevel;
-   std::stringstream m_stream;
+   std::ostringstream m_stream;
 };
 
 ////////////////////////////////////////////////////////////
@@ -67,10 +67,10 @@ public:
 
 protected:
     virtual void VInitialize();
+    virtual bool VShouldLog(LogLevel logLevel);
+    virtual bool VShouldThrow(LogLevel logLevel);
+    virtual bool VShouldAbort(LogLevel logLevel);
     virtual void VLog(const std::string& message, const LogLevel& logLevel);
-    bool ShouldLog(LogLevel logLevel);
-    bool ShouldThrow(LogLevel logLevel);
-    bool ShouldAbort(LogLevel logLevel);
     
 private:
     bool m_initialized;
@@ -84,25 +84,25 @@ private:
 template<typename T>
 std::string Bracket(const T& object)
 {
-   std::stringstream ss;
+   std::ostringstream ss;
    ss << "[" << object << "]";
    return ss.str();
 }
 
 extern Logger OTL_CORE_API gLogger;
 
-#define OTL_LOG(message, level) do \
-   { std::stringstream ss; ss << message; gLogger.Log(ss.str(), level); } while(0)
+// Logging macros similar to std::cout
 #define OTL_INFO() gLogger.Info()
 #define OTL_WARN() gLogger.Warn()
 #define OTL_ERROR() gLogger.Error()
 #define OTL_FATAL() gLogger.Fatal()
 
-//#define OTL_INFO(message) OTL_LOG(message, LogLevel::Info)
-//#define OTL_WARN(message) OTL_LOG(message, LogLevel::Warning)
-//#define OTL_ERROR(message) OTL_LOG(message, LogLevel::Error)
-//#define OTL_FATAL(message) OTL_LOG(message, LogLevel::Fatal)
+// Standard logging macro
+#define OTL_LOG(message, level) do \
+   { std::ostringstream os; os << message; gLogger.Log(os.str(), level); } while(0)
 
+// Conditional logging macros
+// No processing occurs if the condition is false
 #define OTL_INFO_IF(condition, message) do \
    { if ((condition)) { OTL_LOG(message, LogLevel::Info); } } while(0)
 #define OTL_WARN_IF(condition, message) do \
@@ -112,28 +112,20 @@ extern Logger OTL_CORE_API gLogger;
 #define OTL_FATAL_IF(condition, message) do \
    { if ((condition)) { OTL_LOG(message, LogLevel::Fatal); } } while(0)
 
-#define CAT(A, B) A ## B
-#define SELECT_(NAME, NUM) CAT(NAME ## _, NUM)
-#define SELECT(NAME, NUM) SELECT_(NUM, NUM)
+// Some varadiac macro magic to support overloaded macros
+// OTL_OVERLOAD allows passing variadic data to non-variadic macros
+// Reference: http://www.boost.org/doc/libs/master/libs/preprocessor/doc/topics/variadic_macros.html
+#define OTL_EMPTY()
+#define OTL_CAT_I(a, b) a ## b
+#define OTL_CAT(a, b) OTL_CAT_I(a, b)
+#define OTL_VAR_SIZE_I(e0, e1, size, ...) size
+#define OTL_VAR_SIZE(...) OTL_CAT(OTL_VAR_SIZE_I(__VA_ARGS__, 2, 1,),)
+#define OTL_OVERLOAD(prefix, ...) OTL_CAT(prefix, OTL_VAR_SIZE(__VA_ARGS__))
 
-//#define GET_COUNT(_1, _2, _3, _4, _5, _6, COUNT, ...) COUNT
-//#define VA_SIZE(...) GET_COUNT(__VA_ARGS__, 6, 5, 4, 3, 2, 1)
-
-#define VA_SIZE( ... ) GET_COUNT_(( __VA_ARGS__, 6, 5, 4, 3, 2, 1 ))
-#define GET_COUNT_(tuple) GET_COUNT tuple
-#define GET_COUNT( _1, _2, _3, _4, _5, _6, COUNT, ... ) COUNT
-
-#define VA_SELECT(NAME, ...) SELECT(NAME, VA_SIZE(__VA_ARGS__))(__VA_ARGS__)
-
-//#define OTL_ASSERT(condition, ...) VA_SELECT(OTL_ASSERT_IMPL, __VA_ARGS__)(condition, __VA_ARGS__)
-//#define OTL_ASSERT_IMPL_1(condition) OTL_FATAL_IF(!(condition), "")
-//#define OTL_ASSERT_IMPL_2(condition, message) OTL_FATAL_IF(!(condition), message)
-
-//#define OTL_ASSERT_1(condition) OTL_FATAL_IF(!(condition), "")
-//#define OTL_ASSERT_X(condition, message) OTL_FATAL_IF(!(condition), message)
-//#define OTL_ASSERT(condition, ...) OTL_FATAL_IF(!(condition), "" << __VA_ARGS__)
-
-#define OTL_ASSERT(condition, ...) do \
-   { if (VA_SIZE(__VA_ARGS__) > 0) { OTL_FATAL_IF(!(condition), __VA_ARGS__); } else { OTL_FATAL_IF(!(condition), ""); } } while (0)
+// Overloaded assertion macro
+// Reference: http://www.boost.org/doc/libs/master/libs/preprocessor/doc/topics/variadic_macros.html
+#define OTL_ASSERT_1(condition) OTL_FATAL_IF(!(condition), "")
+#define OTL_ASSERT_2(condition, message) OTL_FATAL_IF(!(condition), message)
+#define OTL_ASSERT(...) OTL_CAT(OTL_OVERLOAD(OTL_ASSERT_,__VA_ARGS__)(__VA_ARGS__),OTL_EMPTY())
 
 } // namespace otl

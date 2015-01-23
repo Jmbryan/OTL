@@ -127,19 +127,25 @@ void Logger::SetNumRotatingFiles(int numRotatingFiles)
 }
 
 ////////////////////////////////////////////////////////////
-bool Logger::ShouldLog(LogLevel logLevel)
+void Logger::VInitialize()
+{
+   LoggerImpl::Init(m_logDirectory, m_logFilename, m_maxFileSize, m_numRotatingFiles);
+}
+
+////////////////////////////////////////////////////////////
+bool Logger::VShouldLog(LogLevel logLevel)
 {
    return (logLevel >= m_logLevel);
 }
 
 ////////////////////////////////////////////////////////////
-bool Logger::ShouldThrow(LogLevel logLevel)
+bool Logger::VShouldThrow(LogLevel logLevel)
 {
    return (logLevel == LogLevel::Error);
 }
 
 ////////////////////////////////////////////////////////////
-bool Logger::ShouldAbort(LogLevel logLevel)
+bool Logger::VShouldAbort(LogLevel logLevel)
 {
    return (logLevel == LogLevel::Fatal);
 }
@@ -147,13 +153,7 @@ bool Logger::ShouldAbort(LogLevel logLevel)
 ////////////////////////////////////////////////////////////
 void Logger::VLog(const std::string& message, const LogLevel& logLevel)
 {
-   LoggerImpl::Log(message, logLevel, ShouldLog(logLevel), ShouldAbort(logLevel), ShouldThrow(logLevel));
-}
-
-////////////////////////////////////////////////////////////
-void Logger::VInitialize()
-{
-   LoggerImpl::Init(m_logDirectory, m_logFilename, m_maxFileSize, m_numRotatingFiles);
+   LoggerImpl::Log(message, logLevel, VShouldLog(logLevel), VShouldAbort(logLevel), VShouldThrow(logLevel));
 }
 
 } // namespace otl
