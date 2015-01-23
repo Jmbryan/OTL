@@ -76,10 +76,10 @@ enum class FlybyType
 // Math constants
 const double MATH_DEG_TO_RAD        = 0.0174532925;
 const double MATH_RAD_TO_DEG        = 57.29577951;
-const double MATH_DOUBLE_SMALL      = 1.0e-37;
 const double MATH_NEAR_ZERO         = 2.0e-37;
 const double MATH_TOLERANCE         = 1.0e-8;
-const double MATH_INFINITY          = 1.0e37;
+const double MATH_INFINITY          = std::numeric_limits<double>::infinity();
+const double MATH_EPSILON           = std::numeric_limits<double>::epsilon();
 const double MATH_E                 = 2.71828182845904523536;
 const double MATH_LOG10E            = 0.4342944819032518;
 const double MATH_LOG2E             = 1.442695040888963387;
@@ -92,9 +92,9 @@ const double MATH_DAY_TO_SEC        = 86400.0;
 const double MATH_HOUR_TO_SEC       = 3600.0;
 const double MATH_MIN_TO_SEC        = 60.0;
 const double MATH_SEC_TO_DAY        = 1.0 / MATH_DAY_TO_SEC;
-const Vector3d MATH_UNIT_VEC_I      = Vector3d(1.0, 0.0, 0.0);
-const Vector3d MATH_UNIT_VEC_J      = Vector3d(0.0, 1.0, 0.0);
-const Vector3d MATH_UNIT_VEC_K      = Vector3d(0.0, 0.0, 1.0);
+const Vector3d MATH_UNIT_VEC_I      = Vector3d::UnitX();
+const Vector3d MATH_UNIT_VEC_J      = Vector3d::UnitY();
+const Vector3d MATH_UNIT_VEC_K      = Vector3d::UnitZ();
 
 // Astrodynamics constants
 const double ASTRO_GRAVITATIONAL_CONSTANT = 6.67384e-11;      // Universal gravitational constant (m^3 kg^-1 s^-2)
@@ -126,7 +126,7 @@ const double ASTRO_RADIUS_PLUTO     = 1151.0;
 
 /// Returns the square of x
 inline double SQR(double x)
-{return x * x;}
+{ return x * x; }
 
 /// Returns positive one if x is positive or negative one otherwise
 inline int Sign(double x)
@@ -134,7 +134,7 @@ inline int Sign(double x)
 
 /// Returns x rounded towards zero
 inline double Round0(double x)
-{return (x < 0.0 ? ceil(x) : floor(x));}
+{ return (x < 0.0 ? ceil(x) : floor(x)); }
 
 /// Returns the inverse hyperbolic sine of x
 inline double asinh(double x)
@@ -161,7 +161,9 @@ inline double Modulo(double dividend, double divisor)
 { return dividend - divisor * std::floor(dividend / divisor); }
 
 /// Returns true if the floating point numbers are approximately the same
-inline bool ApproxEqual(double lhs, double rhs, double epsilon = 2.0 * std::numeric_limits<double>::epsilon())
+/// Combines absolute and relative errors and should work equally well for
+/// very small and very large numbers.
+inline bool IsApprox(double lhs, double rhs, double epsilon = 2.0 * MATH_EPSILON)
 { return std::abs(lhs - rhs) <= std::max({1.0, std::abs(lhs), std::abs(rhs)}) * epsilon; }
 
 } // namespace otl

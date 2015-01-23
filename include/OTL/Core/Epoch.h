@@ -201,6 +201,8 @@ T& operator<<(T& stream, const Epoch& epoch)
     return stream;
 }
 
+OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);
+
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Julian Date.
 /// \relates Epoch

@@ -30,8 +30,8 @@
 namespace otl
 {
 
-using Vector3d = Eigen::Vector3d;
-using Matrix3d = Eigen::Matrix3d;
+using Vector3d = Eigen::Vector3d; ///< Alias the Eigen Vector3d class
+using Matrix3d = Eigen::Matrix3d; ///< Alias the Eigen Matrix3d class
 
 struct OTL_CORE_API StateVector
 {
@@ -45,22 +45,16 @@ struct OTL_CORE_API StateVector
 
    ////////////////////////////////////////////////////////////
    /// \brief Copy constructor
-   ///
-   /// \param other Other StateVector being assigned to 
-   ///
    ////////////////////////////////////////////////////////////
    StateVector(const StateVector& other);
 
    ////////////////////////////////////////////////////////////
    /// \brief Move constructor
-   ///
-   /// \param other Other StateVector being assigned to 
-   ///
    ////////////////////////////////////////////////////////////
    StateVector(const StateVector&& other);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Construct a state vector from position and velocity vectors
+   /// \brief Construct state vector from position and velocity vectors
    ///
    /// \param _position Absolute position
    /// \param _velocity Absolute velocity
@@ -69,7 +63,7 @@ struct OTL_CORE_API StateVector
    StateVector(const Vector3d& _position, const Vector3d& _velocity);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Construct a state vector from position and velocity elements
+   /// \brief Construct state vector from position and velocity components
    ///
    /// \param x X component of position vector
    /// \param y Y component of position vector
@@ -80,6 +74,18 @@ struct OTL_CORE_API StateVector
    ///
    ////////////////////////////////////////////////////////////
    StateVector(double x, double y, double z, double vx, double vy, double vz);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct state vector from an initializer list
+   ///
+   /// The position vector will be filled first followed by the
+   /// velocity vector. If less than six values are supplied,
+   /// the remaining components are initialized to zero.
+   ///
+   /// \param list std::initializer_list<double> containing the position and velocity elements
+   ///
+   ////////////////////////////////////////////////////////////
+   StateVector(std::initializer_list<double> list);
 
    ////////////////////////////////////////////////////////////
    /// \brief Operator overload for assignment
@@ -98,39 +104,106 @@ struct OTL_CORE_API StateVector
    ///
    ////////////////////////////////////////////////////////////
    StateVector& operator =(const StateVector&& other);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Operator overload for equality
-   ///
-   /// \param other Other StateVector being compared to 
-   /// \returns True if the state vectors are equal to within tolerance
-   ///
-   ////////////////////////////////////////////////////////////
-   bool operator==(const StateVector& other);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Operator overload for inequality
-   ///
-   /// \param other Other StateVector being compared to 
-   /// \returns True if the state vectors are not equal to within tolerance
-   ///
-   ////////////////////////////////////////////////////////////
-   bool operator!=(const StateVector& other);
 };
 
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates StateVector
+///
+/// The state vector is converted to a single-line string
+/// in the following format:
+///
+/// "x=[position.x()] y=[position.y()] z=[position.z()] vx=[velocity.x()] vy=[velocity.y()] vz=[velocity.z()]"
+///
+/// e.g. "x=10000.0 y=8000.0 z=0.0 vx=2.5 vy=2.4 vz=0.0"
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns Reference to the stream object
+///
+////////////////////////////////////////////////////////////
 template<typename T>
 T& operator<<(T& stream, const StateVector& stateVector)
 {
    stream << "x=" << stateVector.position.x() << " "
-      << "y=" << stateVector.position.y() << " "
-      << "z=" << stateVector.position.z() << " "
-      << "vx=" << stateVector.velocity.x() << " "
-      << "vy=" << stateVector.velocity.y() << " "
-      << "vz=" << stateVector.velocity.z();
+          << "y=" << stateVector.position.y() << " "
+          << "z=" << stateVector.position.z() << " "
+          << "vx=" << stateVector.velocity.x() << " "
+          << "vy=" << stateVector.velocity.y() << " "
+          << "vz=" << stateVector.velocity.z();
    return stream;
 }
 
+////////////////////////////////////////////////////////////
+/// \brief Converts the state vector to a multi-line formatted string
+/// \relates StateVector
+///
+/// The state vector is converted to a multi-line string
+/// in the following format:
+///
+/// "State Vector:
+///     Position:
+///        X: position.x()
+///        Y: position.y()
+///        Z: position.z()
+///     Velocity:
+///        X: velocity.x()
+///        Y: velocity.y()
+///        Z: velocity.z()
+/// "
+///
+/// e.g.
+///
+/// "State Vector:
+///     Position:
+///        X: 10000.0
+///        Y: 8000.0
+///        Z: 0.0
+///     Velocity:
+///        X: 2.5
+///        Y: 2.4
+///        Z: 0.0
+/// "
+/// \note Units are not shown because that information is not stored in the StateVector
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns Reference to the stream object
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API std::string HumanReadable(const StateVector& stateVector);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator==
+/// \relates StateVector
+///
+/// This operator compares approximate equality between two
+/// state vectors.
+///
+/// \note Internally, the Eigen::isApprox() function is used to compare each vector with epsilon = 2 * MATH_EPSILON
+/// \warning This function cannot be used to check whether the position and velocity vectors are approximately equal to the zero vector
+///
+/// \param left Left operand (a StateVector)
+/// \param right right operand (a StateVector)
+/// \returns True if left is equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator==(const StateVector& lhs, const StateVector& rhs);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator!=
+/// \relates StateVector
+///
+/// This operator compares approximate inequality between two
+/// state vectors.
+///
+/// \note Internally, the Eigen::isApprox() function is used to compare each vector with epsilon = 2 * MATH_EPSILON
+/// \warning This function cannot be used to check whether the position and velocity vectors are approximately inequal to the zero vector
+///
+/// \param left Left operand (a StateVector)
+/// \param right right operand (a StateVector)
+/// \returns True if left is not equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator!=(const StateVector& lhs, const StateVector& rhs);
 
 } // namespace otl
 
@@ -138,7 +211,7 @@ OTL_CORE_API std::string HumanReadable(const StateVector& stateVector);
 /// \class otl::StateVector
 ///
 /// Basic construct representing a three dimensional
-/// position and velocity in space.
+/// position and velocity in space
 ///
 /// In general, six elements are required to completely
 /// define a keplerian orbit in three dimensional space.

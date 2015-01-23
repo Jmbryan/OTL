@@ -204,7 +204,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator==.
+/// \brief Overload of binary operator==
 ///
 /// This operator compares strict equality between two times.
 ///
@@ -216,7 +216,7 @@ private:
 OTL_CORE_API bool operator==(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator!=.
+/// \brief Overload of binary operator!=
 ///
 /// This operator compares strict inequality between two times.
 ///
@@ -228,7 +228,7 @@ OTL_CORE_API bool operator==(Time& left, const Time& right);
 OTL_CORE_API bool operator!=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator+=.
+/// \brief Overload of binary operator+=
 ///
 /// Add left and right and assign the result to left.
 ///
@@ -240,7 +240,7 @@ OTL_CORE_API bool operator!=(Time& left, const Time& right);
 OTL_CORE_API Time& operator+=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator-=.
+/// \brief Overload of binary operator-=
 ///
 /// Subtract right from left and assign the result to left.
 ///
@@ -252,7 +252,7 @@ OTL_CORE_API Time& operator+=(Time& left, const Time& right);
 OTL_CORE_API Time& operator-=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator-=.
+/// \brief Overload of binary operator-=
 ///
 /// Create a new Time by adding left and right.
 ///
@@ -264,7 +264,7 @@ OTL_CORE_API Time& operator-=(Time& left, const Time& right);
 OTL_CORE_API Time operator+ (const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator-=.
+/// \brief Overload of binary operator-=
 ///
 /// Create a new Time by subtracting right from left.
 ///

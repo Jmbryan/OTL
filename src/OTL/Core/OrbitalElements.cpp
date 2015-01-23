@@ -33,10 +33,10 @@ namespace otl
 OrbitalElements::OrbitalElements() :
 semiMajorAxis(),
 eccentricity(),
+trueAnomaly(),
 inclination(),
 argOfPericenter(),
-lonOfAscendingNode(),
-trueAnomaly()
+lonOfAscendingNode()
 {
 }
 
@@ -44,10 +44,10 @@ trueAnomaly()
 OrbitalElements::OrbitalElements(const OrbitalElements& other) :
 semiMajorAxis(other.semiMajorAxis),
 eccentricity(other.eccentricity),
+trueAnomaly(other.trueAnomaly),
 inclination(other.inclination),
 argOfPericenter(other.argOfPericenter),
-lonOfAscendingNode(other.lonOfAscendingNode),
-trueAnomaly(other.trueAnomaly)
+lonOfAscendingNode(other.lonOfAscendingNode)
 {
 
 }
@@ -56,50 +56,94 @@ trueAnomaly(other.trueAnomaly)
 OrbitalElements::OrbitalElements(const OrbitalElements&& other) :
 semiMajorAxis(std::move(other.semiMajorAxis)),
 eccentricity(std::move(other.eccentricity)),
+trueAnomaly(std::move(other.trueAnomaly)),
 inclination(std::move(other.inclination)),
 argOfPericenter(std::move(other.argOfPericenter)),
-lonOfAscendingNode(std::move(other.lonOfAscendingNode)),
-trueAnomaly(std::move(other.trueAnomaly))
+lonOfAscendingNode(std::move(other.lonOfAscendingNode))
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalElements::OrbitalElements(double _semiMajorAxis, double _eccentricity, double _inclination,
-                                 double _argOfPericenter, double _lonOfAscendingNode, double _trueAnomaly) :
+OrbitalElements::OrbitalElements(double _semiMajorAxis, double _eccentricity, double _trueAnomaly,
+                                 double _inclination, double _argOfPericenter, double _lonOfAscendingNode) :
 semiMajorAxis(_semiMajorAxis),
 eccentricity(_eccentricity),
+trueAnomaly(_trueAnomaly),
 inclination(_inclination),
 argOfPericenter(_argOfPericenter),
-lonOfAscendingNode(_lonOfAscendingNode),
-trueAnomaly(_trueAnomaly)
+lonOfAscendingNode(_lonOfAscendingNode)
 {
 
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements::OrbitalElements(std::initializer_list<double> list)
+{
+   auto size = list.size();
+   auto it = list.begin();
+   semiMajorAxis      = (size > 0) ? *(it++) : 0.0;
+   eccentricity       = (size > 1) ? *(it++) : 0.0;
+   trueAnomaly        = (size > 2) ? *(it++) : 0.0;
+   inclination        = (size > 3) ? *(it++) : 0.0;
+   argOfPericenter    = (size > 4) ? *(it++) : 0.0;
+   lonOfAscendingNode = (size > 5) ? *(it++) : 0.0;
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements& OrbitalElements::operator =(const OrbitalElements& other)
+{
+   if (this != &other)
+   {
+      semiMajorAxis = other.semiMajorAxis;
+      eccentricity = other.eccentricity;
+      trueAnomaly = other.trueAnomaly;
+      inclination = other.inclination;
+      argOfPericenter = other.argOfPericenter;
+      lonOfAscendingNode = other.lonOfAscendingNode;
+   }
+   return *this;
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
+{
+   if (this != &other)
+   {
+      semiMajorAxis = std::move(other.semiMajorAxis);
+      eccentricity = std::move(other.eccentricity);
+      trueAnomaly = std::move(other.trueAnomaly);
+      inclination = std::move(other.inclination);
+      argOfPericenter = std::move(other.argOfPericenter);
+      lonOfAscendingNode = std::move(other.lonOfAscendingNode);
+   }
+   return *this;
 }
 
 ////////////////////////////////////////////////////////////
 std::string HumanReadable(const OrbitalElements& orbitalElements)
 {
-   std::stringstream ss;
+   const double rad2deg = MATH_RAD_TO_DEG;
+   std::ostringstream ss;
    ss << "Orbital Elements:" << std::endl;
    ss << "   Semimajor Axis:              " << orbitalElements.semiMajorAxis << std::endl;
    ss << "   Eccentricity:                " << orbitalElements.eccentricity << std::endl;
-   ss << "   Inclination:                 " << orbitalElements.inclination << std::endl;
-   ss << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter << std::endl;
-   ss << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode << std::endl;
-   ss << "   True Anomaly:                " << orbitalElements.trueAnomaly;
+   ss << "   True Anomaly:                " << orbitalElements.trueAnomaly * rad2deg << " deg" << std::endl;
+   ss << "   Inclination:                 " << orbitalElements.inclination * rad2deg << " deg" << std::endl;
+   ss << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter * rad2deg << " deg" << std::endl;
+   ss << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode * rad2deg << " deg" << std::endl;
    return ss.str();
 }
 
 ////////////////////////////////////////////////////////////
 bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs)
 {
-   return (ApproxEqual(lhs.semiMajorAxis, rhs.semiMajorAxis) &&
-            ApproxEqual(lhs.eccentricity, rhs.eccentricity) &&
-            ApproxEqual(lhs.inclination, rhs.inclination) &&
-            ApproxEqual(lhs.argOfPericenter, rhs.argOfPericenter) &&
-            ApproxEqual(lhs.lonOfAscendingNode, rhs.lonOfAscendingNode) &&
-            ApproxEqual(lhs.trueAnomaly, rhs.trueAnomaly));
+   return (IsApprox(lhs.semiMajorAxis, rhs.semiMajorAxis) &&
+           IsApprox(lhs.eccentricity, rhs.eccentricity) &&
+           IsApprox(lhs.trueAnomaly, rhs.trueAnomaly) &&
+           IsApprox(lhs.inclination, rhs.inclination) &&
+           IsApprox(lhs.argOfPericenter, rhs.argOfPericenter) &&
+           IsApprox(lhs.lonOfAscendingNode, rhs.lonOfAscendingNode));
 }
 
 ////////////////////////////////////////////////////////////

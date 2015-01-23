@@ -31,12 +31,14 @@ int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);
 
-    OrbitalElements coes;
+#define IsNANorINF(x) ((x * 0) != 0)
+
+    OrbitalElements coes{ 10000.0, 0.8, 45.0 * MATH_DEG_TO_RAD };
     std::cout << coes << std::endl;
     std::cout << HumanReadable(coes) << std::endl;
     std::cout << std::endl;
 
-    StateVector sv;
+    StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
     std::cout << HumanReadable(sv) << std::endl;
  

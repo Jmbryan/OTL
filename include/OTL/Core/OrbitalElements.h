@@ -33,35 +33,166 @@ struct OTL_CORE_API OrbitalElements
 {
    double semiMajorAxis;      ///< SemiMajor axis (a)
    double eccentricity;       ///< Eccentricity (e)
+   double trueAnomaly;        ///< True Anomaly (ta)
    double inclination;        ///< Inclination (i)
-   double argOfPericenter;    ///< Argument of pericenter (omega, w)
+   double argOfPericenter;    ///< Argument of pericenter (w)
    double lonOfAscendingNode; ///< Longitude of the ascending node (l)
-   double trueAnomaly;        ///< True Anomaly (theta, t)
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
    OrbitalElements();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Copy constructor
+   ////////////////////////////////////////////////////////////
    OrbitalElements(const OrbitalElements& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Move constructor
+   ////////////////////////////////////////////////////////////
    OrbitalElements(const OrbitalElements&& other);
-   OrbitalElements(double _semiMajorAxis, double _eccentricity, double _inclination,
-                   double _argOfPericenter, double _lonOfAscendingNode, double _trueAnomaly);
-   
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct orbital elements from components
+   ///
+   /// \param _semiMajorAxis Semimajor Axis
+   /// \param _eccentricity Eccentricity
+   /// \param _trueAnomaly True Anomaly in radians
+   /// \param _inclination Inclination in radians
+   /// \param _argOfPericenter Arguement of Pericenter in radians
+   /// \param _lonOfAscendingNode Longitude of Ascending Node in radians
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalElements(double _semiMajorAxis, double _eccentricity, double _trueAnomaly,
+                   double _inclination, double _argOfPericenter, double _lonOfAscendingNode);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct orbital elements from an initializer list
+   ///
+   /// The orbital elements will be filled in the order that they
+   /// are defined. If less than six values are supplied,
+   /// the remaining elements are initialized to zero.
+   ///
+   /// \param list std::initializer_list<double> containing the orbital elements
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalElements(std::initializer_list<double> list);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Operator overload for assignment
+   ///
+   /// \param other Other OrbitalElements being assigned to 
+   /// \returns Reference to this
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalElements& operator =(const OrbitalElements& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Operator overload for move
+   ///
+   /// \param other Other OrbitalElements being moved to 
+   /// \returns Reference to this
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalElements& operator =(const OrbitalElements&& other);
 };
 
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates OrbitalElements
+///
+/// The orbital elements are converted to a single-line string
+/// in the following format:
+///
+/// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly] i=[inclination] w=[argOfPericenter] l=[lonOfAscendingNode]"
+///
+/// e.g. "a=10000.0 e=0.8, ta=0.7854 i=0.08727 w=0.2618 l=0.5236"
+///
+/// \note All angles are in radians
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns Reference to the stream object
+///
+////////////////////////////////////////////////////////////
 template<typename T>
 T& operator<<(T& stream, const OrbitalElements& orbitalElements)
 {
    stream << "a=" << orbitalElements.semiMajorAxis << " "
-      << "e=" << orbitalElements.eccentricity << " "
-      << "i=" << orbitalElements.inclination << " "
-      << "w=" << orbitalElements.argOfPericenter << " "
-      << "l=" << orbitalElements.lonOfAscendingNode << " "
-      << "t=" << orbitalElements.trueAnomaly;
+          << "e=" << orbitalElements.eccentricity << " "
+          << "ta=" << orbitalElements.trueAnomaly << " "
+          << "i=" << orbitalElements.inclination << " "
+          << "w=" << orbitalElements.argOfPericenter << " "
+          << "l=" << orbitalElements.lonOfAscendingNode;
    return stream;
 }
 
+////////////////////////////////////////////////////////////
+/// \brief Converts the orbital elements to a multi-line formatted string
+/// \relates OrbitalElements
+///
+/// The orbital elements are converted to a multi-line string
+/// in the following format:
+///
+/// "Orbital Elements:
+///     Semimajor Axis:              [semiMajorAxis]
+///     Eccentricity:                [eccentricity]
+///     True Anomaly:                [trueAnomaly] deg
+///     Inclination:                 [inclination] deg
+///     Argument of Pericenter:      [argOfPericenter] deg
+///     Longitude of Ascending Node: [lonOfAscendingNode] deg
+/// "
+///
+/// e.g.
+///
+/// "Orbital Elements:
+///     Semimajor Axis:              10000.0
+///     Eccentricity:                0.8
+///     True Anomaly:                45.0 deg
+///     Inclination:                 5.0 deg
+///     Argument of Pericenter:      15.0 deg
+///     Longitude of Ascending Node: 30.0 deg
+/// "
+///
+/// \note All angles are in degrees
+/// \note Semimajor axis does not include units because that information is not known
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns Reference to the stream object
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);
 
-/// Returns true if the orbital elements are identical
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator==
+/// \relates OrbitalElements
+///
+/// This operator compares approximate equality between two
+/// sets of orbital elements.
+///
+/// \note Internally, the IsApprox() function is used to compare floating point values with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (a OrbitalElements)
+/// \param right right operand (a OrbitalElements)
+/// \returns True if left is equal to right
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator!=
+/// \relates OrbitalElements
+///
+/// This operator compares approximate inequality between two
+/// sets of orbital elements.
+///
+/// \note Internally, the IsApprox() function is used to compare each value with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (a OrbitalElements)
+/// \param right right operand (a OrbitalElements)
+/// \returns True if left is not equal to right
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API bool operator!=(const OrbitalElements& lhs, const OrbitalElements& rhs);
 
 } // namespace otl
@@ -85,12 +216,12 @@ OTL_CORE_API bool operator!=(const OrbitalElements& lhs, const OrbitalElements& 
 /// <li>1 for parabolic orbits</li>
 /// <li>(1, infinity) for hyperbolic orbits</li>
 /// </ul>
+/// <li>The True Anomaly defines the current point along the orbit. A true
+/// anomaly of zero occurs at the periapsis of the orbit and a true
+/// anomaly of 180 degrees occurs at the apoapsis of the orbit.</li>
 /// <li>The Inclination, Argument of Pericenter, and Longitude
 /// of Ascending Node all define the orientation of the
 /// orbit in 3D space. These parameters are unecessary for 2D orbits.</li>
-/// <li>The true anomaly defines the current point along the orbit. A true
-/// anomaly of zero occurs at the periapsis of the orbit and a true
-/// anomaly of 180 degrees occurs at the apoapsis of the orbit.</li>
 /// </ul>
 ///
 /// \Note Neglecting external disturbances, the true anomaly is the only parameter that varies in time

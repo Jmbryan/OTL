@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/StateVector.h>
+#include <OTL/Core/Base.h>
 
 namespace otl
 {
@@ -67,6 +68,32 @@ velocity({ vx, vy, vz })
 }
 
 ////////////////////////////////////////////////////////////
+StateVector::StateVector(std::initializer_list<double> list)
+{
+   auto size = list.size();
+   auto it = list.begin();
+   int index = 0;
+   for (; it != list.end() && index < 3; ++it, ++index)
+   {
+      position[index] = static_cast<double>(*it);
+   }
+   for (; index < 3; ++index)
+   {
+      position[index] = 0.0;
+   }
+
+   index = 0;
+   for (; it != list.end() && index < 3; ++it, ++index)
+   {
+      velocity[index] = static_cast<double>(*it);
+   } 
+   for (; index < 3; ++index)
+   {
+      velocity[index] = 0.0;
+   }
+}
+
+////////////////////////////////////////////////////////////
 StateVector& StateVector::operator =(const StateVector& other)
 {
    if (this != &other)
@@ -89,21 +116,9 @@ StateVector& StateVector::operator =(const StateVector&& other)
 }
 
 ////////////////////////////////////////////////////////////
-bool StateVector::operator==(const StateVector& other)
-{
-   return (position == other.position && velocity == other.velocity);
-}
-
-////////////////////////////////////////////////////////////
-bool StateVector::operator!=(const StateVector& other)
-{
-   return (position != other.position || velocity != other.velocity);
-}
-
-////////////////////////////////////////////////////////////
 std::string HumanReadable(const StateVector& stateVector)
 {
-   std::stringstream ss;
+   std::ostringstream ss;
    ss << "State Vector:" << std::endl;
    ss << "   Position:" << std::endl;
    ss << "      X: " << stateVector.position.x() << std::endl;
@@ -112,8 +127,21 @@ std::string HumanReadable(const StateVector& stateVector)
    ss << "   Velocity:" << std::endl;
    ss << "      X: " << stateVector.velocity.x() << std::endl;
    ss << "      Y: " << stateVector.velocity.y() << std::endl;
-   ss << "      Z: " << stateVector.velocity.z();
+   ss << "      Z: " << stateVector.velocity.z() << std::endl;
    return ss.str();
+}
+
+////////////////////////////////////////////////////////////
+bool operator==(const StateVector& lhs, const StateVector& rhs)
+{
+   return (lhs.position.isApprox(rhs.position, 2.0 * MATH_EPSILON) &&
+           lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
+}
+
+////////////////////////////////////////////////////////////
+bool operator!=(const StateVector& lhs, const StateVector& rhs)
+{
+   return !(lhs == rhs);
 }
 
 } // namespace otl
