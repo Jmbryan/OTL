@@ -40,10 +40,21 @@ int main()
     std::cout << sv << std::endl;
     std::cout << HumanReadable(sv) << std::endl;
 
-    //OTL_INFO_IF(true) << "Hi";
+#define VA_NUM_ARGS(...) VA_NUM_ARGS_IMPL_((__VA_ARGS__, 5,4,3,2,1))
+#define VA_NUM_ARGS_IMPL_(tuple) VA_NUM_ARGS_IMPL tuple
+#define VA_NUM_ARGS_IMPL(_1,_2,_3,_4,_5,N,...) N
 
-    //if (true)
-    //OTL_INFO2("Hello " << "there");
+    int a1 = VA_NUM_ARGS(1);
+    int a2 = VA_NUM_ARGS(1, 2);
+
+#define SELECT2(NAME, NUM) SELECT(NAME, NUM)
+#define VA_SELECT2(NAME, ...) SELECT2(NAME, VA_NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+//#define VA_SELECT3(NAME, ...) (NAME ## VA_NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
+    //SELECT(Me, 1);
+    //SELECT(Me, 2);
+    //VA_SELECT2(Me, 1);
+    //VA_SELECT2(Me, 1, 2);
     
     if (true)
       OTL_INFO_IF(false, "I'm " << "number " << 10 << "!");
@@ -55,9 +66,68 @@ int main()
     else
       OTL_WARN_IF(false, "My fav number is " << 37);
 
-    OTL_ASSERT(true, "Not " << "a " << "problem " << 1);
-    OTL_ASSERT(1+1==2, "Is " << "a " << "problem " << 2);
-    OTL_ASSERT(1 < 2, "Old school");
+#define VA_COUNTER(condition, ...) VA_SIZE(__VA_ARGS__)
+
+    int d0 = VA_NUM_ARGS();
+    int d1 = VA_NUM_ARGS(1 < 2);
+    int d2 = VA_NUM_ARGS(1 < 2, "Hi");
+
+    
+#define VA_NUM_ARGS_GT_ONE_IMPL(COUNT) COUNT > 1
+#define VA_NUM_ARGS_GT_ONE(...) VA_NUM_ARGS_GT_ONE_IMPL(VA_NUM_ARGS(__VA_ARGS__))
+
+
+    bool bb1 = VA_NUM_ARGS_GT_ONE(1 < 2);
+    bool bb2 = VA_NUM_ARGS_GT_ONE(1 < 2, "Hi");
+    bool bb3 = VA_NUM_ARGS_GT_ONE(1 < 2, "Hi", "Bye");
+
+#define OTL_ASSERT2(condition, ...) do \
+   { if (VA_NUM_ARGS_GT_ONE(condition, ##__VA_ARGS__)) { OTL_INFO_IF(!(condition), "1"); } else { OTL_INFO_IF(!(condition), "0"); } } while (0)
+
+#define OTL_LOG_IMPL(logLevel, ...) OTL_LOG(__VA_ARGS__, logLevel)
+
+#define OTL_ASSERT3(condition, ...) do \
+{ if (!(condition)) OTL_LOGL(##__VA_ARGS__, LogLevel::Fatal); } while(0)
+
+#define VARGS_(_10, _9, _8, _7, _6, _5, _4, _3, _2, _1, N, ...) N
+#define VARGS(...) VARGS_(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define CONCAT_(a, b) a##b
+#define CONCAT(a, b) CONCAT_(a, b)
+#define MACRO_2(a, b) std::cout << a << ' ' << b;
+#define MACRO_1(a) MACRO_2(a, "test") // Supply default argument
+
+#define MACRO(...) CONCAT(MACRO_, VA_NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
+    int v1 = VARGS(1);
+    int v2 = VARGS(1, 2);
+
+    MACRO(1);
+    MACRO(1, 2);
+
+    OTL_ASSERT2(0);
+    OTL_ASSERT2(1 > 2);
+    OTL_ASSERT2(1 > 2, "Old school");
+    OTL_ASSERT2(1 > 2, "Hello " << "there");
+
+    int c1 = GET_COUNT(a, 6, 5, 4, 3, 2, 1);
+    int c2 = GET_COUNT(a, b, 6, 5, 4, 3, 2, 1);
+    int c3 = GET_COUNT(a, b, c, 6, 5, 4, 3, 2, 1);
+
+    int n1 = VA_SIZE('a');
+    int n2 = VA_SIZE('a', 'b');
+    int n3 = VA_SIZE('a', 'b', 'c');
+
+    OTL_LOG("", LogLevel::Info);
+
+
+
+
+    //auto s1 = VA_SELECT(Me, "a");
+    //auto s2 = VA_SELECT(Me, "a", "b");
+
+    //OTL_ASSERT(true, "Not " << "a " << "problem " << 1);
+    //OTL_ASSERT(1+1==2, "Is " << "a " << "problem " << 2);
+    
 
     if (false)
     {

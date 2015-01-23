@@ -2,6 +2,7 @@
 #include <OTL/Core/Export.h>
 #include <sstream>
 #include <memory>
+#include <tuple>
 
 namespace otl
 {
@@ -111,6 +112,28 @@ extern Logger OTL_CORE_API gLogger;
 #define OTL_FATAL_IF(condition, message) do \
    { if ((condition)) { OTL_LOG(message, LogLevel::Fatal); } } while(0)
 
-#define OTL_ASSERT(condition, message) OTL_FATAL_IF(!(condition), message)
+#define CAT(A, B) A ## B
+#define SELECT_(NAME, NUM) CAT(NAME ## _, NUM)
+#define SELECT(NAME, NUM) SELECT_(NUM, NUM)
+
+//#define GET_COUNT(_1, _2, _3, _4, _5, _6, COUNT, ...) COUNT
+//#define VA_SIZE(...) GET_COUNT(__VA_ARGS__, 6, 5, 4, 3, 2, 1)
+
+#define VA_SIZE( ... ) GET_COUNT_(( __VA_ARGS__, 6, 5, 4, 3, 2, 1 ))
+#define GET_COUNT_(tuple) GET_COUNT tuple
+#define GET_COUNT( _1, _2, _3, _4, _5, _6, COUNT, ... ) COUNT
+
+#define VA_SELECT(NAME, ...) SELECT(NAME, VA_SIZE(__VA_ARGS__))(__VA_ARGS__)
+
+//#define OTL_ASSERT(condition, ...) VA_SELECT(OTL_ASSERT_IMPL, __VA_ARGS__)(condition, __VA_ARGS__)
+//#define OTL_ASSERT_IMPL_1(condition) OTL_FATAL_IF(!(condition), "")
+//#define OTL_ASSERT_IMPL_2(condition, message) OTL_FATAL_IF(!(condition), message)
+
+//#define OTL_ASSERT_1(condition) OTL_FATAL_IF(!(condition), "")
+//#define OTL_ASSERT_X(condition, message) OTL_FATAL_IF(!(condition), message)
+//#define OTL_ASSERT(condition, ...) OTL_FATAL_IF(!(condition), "" << __VA_ARGS__)
+
+#define OTL_ASSERT(condition, ...) do \
+   { if (VA_SIZE(__VA_ARGS__) > 0) { OTL_FATAL_IF(!(condition), __VA_ARGS__); } else { OTL_FATAL_IF(!(condition), ""); } } while (0)
 
 } // namespace otl
