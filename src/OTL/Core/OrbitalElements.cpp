@@ -124,15 +124,15 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
 std::string HumanReadable(const OrbitalElements& orbitalElements)
 {
    const double rad2deg = MATH_RAD_TO_DEG;
-   std::ostringstream ss;
-   ss << "Orbital Elements:" << std::endl;
-   ss << "   Semimajor Axis:              " << orbitalElements.semiMajorAxis << std::endl;
-   ss << "   Eccentricity:                " << orbitalElements.eccentricity << std::endl;
-   ss << "   True Anomaly:                " << orbitalElements.trueAnomaly * rad2deg << " deg" << std::endl;
-   ss << "   Inclination:                 " << orbitalElements.inclination * rad2deg << " deg" << std::endl;
-   ss << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter * rad2deg << " deg" << std::endl;
-   ss << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode * rad2deg << " deg" << std::endl;
-   return ss.str();
+   std::ostringstream os;
+   os << "Orbital Elements:" << std::endl;
+   os << "   Semimajor Axis:              " << orbitalElements.semiMajorAxis << std::endl;
+   os << "   Eccentricity:                " << orbitalElements.eccentricity << std::endl;
+   os << "   True Anomaly:                " << orbitalElements.trueAnomaly * rad2deg << " deg" << std::endl;
+   os << "   Inclination:                 " << orbitalElements.inclination * rad2deg << " deg" << std::endl;
+   os << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter * rad2deg << " deg" << std::endl;
+   os << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode * rad2deg << " deg" << std::endl;
+   return os.str();
 }
 
 ////////////////////////////////////////////////////////////

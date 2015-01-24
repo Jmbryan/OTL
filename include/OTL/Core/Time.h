@@ -31,6 +31,17 @@ namespace otl
 class OTL_CORE_API Time
 {
 public:
+   struct AggregrateTime
+   {
+      int years;
+      int days;
+      int hours;
+      int minutes;
+      double seconds;
+
+      AggregrateTime(int _years, int _days, int _hours, int _minutes, double _seconds);
+   };
+
    ////////////////////////////////////////////////////////////
    /// \brief Static constructor using seconds
    ///
@@ -82,6 +93,32 @@ public:
    static Time Days(double days);
 
    ////////////////////////////////////////////////////////////
+   /// \brief Static constructor using years
+   ///
+   /// Creates a Time object from a number of years.
+   /// Internally, the years are converted into
+   /// seconds.
+   ///
+   /// \param years Number of years
+   /// \returns instance of Time
+   ///
+   ////////////////////////////////////////////////////////////
+   static Time Years(double years);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Static constructor using an aggregrate time
+   ///
+   /// Creates a Time object from an aggregrate number of
+   /// years, days, hours, minutes, and seconds. Internally,
+   /// the aggregrate time is converted into total seconds.
+   ///
+   /// \param years Number of years
+   /// \returns instance of Time
+   ///
+   ////////////////////////////////////////////////////////////
+   static Time Aggregrate(const AggregrateTime& aggregrateTime);
+
+   ////////////////////////////////////////////////////////////
    /// \brief Set the time to a number of seconds
    ///
    /// \param seconds Number of seconds
@@ -112,6 +149,23 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void SetDays(double days);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the time to a number of years
+   ///
+   /// \param years Number of years
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetYears(double years);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the aggregrate time
+   ///
+   /// Sets the time by combining the aggregrate number of
+   /// years, days, hours, minutes, and seconds.
+   ///
+   ////////////////////////////////////////////////////////////
+   void SetAggregrate(const AggregrateTime& aggregrateTime);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the total number of seconds
@@ -154,6 +208,27 @@ public:
    double Days() const;
 
    ////////////////////////////////////////////////////////////
+   /// \brief Get the total number of years
+   ///
+   /// Fractional years are expressed as decimals.
+   ///
+   /// \returns Number of years
+   ///
+   ////////////////////////////////////////////////////////////
+   double GetYears() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the aggregrate time
+   ///
+   /// Splits the total number of seconds into
+   /// years, days, hours, minutes, and seconds.
+   ///
+   /// \returns AggregrateTime
+   ///
+   ////////////////////////////////////////////////////////////
+   AggregrateTime GetAggregrate() const;
+
+   ////////////////////////////////////////////////////////////
    /// \brief Add a number of seconds
    ///
    /// Negative seconds will result in subtraction.
@@ -193,6 +268,16 @@ public:
    ////////////////////////////////////////////////////////////
    void AddDays(double days);
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Add a number of years
+   ///
+   /// Negative years will result in subtraction.
+   ///
+   /// \param years Number of years
+   ///
+   ////////////////////////////////////////////////////////////
+   void AddYears(double years);
+
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor not allowed
@@ -204,9 +289,107 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Time
+///
+/// The time is converted to a single-line string
+/// in the following format:
+///
+/// "[total seconds] sec"
+///
+/// e.g. "873015.45 sec"
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const Time& time)
+{
+   auto years = time.GetYears();
+   if (years > 1.0)
+   {
+      stream << years << " years";
+      return stream;
+   }
+
+   auto days = time.Days();
+   if (days > 1.0)
+   {
+      stream << days << " days";
+      return stream;
+   }
+
+   auto hours = time.Hours();
+   if (hours > 1.0)
+   {
+      stream << hours << " hours";
+      return stream;
+   }
+
+   auto minutes = time.Minutes();
+   if (minutes > 1.0)
+   {
+      stream << minutes << " minutes";
+      return stream;
+   }
+
+   stream << time.Seconds() << " seconds";
+   return stream;
+
+}
+
+////////////////////////////////////////////////////////////
+/// \brief Converts the time to a multi-line formatted string
+/// \relates Time
+///
+/// The time is converted to a multi-line string
+/// in the following format:
+///
+/// "Time:
+///     Aggregate:
+///        Years:   [years]
+///        Days:    [days]
+///        Hours:   [hours]
+///        Minutes: [minutes]
+///        Seconds: [seconds]
+///     Total:
+///        Years:   [total years]
+///        Days:    [total days]
+///        Hours:   [total hours]
+///        Minutes: [total minutes]
+///        Seconds: [total seconds]
+/// "
+///
+/// e.g.
+///
+/// "Time:
+///     Aggregate:
+///        Years:   0
+///        Days:    10
+///        Hours:   2
+///        Minutes: 30
+///        Seconds: 15.45
+///     Total:
+///        Years:   0.027664
+///        Days:    10.10435
+///        Hours:   242.5043
+///        Minutes: 14550.258
+///        Seconds: 873015.45
+/// "
+///
+/// \param time Time to be formatted
+/// \returns std::string Formatted time
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API std::string HumanReadable(const Time& time);
+
+////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator==
 ///
-/// This operator compares strict equality between two times.
+/// This operator compares approximate equality between two times.
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
@@ -218,7 +401,9 @@ OTL_CORE_API bool operator==(Time& left, const Time& right);
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator!=
 ///
-/// This operator compares strict inequality between two times.
+/// This operator compares approximate inequality between two times.
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
@@ -226,6 +411,50 @@ OTL_CORE_API bool operator==(Time& left, const Time& right);
 ///
 ////////////////////////////////////////////////////////////
 OTL_CORE_API bool operator!=(Time& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator >
+///
+/// \param left Left operand (a Time)
+/// \param right right operand (a Time)
+/// \returns True if left greater than right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator >(Time& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator <
+///
+/// \param left Left operand (a Time)
+/// \param right right operand (a Time)
+/// \returns True if left less than right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator <(Time& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator >=
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (a Time)
+/// \param right right operand (a Time)
+/// \returns True if left greater than or equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator>=(Time& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator <=
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (a Time)
+/// \param right right operand (a Time)
+/// \returns True if left less than or equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator<=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator+=
@@ -291,6 +520,7 @@ OTL_CORE_API Time operator- (const Time& left, const Time& right);
 /// \li otl::Time::Minutes()
 /// \li otl::Time::Hours()
 /// \li otl::Time::Days()
+/// \li otl::Time::Years()
 ///
 /// Internally, the time duration is always stored as
 /// seconds and converted from/to other time formats
@@ -298,20 +528,26 @@ OTL_CORE_API Time operator- (const Time& left, const Time& right);
 ///
 /// Usage example:
 /// \code
-/// otl::Time seconds = otl::Time::Seconds(60.0);
-/// otl::Time minutes = otl::Minutes(1.0);
-/// OLT_ASSERT(seconds == minutes);
+/// otl::Time time = otl::Days(10.0);
+/// time.AddHours(6.0);
+/// time.AddMinutes(30.0);
+/// double totalSeconds = time.Seconds();
 ///
-/// otl::Time days = otl::Days(10.0);
-/// days += 10.0;
-/// days.AddHours(6.0);
-/// days.AddMinutes(30.0);
-/// totalSeconds = days.Seconds();
+/// // Operator overloads are also supported
+/// auto time1 = time;
+/// time1 += otl::Time::Days(1.0);
+/// time1 -= otl::Time::Hours(2.0);
+/// auto time2 = time1 + otl::Time::Days(10.0);
+/// OTL_ASSERT(time2 > time1);
 ///
-/// otl::keplerian::IPropagator* propagator = new KeplerianPropagator();
-/// propagator->(myStateVector, myMu, otl::Time::Days(1.0));                        // propagate forward 1 day
-/// propagator->(myStateVector, myMu, otl::Time::Seconds(-1.0 * MATH_DAY_TO_SEC));  // propagate backwards 1 day
-/// OTL_SAFE_DELETE(propagator);
+/// auto sixtySeconds = otl::Time::Seconds(60.0);
+/// auto oneMinute = otl::Minutes(1.0);
+/// OLT_ASSERT(sixtySeconds == oneMinute);
+///
+/// // In use with OTL's algorithms:
+/// auto propagator = std::make_shared<otl::keplerian::KeplerianPropagator>();
+/// propagator->Propagate(myStateVector, MATH_MU_EARTH, otl::Time::Days(1.0));                        // propagate forward 1 day
+/// propagator->Propagate(myStateVector, MATH_MU_EARTH, otl::Time::Seconds(-1.0 * MATH_DAY_TO_SEC));  // propagate backwards 1 day
 /// \endcode
 /// 
 ////////////////////////////////////////////////////////////

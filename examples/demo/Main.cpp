@@ -33,14 +33,28 @@ int main()
 
 #define IsNANorINF(x) ((x * 0) != 0)
 
+    GregorianDateTime date;
+    date.day = 15;
+    date.month = 1;
+    date.year = 2014;
+    date.hour = 11;
+    date.min = 30;
+    date.sec = 0.0;
+    Epoch epoch = Epoch::Gregorian(date);
+    std::cout << epoch << std::endl;
+    std::cout << HumanReadable(epoch) << std::endl;
+
+    Time time = Time::Aggregrate(Time::AggregrateTime(0, 10, 2, 30, 15.45));
+    std::cout << time << std::endl;
+    std::cout << HumanReadable(time) << std::endl;
+
     OrbitalElements coes{ 10000.0, 0.8, 45.0 * MATH_DEG_TO_RAD };
     std::cout << coes << std::endl;
     std::cout << HumanReadable(coes) << std::endl;
-    std::cout << std::endl;
 
     StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
-    std::cout << HumanReadable(sv) << std::endl;
+    std::cout << HumanReadable(sv);
  
     if (true)
       OTL_INFO_IF(false, "I'm " << "number " << 10 << "!");

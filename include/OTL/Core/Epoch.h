@@ -197,11 +197,54 @@ T& operator<<(T& stream, const Epoch& epoch)
 {
     const auto& gregorian = epoch.GetGregorian();
     stream << gregorian.year << "-" << gregorian.month << "-" << gregorian.day << " "
-        << gregorian.hour << ":" << gregorian.min << ":" << gregorian.sec;
+           << gregorian.hour << ":" << gregorian.min << ":" << gregorian.sec;
     return stream;
 }
 
-OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);
+////////////////////////////////////////////////////////////
+/// \brief Converts the epoch to a multi-line formatted string
+/// \relates Epoch
+///
+/// The epoch is converted to a multi-line string
+/// in the following format:
+///
+/// "Wednesday January 15, 2014 - 11:30:00 UTC"
+///
+/// "Epoch:
+///     Gregorian:
+///        Year:   [year]
+///        Month:  [month]
+///        Day:    [day]
+///        Hour:   [hour]
+///        Minute: [minute]
+///        Second: [second]
+///     Julian:
+///        Julian:               [julian date]
+///        Modified Julian:      [modified julian date]
+///        Modified Julian 2000: [modified julian date 2000]
+/// "
+///
+/// e.g.
+///
+/// "Epoch:
+///     Gregorian:
+///        Year:   2014
+///        Month:  1
+///        Day:    15
+///        Hour:   11
+///        Minute: 30
+///        Second: 0.0
+///     Julian:
+///        Julian:               xx
+///        Modified Julian:      xx
+///        Modified Julian 2000: xx
+/// "
+///
+/// \param epoch Epoch to be formatted
+/// \returns std::string Formatted epoch
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API std::string HumanReadable(const Epoch& epoch);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Julian Date.

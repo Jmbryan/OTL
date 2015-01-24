@@ -67,6 +67,30 @@ Epoch Epoch::Gregorian(const GregorianDateTime& dateTime)
 }
 
 ////////////////////////////////////////////////////////////
+std::string HumanReadable(const Epoch& epoch)
+{
+   auto gregorianDateTime = epoch.GetGregorian();
+   auto jd = epoch.GetJD();
+   auto mjd = epoch.GetMJD();
+   auto mjd2000 = epoch.GetMJD2000();
+
+   std::ostringstream os;
+   os << "Epoch:" << std::endl;
+   os << "   Gregorian:" << std::endl;
+   os << "      Year:   " << gregorianDateTime.year << std::endl;
+   os << "      Month:  " << gregorianDateTime.month << std::endl;
+   os << "      Day:    " << gregorianDateTime.day << std::endl;
+   os << "      Hour:   " << gregorianDateTime.hour << std::endl;
+   os << "      Minute: " << gregorianDateTime.min << std::endl;
+   os << "      Second: " << gregorianDateTime.sec << std::endl;
+   os << "   Julian:" << std::endl;
+   os << "      Julian:              " << jd << std::endl;
+   os << "      Modified Julian:     " << mjd << std::endl;
+   os << "      Modified Julian 2000 " << mjd2000 << std::endl;
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
 double ConvertGregorian2JD(const GregorianDateTime& dateTime)
 {
    double julianDate = 367.0 * dateTime.year -

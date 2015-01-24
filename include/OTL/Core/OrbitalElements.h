@@ -107,9 +107,9 @@ struct OTL_CORE_API OrbitalElements
 ///
 /// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly] i=[inclination] w=[argOfPericenter] l=[lonOfAscendingNode]"
 ///
-/// e.g. "a=10000.0 e=0.8, ta=0.7854 i=0.08727 w=0.2618 l=0.5236"
+/// e.g. "a=10000.0 e=0.8 ta=45 deg i=5 deg w=15 deg l=30 deg"
 ///
-/// \note All angles are in radians
+/// \note All angles are in degrees
 ///
 /// \param stream Templated stream object (e.g. ostream)
 /// \returns Reference to the stream object
@@ -118,12 +118,13 @@ struct OTL_CORE_API OrbitalElements
 template<typename T>
 T& operator<<(T& stream, const OrbitalElements& orbitalElements)
 {
+   const double rad2deg = MATH_RAD_TO_DEG;
    stream << "a=" << orbitalElements.semiMajorAxis << " "
           << "e=" << orbitalElements.eccentricity << " "
-          << "ta=" << orbitalElements.trueAnomaly << " "
-          << "i=" << orbitalElements.inclination << " "
-          << "w=" << orbitalElements.argOfPericenter << " "
-          << "l=" << orbitalElements.lonOfAscendingNode;
+          << "ta=" << orbitalElements.trueAnomaly * rad2deg << "deg" << " "
+          << "i=" << orbitalElements.inclination * rad2deg << "deg" << " "
+          << "w=" << orbitalElements.argOfPericenter * rad2deg << "deg" << " "
+          << "l=" << orbitalElements.lonOfAscendingNode * rad2deg << "deg";
    return stream;
 }
 
@@ -157,8 +158,8 @@ T& operator<<(T& stream, const OrbitalElements& orbitalElements)
 /// \note All angles are in degrees
 /// \note Semimajor axis does not include units because that information is not known
 ///
-/// \param stream Templated stream object (e.g. ostream)
-/// \returns Reference to the stream object
+/// \param orbitalElements OrbitalElements to be formatted
+/// \returns std::string Formatted orbital elements
 ///
 ////////////////////////////////////////////////////////////
 OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);

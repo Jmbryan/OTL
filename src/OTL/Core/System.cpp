@@ -31,7 +31,6 @@ void System::CreateDirectory(const std::string& directory)
 
 std::string System::GetCurrentDirectory()
 {
-   //return SystemImpl::GetCurrentDirectory();
    try
    {
       return std::tr2::sys::current_path<std::string>();

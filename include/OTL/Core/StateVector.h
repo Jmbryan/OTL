@@ -165,8 +165,8 @@ T& operator<<(T& stream, const StateVector& stateVector)
 /// "
 /// \note Units are not shown because that information is not stored in the StateVector
 ///
-/// \param stream Templated stream object (e.g. ostream)
-/// \returns Reference to the stream object
+/// \param stateVector StateVector to be formatted
+/// \returns std::string Formatted state vector
 ///
 ////////////////////////////////////////////////////////////
 OTL_CORE_API std::string HumanReadable(const StateVector& stateVector);

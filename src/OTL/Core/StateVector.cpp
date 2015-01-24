@@ -118,17 +118,17 @@ StateVector& StateVector::operator =(const StateVector&& other)
 ////////////////////////////////////////////////////////////
 std::string HumanReadable(const StateVector& stateVector)
 {
-   std::ostringstream ss;
-   ss << "State Vector:" << std::endl;
-   ss << "   Position:" << std::endl;
-   ss << "      X: " << stateVector.position.x() << std::endl;
-   ss << "      Y: " << stateVector.position.y() << std::endl;
-   ss << "      Z: " << stateVector.position.z() << std::endl;
-   ss << "   Velocity:" << std::endl;
-   ss << "      X: " << stateVector.velocity.x() << std::endl;
-   ss << "      Y: " << stateVector.velocity.y() << std::endl;
-   ss << "      Z: " << stateVector.velocity.z() << std::endl;
-   return ss.str();
+   std::ostringstream os;
+   os << "State Vector:" << std::endl;
+   os << "   Position:" << std::endl;
+   os << "      X: " << stateVector.position.x() << std::endl;
+   os << "      Y: " << stateVector.position.y() << std::endl;
+   os << "      Z: " << stateVector.position.z() << std::endl;
+   os << "   Velocity:" << std::endl;
+   os << "      X: " << stateVector.velocity.x() << std::endl;
+   os << "      Y: " << stateVector.velocity.y() << std::endl;
+   os << "      Z: " << stateVector.velocity.z() << std::endl;
+   return os.str();
 }
 
 ////////////////////////////////////////////////////////////
