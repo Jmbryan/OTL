@@ -34,11 +34,11 @@ int main()
 #define IsNANorINF(x) ((x * 0) != 0)
 
     GregorianDateTime date;
-    date.day = 15;
+    date.day = 1;
     date.month = 1;
-    date.year = 2014;
-    date.hour = 11;
-    date.min = 30;
+    date.year = 2000;
+    date.hour = 0;
+    date.min = 0;
     date.sec = 0.0;
     Epoch epoch = Epoch::Gregorian(date);
     std::cout << epoch << std::endl;
@@ -55,6 +55,14 @@ int main()
     StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
     std::cout << HumanReadable(sv);
+
+    auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
+    auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday
+    auto dayOfWeek2 = CalculateDayOfWeek(GregorianDateTime(1732, 6, 18));  // Wednesday
+    auto dayOfWeek3 = CalculateDayOfWeek(GregorianDateTime(1958, 11, 27)); // Thursday
+    auto dayOfWeek4 = CalculateDayOfWeek(GregorianDateTime(2000, 1, 1));   // Saturday
+    auto dayOfWeek5 = CalculateDayOfWeek(GregorianDateTime(2015, 1, 25));  // Sunday
+    auto dayOfWeek6 = CalculateDayOfWeek(GregorianDateTime(2283, 3, 13));  // Tuesday
  
     if (true)
       OTL_INFO_IF(false, "I'm " << "number " << 10 << "!");

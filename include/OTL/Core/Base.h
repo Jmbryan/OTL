@@ -30,6 +30,7 @@
 #include <OTL/Core/OrbitalElements.h>
 #include <OTL/Core/Time.h>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 #include <map>

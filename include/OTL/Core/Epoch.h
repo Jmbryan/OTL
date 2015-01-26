@@ -28,6 +28,19 @@
 namespace otl
 {
 
+   enum class DayOfWeek
+   {
+      Invalid = -1,
+      Sunday,
+      Monday,
+      Tuesday,
+      Wednesday,
+      Thursday,
+      Friday,
+      Saturday,
+      Count
+   };
+
 ////////////////////////////////////////////////////////////
 /// \brief Simple data structure for expressing a Gregorian date and time
 /// \ingroup otl
@@ -41,6 +54,11 @@ struct OTL_CORE_API GregorianDateTime
    int hour;   ///< The hour
    int min;    ///< The minute
    double sec; ///< The second
+
+   GregorianDateTime();
+   GregorianDateTime(int _year, int _month, int _day);
+   GregorianDateTime(int _year, int _month, int _day,
+                     int _hour, int _minute, double _second);
 };
 
 class OTL_CORE_API Epoch
@@ -186,20 +204,28 @@ private:
 /// \relates Epoch
 ///
 /// The epoch is converted to a string in the following format:
-/// "year-month-date hour:min:sec" e.g. "2014-1-15 11:30:0"
+/// "dayOfWeek year-month-date hour:min:sec" e.g. "Wed 2014-1-15 11:30:0"
+/// "Wed. Jan. 15, 2014 - 11:30:00"
 ///
 /// \param stream Templated stream object (e.g. ostream)
 /// \returns T Reference to the stream object
 ///
 ////////////////////////////////////////////////////////////
-template<typename T>
-T& operator<<(T& stream, const Epoch& epoch)
-{
-    const auto& gregorian = epoch.GetGregorian();
-    stream << gregorian.year << "-" << gregorian.month << "-" << gregorian.day << " "
-           << gregorian.hour << ":" << gregorian.min << ":" << gregorian.sec;
-    return stream;
-}
+//template<typename T>
+std::ostream& operator<<(std::ostream& stream, const Epoch& epoch);
+//{
+//    const auto& date = epoch.GetGregorian();
+//    auto dayOfWeek = CalculateDayOfWeek(date);
+//    auto dayOfWeekString = ConvertDayOfWeek2String(dayOfWeek).substr(0, 3);
+//    auto monthString = ConvertMonth2String(date.month).substr(0, 3);
+//
+//    stream.fill('0');
+//    stream.width(2);
+//    stream << dayOfWeekString << " " << monthString << " "
+//           << date.day << ", " << date.year << " - "
+//           << date.hour << ":" << date.min << ":" << static_cast<int>(date.sec);
+//    return stream;
+//}
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts the epoch to a multi-line formatted string
@@ -212,12 +238,24 @@ T& operator<<(T& stream, const Epoch& epoch)
 ///
 /// "Epoch:
 ///     Gregorian:
-///        Year:   [year]
-///        Month:  [month]
-///        Day:    [day]
-///        Hour:   [hour]
-///        Minute: [minute]
-///        Second: [second]
+///        Year:      [year]
+///        Month:     [month]
+///        Day:       [day]
+///        Hour:      [hour]
+///        Minute:    [minute]
+///        Second:    [second]
+///        DayOfWeek: [dayOfWeek]
+///        DayOfYear: [dayOfYear]
+///     Julian:
+///        Julian:               [julian date]
+///        Modified Julian:      [modified julian date]
+///        Modified Julian 2000: [modified julian date 2000]
+/// "
+///
+/// "Epoch:
+///     Gregorian:
+///        [day of week] [month] [day], [year] - [hour]:[minute]:[second]
+///        Wednesday January 15, 2014 - 11:30:00
 ///     Julian:
 ///        Julian:               [julian date]
 ///        Modified Julian:      [modified julian date]
@@ -228,16 +266,12 @@ T& operator<<(T& stream, const Epoch& epoch)
 ///
 /// "Epoch:
 ///     Gregorian:
-///        Year:   2014
-///        Month:  1
-///        Day:    15
-///        Hour:   11
-///        Minute: 30
-///        Second: 0.0
+///        Date:          Wednesday January 15, 2014 - 11:30:00
+///        Day of Year:   xx
 ///     Julian:
-///        Julian:               xx
-///        Modified Julian:      xx
-///        Modified Julian 2000: xx
+///        Date:          xx
+///        Modified:      xx
+///        Modified 2000: xx
 /// "
 ///
 /// \param epoch Epoch to be formatted
@@ -245,6 +279,66 @@ T& operator<<(T& stream, const Epoch& epoch)
 ///
 ////////////////////////////////////////////////////////////
 OTL_CORE_API std::string HumanReadable(const Epoch& epoch);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator +=
+/// \relates Epoch
+///
+/// This operator adds a Time to the Epoch,
+/// and assigns the result to \a left.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Time)
+///
+/// \return Reference to \a left
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Epoch& operator +=(Epoch& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator -=
+/// \relates Epoch
+///
+/// This operator subtracts a Time from the Epoch,
+/// and assigns the result to \a left.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Time)
+///
+/// \return Reference to \a left
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Epoch& operator -=(Epoch& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator +
+/// \relates Epoch
+///
+/// This operator adds the Time to the Epoch,
+/// and assigns the result to a new Epoch.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Time)
+///
+/// \return Instance of Epoch
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Epoch operator +(const Epoch& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator -
+/// \relates Epoch
+///
+/// This operator subratcs the Time from the Epoch,
+/// and assigns the result to a new Epoch.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Time)
+///
+/// \return Instance of Epoch
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Epoch operator -(const Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Julian Date.
@@ -366,67 +460,12 @@ OTL_CORE_API GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
 ////////////////////////////////////////////////////////////
 OTL_CORE_API GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
 
-////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator +=
-/// \relates Epoch
-///
-/// This operator adds a Time to the Epoch,
-/// and assigns the result to \a left.
-///
-/// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Time)
-///
-/// \return Reference to \a left
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API Epoch& operator +=(Epoch& left, const Time& right);
+OTL_CORE_API int CalculateDayOfYear(const GregorianDateTime& date);
+OTL_CORE_API DayOfWeek CalculateDayOfWeek(const GregorianDateTime& date);
 
-////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator -=
-/// \relates Epoch
-///
-/// This operator subtracts a Time from the Epoch,
-/// and assigns the result to \a left.
-///
-/// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Time)
-///
-/// \return Reference to \a left
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API Epoch& operator -=(Epoch& left, const Time& right);
+OTL_CORE_API std::string ConvertMonth2String(int month);
+OTL_CORE_API std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek);
 
-////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator +
-/// \relates Epoch
-///
-/// This operator adds the Time to the Epoch,
-/// and assigns the result to a new Epoch.
-///
-/// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Time)
-///
-/// \return Instance of Epoch
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API Epoch operator +(const Epoch& left, const Time& right);
-
-////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator -
-/// \relates Epoch
-///
-/// This operator subratcs the Time from the Epoch,
-/// and assigns the result to a new Epoch.
-///
-/// \param left  Left operand (a Epoch)
-/// \param right Right operand (a Time)
-///
-/// \return Instance of Epoch
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API Epoch operator -(const Epoch& left, const Time& right);
-
-#include <OTL/Core/Epoch.inl>
 
 } // namespace otl
 
