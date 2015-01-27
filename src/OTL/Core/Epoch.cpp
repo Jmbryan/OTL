@@ -23,10 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Epoch.h>
+#include <OTL/Core/Time.h>
 
 namespace otl
 {
 
+// Static global initialization
 static const std::vector<int> g_daysPerMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 static const std::vector<std::string> g_monthNames = { "January", "February", "March", "April",
                                                        "May", "June", "July", "August",
@@ -160,29 +162,27 @@ GregorianDateTime Epoch::GetGregorian() const
    return ConvertJD2Gregorian(julianDate);
 }
 
-std::ostream& operator<<(std::ostream& stream, const Epoch& epoch)
+std::string Epoch::ToString() const
 {
-   const auto& date = epoch.GetGregorian();
-   auto dayOfWeek = CalculateDayOfWeek(date);
-   auto dayOfWeekString = ConvertDayOfWeek2String(dayOfWeek).substr(0, 3);
-   auto monthString = ConvertMonth2String(date.month).substr(0, 3);
+   const auto& date = GetGregorian();
 
-   stream << dayOfWeekString << ". " << monthString << ". "
-      << std::setfill('0') << std::setw(2) << date.day << ", "
-      << std::setfill('0') << std::setw(4) << date.year << " - "
+   std::ostringstream os;
+   os << std::setfill('0') << std::setw(4) << date.year << "-"
+      << std::setfill('0') << std::setw(2) << date.month << "-"
+      << std::setfill('0') << std::setw(2) << date.day << " "
       << std::setfill('0') << std::setw(2) << date.hour << ":"
       << std::setfill('0') << std::setw(2) << date.min << ":"
-      << std::setfill('0') << std::setw(2) << static_cast<int>(date.sec);
-   return stream;
+      << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
+
+   return os.str();
 }
 
-////////////////////////////////////////////////////////////
-std::string HumanReadable(const Epoch& epoch)
+std::string Epoch::ToDetailedString() const
 {
-   auto date = epoch.GetGregorian();
-   auto jd = epoch.GetJD();
-   auto mjd = epoch.GetMJD();
-   auto mjd2000 = epoch.GetMJD2000();
+   auto date = GetGregorian();
+   auto jd = GetJD();
+   auto mjd = GetMJD();
+   auto mjd2000 = GetMJD2000();
 
    DayOfWeek dayOfWeek = CalculateDayOfWeek(date);
    int dayOfYear = CalculateDayOfYear(date);
@@ -192,17 +192,53 @@ std::string HumanReadable(const Epoch& epoch)
    os << "   Gregorian:" << std::endl;
    os << "      Date:          " << ConvertDayOfWeek2String(dayOfWeek) << " "
                                  << ConvertMonth2String(date.month) << " "
-                                 << date.day << ", "
-                                 << date.year << std::endl;
-   os << "      Time:          " << date.hour << ":"
-                                 << date.min << ":"
-                                 << static_cast<int>(date.sec) << std::endl; 
+                                 << std::setfill('0') << std::setw(2) << date.day << ", "
+                                 << std::setfill('0') << std::setw(4) << date.year << std::endl;
+   os << "      Time:          " << std::setfill('0') << std::setw(2) << date.hour << ":"
+                                 << std::setfill('0') << std::setw(2) << date.min << ":"
+                                 << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
    os << "      Day of Year:   " << dayOfYear << std::endl;
    os << "   Julian:" << std::endl;
-   os << "      Date:          " << jd << std::endl;
-   os << "      Modified:      " << mjd << std::endl;
-   os << "      Modified 2000: " << mjd2000 << std::endl;
+   os << "      Date:          " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << jd << std::endl;
+   os << "      Modified:      " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << mjd << std::endl;
+   os << "      Modified 2000: " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << mjd2000 << std::endl;
+
    return os.str();
+}
+
+////////////////////////////////////////////////////////////
+bool operator==(const Epoch& left, const Epoch& right)
+{
+   return IsApprox(left.GetMJD2000(), right.GetMJD2000(), 2.0 * MATH_EPSILON);
+}
+
+////////////////////////////////////////////////////////////
+bool operator!=(const Epoch& left, const Epoch& right)
+{
+   return !(left == right);
+}
+
+////////////////////////////////////////////////////////////
+bool operator >(const Epoch& left, const Epoch& right)
+{
+   return (left.GetMJD2000() > right.GetMJD2000());
+}
+
+////////////////////////////////////////////////////////////
+bool operator <(const Epoch& left, const Epoch& right)
+{
+   return (left.GetMJD2000() < right.GetMJD2000());
+}
+
+////////////////////////////////////////////////////////////
+bool operator>=(const Epoch& left, const Epoch& right)
+{
+   return (left > right || left == right);
+}
+////////////////////////////////////////////////////////////
+bool operator<=(const Epoch& left, const Epoch& right)
+{
+   return (left < right || left == right);
 }
 
 ////////////////////////////////////////////////////////////
@@ -346,6 +382,7 @@ GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000)
    return ConvertJD2Gregorian(julianDate);
 }
 
+////////////////////////////////////////////////////////////
 int CalculateDayOfYear(const GregorianDateTime& date)
 {
    bool isLeapYear = (date.year % 4 == 0);
@@ -362,6 +399,7 @@ int CalculateDayOfYear(const GregorianDateTime& date)
    return dayOfYear;
 }
 
+////////////////////////////////////////////////////////////
 DayOfWeek CalculateDayOfWeek(const GregorianDateTime& date)
 {
    // Months table(s) for regular and leap years
@@ -389,12 +427,14 @@ DayOfWeek CalculateDayOfWeek(const GregorianDateTime& date)
    return dayOfWeek;
 }
 
+////////////////////////////////////////////////////////////
 std::string ConvertMonth2String(int month)
 {
    OTL_ASSERT(month > 0 && month <= 12, "Invalid month. Month must be between 1..12 where Jan=1, Feb=2, etc.");
    return g_monthNames[month - 1];
 }
 
+////////////////////////////////////////////////////////////
 std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek)
 {
    OTL_ASSERT(dayOfWeek > DayOfWeek::Invalid && dayOfWeek < DayOfWeek::Count);

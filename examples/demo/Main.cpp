@@ -20,8 +20,13 @@
 
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
+#include <spdlog\spdlog.h>
 
 #include <numeric>
+
+#ifdef GetCurrentDirectory
+#undef GetCurrentDirectory
+#endif
 
 //#include <Eigen/Dense>
 
@@ -34,15 +39,15 @@ int main()
 #define IsNANorINF(x) ((x * 0) != 0)
 
     GregorianDateTime date;
-    date.day = 1;
-    date.month = 1;
-    date.year = 2000;
-    date.hour = 0;
-    date.min = 0;
-    date.sec = 0.0;
+    date.day = 15;
+    date.month = 2;
+    date.year = 2015;
+    date.hour = 13;
+    date.min = 27;
+    date.sec = 3.456;
     Epoch epoch = Epoch::Gregorian(date);
     std::cout << epoch << std::endl;
-    std::cout << HumanReadable(epoch) << std::endl;
+    std::cout << epoch.ToDetailedString() << std::endl;
 
     Time time = Time::Aggregrate(Time::AggregrateTime(0, 10, 2, 30, 15.45));
     std::cout << time << std::endl;
@@ -55,6 +60,13 @@ int main()
     StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
     std::cout << HumanReadable(sv);
+
+    OTL_INFO() << epoch;
+    auto spdlog = spdlog::stderr_logger_mt("SPD");
+    spdlog->info() << epoch;
+
+    OTL_INFO() << epoch.ToDetailedString();
+    spdlog->info() << epoch.ToDetailedString();
 
     auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
     auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday

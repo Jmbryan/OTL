@@ -227,37 +227,37 @@ std::string HumanReadable(const Time& time)
 }
 
 ////////////////////////////////////////////////////////////
-bool operator==(Time& left, const Time& right)
+bool operator==(const Time& left, const Time& right)
 {
    return (IsApprox(left.Seconds(), right.Seconds(), 2.0 * MATH_EPSILON));
 }
 
 ////////////////////////////////////////////////////////////
-bool operator!=(Time& left, const Time& right)
+bool operator!=(const Time& left, const Time& right)
 {
    return !(left == right);
 }
 
 ////////////////////////////////////////////////////////////
-bool operator >(Time& left, const Time& right)
+bool operator >(const Time& left, const Time& right)
 {
    return (left.Seconds() > right.Seconds());
 }
 
 ////////////////////////////////////////////////////////////
-bool operator <(Time& left, const Time& right)
+bool operator <(const Time& left, const Time& right)
 {
    return (left.Seconds() < right.Seconds());
 }
 
 ////////////////////////////////////////////////////////////
-bool operator>=(Time& left, const Time& right)
+bool operator>=(const Time& left, const Time& right)
 {
    return ((left > right) || (left == right));
 }
 
 ////////////////////////////////////////////////////////////
-bool operator<=(Time& left, const Time& right)
+bool operator<=(const Time& left, const Time& right)
 {
    return ((left < right) || (left == right));
 }

@@ -23,28 +23,35 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Time.h>
+#include <OTL/Core/Export.h>
+#include <string>
 
 namespace otl
 {
 
-   enum class DayOfWeek
-   {
-      Invalid = -1,
-      Sunday,
-      Monday,
-      Tuesday,
-      Wednesday,
-      Thursday,
-      Friday,
-      Saturday,
-      Count
-   };
+// Forward declarations
+class Time;
 
 ////////////////////////////////////////////////////////////
-/// \brief Simple data structure for expressing a Gregorian date and time
+/// \brief Enumerators for the days of the week, Sunday through Saturday
 /// \ingroup otl
-/// 
+////////////////////////////////////////////////////////////
+enum class DayOfWeek
+{
+   Invalid = -1,  ///< Invalid day of week
+   Sunday,        ///< Sunday
+   Monday,        ///< Monday
+   Tuesday,       ///< Tuesday
+   Wednesday,     ///< Wednesday
+   Thursday,      ///< Thursday
+   Friday,        ///< Friday
+   Saturday,      ///< Saturday
+   Count          ///< Total number of days
+};
+
+////////////////////////////////////////////////////////////
+/// \brief Helper object for expressing a Gregorian date and time
+/// \ingroup otl
 ////////////////////////////////////////////////////////////
 struct OTL_CORE_API GregorianDateTime
 {
@@ -195,6 +202,58 @@ public:
    ////////////////////////////////////////////////////////////
    GregorianDateTime GetGregorian() const;
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the epoch to a single-line formatted string
+   ///
+   /// The epoch is converted to a single-line string
+   /// with the following format:
+   ///
+   /// "[year]-[month]-[day] [hour]:[minute]:[second]"
+   ///
+   /// e.g.
+   ///
+   /// "2015-02-15 13:27:03.456"
+   ///
+   /// \returns std::string Stringified epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the epoch to a detailed multi-line formatted string
+   ///
+   /// The epoch is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Epoch:
+   ///     Gregorian:
+   ///        Date:          [day of week] [month] [day], [year]
+   ///        Time:          [hour]:[minute]:[second]
+   ///        Day of Year:   [day of year]
+   ///     Julian:
+   ///        Date:          [julian date]
+   ///        Modified:      [modified julian date]
+   ///        Modified 2000: [modified julian date 2000]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Epoch:
+   ///     Gregorian:
+   ///        Date:          Sunday February 15, 2015
+   ///        Time:          13:27:03.456
+   ///        Day of Year:   46
+   ///     Julian:
+   ///        Date:          2457069.060457
+   ///        Modified:        57068.560457
+   ///        Modified 2000:    5524.560457
+   /// "
+   ///
+   /// \returns std::string Stringified epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString() const;
+
 private:
    double m_mjd2000; ///< Modified Julian Date 2000
 };
@@ -203,85 +262,94 @@ private:
 /// \brief Stream operator overload
 /// \relates Epoch
 ///
-/// The epoch is converted to a string in the following format:
-/// "dayOfWeek year-month-date hour:min:sec" e.g. "Wed 2014-1-15 11:30:0"
-/// "Wed. Jan. 15, 2014 - 11:30:00"
+/// The epoch is converted to a string by calling the
+/// Epoch::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
 /// \returns T Reference to the stream object
 ///
 ////////////////////////////////////////////////////////////
-//template<typename T>
-std::ostream& operator<<(std::ostream& stream, const Epoch& epoch);
-//{
-//    const auto& date = epoch.GetGregorian();
-//    auto dayOfWeek = CalculateDayOfWeek(date);
-//    auto dayOfWeekString = ConvertDayOfWeek2String(dayOfWeek).substr(0, 3);
-//    auto monthString = ConvertMonth2String(date.month).substr(0, 3);
-//
-//    stream.fill('0');
-//    stream.width(2);
-//    stream << dayOfWeekString << " " << monthString << " "
-//           << date.day << ", " << date.year << " - "
-//           << date.hour << ":" << date.min << ":" << static_cast<int>(date.sec);
-//    return stream;
-//}
+template<typename T>
+T& operator<<(T& stream, const Epoch& epoch)
+{
+   stream << epoch.ToString();
+   return stream;
+}
 
 ////////////////////////////////////////////////////////////
-/// \brief Converts the epoch to a multi-line formatted string
-/// \relates Epoch
+/// \brief Overload of binary operator==
 ///
-/// The epoch is converted to a multi-line string
-/// in the following format:
+/// This operator compares approximate equality between two epochs.
 ///
-/// "Wednesday January 15, 2014 - 11:30:00 UTC"
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
 ///
-/// "Epoch:
-///     Gregorian:
-///        Year:      [year]
-///        Month:     [month]
-///        Day:       [day]
-///        Hour:      [hour]
-///        Minute:    [minute]
-///        Second:    [second]
-///        DayOfWeek: [dayOfWeek]
-///        DayOfYear: [dayOfYear]
-///     Julian:
-///        Julian:               [julian date]
-///        Modified Julian:      [modified julian date]
-///        Modified Julian 2000: [modified julian date 2000]
-/// "
-///
-/// "Epoch:
-///     Gregorian:
-///        [day of week] [month] [day], [year] - [hour]:[minute]:[second]
-///        Wednesday January 15, 2014 - 11:30:00
-///     Julian:
-///        Julian:               [julian date]
-///        Modified Julian:      [modified julian date]
-///        Modified Julian 2000: [modified julian date 2000]
-/// "
-///
-/// e.g.
-///
-/// "Epoch:
-///     Gregorian:
-///        Date:          Wednesday January 15, 2014 - 11:30:00
-///        Day of Year:   xx
-///     Julian:
-///        Date:          xx
-///        Modified:      xx
-///        Modified 2000: xx
-/// "
-///
-/// \param epoch Epoch to be formatted
-/// \returns std::string Formatted epoch
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is equal to right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API std::string HumanReadable(const Epoch& epoch);
+OTL_CORE_API bool operator==(const Epoch& left, const Epoch& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator +=
+/// \brief Overload of binary operator!=
+///
+/// This operator compares approximate inequality between two epochs.
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is not equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator!=(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator >
+///
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is strictly greater than right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator >(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator <
+///
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is strictly less than right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator <(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator>=
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is greater than or approximately equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator>=(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator<=
+///
+/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+///
+/// \param left Left operand (an Epoch)
+/// \param right right operand (an Epoch)
+/// \returns True if left is less than or approximately equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator<=(const Epoch& left, const Epoch& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator+=
 /// \relates Epoch
 ///
 /// This operator adds a Time to the Epoch,
@@ -296,7 +364,7 @@ OTL_CORE_API std::string HumanReadable(const Epoch& epoch);
 OTL_CORE_API Epoch& operator +=(Epoch& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator -=
+/// \brief Overload of binary operator-=
 /// \relates Epoch
 ///
 /// This operator subtracts a Time from the Epoch,
@@ -460,12 +528,55 @@ OTL_CORE_API GregorianDateTime ConvertMJD2Gregorian(double modifiedJulianDate);
 ////////////////////////////////////////////////////////////
 OTL_CORE_API GregorianDateTime ConvertMJD20002Gregorian(double modifiedJulianDate2000);
 
+////////////////////////////////////////////////////////////
+/// \brief Helper function for calculating the day of the year for a given Gregorian Date
+/// \relates Epoch
+///
+/// The day of the year starts at 1 for Janurary 1st and increments
+/// by one for each subsequent day.
+///
+/// \param date GregorianDateTime of the desired date 
+/// \returns Day of the year as an integer
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API int CalculateDayOfYear(const GregorianDateTime& date);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for calculating the day of the week for a given Gregorian Date
+/// \relates Epoch
+///
+/// \param date GregorianDateTime of the desired date 
+/// \returns DayOfWeek enumerator
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API DayOfWeek CalculateDayOfWeek(const GregorianDateTime& date);
 
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting an integral month into a string
+/// \relates Epoch
+///
+/// The months are numbered as follows:
+/// January = 1, February = 2, ... December = 12
+///
+/// \note This function returns the full name (i.e. Janurary and not Jan.)
+///
+/// \param int Month number
+/// \returns std::string Name of the month
+///
+////////////////////////////////////////////////////////////
 OTL_CORE_API std::string ConvertMonth2String(int month);
-OTL_CORE_API std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek);
 
+////////////////////////////////////////////////////////////
+/// \brief Helper function for converting a DayOfWeek into a string
+/// \relates Epoch
+///
+/// \note This function returns the full name (i.e. Monday and not Mon.)
+///
+/// \param DayOfWeek Day of week enumerator
+/// \returns std::string Name of the day of week
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek);
 
 } // namespace otl
 
@@ -474,6 +585,7 @@ OTL_CORE_API std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek);
 /// \ingroup otl
 ///
 /// Represents a point in time expressed in a variety of formats.
+///
 /// Supported formats include:
 /// \li Julian Date (JD)
 /// \li Modified Julian Date (MJD)
@@ -492,7 +604,7 @@ OTL_CORE_API std::string ConvertDayOfWeek2String(const DayOfWeek& dayOfWeek);
 /// otl::Epoch epoch1 = otl::Epoch::JD(2451545.5);
 /// otl::Epoch epoch2 = otl::Epoch::MJD(51544.0);
 /// otl::Epoch epoch3 = otl::Epoch::MJD2000(0.0)
-/// OTL_ASSERT(epoch1 == epoch2 && epoch2 == epoch3);
+/// OTL_ASSERT(epoch1 == epoch2 && epoch2 == epoch3 && epoch3 == epoch1);
 ///
 /// double mjd2000_1 = epoch1.GetMJD2000();
 /// double mjd2000_2 = otl::ConvertJD2MJD2000(epoch2.GetJD()); // Helper conversion functions

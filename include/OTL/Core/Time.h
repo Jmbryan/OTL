@@ -396,7 +396,7 @@ OTL_CORE_API std::string HumanReadable(const Time& time);
 /// \returns True if left is equal to right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator==(Time& left, const Time& right);
+OTL_CORE_API bool operator==(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator!=
@@ -410,27 +410,27 @@ OTL_CORE_API bool operator==(Time& left, const Time& right);
 /// \returns True if left is not equal to right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator!=(Time& left, const Time& right);
+OTL_CORE_API bool operator!=(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator >
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
-/// \returns True if left greater than right
+/// \returns True if left is strictly greater than right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator >(Time& left, const Time& right);
+OTL_CORE_API bool operator >(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator <
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
-/// \returns True if left less than right
+/// \returns True if left is strictly less than right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator <(Time& left, const Time& right);
+OTL_CORE_API bool operator <(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator >=
@@ -439,10 +439,10 @@ OTL_CORE_API bool operator <(Time& left, const Time& right);
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
-/// \returns True if left greater than or equal to right
+/// \returns True if left is greater than or approximately equal to right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator>=(Time& left, const Time& right);
+OTL_CORE_API bool operator>=(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator <=
@@ -451,10 +451,10 @@ OTL_CORE_API bool operator>=(Time& left, const Time& right);
 ///
 /// \param left Left operand (a Time)
 /// \param right right operand (a Time)
-/// \returns True if left less than or equal to right
+/// \returns True if left less than or approximately equal to right
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API bool operator<=(Time& left, const Time& right);
+OTL_CORE_API bool operator<=(const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator+=
