@@ -96,73 +96,75 @@ struct OTL_CORE_API OrbitalElements
    ///
    ////////////////////////////////////////////////////////////
    OrbitalElements& operator =(const OrbitalElements&& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the orbital elements to a single-line formatted string
+   ///
+   /// The orbital elements are converted to a single-line string
+   /// with the following format:
+   ///
+   /// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly] i=[inclination] w=[argOfPericenter] l=[lonOfAscendingNode]"
+   ///
+   /// e.g.
+   ///
+   /// "a=10000.0 e=0.8 ta=45 deg i=5 deg w=15 deg l=30 deg"
+   ///
+   /// \returns std::string Stringified orbital elements
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the time to a detailed multi-line formatted string
+   ///
+   /// The orbital elements are converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Orbital Elements:
+   ///     Semimajor Axis:              [semiMajorAxis]
+   ///     Eccentricity:                [eccentricity]
+   ///     True Anomaly:                [trueAnomaly] deg
+   ///     Inclination:                 [inclination] deg
+   ///     Argument of Pericenter:      [argOfPericenter] deg
+   ///     Longitude of Ascending Node: [lonOfAscendingNode] deg
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Orbital Elements:
+   ///     Semimajor Axis:              10000.0
+   ///     Eccentricity:                0.8000
+   ///     True Anomaly:                45.0000 deg
+   ///     Inclination:                 5.0000 deg
+   ///     Argument of Pericenter:      15.0000 deg
+   ///     Longitude of Ascending Node: 30.0000 deg
+   /// "
+   ///
+   /// \note Semimajor axis does not include units because that information is not known
+   ///
+   /// \returns std::string Stringified orbital elements
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString() const;
 };
 
 ////////////////////////////////////////////////////////////
 /// \brief Stream operator overload
 /// \relates OrbitalElements
 ///
-/// The orbital elements are converted to a single-line string
-/// in the following format:
-///
-/// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly] i=[inclination] w=[argOfPericenter] l=[lonOfAscendingNode]"
-///
-/// e.g. "a=10000.0 e=0.8 ta=45 deg i=5 deg w=15 deg l=30 deg"
-///
-/// \note All angles are in degrees
+/// The OrbitalElements is converted to a string by calling the
+/// OrbitalElements::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
-/// \returns Reference to the stream object
+/// \returns T Reference to the stream object
 ///
 ////////////////////////////////////////////////////////////
 template<typename T>
 T& operator<<(T& stream, const OrbitalElements& orbitalElements)
 {
-   const double rad2deg = MATH_RAD_TO_DEG;
-   stream << "a=" << orbitalElements.semiMajorAxis << " "
-          << "e=" << orbitalElements.eccentricity << " "
-          << "ta=" << orbitalElements.trueAnomaly * rad2deg << "deg" << " "
-          << "i=" << orbitalElements.inclination * rad2deg << "deg" << " "
-          << "w=" << orbitalElements.argOfPericenter * rad2deg << "deg" << " "
-          << "l=" << orbitalElements.lonOfAscendingNode * rad2deg << "deg";
+   stream << orbitalElements.ToString();
    return stream;
 }
-
-////////////////////////////////////////////////////////////
-/// \brief Converts the orbital elements to a multi-line formatted string
-/// \relates OrbitalElements
-///
-/// The orbital elements are converted to a multi-line string
-/// in the following format:
-///
-/// "Orbital Elements:
-///     Semimajor Axis:              [semiMajorAxis]
-///     Eccentricity:                [eccentricity]
-///     True Anomaly:                [trueAnomaly] deg
-///     Inclination:                 [inclination] deg
-///     Argument of Pericenter:      [argOfPericenter] deg
-///     Longitude of Ascending Node: [lonOfAscendingNode] deg
-/// "
-///
-/// e.g.
-///
-/// "Orbital Elements:
-///     Semimajor Axis:              10000.0
-///     Eccentricity:                0.8
-///     True Anomaly:                45.0 deg
-///     Inclination:                 5.0 deg
-///     Argument of Pericenter:      15.0 deg
-///     Longitude of Ascending Node: 30.0 deg
-/// "
-///
-/// \note All angles are in degrees
-/// \note Semimajor axis does not include units because that information is not known
-///
-/// \param orbitalElements OrbitalElements to be formatted
-/// \returns std::string Formatted orbital elements
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API std::string HumanReadable(const OrbitalElements& orbitalElements);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator==

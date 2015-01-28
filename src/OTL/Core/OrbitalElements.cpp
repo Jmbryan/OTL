@@ -121,17 +121,35 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
 }
 
 ////////////////////////////////////////////////////////////
-std::string HumanReadable(const OrbitalElements& orbitalElements)
+std::string OrbitalElements::ToString() const
 {
    const double rad2deg = MATH_RAD_TO_DEG;
+
+   std::ostringstream os;
+   os << "a=" << semiMajorAxis << " "
+      << "e=" << eccentricity << " "
+      << "ta=" << trueAnomaly * rad2deg << "deg" << " "
+      << "i=" << inclination * rad2deg << "deg" << " "
+      << "w=" << argOfPericenter * rad2deg << "deg" << " "
+      << "l=" << lonOfAscendingNode * rad2deg << "deg";
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string OrbitalElements::ToDetailedString() const
+{
+   const double rad2deg = MATH_RAD_TO_DEG;
+
    std::ostringstream os;
    os << "Orbital Elements:" << std::endl;
-   os << "   Semimajor Axis:              " << orbitalElements.semiMajorAxis << std::endl;
-   os << "   Eccentricity:                " << orbitalElements.eccentricity << std::endl;
-   os << "   True Anomaly:                " << orbitalElements.trueAnomaly * rad2deg << " deg" << std::endl;
-   os << "   Inclination:                 " << orbitalElements.inclination * rad2deg << " deg" << std::endl;
-   os << "   Arguement of Pericenter:     " << orbitalElements.argOfPericenter * rad2deg << " deg" << std::endl;
-   os << "   Longitude of Ascending Node: " << orbitalElements.lonOfAscendingNode * rad2deg << " deg" << std::endl;
+   os << "   Semimajor Axis:              " << std::setprecision(3) << std::fixed << semiMajorAxis << std::endl;
+   os << "   Eccentricity:                " << std::setprecision(6) << std::fixed << eccentricity << std::endl;
+   os << "   True Anomaly:                " << std::setprecision(4) << std::fixed << trueAnomaly * rad2deg << " deg" << std::endl;
+   os << "   Inclination:                 " << std::setprecision(4) << std::fixed << inclination * rad2deg << " deg" << std::endl;
+   os << "   Arguement of Pericenter:     " << std::setprecision(4) << std::fixed << argOfPericenter * rad2deg << " deg" << std::endl;
+   os << "   Longitude of Ascending Node: " << std::setprecision(4) << std::fixed << lonOfAscendingNode * rad2deg << " deg" << std::endl;
+   
    return os.str();
 }
 

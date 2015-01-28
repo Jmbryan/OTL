@@ -278,6 +278,70 @@ public:
    ////////////////////////////////////////////////////////////
    void AddYears(double years);
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the time to a single-line formatted string
+   ///
+   /// The time is converted to a single-line string
+   /// with the following format:
+   ///
+   /// "[total time] [time units]"
+   ///
+   /// e.g.
+   ///
+   /// "36.456 sec"
+   /// "10.125 days"
+   /// "2.512 years"
+   ///
+   /// \note The most significant 
+   ///
+   /// \returns std::string Stringified time
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the time to a detailed multi-line formatted string
+   ///
+   /// The time is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Time:
+   ///     Aggregate:
+   ///        Years:   [years]
+   ///        Days:    [days]
+   ///        Hours:   [hours]
+   ///        Minutes: [minutes]
+   ///        Seconds: [seconds]
+   ///     Total:
+   ///        Years:   [total years]
+   ///        Days:    [total days]
+   ///        Hours:   [total hours]
+   ///        Minutes: [total minutes]
+   ///        Seconds: [total seconds]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Time:
+   ///     Aggregate:
+   ///        Years:   0
+   ///        Days:    10
+   ///        Hours:   2
+   ///        Minutes: 30
+   ///        Seconds: 15.45
+   ///     Total:
+   ///        Years:   0.027664
+   ///        Days:    10.10435
+   ///        Hours:   242.5043
+   ///        Minutes: 14550.258
+   ///        Seconds: 873015.45
+   /// "
+   ///
+   /// \returns std::string Stringified time
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString() const;
+
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor not allowed
@@ -292,97 +356,19 @@ private:
 /// \brief Stream operator overload
 /// \relates Time
 ///
-/// The time is converted to a single-line string
-/// in the following format:
-///
-/// "[total seconds] sec"
-///
-/// e.g. "873015.45 sec"
+/// The Time is converted to a string by calling the
+/// Time::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
-/// \returns Reference to the stream object
+/// \returns T Reference to the stream object
 ///
 ////////////////////////////////////////////////////////////
 template<typename T>
-T& operator<<(T& stream, const Time& time)
+T& operator<<(T& stream, const Time& epoch)
 {
-   auto years = time.GetYears();
-   if (years > 1.0)
-   {
-      stream << years << " years";
-      return stream;
-   }
-
-   auto days = time.Days();
-   if (days > 1.0)
-   {
-      stream << days << " days";
-      return stream;
-   }
-
-   auto hours = time.Hours();
-   if (hours > 1.0)
-   {
-      stream << hours << " hours";
-      return stream;
-   }
-
-   auto minutes = time.Minutes();
-   if (minutes > 1.0)
-   {
-      stream << minutes << " minutes";
-      return stream;
-   }
-
-   stream << time.Seconds() << " seconds";
+   stream << epoch.ToString();
    return stream;
-
 }
-
-////////////////////////////////////////////////////////////
-/// \brief Converts the time to a multi-line formatted string
-/// \relates Time
-///
-/// The time is converted to a multi-line string
-/// in the following format:
-///
-/// "Time:
-///     Aggregate:
-///        Years:   [years]
-///        Days:    [days]
-///        Hours:   [hours]
-///        Minutes: [minutes]
-///        Seconds: [seconds]
-///     Total:
-///        Years:   [total years]
-///        Days:    [total days]
-///        Hours:   [total hours]
-///        Minutes: [total minutes]
-///        Seconds: [total seconds]
-/// "
-///
-/// e.g.
-///
-/// "Time:
-///     Aggregate:
-///        Years:   0
-///        Days:    10
-///        Hours:   2
-///        Minutes: 30
-///        Seconds: 15.45
-///     Total:
-///        Years:   0.027664
-///        Days:    10.10435
-///        Hours:   242.5043
-///        Minutes: 14550.258
-///        Seconds: 873015.45
-/// "
-///
-/// \param time Time to be formatted
-/// \returns std::string Formatted time
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API std::string HumanReadable(const Time& time);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator==

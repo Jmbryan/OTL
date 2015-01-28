@@ -50,23 +50,24 @@ int main()
     std::cout << epoch.ToDetailedString() << std::endl;
 
     Time time = Time::Aggregrate(Time::AggregrateTime(0, 10, 2, 30, 15.45));
+    //Time time = Time::Seconds(0);
     std::cout << time << std::endl;
-    std::cout << HumanReadable(time) << std::endl;
+    std::cout << time.ToDetailedString() << std::endl;
 
     OrbitalElements coes{ 10000.0, 0.8, 45.0 * MATH_DEG_TO_RAD };
     std::cout << coes << std::endl;
-    std::cout << HumanReadable(coes) << std::endl;
+    std::cout << coes.ToDetailedString() << std::endl;
 
     StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
     std::cout << HumanReadable(sv);
 
-    OTL_INFO() << epoch;
-    auto spdlog = spdlog::stderr_logger_mt("SPD");
-    spdlog->info() << epoch;
+    //OTL_INFO() << epoch;
+    //auto spdlog = spdlog::stderr_logger_mt("SPD");
+    //spdlog->info() << epoch;
 
-    OTL_INFO() << epoch.ToDetailedString();
-    spdlog->info() << epoch.ToDetailedString();
+    //OTL_INFO() << epoch.ToDetailedString();
+    //spdlog->info() << epoch.ToDetailedString();
 
     auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
     auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday

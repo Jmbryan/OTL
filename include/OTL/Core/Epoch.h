@@ -262,7 +262,7 @@ private:
 /// \brief Stream operator overload
 /// \relates Epoch
 ///
-/// The epoch is converted to a string by calling the
+/// The Epoch is converted to a string by calling the
 /// Epoch::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)

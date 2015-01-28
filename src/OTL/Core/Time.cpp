@@ -205,9 +205,46 @@ void Time::AddYears(double years)
 }
 
 ////////////////////////////////////////////////////////////
-std::string HumanReadable(const Time& time)
+std::string Time::ToString() const
 {
-   auto aggregate = time.GetAggregrate();
+   std::ostringstream os;
+
+   auto years = GetYears();
+   if (years > 1.0)
+   {
+      os << years << " years";
+      return os.str();
+   }
+
+   auto days = Days();
+   if (days > 1.0)
+   {
+      os << days << " days";
+      return os.str();
+   }
+
+   auto hours = Hours();
+   if (hours > 1.0)
+   {
+      os << hours << " hours";
+      return os.str();
+   }
+
+   auto minutes = Minutes();
+   if (minutes > 1.0)
+   {
+      os << minutes << " minutes";
+      return os.str();
+   }
+
+   os << Seconds() << " seconds";
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string Time::ToDetailedString() const
+{
+   auto aggregate = GetAggregrate();
 
    std::ostringstream os;
    os << "Time:" << std::endl;
@@ -216,13 +253,14 @@ std::string HumanReadable(const Time& time)
    os << "      Days:    " << aggregate.days << std::endl;
    os << "      Hours:   " << aggregate.hours << std::endl;
    os << "      Minutes: " << aggregate.minutes << std::endl;
-   os << "      Seconds: " << aggregate.seconds << std::endl;
+   os << "      Seconds: " << std::setprecision(3) << std::fixed << aggregate.seconds << std::endl;
    os << "   Total: " << std::endl;
-   os << "      Years:   " << time.GetYears() << std::endl;
-   os << "      Days:    " << time.Days() << std::endl;
-   os << "      Hours:   " << time.Hours() << std::endl;
-   os << "      Minutes: " << time.Minutes() << std::endl;
-   os << "      Seconds: " << time.Seconds() << std::endl;
+   os << "      Years:   " << std::setprecision(11) << std::fixed << GetYears() << std::endl;
+   os << "      Days:    " << std::setprecision(9) << std::fixed << Days() << std::endl;
+   os << "      Hours:   " << std::setprecision(7) << std::fixed << Hours() << std::endl;
+   os << "      Minutes: " << std::setprecision(5) << std::fixed << Minutes() << std::endl;
+   os << "      Seconds: " << std::setprecision(3) << std::fixed << Seconds() << std::endl;
+
    return os.str();
 }
 
