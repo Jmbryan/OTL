@@ -104,72 +104,78 @@ struct OTL_CORE_API StateVector
    ///
    ////////////////////////////////////////////////////////////
    StateVector& operator =(const StateVector&& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the state vector to a single-line formatted string
+   ///
+   /// The state vector is converted to a single-line string
+   /// with the following format:
+   ///
+   /// "x=[position.x()] y=[position.y()] z=[position.z()] vx=[velocity.x()] vy=[velocity.y()] vz=[velocity.z()]"
+   ///
+   /// e.g. "x=10000.0 y=8000.0 z=0.0 vx=2.5 vy=2.4 vz=0.0"
+   ///
+   /// \note Units are not shown because that information is not stored in the StateVector
+   ///
+   /// \returns std::string Stringified state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the state vector to a detailed multi-line formatted string
+   ///
+   /// The state vector is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "State Vector:
+   ///     Position:
+   ///        X: position.x()
+   ///        Y: position.y()
+   ///        Z: position.z()
+   ///     Velocity:
+   ///        X: velocity.x()
+   ///        Y: velocity.y()
+   ///        Z: velocity.z()
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "State Vector:
+   ///     Position:
+   ///        X: 10000.0
+   ///        Y: 8000.0
+   ///        Z: 0.0
+   ///     Velocity:
+   ///        X: 2.5
+   ///        Y: 2.4
+   ///        Z: 0.0
+   /// "
+   /// \note Units are not shown because that information is not stored in the StateVector
+   ///
+   /// \returns std::string Stringified state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString() const;
 };
 
 ////////////////////////////////////////////////////////////
 /// \brief Stream operator overload
 /// \relates StateVector
 ///
-/// The state vector is converted to a single-line string
-/// in the following format:
-///
-/// "x=[position.x()] y=[position.y()] z=[position.z()] vx=[velocity.x()] vy=[velocity.y()] vz=[velocity.z()]"
-///
-/// e.g. "x=10000.0 y=8000.0 z=0.0 vx=2.5 vy=2.4 vz=0.0"
+/// The StateVector is converted to a string by calling the
+/// StateVEctor::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
-/// \returns Reference to the stream object
+/// \returns T Reference to the stream object
 ///
 ////////////////////////////////////////////////////////////
 template<typename T>
 T& operator<<(T& stream, const StateVector& stateVector)
 {
-   stream << "x=" << stateVector.position.x() << " "
-          << "y=" << stateVector.position.y() << " "
-          << "z=" << stateVector.position.z() << " "
-          << "vx=" << stateVector.velocity.x() << " "
-          << "vy=" << stateVector.velocity.y() << " "
-          << "vz=" << stateVector.velocity.z();
+   stream << stateVector.ToString();
    return stream;
 }
-
-////////////////////////////////////////////////////////////
-/// \brief Converts the state vector to a multi-line formatted string
-/// \relates StateVector
-///
-/// The state vector is converted to a multi-line string
-/// in the following format:
-///
-/// "State Vector:
-///     Position:
-///        X: position.x()
-///        Y: position.y()
-///        Z: position.z()
-///     Velocity:
-///        X: velocity.x()
-///        Y: velocity.y()
-///        Z: velocity.z()
-/// "
-///
-/// e.g.
-///
-/// "State Vector:
-///     Position:
-///        X: 10000.0
-///        Y: 8000.0
-///        Z: 0.0
-///     Velocity:
-///        X: 2.5
-///        Y: 2.4
-///        Z: 0.0
-/// "
-/// \note Units are not shown because that information is not stored in the StateVector
-///
-/// \param stateVector StateVector to be formatted
-/// \returns std::string Formatted state vector
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API std::string HumanReadable(const StateVector& stateVector);
 
 ////////////////////////////////////////////////////////////
 /// \brief Overload of binary operator==

@@ -116,18 +116,33 @@ StateVector& StateVector::operator =(const StateVector&& other)
 }
 
 ////////////////////////////////////////////////////////////
-std::string HumanReadable(const StateVector& stateVector)
+std::string StateVector::ToString() const
+{
+   std::ostringstream os;
+   os << "x=" << position.x() << " "
+      << "y=" << position.y() << " "
+      << "z=" << position.z() << " "
+      << "vx=" << velocity.x() << " "
+      << "vy=" << velocity.y() << " "
+      << "vz=" << velocity.z();
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string StateVector::ToDetailedString() const
 {
    std::ostringstream os;
    os << "State Vector:" << std::endl;
    os << "   Position:" << std::endl;
-   os << "      X: " << stateVector.position.x() << std::endl;
-   os << "      Y: " << stateVector.position.y() << std::endl;
-   os << "      Z: " << stateVector.position.z() << std::endl;
+   os << "      X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
+   os << "      Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
+   os << "      Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
    os << "   Velocity:" << std::endl;
-   os << "      X: " << stateVector.velocity.x() << std::endl;
-   os << "      Y: " << stateVector.velocity.y() << std::endl;
-   os << "      Z: " << stateVector.velocity.z() << std::endl;
+   os << "      X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
+   os << "      Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
+   os << "      Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
+
    return os.str();
 }
 

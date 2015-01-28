@@ -60,7 +60,7 @@ int main()
 
     StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
     std::cout << sv << std::endl;
-    std::cout << HumanReadable(sv);
+    std::cout << sv.ToDetailedString();
 
     //OTL_INFO() << epoch;
     //auto spdlog = spdlog::stderr_logger_mt("SPD");

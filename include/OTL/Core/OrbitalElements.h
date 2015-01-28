@@ -103,11 +103,13 @@ struct OTL_CORE_API OrbitalElements
    /// The orbital elements are converted to a single-line string
    /// with the following format:
    ///
-   /// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly] i=[inclination] w=[argOfPericenter] l=[lonOfAscendingNode]"
+   /// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly]deg i=[inclination]deg w=[argOfPericenter]deg l=[lonOfAscendingNode]deg"
    ///
    /// e.g.
    ///
-   /// "a=10000.0 e=0.8 ta=45 deg i=5 deg w=15 deg l=30 deg"
+   /// "a=10000 e=0.8 ta=45deg i=5deg w=15deg l=30deg"
+   ///
+   /// \note Semimajor axis units are not shown because that information is stored in the OrbitalElements
    ///
    /// \returns std::string Stringified orbital elements
    ///
@@ -115,7 +117,7 @@ struct OTL_CORE_API OrbitalElements
    std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Converts the time to a detailed multi-line formatted string
+   /// \brief Converts the orbital elements to a detailed multi-line formatted string
    ///
    /// The orbital elements are converted to a detailed multi-line string
    /// with the following format:
@@ -140,7 +142,7 @@ struct OTL_CORE_API OrbitalElements
    ///     Longitude of Ascending Node: 30.0000 deg
    /// "
    ///
-   /// \note Semimajor axis does not include units because that information is not known
+   /// \note Semimajor axis units are not shown because that information is stored in the OrbitalElements
    ///
    /// \returns std::string Stringified orbital elements
    ///

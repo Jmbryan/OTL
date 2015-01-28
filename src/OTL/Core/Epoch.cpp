@@ -172,7 +172,7 @@ std::string Epoch::ToString() const
       << std::setfill('0') << std::setw(2) << date.day << " "
       << std::setfill('0') << std::setw(2) << date.hour << ":"
       << std::setfill('0') << std::setw(2) << date.min << ":"
-      << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
+      << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec;
 
    return os.str();
 }
@@ -199,9 +199,9 @@ std::string Epoch::ToDetailedString() const
                                  << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
    os << "      Day of Year:   " << dayOfYear << std::endl;
    os << "   Julian:" << std::endl;
-   os << "      Date:          " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << jd << std::endl;
-   os << "      Modified:      " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << mjd << std::endl;
-   os << "      Modified 2000: " << std::setfill(' ') << std::setw(14) << std::setprecision(6) << std::fixed << mjd2000 << std::endl;
+   os << "      Date:          " << std::setprecision(6) << std::fixed << jd << std::endl;
+   os << "      Modified:      " << std::setprecision(6) << std::fixed << mjd << std::endl;
+   os << "      Modified 2000: " << std::setprecision(6) << std::fixed << mjd2000 << std::endl;
 
    return os.str();
 }
