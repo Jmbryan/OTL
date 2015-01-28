@@ -143,4 +143,24 @@ void OrbitalBody::Propagate(const Time& timeDelta)
    m_orbit.Propagate(timeDelta);
 }
 
+////////////////////////////////////////////////////////////
+std::string OrbitalBody::ToString() const
+{
+   std::ostringstream os;
+   os << "name=" << m_name << " " << m_orbit;
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string OrbitalBody::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Orbital Body:" << std::endl;
+   os << prefix << "   Name: " << m_name << std::endl;
+   os << m_orbit.ToDetailedString(prefix + "   ");
+
+   return os.str();
+}
+
 } // namespace otl

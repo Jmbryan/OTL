@@ -134,12 +134,12 @@ struct OTL_CORE_API OrbitalElements
    /// e.g.
    ///
    /// "Orbital Elements:
-   ///     Semimajor Axis:              10000.0
-   ///     Eccentricity:                0.8000
-   ///     True Anomaly:                45.0000 deg
-   ///     Inclination:                 5.0000 deg
-   ///     Argument of Pericenter:      15.0000 deg
-   ///     Longitude of Ascending Node: 30.0000 deg
+   ///     Semimajor Axis:              10000.000000
+   ///     Eccentricity:                0.800000
+   ///     True Anomaly:                45.000000 deg
+   ///     Inclination:                 5.000000 deg
+   ///     Argument of Pericenter:      15.000000 deg
+   ///     Longitude of Ascending Node: 30.000000 deg
    /// "
    ///
    /// \note Semimajor axis units are not shown because that information is stored in the OrbitalElements
@@ -147,7 +147,7 @@ struct OTL_CORE_API OrbitalElements
    /// \returns std::string Stringified orbital elements
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
 };
 
 ////////////////////////////////////////////////////////////

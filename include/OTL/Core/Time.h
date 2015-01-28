@@ -340,7 +340,7 @@ public:
    /// \returns std::string Stringified time
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
 
 private:
    ////////////////////////////////////////////////////////////

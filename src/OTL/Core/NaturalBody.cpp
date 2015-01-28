@@ -137,4 +137,33 @@ void NaturalBody::Propagate(const Time& timeDelta)
     }
 }
 
+////////////////////////////////////////////////////////////
+std::string NaturalBody::ToString() const
+{
+   std::ostringstream os;
+   //os << "name=" << GetName() << " " << GetOrbit();
+   os << "name=" << GetName() << "epoch=" << m_epoch << "r=" << m_radius << std::endl;
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string NaturalBody::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   //os << prefix << "Natural Body:" << std::endl;
+   //os << prefix << "   Name:   " << GetName() << std::endl;
+   //os << prefix << "   Radius: " << GetRadius() << std::endl;
+   //os << prefix << GetEpoch().ToDetailedString(prefix + "   ");
+   //os << prefix << GetStateVector().ToDetailedString(prefix + "   ");
+
+   os << prefix << "Natural Body:" << std::endl;
+   os << prefix << "   Radius: " << GetRadius() << std::endl;
+   os << prefix << GetEpoch().ToDetailedString(prefix + "   ");
+   os << prefix << OrbitalBody::ToDetailedString(prefix + "   ");
+
+
+   return os.str();
+}
+
 } // namespace otl

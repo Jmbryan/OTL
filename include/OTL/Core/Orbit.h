@@ -74,7 +74,7 @@ public:
    /// \param mu Gravitational parameter of the central body of the orbit
    ///
    ////////////////////////////////////////////////////////////
-	Orbit(double mu);
+	explicit Orbit(double mu);
    
    ////////////////////////////////////////////////////////////
    /// \brief Create the fully defined orbit
@@ -118,7 +118,7 @@ public:
    ///
    /// The orbital elements and orbit type are not updated
    /// until the GetOrbitalElements(), GetOrbitType(),
-   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   /// IsType(), or PropagateToTrueAnomaly() functions are called.
    ///
    /// \param position New position vector of the orbit
    ///
@@ -132,7 +132,7 @@ public:
    ///
    /// The orbital elements and orbit type are not updated
    /// until the GetOrbitalElements(), GetOrbitType(),
-   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   /// IsType(), or PropagateToTrueAnomaly() functions are called.
    ///
    /// \param velocity New velocity vector of the orbit
    ///
@@ -146,7 +146,7 @@ public:
    ///
    /// The orbital elements and orbit type are not updated
    /// until the GetOrbitalElements(), GetOrbitType(),
-   /// IsType(), or PropagateTrueAnomaly() functions are called.
+   /// IsType(), or PropagateToTrueAnomaly() functions are called.
    ///
    /// \param stateVector New state vector of the orbit
    ///
@@ -264,6 +264,9 @@ public:
    /// The time can be positive or negative for
    /// forewards and backwards propagation respectively.
    ///
+   /// This function uses the internal propagation algorithm
+   /// specified using the SetPropagator() method. 
+   ///
    /// \param timeDelta Time object which specifies the propagation duration
    ///
    ////////////////////////////////////////////////////////////
@@ -281,7 +284,65 @@ public:
    /// \param direction Enumerator which specifies the propagation direction (Prograde or Retrograde)
    ///
    ////////////////////////////////////////////////////////////
-   void PropagateTrueAnomaly(double trueAnomaly, const Direction& direction);
+   void PropagateToTrueAnomaly(double trueAnomaly, const Direction& direction);
+
+   void UseStateVectorForStringOutput(bool useStateVectorForStringOutput);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the orbit to a single-line formatted string
+   ///
+   /// The orbit is converted to a single-line string
+   /// with the following format:
+   ///
+   /// "mu=[grav. param] r=[orbit radius] [OrbitalElements]"
+   ///
+   /// e.g.
+   ///
+   /// "mu=398600 r=7414.32 [OrbitalElements]"
+   ///
+   /// where [OrbitalElements] is the result of calling the
+   /// OrbitalElements::ToString() method. The state vector
+   /// can be displayed instead, by calling
+   /// UseStateVectorForStringOutput(true).
+   ///
+   /// \see OrbitalElements::ToString(), StateVector::ToString()
+   ///
+   /// \returns std::string Stringified orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the orbit to a detailed multi-line formatted string
+   ///
+   /// The orbit is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Orbit:
+   ///     Gravitational Parameter: [grav. param.]
+   ///     Radius:                  [orbit radius]
+   ///     [OrbitalElements]
+   ///     [StateVector]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Orbit:
+   ///     Gravitational Parameter: 398600.441800
+   ///     Radius:                  7414.318917
+   ///     [OrbitalElements]
+   ///     [StateVector]
+   /// "
+   ///
+   /// where [OrbitalElements] and [StateVector] are the results
+   /// from calling the respective ToDetailedString() methods.
+   ///
+   /// \note Some units are not shown because that information is not stored in the orbit
+   ///
+   /// \returns std::string Stringified orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString(std::string prefix = "") const;
 
 private:
    ////////////////////////////////////////////////////////////
@@ -321,6 +382,7 @@ private:
    void UpdateOrbitType() const;
 
 private:
+   bool m_useStateVectorForStringOutput;        ///< If TRUE, the ToString() method will print the state vector. By default, orbital elements are printed.
    double m_mu;                                 ///< Gravitational parameter of the central body (kg^2/m^3)
    mutable double m_orbitRadius;                ///< Radius of the orbit (m)
    mutable Type m_orbitType;                    ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
@@ -330,6 +392,24 @@ private:
    mutable bool m_orbitalElementsDirty;         ///< Flag which when TRUE indicates the orbital elements need to be updated
    PropagatorPointer m_propagator;              ///< Pointer to the propagation algorithm
 };
+
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Orbit
+///
+/// The orbit is converted to a string by calling the
+/// Orbit::ToString() method.
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const Orbit& orbit)
+{
+   stream << orbit.ToString();
+   return stream;
+}
 
 } // namespace keplerian
 
@@ -359,7 +439,7 @@ private:
 /// orbit.Propagate(Time::Minutes(10.0));
 ///
 /// // Propagate in retrograde direction to true anomaly of 60 degrees
-/// orbit.PropagateTrueAnomaly(60.0 * MATH_DEG_TO_RAD, Orbit::Retrograde);
+/// orbit.PropagateToTrueAnomaly(60.0 * MATH_DEG_TO_RAD, Orbit::Retrograde);
 ///
 /// // Get updated state vector and orbital elements
 /// myNewStateVector = orbit.GetStateVector();

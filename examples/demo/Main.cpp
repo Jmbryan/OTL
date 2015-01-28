@@ -54,20 +54,26 @@ int main()
     std::cout << time << std::endl;
     std::cout << time.ToDetailedString() << std::endl;
 
-    OrbitalElements coes{ 10000.0, 0.8, 45.0 * MATH_DEG_TO_RAD };
+    OrbitalElements coes{ 10000.0, 0.8, 30.0 * MATH_DEG_TO_RAD, 5.0 * MATH_DEG_TO_RAD, 15 * MATH_DEG_TO_RAD, 135.0 * MATH_DEG_TO_RAD };
     std::cout << coes << std::endl;
     std::cout << coes.ToDetailedString() << std::endl;
 
-    StateVector sv{ 10000.0, 8000.0, 0.0, 2.5};
+    StateVector sv{ -6045, -3490, 2500, -3.457, 6.618, 2.533};
     std::cout << sv << std::endl;
-    std::cout << sv.ToDetailedString();
+    std::cout << sv.ToDetailedString() << std::endl;
 
-    //OTL_INFO() << epoch;
-    //auto spdlog = spdlog::stderr_logger_mt("SPD");
-    //spdlog->info() << epoch;
+    keplerian::Orbit orbit(ASTRO_MU_EARTH, sv);
+    //orbit.UseStateVectorForStringOutput(true);
+    std::cout << orbit << std::endl;
+    std::cout << orbit.ToDetailedString() << std::endl;
 
-    //OTL_INFO() << epoch.ToDetailedString();
-    //spdlog->info() << epoch.ToDetailedString();
+    OrbitalBody orbitalBody("Ceres", 895.8e18);
+    std::cout << orbitalBody << std::endl;
+    std::cout << orbitalBody.ToDetailedString() << std::endl;
+
+    NaturalBody naturalBody("Ceres", 895.8e18, 476.2, epoch);
+    std::cout << naturalBody << std::endl;
+    std::cout << naturalBody.ToDetailedString() << std::endl;
 
     auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
     auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday

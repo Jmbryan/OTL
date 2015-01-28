@@ -139,6 +139,9 @@ public:
    ////////////////////////////////////////////////////////////
    virtual void Propagate(const Time& timeDelta);
 
+   std::string ToString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
+
 private:
    double m_radius;                     ///< Radius of the orbital body
    Epoch m_epoch;                       ///< Current epoch of the orbital body

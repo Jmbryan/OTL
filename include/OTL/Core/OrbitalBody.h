@@ -228,10 +228,31 @@ public:
    ////////////////////////////////////////////////////////////
    //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
+   std::string ToString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
+
 private:
     std::string m_name;        ///< Name of the orbital body
     keplerian::Orbit m_orbit;  ///< Keplerian orbit of the orbital body 
 };
+
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Orbit
+///
+/// The orbital body is converted to a string by calling the
+/// OrbitalBody::ToString() method.
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const OrbitalBody& orbitalBody)
+{
+   stream << orbitalBody.ToString();
+   return stream;
+}
 
 typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 
@@ -242,14 +263,13 @@ typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 /// \ingroup otl
 ///
 /// Interface class for all orbital bodies (planets,
-/// asteroids, comets, etc..).  
+/// asteroids, comets, spacecraft, etc..).  
 ///
 /// The state vector and orbital elements of the orbital
-/// body at a desired Epoch can be obtained by calling
-/// the inherited member functions:
+/// body can be obtained by calling the methods:
 ///
-/// \li GetStateVectorAtEpoch()
-/// \li GetOrbitalElementsAtEpoch()
+/// \li GetStateVector()
+/// \li GetOrbitalElements()
 ///
 /// This class is an abstract base class and cannot be instantiated.
 ///

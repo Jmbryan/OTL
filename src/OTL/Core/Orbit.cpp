@@ -35,6 +35,7 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit() :
+m_useStateVectorForStringOutput(false),
 m_mu(0.0),
 m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
@@ -46,6 +47,7 @@ m_propagator(new KeplerianPropagator())
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu) :
+m_useStateVectorForStringOutput(false),
 m_mu(mu),
 m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
@@ -57,6 +59,7 @@ m_propagator(new KeplerianPropagator())
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu, const StateVector& stateVector) :
+m_useStateVectorForStringOutput(false),
 m_mu(mu),
 m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
@@ -69,6 +72,7 @@ m_propagator(new KeplerianPropagator())
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu, const OrbitalElements& orbitalElements) :
+m_useStateVectorForStringOutput(false),
 m_mu(mu),
 m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
@@ -229,11 +233,49 @@ void Orbit::Propagate(const Time& timeDelta)
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::PropagateTrueAnomaly(double trueAnomaly, const Orbit::Direction& direction)
+void Orbit::PropagateToTrueAnomaly(double trueAnomaly, const Orbit::Direction& direction)
 {
    OrbitalElements newOrbitalElements = m_orbitalElements;
    newOrbitalElements.trueAnomaly = trueAnomaly;
    SetOrbitalElements(newOrbitalElements);
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UseStateVectorForStringOutput(bool useStateVectorForStringOutput)
+{
+   m_useStateVectorForStringOutput = useStateVectorForStringOutput;
+}
+
+////////////////////////////////////////////////////////////
+std::string Orbit::ToString() const
+{
+   std::ostringstream os;
+   os << "mu=" << m_mu << " "
+      << "r=" << m_orbitRadius << " ";
+
+   if (m_useStateVectorForStringOutput)
+   {
+      os << GetStateVector();
+   }
+   else
+   {
+      os << GetOrbitalElements();
+   }
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string Orbit::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Orbit:" << std::endl;
+   os << prefix << "   Gravitational Parameter: " << std::setprecision(6) << std::fixed << m_mu << std::endl;
+   os << prefix << "   Radius:                  " << std::setprecision(6) << std::fixed << m_orbitRadius << std::endl;
+   os << GetOrbitalElements().ToDetailedString(prefix + "   ");
+   os << GetStateVector().ToDetailedString(prefix + "   ");
+
+   return os.str();
 }
 
 ////////////////////////////////////////////////////////////
@@ -260,25 +302,27 @@ void Orbit::UpdateOrbitRadius() const
 void Orbit::UpdateOrbitType() const
 {
    double eccentricity = m_orbitalElements.eccentricity;  
-   if (eccentricity == ASTRO_ECC_CIRCULAR)
-   {
-      m_orbitType = Type::Circular;
-   }
-   else if (eccentricity > ASTRO_ECC_CIRCULAR &&
-            eccentricity < ASTRO_ECC_PARABOLIC)
+   
+   if (eccentricity > ASTRO_ECC_CIRCULAR &&
+       eccentricity < ASTRO_ECC_PARABOLIC)
    {
       m_orbitType = Type::Elliptical;
-   }
-   else if (eccentricity == ASTRO_ECC_PARABOLIC)
-   {
-      m_orbitType = Type::Parabolic;
    }
    else if (eccentricity > ASTRO_ECC_PARABOLIC)
    {
       m_orbitType = Type::Hyperbolic;
    }
+   else if (IsApprox(eccentricity, ASTRO_ECC_PARABOLIC))
+   {
+      m_orbitType = Type::Parabolic;
+   }
+   else if (IsApprox(eccentricity, ASTRO_ECC_CIRCULAR))
+   {
+      m_orbitType = Type::Circular;
+   }
    else
    {
+      OTL_WARN() << "Invalid orbit type with eccentricity " << Bracket(eccentricity);
       m_orbitType = Type::Invalid;
    }
 }

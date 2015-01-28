@@ -111,7 +111,7 @@ struct OTL_CORE_API StateVector
    /// The state vector is converted to a single-line string
    /// with the following format:
    ///
-   /// "x=[position.x()] y=[position.y()] z=[position.z()] vx=[velocity.x()] vy=[velocity.y()] vz=[velocity.z()]"
+   /// "x=[x position] y=[y position] z=[z position] vx=[x velocity] vy=[y velocity] vz=[z velocity]"
    ///
    /// e.g. "x=10000.0 y=8000.0 z=0.0 vx=2.5 vy=2.4 vz=0.0"
    ///
@@ -130,13 +130,13 @@ struct OTL_CORE_API StateVector
    ///
    /// "State Vector:
    ///     Position:
-   ///        X: position.x()
-   ///        Y: position.y()
-   ///        Z: position.z()
+   ///        X: [x position]
+   ///        Y: [y position]
+   ///        Z: [z position]
    ///     Velocity:
-   ///        X: velocity.x()
-   ///        Y: velocity.y()
-   ///        Z: velocity.z()
+   ///        X: [x velocity]
+   ///        Y: [y velocity]
+   ///        Z: [z velocity]
    /// "
    ///
    /// e.g.
@@ -156,7 +156,7 @@ struct OTL_CORE_API StateVector
    /// \returns std::string Stringified state vector
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
 };
 
 ////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ struct OTL_CORE_API StateVector
 /// \relates StateVector
 ///
 /// The StateVector is converted to a string by calling the
-/// StateVEctor::ToString() method.
+/// StateVector::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
 /// \returns T Reference to the stream object

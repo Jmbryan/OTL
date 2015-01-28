@@ -177,7 +177,7 @@ std::string Epoch::ToString() const
    return os.str();
 }
 
-std::string Epoch::ToDetailedString() const
+std::string Epoch::ToDetailedString(std::string prefix) const
 {
    auto date = GetGregorian();
    auto jd = GetJD();
@@ -188,20 +188,20 @@ std::string Epoch::ToDetailedString() const
    int dayOfYear = CalculateDayOfYear(date);
 
    std::ostringstream os;
-   os << "Epoch:" << std::endl;
-   os << "   Gregorian:" << std::endl;
-   os << "      Date:          " << ConvertDayOfWeek2String(dayOfWeek) << " "
-                                 << ConvertMonth2String(date.month) << " "
-                                 << std::setfill('0') << std::setw(2) << date.day << ", "
-                                 << std::setfill('0') << std::setw(4) << date.year << std::endl;
-   os << "      Time:          " << std::setfill('0') << std::setw(2) << date.hour << ":"
-                                 << std::setfill('0') << std::setw(2) << date.min << ":"
-                                 << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
-   os << "      Day of Year:   " << dayOfYear << std::endl;
-   os << "   Julian:" << std::endl;
-   os << "      Date:          " << std::setprecision(6) << std::fixed << jd << std::endl;
-   os << "      Modified:      " << std::setprecision(6) << std::fixed << mjd << std::endl;
-   os << "      Modified 2000: " << std::setprecision(6) << std::fixed << mjd2000 << std::endl;
+   os << prefix << "Epoch:" << std::endl;
+   os << prefix << "   Gregorian:" << std::endl;
+   os << prefix << "      Date:          " << ConvertDayOfWeek2String(dayOfWeek) << " "
+                                           << ConvertMonth2String(date.month) << " "
+                                           << std::setfill('0') << std::setw(2) << date.day << ", "
+                                           << std::setfill('0') << std::setw(4) << date.year << std::endl;
+   os << prefix << "      Time:          " << std::setfill('0') << std::setw(2) << date.hour << ":"
+                                           << std::setfill('0') << std::setw(2) << date.min << ":"
+                                           << std::setfill('0') << std::setw(6) << std::setprecision(3) << std::fixed << date.sec << std::endl;
+   os << prefix << "      Day of Year:   " << dayOfYear << std::endl;
+   os << prefix << "   Julian:" << std::endl;
+   os << prefix << "      Date:          " << std::setprecision(6) << std::fixed << jd << std::endl;
+   os << prefix << "      Modified:      " << std::setprecision(6) << std::fixed << mjd << std::endl;
+   os << prefix << "      Modified 2000: " << std::setprecision(6) << std::fixed << mjd2000 << std::endl;
 
    return os.str();
 }

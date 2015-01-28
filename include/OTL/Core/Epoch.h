@@ -252,7 +252,7 @@ public:
    /// \returns std::string Stringified epoch
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
 
 private:
    double m_mjd2000; ///< Modified Julian Date 2000
