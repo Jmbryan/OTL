@@ -269,10 +269,11 @@ std::string Orbit::ToString() const
 std::string Orbit::ToDetailedString(std::string prefix) const
 {
    std::ostringstream os;
-   os << prefix << "Orbit:" << std::endl;
-   os << prefix << "   Gravitational Parameter: " << std::setprecision(6) << std::fixed << m_mu << std::endl;
-   os << prefix << "   Radius:                  " << std::setprecision(6) << std::fixed << m_orbitRadius << std::endl;
+   os << prefix << "Gravitational Parameter: " << std::setprecision(6) << std::fixed << m_mu << std::endl;
+   os << prefix << "Mean Orbital Radius:     " << std::setprecision(6) << std::fixed << m_orbitRadius << std::endl;
+   os << prefix << "Orbital Elements:" << std::endl;
    os << GetOrbitalElements().ToDetailedString(prefix + "   ");
+   os << prefix << "State Vector:" << std::endl;
    os << GetStateVector().ToDetailedString(prefix + "   ");
 
    return os.str();

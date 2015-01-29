@@ -247,19 +247,18 @@ std::string Time::ToDetailedString(std::string prefix) const
    auto aggregate = GetAggregrate();
 
    std::ostringstream os;
-   os << prefix << "Time:" << std::endl;
-   os << prefix << "   Aggregrate:" << std::endl;
-   os << prefix << "      Years:   " << aggregate.years << std::endl;
-   os << prefix << "      Days:    " << aggregate.days << std::endl;
-   os << prefix << "      Hours:   " << aggregate.hours << std::endl;
-   os << prefix << "      Minutes: " << aggregate.minutes << std::endl;
-   os << prefix << "      Seconds: " << std::setprecision(3) << std::fixed << aggregate.seconds << std::endl;
-   os << prefix << "   Total: " << std::endl;
-   os << prefix << "      Years:   " << std::setprecision(11) << std::fixed << GetYears() << std::endl;
-   os << prefix << "      Days:    " << std::setprecision(9) << std::fixed << Days() << std::endl;
-   os << prefix << "      Hours:   " << std::setprecision(7) << std::fixed << Hours() << std::endl;
-   os << prefix << "      Minutes: " << std::setprecision(5) << std::fixed << Minutes() << std::endl;
-   os << prefix << "      Seconds: " << std::setprecision(3) << std::fixed << Seconds() << std::endl;
+   os << prefix << "Aggregrate:" << std::endl;
+   os << prefix << "   Years:   " << aggregate.years << std::endl;
+   os << prefix << "   Days:    " << aggregate.days << std::endl;
+   os << prefix << "   Hours:   " << aggregate.hours << std::endl;
+   os << prefix << "   Minutes: " << aggregate.minutes << std::endl;
+   os << prefix << "   Seconds: " << std::setprecision(3) << std::fixed << aggregate.seconds << std::endl;
+   os << prefix << "Total: " << std::endl;
+   os << prefix << "   Years:   " << std::setprecision(11) << std::fixed << GetYears() << std::endl;
+   os << prefix << "   Days:    " << std::setprecision(9) << std::fixed << Days() << std::endl;
+   os << prefix << "   Hours:   " << std::setprecision(7) << std::fixed << Hours() << std::endl;
+   os << prefix << "   Minutes: " << std::setprecision(5) << std::fixed << Minutes() << std::endl;
+   os << prefix << "   Seconds: " << std::setprecision(3) << std::fixed << Seconds() << std::endl;
 
    return os.str();
 }

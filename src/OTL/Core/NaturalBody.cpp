@@ -30,9 +30,49 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
+NaturalBody::PhysicalProperties::PhysicalProperties() :
+mass(1.0),
+mu(ASTRO_GRAVITATIONAL_CONSTANT),
+radius(1.0)
+
+{
+
+}
+
+////////////////////////////////////////////////////////////
+NaturalBody::PhysicalProperties::PhysicalProperties(double _mass, double _mu, double _radius) :
+mass(_mass),
+mu(_mu),
+radius(_radius)
+
+{
+
+}
+
+////////////////////////////////////////////////////////////
+std::string NaturalBody::PhysicalProperties::ToString() const
+{
+   std::ostringstream os;
+   os << "m=" << mass << " mu=" << mu << " r=" << radius << std::endl;
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
+std::string NaturalBody::PhysicalProperties::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Mass:                    " << mass << std::endl;
+   os << prefix << "Gravitational Parameter: " << mu << std::endl;
+   os << prefix << "Equatorial Radius:       " << radius << std::endl;
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
 NaturalBody::NaturalBody() :
 OrbitalBody(),
-m_radius(1.0),
+m_physicalProperties(),
 m_useEphemerisForPropagation(false)
 {
 
@@ -41,7 +81,7 @@ m_useEphemerisForPropagation(false)
 ////////////////////////////////////////////////////////////
 NaturalBody::NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch) :
 OrbitalBody(name, mass),
-m_radius(radius),
+m_physicalProperties(mass, mass * ASTRO_GRAVITATIONAL_CONSTANT, radius),
 m_epoch(epoch),
 m_useEphemerisForPropagation(false)
 {
@@ -51,7 +91,7 @@ m_useEphemerisForPropagation(false)
 ////////////////////////////////////////////////////////////
 NaturalBody::NaturalBody(const std::string& name, double mass, double radius, const Epoch& epoch, const EphemerisPointer& ephemeris) :
 OrbitalBody(name, mass),
-m_radius(radius),
+m_physicalProperties(mass, mass * ASTRO_GRAVITATIONAL_CONSTANT, radius),
 m_epoch(epoch),
 m_ephemeris(ephemeris),
 m_useEphemerisForPropagation(true)
@@ -66,9 +106,9 @@ NaturalBody::~NaturalBody()
 }
 
 ////////////////////////////////////////////////////////////
-void NaturalBody::SetRadius(double radius)
+void NaturalBody::SetPhysicalProperties(const PhysicalProperties& physicalProperties)
 {
-   m_radius = radius;
+   m_physicalProperties = physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
@@ -103,15 +143,15 @@ void NaturalBody::UseEphemerisForPropagation(bool useEphemerisForPropagation)
 }
 
 ////////////////////////////////////////////////////////////
-double NaturalBody::GetRadius() const
-{
-   return m_radius;
-}
-
-////////////////////////////////////////////////////////////
 const Epoch& NaturalBody::GetEpoch() const
 {
    return m_epoch;
+}
+
+////////////////////////////////////////////////////////////
+const NaturalBody::PhysicalProperties& NaturalBody::GetPhysicalProperties() const
+{
+   return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
@@ -141,8 +181,7 @@ void NaturalBody::Propagate(const Time& timeDelta)
 std::string NaturalBody::ToString() const
 {
    std::ostringstream os;
-   //os << "name=" << GetName() << " " << GetOrbit();
-   os << "name=" << GetName() << "epoch=" << m_epoch << "r=" << m_radius << std::endl;
+   os << "name=" << GetName() << " epoch=" << GetEpoch();
 
    return os.str();
 }
@@ -151,17 +190,13 @@ std::string NaturalBody::ToString() const
 std::string NaturalBody::ToDetailedString(std::string prefix) const
 {
    std::ostringstream os;
-   //os << prefix << "Natural Body:" << std::endl;
-   //os << prefix << "   Name:   " << GetName() << std::endl;
-   //os << prefix << "   Radius: " << GetRadius() << std::endl;
-   //os << prefix << GetEpoch().ToDetailedString(prefix + "   ");
-   //os << prefix << GetStateVector().ToDetailedString(prefix + "   ");
-
-   os << prefix << "Natural Body:" << std::endl;
-   os << prefix << "   Radius: " << GetRadius() << std::endl;
-   os << prefix << GetEpoch().ToDetailedString(prefix + "   ");
-   os << prefix << OrbitalBody::ToDetailedString(prefix + "   ");
-
+   os << prefix << "Name: " << GetName() << std::endl;
+   os << prefix << "Physical Properties: " << std::endl;
+   os << GetPhysicalProperties().ToDetailedString(prefix + "   ");
+   os << prefix << "Epoch:" << std::endl;
+   os << GetEpoch().ToDetailedString(prefix + "   ");
+   os << prefix << "Orbit:" << std::endl;
+   os << GetOrbit().ToDetailedString(prefix + "   ");
 
    return os.str();
 }

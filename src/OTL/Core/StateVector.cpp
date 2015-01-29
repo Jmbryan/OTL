@@ -133,15 +133,14 @@ std::string StateVector::ToString() const
 std::string StateVector::ToDetailedString(std::string prefix) const
 {
    std::ostringstream os;
-   os << prefix << "State Vector:" << std::endl;
-   os << prefix << "   Position:" << std::endl;
-   os << prefix << "      X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
-   os << prefix << "      Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
-   os << prefix << "      Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
-   os << prefix << "   Velocity:" << std::endl;
-   os << prefix << "      X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
-   os << prefix << "      Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
-   os << prefix << "      Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
+   os << prefix << "Position:" << std::endl;
+   os << prefix << "   X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
+   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
+   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
+   os << prefix << "Velocity:" << std::endl;
+   os << prefix << "   X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
+   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
+   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
 
    return os.str();
 }

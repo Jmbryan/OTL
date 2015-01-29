@@ -93,7 +93,7 @@ public:
    /// \param planetId Identifier of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   Planet(PlanetId planetId);
+   explicit Planet(PlanetId planetId);
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet according to name
@@ -101,7 +101,7 @@ public:
    /// \param name Name of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   Planet(const std::string& name);
+   explicit Planet(const std::string& name);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the state vector of the planet at the the epoch
@@ -137,6 +137,9 @@ public:
    ////////////////////////////////////////////////////////////
    static std::string ConvertIdentifier2Name(PlanetId planetId);
 
+   std::string ToString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
+
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Initialize the planet of type planetId
@@ -166,6 +169,24 @@ private:
    PlanetId m_id; ///< Planet identifier
    static const PlanetDictionary m_planetInfo; // Planet info lookup table
 };
+
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates Planet
+///
+/// The planet is converted to a string by calling the
+/// Planet::ToString() method.
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const Planet& planet)
+{
+   stream << planet.ToString();
+   return stream;
+}
 
 ////////////////////////////////////////////////////////////
 /// \brief Stream operator overload

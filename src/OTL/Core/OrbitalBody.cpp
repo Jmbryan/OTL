@@ -138,6 +138,12 @@ const OrbitalElements& OrbitalBody::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
+const keplerian::Orbit& OrbitalBody::GetOrbit() const
+{
+   return m_orbit;
+}
+
+////////////////////////////////////////////////////////////
 void OrbitalBody::Propagate(const Time& timeDelta)
 {
    m_orbit.Propagate(timeDelta);
@@ -156,8 +162,8 @@ std::string OrbitalBody::ToString() const
 std::string OrbitalBody::ToDetailedString(std::string prefix) const
 {
    std::ostringstream os;
-   os << prefix << "Orbital Body:" << std::endl;
-   os << prefix << "   Name: " << m_name << std::endl;
+   os << prefix << "Name: " << GetName() << std::endl;
+   os << prefix << "Orbit:" << std::endl;
    os << m_orbit.ToDetailedString(prefix + "   ");
 
    return os.str();

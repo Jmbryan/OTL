@@ -35,6 +35,20 @@ typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 class OTL_CORE_API NaturalBody : public OrbitalBody
 {
 public:
+
+   struct PhysicalProperties
+   {
+      double mass;      ///< Mass
+      double mu;        ///< Gravitational parameter
+      double radius;    ///< Equatorial radius
+
+      PhysicalProperties();
+      PhysicalProperties(double _mass, double _mu, double _radius);
+
+      std::string ToString() const;
+      std::string ToDetailedString(std::string prefix = "") const;
+   };
+
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
@@ -69,12 +83,12 @@ public:
    virtual ~NaturalBody();
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the radius of the orbital body
+   /// \brief Set the physical properties of the natural body
    ///
-   /// \param radius Radius of the orbital body 
+   /// \param physicalProperties PhysicalProperties of the natural body
    ///
    ////////////////////////////////////////////////////////////
-   void SetRadius(double radius);
+   void SetPhysicalProperties(const PhysicalProperties& physicalProperties);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the epoch of the natural body
@@ -109,20 +123,20 @@ public:
    void UseEphemerisForPropagation(bool useEphemerisForPropagation);
        
    ////////////////////////////////////////////////////////////
-   /// \brief Get the radius of the orbital body
+   /// \brief Get the current epoch of the natural body
    ///
-   /// \return Radius of the orbital body 
-   ///
-   ////////////////////////////////////////////////////////////
-   double GetRadius() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the current epoch of the orbital body
-   ///
-   /// \return Current epoch of the orbital body
+   /// \return Current Epoch of the natural body
    ///
    ////////////////////////////////////////////////////////////
    const Epoch& GetEpoch() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the physical properties of the natural body
+   ///
+   /// \return PhysicalProperties of the natural body
+   ///
+   ////////////////////////////////////////////////////////////
+   const PhysicalProperties& GetPhysicalProperties() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital body in time
@@ -143,10 +157,28 @@ public:
    std::string ToDetailedString(std::string prefix = "") const;
 
 private:
-   double m_radius;                     ///< Radius of the orbital body
-   Epoch m_epoch;                       ///< Current epoch of the orbital body
-   EphemerisPointer m_ephemeris;        ///< Smart pointer to ephemeris database
-   bool m_useEphemerisForPropagation;   ///< If true, ephemeris is used to propagate orbit
+   PhysicalProperties m_physicalProperties;  ///< Physical properties of the natural body
+   Epoch m_epoch;                            ///< Current epoch of the natural body
+   EphemerisPointer m_ephemeris;             ///< Smart pointer to ephemeris database
+   bool m_useEphemerisForPropagation;        ///< If true, ephemeris is used to propagate orbit
 };
+
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates NaturalBody
+///
+/// The natural body is converted to a string by calling the
+/// NaturalBody::ToString() method.
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const NaturalBody& naturalBody)
+{
+   stream << naturalBody.ToString();
+   return stream;
+}
 
 } // namespace otl

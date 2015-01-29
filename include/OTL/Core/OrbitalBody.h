@@ -185,6 +185,8 @@ public:
    ////////////////////////////////////////////////////////////
    const OrbitalElements& GetOrbitalElements() const;
 
+   const keplerian::Orbit& GetOrbit() const;
+
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital body in time
    ///

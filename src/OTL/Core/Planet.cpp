@@ -101,19 +101,44 @@ std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
     return it->second.name;
 }
 
+std::string Planet::ToString() const
+{
+   std::ostringstream os;
+   os << "name=" << GetName() << " id=" << m_id << " epoch=" << GetEpoch();
+
+   return os.str();
+}
+
+std::string Planet::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Name: " << GetName() << std::endl;
+   os << prefix << "Id:   " << m_id << std::endl;
+   os << prefix << "Physical Properties:" << std::endl;
+   os << GetPhysicalProperties().ToDetailedString(prefix + "   ");
+   os << prefix << "Epoch:" << std::endl;
+   os << GetEpoch().ToDetailedString(prefix + "   ");
+   os << prefix << "Orbit:" << std::endl;
+   os << GetOrbit().ToDetailedString(prefix + "   ");
+
+   return os.str();
+}
+
 ////////////////////////////////////////////////////////////
 void Planet::Initialize(Planet::PlanetId planetId)
 {
-    PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
-    if (it == m_planetInfo.end())
-    {
-        OTL_ERROR() << "Invalid planet ID [" << planetId << "]";
-    }
+   PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
+   OTL_ERROR_IF(it == m_planetInfo.end(), "Invalid planet ID " << Bracket(planetId));
+
    const PlanetInfo& planetInfo = it->second;
 
    SetName(planetInfo.name);
-   SetRadius(planetInfo.radius);
-   SetMu(planetInfo.mu);
+   SetMu(ASTRO_MU_SUN);
+   SetPhysicalProperties(NaturalBody::PhysicalProperties(
+      planetInfo.mu / ASTRO_GRAVITATIONAL_CONSTANT,
+      planetInfo.mu,
+      planetInfo.radius));
+
 
    // Initialize ephemeris
    UseEphemerisForPropagation(true);
@@ -125,7 +150,7 @@ Planet::PlanetDictionary Planet::CreatePlanetInfo()
 {
    PlanetDictionary planetInfo;
 
-   //         Planet                            Name          Radius                 Gravitational Parameter    
+   //         Planet Id                         Name          Equatorial Radius      Gravitational Parameter    
    planetInfo[PlanetId::Mercury]   = PlanetInfo("Mercury",    ASTRO_RADIUS_MERCURY,  ASTRO_MU_MERCURY);
    planetInfo[PlanetId::Venus]     = PlanetInfo("Venus",      ASTRO_RADIUS_VENUS,    ASTRO_MU_VENUS);
    planetInfo[PlanetId::Earth]     = PlanetInfo("Earth",      ASTRO_RADIUS_EARTH,    ASTRO_MU_EARTH);

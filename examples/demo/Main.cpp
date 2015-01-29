@@ -75,6 +75,11 @@ int main()
     std::cout << naturalBody << std::endl;
     std::cout << naturalBody.ToDetailedString() << std::endl;
 
+    Planet planet("Earth");
+    planet.SetEpoch(Epoch::Gregorian(GregorianDateTime(2015, 1, 28, 20, 58, 0.0)));
+    std::cout << "Planet: " << Bracket(planet) << std::endl;
+    std::cout << "Planet:" << std::endl << planet.ToDetailedString("   ") << std::endl;
+
     auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
     auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday
     auto dayOfWeek2 = CalculateDayOfWeek(GregorianDateTime(1732, 6, 18));  // Wednesday

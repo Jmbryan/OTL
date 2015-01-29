@@ -142,14 +142,13 @@ std::string OrbitalElements::ToDetailedString(std::string prefix) const
    const double rad2deg = MATH_RAD_TO_DEG;
 
    std::ostringstream os;
-   os << prefix << "Orbital Elements:" << std::endl;
-   os << prefix << "   Semimajor Axis:              " << std::setprecision(6) << std::fixed << semiMajorAxis << std::endl;
-   os << prefix << "   Eccentricity:                " << std::setprecision(6) << std::fixed << eccentricity << std::endl;
-   os << prefix << "   True Anomaly:                " << std::setprecision(6) << std::fixed << trueAnomaly * rad2deg << " deg" << std::endl;
-   os << prefix << "   Inclination:                 " << std::setprecision(6) << std::fixed << inclination * rad2deg << " deg" << std::endl;
-   os << prefix << "   Arguement of Pericenter:     " << std::setprecision(6) << std::fixed << argOfPericenter * rad2deg << " deg" << std::endl;
-   os << prefix << "   Longitude of Ascending Node: " << std::setprecision(6) << std::fixed << lonOfAscendingNode * rad2deg << " deg" << std::endl;
-   
+   os << prefix << "Semimajor Axis:              " << std::setprecision(6) << std::fixed << semiMajorAxis << std::endl;
+   os << prefix << "Eccentricity:                " << std::setprecision(6) << std::fixed << eccentricity << std::endl;
+   os << prefix << "True Anomaly:                " << std::setprecision(6) << std::fixed << trueAnomaly * rad2deg << " deg" << std::endl;
+   os << prefix << "Inclination:                 " << std::setprecision(6) << std::fixed << inclination * rad2deg << " deg" << std::endl;
+   os << prefix << "Arguement of Pericenter:     " << std::setprecision(6) << std::fixed << argOfPericenter * rad2deg << " deg" << std::endl;
+   os << prefix << "Longitude of Ascending Node: " << std::setprecision(6) << std::fixed << lonOfAscendingNode * rad2deg << " deg" << std::endl;
+
    return os.str();
 }
 
