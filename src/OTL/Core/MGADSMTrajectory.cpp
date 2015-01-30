@@ -82,14 +82,14 @@ m_planetStateVector(StateVector())
 ///////////////////////////////////////////////////////////////////////////////////
 void MGADSMTrajectory::Evaluate(const std::vector<double>& states, std::vector<double>& deltaVs)
 {
-   OTL_ASSERT(states.size() == m_numStates, "Invalid state vector. Dimension mismatch");
+   OTL_ASSERT((int)states.size() == m_numStates, "Invalid state vector. Dimension mismatch");
    CalculateTrajectory(states, deltaVs);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 const std::vector<double>& MGADSMTrajectory::Evaluate(const std::vector<double>& states)
 {
-   OTL_ASSERT(states.size() == m_numStates, "Invalid state vector. Dimension mismatch");
+   OTL_ASSERT((int)states.size() == m_numStates, "Invalid state vector. Dimension mismatch");
    Evaluate(states, m_deltaVs);
    return m_deltaVs;
 }
@@ -470,9 +470,9 @@ void MGADSMTrajectory::Init()
    m_legsInitialized = false;
 
    // Default algorithms
-   m_propagator = std::make_unique<KeplerianPropagator>();
-   m_lambert = std::make_unique<LambertExponentialSinusoid>();
-   m_flyby = std::make_unique<FlybyUnpowered>();
+   m_propagator = std::make_shared<KeplerianPropagator>();
+   m_lambert = std::make_shared<LambertExponentialSinusoid>();
+   m_flyby = std::make_shared<FlybyUnpowered>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -740,7 +740,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
    // Handle Insertion event
    if (leg.insertion)
    {
-      double orbitTime = states[iState++];
+      //double orbitTime = states[iState++];
 
       // Orbit insertion
       double mu = planet.GetMu();
@@ -754,15 +754,14 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
       deltaVs.push_back(fabs(vper - vper2));
 
       // Orbit propagation
-      double a = leg.insertionOrbit.semiMajorAxis;
-      double T = 2.0 * MATH_PI * pow(a, 1.5) / sqrt(mu) / 24.0 / 3600.0;
-      double M2 = 2.0 * MATH_PI * orbitTime / T;
-      double E2 = 0.0;//SolveKeplersEquationElliptical(e, M2);
-      double TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(0.5 * E2));
+      //double a = leg.insertionOrbit.semiMajorAxis;
+      //double T = 2.0 * MATH_PI * pow(a, 1.5) / sqrt(mu) / 24.0 / 3600.0;
+      //double M2 = 2.0 * MATH_PI * orbitTime / T;
+      //double E2 = 0.0 * e * M2;//SolveKeplersEquationElliptical(e, M2);
+      //double TA = 2.0 * atan(sqrt((1.0 + e) / (1.0 - e)) * tan(0.5 * E2));
 
-      double r = h * h / mu / (1.0 + e * cos(TA));
-
-      double v1 = sqrt(mu / r * (1.0 + e));
+      //double r = h * h / mu / (1.0 + e * cos(TA));
+      //double v1 = sqrt(mu / r * (1.0 + e));
 
 
       // Orbit departure (if followed by a DSM)

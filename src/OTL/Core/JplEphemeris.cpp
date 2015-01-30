@@ -90,7 +90,9 @@ void JplEphemeris::VLoad()
 {
    try
    {
-      g_ephemerisDatabase = std::make_unique<DE405Ephemeris>(m_dataFilename); // Loads file in constructor
+      // Loads file in constructor; 
+      // make_unique not supported in c++1
+      g_ephemerisDatabase = std::unique_ptr<DE405Ephemeris>(new DE405Ephemeris(m_dataFilename));
    }
    catch (std::exception ex)
    {

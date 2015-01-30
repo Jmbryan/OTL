@@ -31,7 +31,7 @@ namespace otl
 class OTL_CORE_API Time
 {
 public:
-   struct AggregrateTime
+   struct OTL_CORE_API AggregrateTime
    {
       int years;
       int days;

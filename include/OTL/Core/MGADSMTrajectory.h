@@ -693,9 +693,9 @@ private:
    std::vector<double> m_states;                      ///< Vector of states
    std::vector<double> m_deltaVs;                     ///< Vector of computed deltaVs
 
-   std::unique_ptr<IPropagator> m_propagator;         ///< Propagation algorithm smart pointer
-   std::unique_ptr<ILambertAlgorithm> m_lambert;      ///< Lambert algorithm smart pointer
-   std::unique_ptr<IFlybyAlgorithm> m_flyby;          ///< Flyby algorithm smart pointer
+   std::shared_ptr<IPropagator> m_propagator;         ///< Propagation algorithm smart pointer
+   std::shared_ptr<ILambertAlgorithm> m_lambert;      ///< Lambert algorithm smart pointer
+   std::shared_ptr<IFlybyAlgorithm> m_flyby;          ///< Flyby algorithm smart pointer
 
    // Temporary variables used in CalculateTrajectory()
    Epoch m_initialEpoch;                              ///< Initial epoch of the active TrajectoryLeg. Used in CalculateTrajectory()

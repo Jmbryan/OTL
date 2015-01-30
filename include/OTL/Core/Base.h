@@ -155,11 +155,11 @@ inline double atanh(double x)
 
 /// Returns the cotangent of x
 inline double cot(double x)
-{ return 1.0; }
+{ return 1.0 / tan(x); }
 
 /// Returns the inverse cotangent of x
 inline double acot(double x)
-{ return 1.0; }
+{ return atan(1.0 / x); }
 
 /// Returns the modulo of the floating point number
 inline double Modulo(double dividend, double divisor)

@@ -26,6 +26,7 @@ enum class LogLevel
 class OTL_CORE_API LineLogger
 {
 public:
+   LineLogger(const LineLogger& other);
    LineLogger(const LoggerPointer& logger, const LogLevel& logLevel);
    ~LineLogger();
 
@@ -35,6 +36,9 @@ public:
       m_stream << what;
       return *this;
    }
+
+   const LoggerPointer& GetLogger() const { return m_logger; }
+   const LogLevel& GetLogLevel() const { return m_logLevel; }
 
 private:
    LoggerPointer m_logger;

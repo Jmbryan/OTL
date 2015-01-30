@@ -13,6 +13,15 @@ namespace otl
 Logger gLogger;
 
 ////////////////////////////////////////////////////////////
+LineLogger::LineLogger(const LineLogger& other) :
+m_logger(other.GetLogger()),
+m_logLevel(other.GetLogLevel())
+{
+
+}
+
+
+////////////////////////////////////////////////////////////
 LineLogger::LineLogger(const LoggerPointer& logger, const LogLevel& logLevel) :
 m_logger(logger),
 m_logLevel(logLevel)

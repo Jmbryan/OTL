@@ -65,17 +65,17 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
    double ecc = Ecc.norm();
 
    // Semimajor axis and semiparameter
-   double a, p;
+   double a/*, p*/;
    if (ecc != ASTRO_ECC_PARABOLIC) // non parabolic orbit
    {
       double m = 0.5 * SQR(v) - mu / r;
       a = -0.5 * mu / m;
-      p = a * (1.0 - SQR(ecc));
+      //p = a * (1.0 - SQR(ecc));
    }
    else
    {
       a = MATH_INFINITY;
-      p = SQR(h) / mu;
+      //p = SQR(h) / mu;
    }
 
    // Inclination

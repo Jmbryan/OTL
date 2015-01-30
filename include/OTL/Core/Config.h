@@ -32,8 +32,17 @@
 
 // Windows
 #define OTL_SYSTEM_WINDOWS
+
 #ifndef NOMINMAX
 #define NOMINMAX
+#endif
+
+#if defined(_MSC_VER)
+   #define OTL_COMPILER_MSVC
+#elif defined (__MINGW64__)
+   #define OTL_COMPILER_MINGW
+#else
+   #error This Windows compiler is not supported by OTL library
 #endif
 
 #elif defined(__APPLE__) && defined(__MACH__)

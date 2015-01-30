@@ -72,7 +72,8 @@ void JplApproximateEphemeris::LoadDataFile(const std::string& dataFilename)
 ////////////////////////////////////////////////////////////
 void JplApproximateEphemeris::VLoad()
 {
-   g_ephemerisDatabase = std::make_unique<JplApproximateEphemerisIO>(m_dataFilename);
+   // make_unique not supported in c++11
+   g_ephemerisDatabase = std::unique_ptr<JplApproximateEphemerisIO>(new JplApproximateEphemerisIO(m_dataFilename));
    try
    {
       g_ephemerisDatabase->Initialize();

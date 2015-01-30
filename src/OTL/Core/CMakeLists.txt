@@ -12,7 +12,6 @@ set(SRC
 	${INCROOT}/Ephemeris.h
 	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Epoch.h
-	${INCROOT}/Epoch.inl
 	${SRCROOT}/Exceptions.cpp	
 	${INCROOT}/Exceptions.h
 	${INCROOT}/Export.h

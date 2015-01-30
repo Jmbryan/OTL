@@ -74,7 +74,8 @@ void MpcorbEphemeris::LoadDataFile(const std::string& dataFilename)
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
 {
-   g_ephemerisDatabase = std::make_unique<MpcorbEphemerisIO>(m_dataFilename);
+   // make_unique not supported in c++11
+   g_ephemerisDatabase = std::unique_ptr<MpcorbEphemerisIO>(new MpcorbEphemerisIO(m_dataFilename));
    try
    {
       g_ephemerisDatabase->Initialize();

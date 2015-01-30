@@ -280,13 +280,13 @@ void KeplerianPropagator::PropagateK(const OrbitalElements& initialOrbitalElemen
    else // Parabolic
    {
       OTL_ERROR() << "Propagate for parabolic orbits is not implemented yet";
-      auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
-      double h = stateVector.position.cross(stateVector.velocity).norm();
-      double p = SQR(h) / mu;
-      double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
-      double M0 = B0 + pow(B0, 3.0) / 3.0;
-      double B = 0.0;// m_keplerParabolic.Evaluate(p, timeDelta);
-      TA = ConvertParabolicAnomaly2TrueAnomaly(B);
+      //auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
+      //double h = stateVector.position.cross(stateVector.velocity).norm();
+      //double p = SQR(h) / mu;
+      //double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
+      //double M0 = B0 + pow(B0, 3.0) / 3.0;
+      //double B = m_keplerParabolic.Evaluate(p, timeDelta);
+      //TA = ConvertParabolicAnomaly2TrueAnomaly(B);
    }
 
    finalOrbitalElements = initialOrbitalElements;
@@ -307,7 +307,6 @@ void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, doub
    double r0 = R.norm();
    double v0 = V.norm();
    double h = 0.5 * SQR(v0) - mu / r0;
-   double h1 = R.cross(V).norm();
    double hSquared = SQR(h);
 
    // Convert to orbital elements
@@ -351,7 +350,7 @@ KeplerianPropagator::CalculateUniversalVariableCurtis(double r0, double v0, doub
    // Create aliases for results
    UniversalVariableResult results;
    double& x = results.x;
-   double& r = results.r;
+   //double& r = results.r;
    double& psi = results.psi;
    double& c2 = results.stumpff.c2;
    double& c3 = results.stumpff.c3;

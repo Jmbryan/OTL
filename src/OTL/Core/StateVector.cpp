@@ -70,7 +70,6 @@ velocity({ vx, vy, vz })
 ////////////////////////////////////////////////////////////
 StateVector::StateVector(std::initializer_list<double> list)
 {
-   auto size = list.size();
    auto it = list.begin();
    int index = 0;
    for (; it != list.end() && index < 3; ++it, ++index)

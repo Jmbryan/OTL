@@ -8,31 +8,34 @@ macro(otl_set_option var default type docstring)
 	set(${var} ${${var}} CACHE ${type} ${docstring} FORCE)
 endmacro()
 
-# set a default build type if none was provided
-# this has to be done before the project() instruction!
-otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
-
-# enable c++11 (GCC compilers only)
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
-    ADD_DEFINITIONS(
-        -std=c++11
-    )
-endif()
-if (MACOSX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
-endif()	
-
 # project name
 project(OTL)
-
-# include the configuration file
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
 
 # setup version numbers
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
+
+# enable c++11 (GCC compilers only)
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+    #add_definitions(-std=c++11)
+endif()
+if (MACOSX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
+endif()
+
+# required to compile spdlog on mingw
+if (CMAKE_COMPILER_IS_GNUCXX)
+	add_definitions(-D_WIN32_WINNT=0x600)
+endif()	
+
+# include the configuration file
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
+
+# set a default build type if none was provided
+# this has to be done before the project() instruction!
+otl_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
 # add an option for choosing the build type
 otl_set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build OTL as shared libraries, FALSE to build it as static libraries")
