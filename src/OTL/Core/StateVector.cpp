@@ -30,7 +30,7 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 StateVector::StateVector() :
-position({ 0.0, 0.0, 0.0 }), velocity({ 0.0, 0.0, 0.0 })
+position({0.0, 0.0, 0.0}), velocity({0.0, 0.0, 0.0})
 {
 
 }
@@ -112,6 +112,12 @@ StateVector& StateVector::operator =(const StateVector&& other)
       velocity = std::move(other.velocity);
    }
    return *this;
+}
+
+////////////////////////////////////////////////////////////
+bool StateVector::IsZero() const
+{
+   return (position.isZero() && velocity.isZero());
 }
 
 ////////////////////////////////////////////////////////////

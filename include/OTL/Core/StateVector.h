@@ -105,6 +105,8 @@ struct OTL_CORE_API StateVector
    ////////////////////////////////////////////////////////////
    StateVector& operator =(const StateVector&& other);
 
+   bool IsZero() const;
+
    ////////////////////////////////////////////////////////////
    /// \brief Converts the state vector to a single-line formatted string
    ///

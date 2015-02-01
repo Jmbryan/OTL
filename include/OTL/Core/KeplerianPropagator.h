@@ -29,7 +29,7 @@ namespace otl
 namespace keplerian
 {
 
-class OTL_CORE_API KeplerianPropagator : public IPropagator
+class OTL_CORE_API KeplerianPropagator : public otl::IPropagator
 {
 public:
    ////////////////////////////////////////////////////////////

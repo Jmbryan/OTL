@@ -523,12 +523,12 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Set the type of Propagation algorithm to be used
    ///
-   /// The default type is PropagateType::StateVector.
+   /// The default type is PropagatorType::Keplerian.
    /// 
    /// \param type Type of propagation algorithm
    ///
    ////////////////////////////////////////////////////////////
-   void SetPropagateType(PropagateType type);
+   void SetPropagateType(PropagatorType type);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the type of Lambert algorithm to be used
@@ -693,7 +693,7 @@ private:
    std::vector<double> m_states;                      ///< Vector of states
    std::vector<double> m_deltaVs;                     ///< Vector of computed deltaVs
 
-   std::shared_ptr<IPropagator> m_propagator;         ///< Propagation algorithm smart pointer
+   std::shared_ptr<otl::IPropagator> m_propagator;    ///< Propagation algorithm smart pointer
    std::shared_ptr<ILambertAlgorithm> m_lambert;      ///< Lambert algorithm smart pointer
    std::shared_ptr<IFlybyAlgorithm> m_flyby;          ///< Flyby algorithm smart pointer
 

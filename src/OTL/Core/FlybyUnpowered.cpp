@@ -58,7 +58,7 @@ void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
 
    // Flyby hyperbola
    double radiusOfPeriapsis = naturalBody.GetPhysicalProperties().radius + altitude;
-   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / naturalBody.GetMu();
+   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / naturalBody.GetPhysicalProperties().mu;
 
    double turnAngle = 2.0 * asin(1.0 / eccentricity);
 

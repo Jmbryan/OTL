@@ -28,12 +28,12 @@
 namespace otl
 {
 
-namespace keplerian
-{
-
 // Forward declarations
 class IPropagator;
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
+
+namespace keplerian
+{
 
 class OTL_CORE_API Orbit
 {
@@ -110,34 +110,6 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void SetMu(double mu);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new position vector of the orbit
-   ///
-   /// The orbit radius is automatically updated.
-   ///
-   /// The orbital elements and orbit type are not updated
-   /// until the GetOrbitalElements(), GetOrbitType(),
-   /// IsType(), or PropagateToTrueAnomaly() functions are called.
-   ///
-   /// \param position New position vector of the orbit
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetPosition(const Vector3d& position);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new velocity vector of the orbit
-   ///
-   /// The orbit radius is automatically updated.
-   ///
-   /// The orbital elements and orbit type are not updated
-   /// until the GetOrbitalElements(), GetOrbitType(),
-   /// IsType(), or PropagateToTrueAnomaly() functions are called.
-   ///
-   /// \param velocity New velocity vector of the orbit
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetVelocity(const Vector3d& velocity);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set thea new state vector of the orbit
@@ -261,30 +233,60 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit in time
    ///
-   /// The time can be positive or negative for
-   /// forewards and backwards propagation respectively.
+   /// This function dispatches to the following sub-functions
+   /// depending on the value of PropagationType:
+   /// \li PropagateOrbitalElements()
+   /// \li PropagateStateVector()
    ///
-   /// This function uses the internal propagation algorithm
-   /// specified using the SetPropagator() method. 
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
+   ///
+   /// \param timeDelta Time object which specifies the propagation duration
+   /// \param propagationType PropagationType which determines whether the orbital elements or state vector is propagated
+   ///
+   ////////////////////////////////////////////////////////////
+   void Propagate(const Time& timeDelta, const PropagationType& propagationType = PropagationType::OrbitalElements);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbit in time using the state vector
+   ///
+   /// This function propagates the orbital elements using the
+   /// internal propagation algorithm. The propagation algorithm
+   /// defaults to KeplerianPropagator but can be specified by
+   /// calling the SetPropagator() method.
+   ///
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
    ///
    /// \param timeDelta Time object which specifies the propagation duration
    ///
    ////////////////////////////////////////////////////////////
-   void Propagate(const Time& timeDelta);
+   void PropagateOrbitalElements(const Time& timeDelta);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbit in time using the state vector
+   ///
+   /// This function propagates the state vector using the
+   /// internal propagation algorithm. The propagation algorithm
+   /// defaults to KeplerianPropagator but can be specified by
+   /// calling the SetPropagator() method.
+   ///
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
+   ///
+   /// \param timeDelta Time object which specifies the propagation duration
+   ///
+   ////////////////////////////////////////////////////////////  
+   void PropagateStateVector(const Time& timeDelta);
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit to the true anomaly
    ///
    /// The true anomaly is the only orbital element that varies with
    /// time (assuming a non-perturbed orbit). This function
-   /// propagates the orbit to the desired true anomaly either
-   /// in the Prograde or Retrograde direction.
+   /// propagates the orbit to the desired true anomaly.
    /// 
    /// \param trueAnomaly Desired true anomaly of the orbit
-   /// \param direction Enumerator which specifies the propagation direction (Prograde or Retrograde)
    ///
    ////////////////////////////////////////////////////////////
-   void PropagateToTrueAnomaly(double trueAnomaly, const Direction& direction);
+   void PropagateToTrueAnomaly(double trueAnomaly);
 
    void UseStateVectorForStringOutput(bool useStateVectorForStringOutput);
 
@@ -302,7 +304,7 @@ public:
    ///
    /// where [OrbitalElements] is the result of calling the
    /// OrbitalElements::ToString() method. The state vector
-   /// can be displayed instead, by calling
+   /// can be displayed instead, by calling the function
    /// UseStateVectorForStringOutput(true).
    ///
    /// \see OrbitalElements::ToString(), StateVector::ToString()
@@ -355,6 +357,15 @@ private:
    void UpdateStateVector() const;
    
    ////////////////////////////////////////////////////////////
+   /// \brief Update the reference state vector of the orbit
+   ///
+   /// This function re-computes the reference state vector of
+   /// the orbit based on the reference orbital elements.
+   ///
+   ////////////////////////////////////////////////////////////
+   void UpdateReferenceStateVector() const;
+
+   ////////////////////////////////////////////////////////////
    /// \brief Update the orbital elements of the orbit
    ///
    /// This function re-computes the orbital elements of the orbit
@@ -362,6 +373,15 @@ private:
    ///
    ////////////////////////////////////////////////////////////
    void UpdateOrbitalElements() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Update the reference orbital elements of the orbit
+   ///
+   /// This function re-computes the reference orbital elements of
+   /// the orbit based on the reference state vector.
+   ///
+   ////////////////////////////////////////////////////////////
+   void UpdateReferenceOrbitalElements() const;
    
    ////////////////////////////////////////////////////////////
    /// \brief Update the radius of the orbit
@@ -382,15 +402,20 @@ private:
    void UpdateOrbitType() const;
 
 private:
-   bool m_useStateVectorForStringOutput;        ///< If TRUE, the ToString() method will print the state vector. By default, orbital elements are printed.
-   double m_mu;                                 ///< Gravitational parameter of the central body (kg^2/m^3)
-   mutable double m_orbitRadius;                ///< Radius of the orbit (m)
-   mutable Type m_orbitType;                    ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
-   mutable StateVector m_stateVector;           ///< State Vector representing the orbit
-   mutable OrbitalElements m_orbitalElements;   ///< Orbital Elements representing the orbit  
-   mutable bool m_stateVectorDirty;             ///< Flag which when TRUE indicates the state vector needs to be updated
-   mutable bool m_orbitalElementsDirty;         ///< Flag which when TRUE indicates the orbital elements need to be updated
-   PropagatorPointer m_propagator;              ///< Pointer to the propagation algorithm
+   bool m_useStateVectorForStringOutput;                 ///< If TRUE, the ToString() method will print the state vector. By default, orbital elements are printed.
+   double m_mu;                                          ///< Gravitational parameter of the central body (kg^2/m^3)
+   Time m_elapsedPropagationTime;                        ///< Total elapsed propagation time since the reference orbital elements or state vector
+   PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
+   mutable double m_orbitRadius;                         ///< Radius of the orbit (m)
+   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   mutable OrbitalElements m_orbitalElements;            ///< Orbital Elements representing the orbit
+   mutable OrbitalElements m_referenceOrbitalElements;   ///< Reference orbital elements
+   mutable StateVector m_stateVector;                    ///< State Vector representing the orbit
+   mutable StateVector m_referenceStateVector;           ///< Reference state vector
+   mutable bool m_orbitalElementsDirty;                  ///< Flag which when TRUE indicates the orbital elements need to be updated
+   mutable bool m_referenceOrbitalElementsDirty;         ///< Flag which when TRUE indicates the reference orbital elements need to be updated
+   mutable bool m_stateVectorDirty;                      ///< Flag which when TRUE indicates the state vector needs to be updated
+   mutable bool m_referenceStateVectorDirty;             ///< Flag which when TRUE indicates the reference state vector needs to be updated
 };
 
 ////////////////////////////////////////////////////////////

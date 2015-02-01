@@ -37,48 +37,38 @@ namespace keplerian
 Orbit::Orbit() :
 m_useStateVectorForStringOutput(false),
 m_mu(0.0),
+m_elapsedPropagationTime(),
+m_propagator(new KeplerianPropagator()),
 m_orbitRadius(0.0),
 m_orbitType(Type::Invalid),
-m_stateVectorDirty(false),
+m_orbitalElements(),
+m_referenceOrbitalElements(),
+m_stateVector(),
+m_referenceStateVector(),
 m_orbitalElementsDirty(false),
-m_propagator(new KeplerianPropagator())
+m_referenceOrbitalElementsDirty(false),
+m_stateVectorDirty(false),
+m_referenceStateVectorDirty(false)
 {
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu) :
-m_useStateVectorForStringOutput(false),
-m_mu(mu),
-m_orbitRadius(0.0),
-m_orbitType(Type::Invalid),
-m_stateVectorDirty(false),
-m_orbitalElementsDirty(false),
-m_propagator(new KeplerianPropagator())
+Orbit()
 {
+   SetMu(mu);
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu, const StateVector& stateVector) :
-m_useStateVectorForStringOutput(false),
-m_mu(mu),
-m_orbitRadius(0.0),
-m_orbitType(Type::Invalid),
-m_stateVectorDirty(false),
-m_orbitalElementsDirty(false),
-m_propagator(new KeplerianPropagator())
+Orbit(mu)
 {
    SetStateVector(stateVector);
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit(double mu, const OrbitalElements& orbitalElements) :
-m_useStateVectorForStringOutput(false),
-m_mu(mu),
-m_orbitRadius(0.0),
-m_orbitType(Type::Invalid),
-m_stateVectorDirty(false),
-m_orbitalElementsDirty(false),
-m_propagator(new KeplerianPropagator())
+Orbit(mu)
 {
    SetOrbitalElements(orbitalElements);
 }
@@ -95,53 +85,41 @@ void Orbit::SetMu(double mu)
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::SetPosition(const Vector3d& position)
-{
-    if (m_stateVectorDirty)
-    {
-        UpdateStateVector();
-    }
-
-    m_stateVector.position = position;
-    UpdateOrbitRadius();
-
-    m_stateVectorDirty = false;
-    m_orbitalElementsDirty = true;
-}
-
-////////////////////////////////////////////////////////////
-void Orbit::SetVelocity(const Vector3d& velocity)
-{
-    if (m_stateVectorDirty)
-    {
-        UpdateStateVector();
-    }
-
-    m_stateVector.velocity = velocity;
-    UpdateOrbitRadius();
-
-    m_stateVectorDirty = false;
-    m_orbitalElementsDirty = true;
-}
-
-////////////////////////////////////////////////////////////
 void Orbit::SetStateVector(const StateVector& stateVector)
 {
    m_stateVector = stateVector;
+   m_referenceStateVector = stateVector;
    UpdateOrbitRadius();
 
+   // Reset elapsed propagation time
+   m_elapsedPropagationTime = Time();
+
+   // State vectors are clean
    m_stateVectorDirty = false;
+   m_referenceStateVectorDirty = false;
+
+   // Orbital elements are dirty
    m_orbitalElementsDirty = true;
+   m_referenceOrbitalElementsDirty = true;
 }
 
 ////////////////////////////////////////////////////////////
 void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
 {
    m_orbitalElements = orbitalElements;
+   m_referenceOrbitalElements = orbitalElements;  
    UpdateOrbitType();
 
+   // Reset elapsed propagation time
+   m_elapsedPropagationTime = Time();
+
+   // Orbital elements are clean
+   m_orbitalElementsDirty = false;
+   m_referenceOrbitalElementsDirty = false;
+
+   // State vectors are dirty
    m_stateVectorDirty = true;
-   m_orbitalElementsDirty = false; 
+   m_referenceOrbitalElementsDirty = true;   
 }
 
 ////////////////////////////////////////////////////////////
@@ -219,24 +197,85 @@ bool Orbit::IsType(Type orbitType) const
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(const Time& timeDelta)
+void Orbit::Propagate(const Time& timeDelta, const PropagationType& propagationType)
 {
    if (m_propagator)
    {
-      auto newStateVector = m_propagator->Propagate(m_stateVector, timeDelta, m_mu);
-      SetStateVector(newStateVector);
+      switch (propagationType)
+      {
+      case PropagationType::OrbitalElements:
+         PropagateOrbitalElements(timeDelta);
+         break;
+
+      case PropagationType::StateVector:
+         PropagateStateVector(timeDelta);
+         break;
+
+      default:
+         OTL_ERROR() << "Failed to propagate orbit. Invalid propagation type";
+         break;
+      }
    }
    else
    {
-       OTL_ERROR() << "Propagator pointer invalid";
+       OTL_ERROR() << "Failed to propagate orbit. Invalid propagator pointer";
    }
 }
 
-////////////////////////////////////////////////////////////
-void Orbit::PropagateToTrueAnomaly(double trueAnomaly, const Orbit::Direction& direction)
+void Orbit::PropagateOrbitalElements(const Time& timeDelta)
 {
+   // Update the elapsed time since the reference state vector
+   m_elapsedPropagationTime += timeDelta;
+
+   // Update the reference orbital elements if they are out-of-date
+   if (m_referenceOrbitalElementsDirty)
+   {
+      UpdateReferenceOrbitalElements();
+   }
+
+   // Propagate the orbital elements and update orbit type
+   m_orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, m_elapsedPropagationTime, m_mu);
+   UpdateOrbitType();
+
+   // Update flags
+   m_orbitalElementsDirty = false;
+   m_stateVectorDirty = true;
+}
+
+void Orbit::PropagateStateVector(const Time& timeDelta)
+{
+   // Update the elapsed time since the reference state vector
+   m_elapsedPropagationTime += timeDelta;
+
+   // Update the reference state vector if it is out-of-date
+   if (m_referenceStateVectorDirty)
+   {
+      UpdateReferenceStateVector();
+   }
+
+   // Propagate the state vector and update orbit radius
+   m_stateVector = m_propagator->Propagate(m_referenceStateVector, m_elapsedPropagationTime, m_mu);
+   UpdateOrbitRadius();
+
+   // Update flags
+   m_stateVectorDirty = false;
+   m_orbitalElementsDirty = true;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
+{
+   // Update the orbital elements if they are out-of-date
+   if (m_orbitalElementsDirty)
+   {
+      UpdateOrbitalElements();
+   }
+
+   // Update the true anomaly
    OrbitalElements newOrbitalElements = m_orbitalElements;
    newOrbitalElements.trueAnomaly = trueAnomaly;
+
+   // Set the final orbital elements
    SetOrbitalElements(newOrbitalElements);
 }
 
@@ -282,8 +321,15 @@ std::string Orbit::ToDetailedString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 void Orbit::UpdateStateVector() const
 {
-   m_stateVector = ConvertOrbitalElements2StateVector(m_orbitalElements, m_mu);
+   m_stateVector = ConvertOrbitalElements2StateVector(m_orbitalElements, m_mu); 
    m_stateVectorDirty = false;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateReferenceStateVector() const
+{
+   m_referenceStateVector = ConvertOrbitalElements2StateVector(m_referenceOrbitalElements, m_mu);
+   m_referenceStateVectorDirty = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -291,6 +337,13 @@ void Orbit::UpdateOrbitalElements() const
 {
    m_orbitalElements = ConvertStateVector2OrbitalElements(m_stateVector, m_mu);
    m_orbitalElementsDirty = false;
+}
+
+////////////////////////////////////////////////////////////
+void Orbit::UpdateReferenceOrbitalElements() const
+{
+   m_referenceOrbitalElements = ConvertStateVector2OrbitalElements(m_referenceStateVector, m_mu);
+   m_referenceOrbitalElementsDirty = false;
 }
 
 ////////////////////////////////////////////////////////////

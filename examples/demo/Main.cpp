@@ -36,8 +36,26 @@ int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);
 
-#define IsNANorINF(x) ((x * 0) != 0)
+    if (true)
+    {
+       auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>();
 
+       MpcorbPlanet ceres2("Ceres");
+
+       OrbitalBody2 ceres("Ceres", mpcorbEphemeris, Epoch::Today());
+       ceres.QueryEphemeris(Time::Days(10));
+       auto svPallas = ceres.GetStateVector();
+
+       auto properties = ceres.GetPhysicalProperties();
+       auto sv = ceres.GetStateVector();
+
+       ceres.Propagate(Time::Days(10)); // calls IPropagator
+       sv = ceres.GetStateVector();
+
+    }
+
+#define IsNANorINF(x) ((x * 0) != 0)
+    
     GregorianDateTime date;
     date.day = 15;
     date.month = 2;

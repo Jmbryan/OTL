@@ -30,10 +30,8 @@ namespace otl
 {
 
 // Forward declarations
-namespace keplerian {
 class IPropagator;
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
-}
 
 class OTL_CORE_API MpcorbEphemeris : public IEphemeris
 {
@@ -75,7 +73,7 @@ public:
    /// \param propagator Smart pointer to the propagator
    ///
    ////////////////////////////////////////////////////////////
-   void SetPropagator(const keplerian::PropagatorPointer& propagator);
+   void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
    /// \brief Load the ephemeris data file into memory
@@ -166,7 +164,7 @@ protected:
 
 private:
    std::string m_dataFilename;                  ///< Full path to the ephemeris data file
-   keplerian::PropagatorPointer m_propagator;   ///< Smart pointer to propagator algorithm for propagating the reference orbits
+   PropagatorPointer m_propagator;              ///< Smart pointer to propagator algorithm for propagating the reference orbits
    Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
    StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
    OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements

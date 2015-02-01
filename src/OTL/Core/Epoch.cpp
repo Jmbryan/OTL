@@ -266,6 +266,11 @@ Epoch operator -(const Epoch& left, const Time& right)
    return Epoch::MJD2000(left.GetMJD2000() - right.Days());
 }
 
+Time operator -(const Epoch&left, const Epoch& right)
+{
+   return Time::Days(left.GetMJD2000() - right.GetMJD2000());
+}
+
 ////////////////////////////////////////////////////////////
 double ConvertMJD2JD(double modifiedJulianDate)
 {

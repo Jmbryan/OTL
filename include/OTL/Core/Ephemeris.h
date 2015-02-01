@@ -32,6 +32,7 @@ namespace otl
 class Epoch;
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
+struct PhysicalProperties;
 
 
 class OTL_CORE_API IEphemeris
@@ -100,6 +101,8 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
+
+    PhysicalProperties GetPhysicalProperties(const std::string& name);
 
 protected:
     virtual void VLoad() = 0;

@@ -39,6 +39,13 @@ seconds(_seconds)
 }
 
 ////////////////////////////////////////////////////////////
+Time::Time() :
+m_seconds(0.0)
+{
+
+}
+
+////////////////////////////////////////////////////////////
 Time Time::Seconds(double seconds)
 {
    Time time;
@@ -84,6 +91,12 @@ Time Time::Aggregrate(const AggregrateTime& aggregrateTime)
    Time time;
    time.SetAggregrate(aggregrateTime);
    return time;
+}
+
+////////////////////////////////////////////////////////////
+Time Time::Infinity()
+{
+   return Time::Seconds(MATH_INFINITY);
 }
 
 ////////////////////////////////////////////////////////////
@@ -202,6 +215,18 @@ void Time::AddDays(double days)
 void Time::AddYears(double years)
 {
    m_seconds += years * MATH_YEAR_TO_SEC;
+}
+
+////////////////////////////////////////////////////////////
+bool Time::IsZero() const
+{
+   return IsApprox(m_seconds, 0.0);
+}
+
+////////////////////////////////////////////////////////////
+bool Time::IsInfinity() const
+{
+   return IsApprox(fabs(m_seconds), MATH_INFINITY);
 }
 
 ////////////////////////////////////////////////////////////

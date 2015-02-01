@@ -101,6 +101,7 @@ std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
     return it->second.name;
 }
 
+////////////////////////////////////////////////////////////
 std::string Planet::ToString() const
 {
    std::ostringstream os;
@@ -109,6 +110,7 @@ std::string Planet::ToString() const
    return os.str();
 }
 
+////////////////////////////////////////////////////////////
 std::string Planet::ToDetailedString(std::string prefix) const
 {
    std::ostringstream os;

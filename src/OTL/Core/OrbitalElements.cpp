@@ -31,12 +31,12 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 OrbitalElements::OrbitalElements() :
-semiMajorAxis(),
-eccentricity(),
-trueAnomaly(),
-inclination(),
-argOfPericenter(),
-lonOfAscendingNode()
+semiMajorAxis(0.0),
+eccentricity(0.0),
+trueAnomaly(0.0),
+inclination(0.0),
+argOfPericenter(0.0),
+lonOfAscendingNode(0.0)
 {
 }
 
@@ -118,6 +118,17 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
       lonOfAscendingNode = std::move(other.lonOfAscendingNode);
    }
    return *this;
+}
+
+////////////////////////////////////////////////////////////
+bool OrbitalElements::IsZero() const
+{
+   return !(IsApprox(semiMajorAxis, 0.0) &&
+            IsApprox(eccentricity, 0.0) &&
+            IsApprox(trueAnomaly, 0.0) &&
+            IsApprox(inclination, 0.0) &&
+            IsApprox(argOfPericenter, 0.0) &&
+            IsApprox(lonOfAscendingNode, 0.0));
 }
 
 ////////////////////////////////////////////////////////////

@@ -24,9 +24,153 @@
 
 #pragma once
 #include <OTL/Core/Orbit.h>
+#include <OTL/Core/Epoch.h>
 
 namespace otl
 {
+
+class IPropagator;
+typedef std::shared_ptr<IPropagator> PropagatorPointer;
+
+class IEphemeris;
+typedef std::shared_ptr<IEphemeris> EphemerisPointer;
+
+struct PhysicalProperties
+{
+   double mass;      ///< Mass
+   double mu;        ///< Gravitational parameter
+   double radius;    ///< Equatorial radius
+
+   PhysicalProperties();
+   PhysicalProperties(double _mass, double _mu, double _radius);
+
+   //std::string ToString() const;
+   //std::string ToDetailedString(std::string prefix = "") const;
+};
+
+class OrbitalBody2;
+//class MpcorbPlanet : public OrbitalBody2
+//{
+//public:
+//   explicit MpcorbPlanet(const std::string& name,
+//                         const Epoch& epoch = Epoch::MJD2000(0.0));
+//
+//};
+
+//class SpiceBody : public OrbitalBody2
+//{
+//public:
+//   SpiceBody(const std::string& name);
+//};
+
+class OrbitalBody2
+{
+public:
+   OrbitalBody2();
+
+   OrbitalBody2(const std::string& name,
+                const PhysicalProperties& physicalProperties,
+                double gravitationalParameterCentralBody,
+                const StateVector& stateVector,
+                const Epoch& epoch = Epoch::MJD2000(0.0));
+
+   OrbitalBody2(const std::string& name,
+                const PhysicalProperties& physicalProperties,
+                double gravitationalParameterCentralBody,
+                const OrbitalElements& orbitalElements,
+                const Epoch& epoch = Epoch::MJD2000(0.0));
+
+   virtual ~OrbitalBody2();
+
+   void SetEphemeris(const EphemerisPointer& ephemeris);
+   void SetPropagator(const PropagatorPointer& propagator);
+   void SetMaxPropagationTime(const Time& threshold);
+
+   const std::string& GetName() const;
+   const PhysicalProperties& GetPhysicalProperties() const;
+   const Epoch& GetEpoch() const;
+   double GetGravitationalParameterCentralBody() const;
+   const Vector3d& GetPosition() const;
+   const Vector3d& GetVelocity() const;
+   const StateVector& GetStateVector() const;
+   const OrbitalElements& GetOrbitalElements() const;
+   const keplerian::Orbit& GetOrbit() const;
+   double GetOrbitRadius() const;
+   keplerian::Orbit::Type GetOrbitType() const;
+
+   bool IsOrbitType(keplerian::Orbit::Type orbitType) const;
+
+   void Propagate(const Time& timeDelta, const PropagationType& propagationType = PropagationType::OrbitalElements);
+   void PropagateTo(const Epoch& epoch, const PropagationType& propagationType = PropagationType::OrbitalElements);
+
+   void PropagateOrbitalElements(const Time& timeDelta);
+   void PropagateOrbitalElementsTo(const Epoch& epoch);
+
+   void PropagateStateVector(const Time& timeDelta);
+   void PropagateStateVectorTo(const Epoch& epoch);
+
+   void QueryEphemeris(const Epoch& epoch);
+   void QueryOrbitalElements(const Epoch& epoch);
+   void QueryStateVector(const Epoch& epoch);
+   void QueryPhysicalProperties();
+
+   std::string ToString() const;
+   std::string ToDetailedString(std::string prefix = "") const;
+
+private:
+   virtual void VPropagate(const Time& timeDelta, const PropagationType& propagationType);
+   virtual void VPropagateOrbitalElements(const Time& timeDelta);
+   virtual void VPropagateStateVector(const Time& timeDelta);
+   virtual void VQueryEphemeris(const Epoch& epoch);
+
+   bool IsEphemerisUpdateRequired();
+   void PropagateEpoch(const Time& timeDelta);
+   void PropagateEpochTo(const Epoch& epoch);
+
+private:
+   std::string m_name;                       ///< Name of the orbital body
+   PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
+   Epoch m_epoch;                            ///< Current epoch of the orbital body
+   keplerian::Orbit m_orbit;                 ///< Keplerian orbit of the orbital body
+   EphemerisPointer m_ephemeris;             ///< Smart pointer to ephemeris database
+   Time m_maxPropagationTime;                ///< Max propagation time before next ephemeris update
+   Time m_elapsedPropagationTime;            ///< Elapsed propagation time since last ephemeris update
+};
+
+inline void OrbitalBody2::Propagate(const Time& timeDelta, const PropagationType& propagationType)
+{ 
+   PropagateEpoch(timeDelta);
+   VPropagate(timeDelta, propagationType);   
+}
+inline void OrbitalBody2::PropagateOrbitalElements(const Time& timeDelta)
+{
+   PropagateEpoch(timeDelta);
+   VPropagateOrbitalElements(timeDelta);
+}
+inline void OrbitalBody2::PropagateStateVector(const Time& timeDelta)
+{
+   PropagateEpoch(timeDelta);
+   VPropagateStateVector(timeDelta);
+}
+inline void OrbitalBody2::PropagateTo(const Epoch& epoch, const PropagationType& propagationType)
+{
+   PropagateEpochTo(epoch);
+   VPropagate(epoch - m_epoch, propagationType);
+}
+inline void OrbitalBody2::PropagateOrbitalElementsTo(const Epoch& epoch)
+{
+   PropagateEpochTo(epoch);
+   VPropagateOrbitalElements(epoch - m_epoch);
+}
+inline void OrbitalBody2::PropagateStateVectorTo(const Epoch& epoch)
+{
+   PropagateEpochTo(epoch);
+   VPropagateStateVector(epoch - m_epoch);
+}
+inline void OrbitalBody2::QueryEphemeris(const Epoch& epoch)
+{
+   VQueryEphemeris(epoch);
+}
 
 class OTL_CORE_API OrbitalBody
 {
@@ -229,6 +373,8 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
+
+   void SetPropagator(const PropagatorPointer& propagator);
 
    std::string ToString() const;
    std::string ToDetailedString(std::string prefix = "") const;

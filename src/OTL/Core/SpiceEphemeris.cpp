@@ -108,9 +108,26 @@ void SpiceEphemeris::VInitialize()
    g_bodyDictionary["Mercury"] = "MERCURY";
    g_bodyDictionary["Earth"] = "EARTH";
 
-   m_referenceFrame = "J2000";
+   m_referenceFrame = "J2000"; // "ECLIPJ2000" tudat
    m_abberationCorrections = "NONE";
    m_observerBody = "SUN";
+
+   // Example: ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/mostused.html#D
+   // SpiceInt n;
+   // SpiceDouble gm;
+   // SpiceDouble et;
+   // SpiceDouble state[6];
+   // SpiceDouble lt;
+   // SpiceDouble elts[8];
+   //
+   // load kernels: LSK, Mex trajectory SPK, and gravity PCK
+   // furnsh_c("naif0008.tls");
+   // furnsh_c("ORMM__050901000000_00165.BSP");
+   // furnsh_c("DE403-MASSES.TPC");
+   // bodvrd_c("MARS", "GM", 1, &n, gm);                          // reterives GM for Mars
+   // str2et_c("2005 SEP 02 04:50:45", &et);                      // convert UTC to ET
+   // spkezr_c("MEX", et, "MARSIAU", "NONE", "MARS", state, &lt); // compute state of MEX at given UTC
+   // oscelt_c(state, et, gm, etls);                              // converts state vector to orbital elements
 }
 
 ////////////////////////////////////////////////////////////

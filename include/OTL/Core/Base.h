@@ -51,7 +51,7 @@ enum class EphemerisType
    Count
 };
 
-enum class PropagateType
+enum class PropagatorType
 {
    Invalid = -1,
    Keplerian,
@@ -72,6 +72,17 @@ enum class FlybyType
    Unpowered,
    Powered,
    Count
+};
+
+////////////////////////////////////////////////////////////
+/// \brief Propagation types
+////////////////////////////////////////////////////////////
+enum class PropagationType
+{
+   Invalid = -1,     ///< Invalid propagation type
+   OrbitalElements,  ///< Propagate the orbital elements
+   StateVector,      ///< Propagate the state vector
+   Count             ///< Number of propagation types
 };
 
 // Math constants

@@ -390,18 +390,18 @@ void MGADSMTrajectory::SetStateVector(const std::vector<double>& states)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::SetPropagateType(PropagateType type)
+void MGADSMTrajectory::SetPropagateType(PropagatorType type)
 {
    switch (type)
    {
-      case PropagateType::Keplerian:
-         m_propagator = std::unique_ptr<IPropagator>(new KeplerianPropagator());
-         break;
+   case PropagatorType::Keplerian:
+      m_propagator = std::unique_ptr<otl::IPropagator>(new KeplerianPropagator());
+      break;
 
-      case PropagateType::Invalid:
-      default:
-         OTL_ASSERT(false, "Can't set Propagate algorithm. Uknown or invalid type.");
-         break;
+   case PropagatorType::Invalid:
+   default:
+      OTL_ASSERT(false, "Can't set Propagate algorithm. Uknown or invalid type.");
+      break;
    }
 }
 

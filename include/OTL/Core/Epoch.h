@@ -126,6 +126,9 @@ public:
    ////////////////////////////////////////////////////////////
    static Epoch Gregorian(const GregorianDateTime& dateTime);
 
+   static Epoch Today();
+   static Epoch Now();
+
    ////////////////////////////////////////////////////////////
    /// \brief Set the epoch to the Julian Date.
    ///
@@ -397,7 +400,7 @@ OTL_CORE_API Epoch operator +(const Epoch& left, const Time& right);
 /// \brief Overload of binary operator -
 /// \relates Epoch
 ///
-/// This operator subratcs the Time from the Epoch,
+/// This operator subtracts the Time from the Epoch,
 /// and assigns the result to a new Epoch.
 ///
 /// \param left  Left operand (a Epoch)
@@ -407,6 +410,21 @@ OTL_CORE_API Epoch operator +(const Epoch& left, const Time& right);
 ///
 ////////////////////////////////////////////////////////////
 OTL_CORE_API Epoch operator -(const Epoch& left, const Time& right);
+
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator -
+/// \relates Epoch
+///
+/// This operator subtracts one Epoch from another,
+/// and assigns the result to a Time.
+///
+/// \param left  Left operand (a Epoch)
+/// \param right Right operand (a Epoch)
+///
+/// \return Instance of Time
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Time operator -(const Epoch&left, const Epoch& right);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting from Modified Julian Date to Julian Date.

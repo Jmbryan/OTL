@@ -28,9 +28,6 @@
 namespace otl
 {
 
-namespace keplerian
-{
-
 class OTL_CORE_API IPropagator
 {
 public:
@@ -112,13 +109,12 @@ protected:
    virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;
 };
 
-} // namespace keplerian
+typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
 /// \class otl::keplerian::IPropagator
-/// \ingroup keplerian
 ///
 /// Interface class for all propagation algorithms.  
 ///

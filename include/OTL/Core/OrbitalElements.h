@@ -97,6 +97,8 @@ struct OTL_CORE_API OrbitalElements
    ////////////////////////////////////////////////////////////
    OrbitalElements& operator =(const OrbitalElements&& other);
 
+   bool IsZero() const;
+
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbital elements to a single-line formatted string
    ///

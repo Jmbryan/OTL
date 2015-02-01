@@ -59,7 +59,7 @@ void MpcorbEphemeris::SetDataFile(const std::string& dataFilename)
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::SetPropagator(const keplerian::PropagatorPointer& propagator)
+void MpcorbEphemeris::SetPropagator(const PropagatorPointer& propagator)
 {
    m_propagator = propagator;
 }
