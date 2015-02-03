@@ -37,15 +37,23 @@ typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 
 struct PhysicalProperties
 {
-   double mass;      ///< Mass
-   double mu;        ///< Gravitational parameter
-   double radius;    ///< Equatorial radius
-
    PhysicalProperties();
-   PhysicalProperties(double _mass, double _mu, double _radius);
+   PhysicalProperties(double mass, double radius);
+   PhysicalProperties(double mass, double radius, double safeRadius);
+
+   double GetMass() const;
+   double GetRadius() const;
+   double GetSafeRadius() const;   
+   double GetGraviationalParameter() const;
 
    //std::string ToString() const;
    //std::string ToDetailedString(std::string prefix = "") const;
+
+private:
+   double m_mass;       ///< Mass
+   double m_radius;     ///< Equatorial radius
+   double m_safeRadius; ///< Safe equatorial radius 
+   double m_mu;         ///< Gravitational parameter
 };
 
 class OrbitalBody2;
@@ -183,14 +191,34 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Constructs the orbital body
    ///
-   /// If a mass is not specified it will be
-   /// initialized to 1.0.
-   ///
    /// \param name Name of the orbital body
-   /// \param mass Mass of the orbital body
+   /// \param physicalProperties PhysicalProperties of the orbital body
+   /// \param gravitationalParameterCentralBody Gravitational parameter of the central body
+   /// \param stateVector Current state vector of the orbital body
+   /// \param epoch Current epoch of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   OrbitalBody(const std::string& name, double mass);
+   OrbitalBody(const std::string& name,
+               const PhysicalProperties& physicalProperties,
+               double gravitationalParameterCentralBody,
+               const StateVector& stateVector,
+               const Epoch& epoch = Epoch::MJD2000(0.0));
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Constructs the orbital body
+   ///
+   /// \param name Name of the orbital body
+   /// \param physicalProperties PhysicalProperties of the orbital body
+   /// \param gravitationalParameterCentralBody Gravitational parameter of the central body
+   /// \param orbitalElements Current orbital elements of the orbital body
+   /// \param epoch Current epoch of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   OrbitalBody(const std::string& name,
+               const PhysicalProperties& physicalProperties,
+               double gravitationalParameterCentralBody,
+               const OrbitalElements& orbitalElements,
+               const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
@@ -198,60 +226,33 @@ public:
    virtual ~OrbitalBody();
  
    ////////////////////////////////////////////////////////////
-   /// \brief Set the name of the orbital body
+   /// \brief Set the propagation algorithm
    ///
-   /// \param name Name of the orbital body
+   /// \param propagator Smart pointer to propagator
    ///
    ////////////////////////////////////////////////////////////
-   void SetName(const std::string& name);
+   void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the mass of the orbital body
+   /// \brief Set the ephemeris database
    ///
-   /// \param mass Mass of the orbital body
+   /// \param ephemeris Smart pointer to ephemeris database
    ///
    ////////////////////////////////////////////////////////////
-   void SetMass(double mass);
+   void SetEphemeris(const EphemerisPointer& ephemeris);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Set the gravitational parameter of the orbital body
+   /// \brief Set the max propagation time
    ///
-   /// \param mu Gravitational parameter of the orbital body
+   /// Maximum amount of time allowed to propagate before
+   /// forcing an ephemeris update. Only applicable if
+   /// an ephemeris database has been specified by calling
+   /// the SetEphemeris() method.
    ///
-   ////////////////////////////////////////////////////////////
-   void SetMu(double mu);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new position vector of the orbital body
-   ///
-   /// \param position New position vector of the orbital body
+   /// \param maxTime Maximum propagation Time
    ///
    ////////////////////////////////////////////////////////////
-   void SetPosition(const Vector3d& position);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new velocity vector of the orbital body
-   ///
-   /// \param position New velocity vector of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetVelocity(const Vector3d& velocity);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new state vector of the orbital body
-   ///
-   /// \param position New state vector of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetStateVector(const StateVector& stateVector);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the new orbital elements of the orbital body
-   ///
-   /// \param position New orbital elements of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetOrbitalElements(const OrbitalElements& orbitalElements);
+   void SetMaxPropagationTime(const Time& maxTime);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the name of the orbital body
@@ -262,34 +263,23 @@ public:
    const std::string& GetName() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the mass of the orbital body
+   /// \brief Get the physical properties of the orbital body
    ///
-   /// \return mass of the orbital body
+   /// \return PhysicalProperties of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   double GetMass() const;
+   const PhysicalProperties& GetPhysicalProperties() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the gravitational parameter of the orbital body
+   /// \brief Get the gravitational parameter of central body being orbited
    ///
-   /// \return Gravitational parameter of the orbital body
+   /// \return Gravitational parameter of the central body
    ///
    ////////////////////////////////////////////////////////////
-   double GetMu() const;
+   double GetGravitationalParameterCentralBody() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the orbit radius of the orbital body
-   ///
-   /// \return Orbit radius of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   double GetOrbitRadius() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the current position vector of the orbital body
-   ///
-   /// If SetEpoch has not been called, then this function will
-   /// return a position vector of all zeros.
+   /// \brief Get the position vector of the orbital body
    ///
    /// \return Current position vector of the orbital body
    ///
@@ -297,10 +287,7 @@ public:
    const Vector3d& GetPosition() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the current velocity vector of the orbital body
-   ///
-   /// If SetEpoch has not been called, then this function will
-   /// return a velocity vector of all zeros.
+   /// \brief Get the velocity vector of the orbital body
    ///
    /// \return Current velocity vector of the orbital body
    ///
@@ -308,12 +295,9 @@ public:
    const Vector3d& GetVelocity() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the current state vector of the orbital body
+   /// \brief Get the state vector of the orbital body
    ///
-   /// If SetEpoch() has not been called, then this function will
-   /// return a StateVector of all zeros.
-   ///
-   /// \return Current state vector of the orbital body
+   /// \return Current StateVector of the orbital body
    ///
    ////////////////////////////////////////////////////////////
    const StateVector& GetStateVector() const;
@@ -321,67 +305,165 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Get the orbital elements of the orbital body
    ///
-   /// If SetEpoch() has not been called, then this function will
-   /// return a OrbitalElements of all zeros. 
-   ///
-   /// \return Current orbital elements of the orbital body
+   /// \return Current OrbitalElements of the orbital body
    ///
    ////////////////////////////////////////////////////////////
    const OrbitalElements& GetOrbitalElements() const;
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the orbit of the orbital body
+   ///
+   /// \return Current Orbit of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
    const keplerian::Orbit& GetOrbit() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the orbital body in time
+   /// \brief Get the current epoch of the orbital body
    ///
-   /// The time can be positive or negative for
-   /// forewards and backwards propagation respectively.
-   ///
-   /// This function is virtual and may be re-implemented
-   /// by subclasses in order to utilize different propagation
-   /// techniques such as querying an ephemeris database.
-   ///
-   /// \param timeDelta Time object for specifying the propagation duration
+   /// \return Current Epoch of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual void Propagate(const Time& timeDelta);
+   const Epoch& GetEpoch() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Get the state vector of the orbital body at an Epoch
+   /// \brief Get the orbital radius of the orbital body
    ///
-   /// Pure virtual function for calculating the state vector
-   /// of the orbital body at a specified Epoch. Derived classes
-   /// must re-implement this function with their respective
-   /// ephemeris algorithm.
-   ///
-   /// \param epoch Epoch to obtain state vector at
-   /// \param stateVector Resulting state vector computed at the specified Epoch
+   /// \return Orbital radius of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   //virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector) = 0;
+   double GetOrbitRadius() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the type of the orbit
+   ///
+   /// Returns an Orbit::Type enumerator which indicates the type
+   /// of the orbit (circular, elliptical, hyperbolic, etc.)
+   ///
+   /// \return OrbitType enumerator
+   ///
+   ////////////////////////////////////////////////////////////
+   keplerian::Orbit::Type GetOrbitType() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Is the orbit of this type
+   ///
+   /// \return True if the orbit matches the specified Orbit::Type
+   ///
+   ////////////////////////////////////////////////////////////
+   bool IsOrbitType(keplerian::Orbit::Type orbitType) const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital body for a desired length of time
+   ///
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
+   ///
+   /// \param timeDelta Time object which specifies the propagation duration
+   /// \param propagationType PropagationType which determines whether the orbital elements or state vector is propagated
+   ///
+   ////////////////////////////////////////////////////////////
+   void Propagate(const Time& timeDelta, const PropagationType& propagationType = PropagationType::OrbitalElements);
    
    ////////////////////////////////////////////////////////////
-   /// \brief Get the orbital elements of the orbital body at an Epoch
+   /// \brief Propagate the orbital body to a desired epoch
    ///
-   /// Pure virtual function for calculating the orbital elements
-   /// of the orbital body at a specified Epoch. Derived classes
-   /// must re-implement this function with their respective
-   /// ephemeris algorithm.
-   ///
-   /// \param epoch Epoch to obtain state vector at
-   /// \param orbitalElements Resulting orbital elements computed at the specified Epoch
+   /// \param epoch Desired Epoch
+   /// \param propagationType PropagationType which determines whether the orbital elements or state vector is propagated
    ///
    ////////////////////////////////////////////////////////////
-   //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
+   void PropagateTo(const Epoch& epoch, const PropagationType& propagationType = PropagationType::OrbitalElements);
 
-   void SetPropagator(const PropagatorPointer& propagator);
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital elements for a desired length of time
+   ///
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
+   ///
+   /// \param timeDelta Time object which specifies the propagation duration
+   ///
+   ////////////////////////////////////////////////////////////
+   void PropagateOrbitalElements(const Time& timeDelta);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the orbital elements to a desired epoch
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void PropagateOrbitalElementsTo(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the state vector for a desired length of time
+   ///
+   /// \note The time can be positive or negative for forewards and backwards propagation respectively
+   ///
+   /// \param timeDelta Time object which specifies the propagation duration
+   ///
+   ////////////////////////////////////////////////////////////
+   void PropagateStateVector(const Time& timeDelta);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the state vector to a desired epoch
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void PropagateStateVectorTo(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database at a desired epoch
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void QueryEphemeris(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database for the orbital elements at a desired epoch
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void QueryOrbitalElements(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database for the state vector at a desired epoch
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void QueryStateVector(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database for the orbital body's physical properties
+   ///
+   /// \param epoch Desired Epoch
+   ///
+   ////////////////////////////////////////////////////////////
+   void QueryPhysicalProperties();
+
 
    std::string ToString() const;
    std::string ToDetailedString(std::string prefix = "") const;
 
+protected:
+   virtual void VPropagate(const Time& timeDelta, const PropagationType& propagationType);
+   virtual void VPropagateOrbitalElements(const Time& timeDelta);
+   virtual void VPropagateStateVector(const Time& timeDelta);
+   virtual void VQueryEphemeris(const Epoch& epoch);
+
 private:
-    std::string m_name;        ///< Name of the orbital body
-    keplerian::Orbit m_orbit;  ///< Keplerian orbit of the orbital body 
+   bool IsEphemerisUpdateRequired();
+   void PropagateEpoch(const Time& timeDelta);
+   void PropagateEpochTo(const Epoch& epoch);
+
+private:
+    std::string m_name;                       ///< Name of the orbital body
+    PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
+    Epoch m_epoch;                            ///< Current epoch of the orbital body
+    keplerian::Orbit m_orbit;                 ///< Keplerian orbit of the orbital body
+    EphemerisPointer m_ephemeris;             ///< Smart pointer to ephemeris database
+    Time m_maxPropagationTime;                ///< Max propagation time before next ephemeris update
+    Time m_elapsedPropagationTime;            ///< Elapsed propagation time since last ephemeris update
 };
 
 ////////////////////////////////////////////////////////////
@@ -402,6 +484,55 @@ T& operator<<(T& stream, const OrbitalBody& orbitalBody)
    return stream;
 }
 
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::Propagate(const Time& timeDelta, const PropagationType& propagationType)
+{
+   PropagateEpoch(timeDelta);
+   VPropagate(timeDelta, propagationType);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::PropagateOrbitalElements(const Time& timeDelta)
+{
+   PropagateEpoch(timeDelta);
+   VPropagateOrbitalElements(timeDelta);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::PropagateStateVector(const Time& timeDelta)
+{
+   PropagateEpoch(timeDelta);
+   VPropagateStateVector(timeDelta);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::PropagateTo(const Epoch& epoch, const PropagationType& propagationType)
+{
+   PropagateEpochTo(epoch);
+   VPropagate(epoch - m_epoch, propagationType);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::PropagateOrbitalElementsTo(const Epoch& epoch)
+{
+   PropagateEpochTo(epoch);
+   VPropagateOrbitalElements(epoch - m_epoch);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::PropagateStateVectorTo(const Epoch& epoch)
+{
+   PropagateEpochTo(epoch);
+   VPropagateStateVector(epoch - m_epoch);
+}
+
+////////////////////////////////////////////////////////////
+inline void OrbitalBody::QueryEphemeris(const Epoch& epoch)
+{
+   VQueryEphemeris(epoch);
+}
+
+////////////////////////////////////////////////////////////
 typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 
 } // namespace otl
@@ -410,8 +541,10 @@ typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 /// \class otl::OrbitalBody
 /// \ingroup otl
 ///
-/// Interface class for all orbital bodies (planets,
-/// asteroids, comets, spacecraft, etc..).  
+/// Class that represents any point-mass object that orbits
+/// another object (e.g planets, asteroids, spacecraft, etc.)
+///
+/// The orbital body can be propagated 
 ///
 /// The state vector and orbital elements of the orbital
 /// body can be obtained by calling the methods:

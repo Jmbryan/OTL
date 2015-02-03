@@ -40,17 +40,20 @@ int main()
     {
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>();
 
-       MpcorbPlanet ceres2("Ceres");
+       //auto ceres = OrbitalBody2("Ceres", ASTRO_MU_SUN);
 
-       OrbitalBody2 ceres("Ceres", mpcorbEphemeris, Epoch::Today());
-       ceres.QueryEphemeris(Time::Days(10));
-       auto svPallas = ceres.GetStateVector();
+       //MpcorbPlanet ceres2("Ceres");
 
-       auto properties = ceres.GetPhysicalProperties();
-       auto sv = ceres.GetStateVector();
 
-       ceres.Propagate(Time::Days(10)); // calls IPropagator
-       sv = ceres.GetStateVector();
+       //OrbitalBody2 ceres("Ceres", mpcorbEphemeris, Epoch::Today());
+       //ceres.QueryEphemeris(Time::Days(10));
+       //auto svPallas = ceres.GetStateVector();
+
+       //auto properties = ceres.GetPhysicalProperties();
+       //auto sv = ceres.GetStateVector();
+
+       //ceres.Propagate(Time::Days(10)); // calls IPropagator
+       //sv = ceres.GetStateVector();
 
     }
 

@@ -166,7 +166,7 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
    ///
-   /// Returns an OrbitType enumerator which indicates the type
+   /// Returns an Orbit::Type enumerator which indicates the type
    /// of the orbit (circular, elliptical, hyperbolic, etc.)
    ///
    /// \return OrbitType enumerator

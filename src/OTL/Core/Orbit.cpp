@@ -224,7 +224,7 @@ void Orbit::Propagate(const Time& timeDelta, const PropagationType& propagationT
 
 void Orbit::PropagateOrbitalElements(const Time& timeDelta)
 {
-   // Update the elapsed time since the reference state vector
+   // Update the elapsed time since the reference orbital elements
    m_elapsedPropagationTime += timeDelta;
 
    // Update the reference orbital elements if they are out-of-date
@@ -233,7 +233,7 @@ void Orbit::PropagateOrbitalElements(const Time& timeDelta)
       UpdateReferenceOrbitalElements();
    }
 
-   // Propagate the orbital elements and update orbit type
+   // Propagate from the reference orbital elements and update orbit type
    m_orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, m_elapsedPropagationTime, m_mu);
    UpdateOrbitType();
 
@@ -253,7 +253,7 @@ void Orbit::PropagateStateVector(const Time& timeDelta)
       UpdateReferenceStateVector();
    }
 
-   // Propagate the state vector and update orbit radius
+   // Propagate from the reference state vector and update orbit radius
    m_stateVector = m_propagator->Propagate(m_referenceStateVector, m_elapsedPropagationTime, m_mu);
    UpdateOrbitRadius();
 
