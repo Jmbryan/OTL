@@ -31,6 +31,63 @@ namespace otl
 
 const Planet::PlanetDictionary Planet::m_planetInfo = Planet::CreatePlanetInfo();
 
+static std::map<Planet::PlanetId, std::string> g_planetIdMap;
+static std::map<std::string, PhysicalProperties> g_planetInfo;
+
+std::string ConvertPlanetId2Name(const Planet::PlanetId& planetId)
+{
+   static bool initialized = false;
+   if (!initialized)
+   {
+      g_planetIdMap[Planet::PlanetId::Mercury] = "Mercury";
+      g_planetIdMap[Planet::PlanetId::Venus] = "Venus";
+      g_planetIdMap[Planet::PlanetId::Earth] = "Earth";
+      g_planetIdMap[Planet::PlanetId::Mars] = "Mars";
+      g_planetIdMap[Planet::PlanetId::Jupiter] = "Jupiter";
+      g_planetIdMap[Planet::PlanetId::Saturn] = "Saturn";
+      g_planetIdMap[Planet::PlanetId::Uranus] = "Uranus";
+      g_planetIdMap[Planet::PlanetId::Neptune] = "Neptune";
+      g_planetIdMap[Planet::PlanetId::Pluto] = "Pluto";
+
+      initialized = true;
+   }
+
+   auto it = g_planetIdMap.find(planetId);
+   OTL_ASSERT(it != g_planetIdMap.end(), "Invalid planet identifier " << Bracket(planetId));
+
+   return it->second;
+}
+
+PhysicalProperties GetPlanetPhysicalProperties(const std::string& name)
+{
+   static bool initialized = false;
+   if (!initialized)
+   {
+      g_planetInfo["Mercury"] = PhysicalProperties(ASTRO_RADIUS_MERCURY, ASTRO_MU_MERCURY);
+      g_planetInfo["Venus"] = PhysicalProperties(ASTRO_RADIUS_VENUS, ASTRO_MU_VENUS);
+      g_planetInfo["Earth"] = PhysicalProperties(ASTRO_RADIUS_EARTH, ASTRO_MU_EARTH);
+      g_planetInfo["Mars"] = PhysicalProperties(ASTRO_RADIUS_MARS, ASTRO_MU_MARS);
+      g_planetInfo["Jupiter"] = PhysicalProperties(ASTRO_RADIUS_JUPITER, ASTRO_MU_JUPITER);
+      g_planetInfo["Saturn"] = PhysicalProperties(ASTRO_RADIUS_SATURN, ASTRO_MU_SATURN);
+      g_planetInfo["Uranus"] = PhysicalProperties(ASTRO_RADIUS_URANUS, ASTRO_MU_URANUS);
+      g_planetInfo["Neptune"] = PhysicalProperties(ASTRO_RADIUS_NEPTUNE, ASTRO_MU_NEPTUNE);
+      g_planetInfo["Pluto"] = PhysicalProperties(ASTRO_RADIUS_PLUTO, ASTRO_MU_PLUTO);
+
+      initialized = true;
+   }
+
+   auto it = g_planetInfo.find(name);
+   OTL_ASSERT(it != g_planetInfo.end(), "Invalid planet name " << Bracket(name));
+
+   return it->second;
+}
+
+PhysicalProperties GetPlanetPhysicalProperties(const Planet::PlanetId& planetId)
+{
+   auto name = ConvertPlanetId2Name(planetId);
+   return GetPlanetPhysicalProperties(name);
+}
+
 ////////////////////////////////////////////////////////////
 Planet::PlanetInfo::PlanetInfo() :
 name(""),
@@ -47,27 +104,29 @@ mu(Mu)
 {
 }
 
+
+
 ////////////////////////////////////////////////////////////
 Planet::Planet() :
-NaturalBody(),
-m_id(PlanetId::Invalid)
+OrbitalBody("Earth", LookupPhysicalProperties("Earth"), ASTRO_MU_SUN, OrbitalElements()),
+m_id(PlanetId::Earth)
 {
+
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(Planet::PlanetId planetId) :
-NaturalBody(),
+Planet::Planet(Planet::PlanetId planetId, const Epoch& epoch) :
+OrbitalBody(ConvertIdentifier2Name(planetId), LookupPhysicalProperties(planetId), ASTRO_MU_SUN, OrbitalElements(), epoch),
 m_id(planetId)
 {
-   Initialize(planetId);
+   Initialize(m_id);
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(const std::string& name) :
-NaturalBody(),
-m_id(PlanetId::Invalid)
+Planet::Planet(const std::string& name, const Epoch& epoch) :
+OrbitalBody(name, LookupPhysicalProperties(name), ASTRO_MU_SUN, OrbitalElements(), epoch),
+m_id(ConvertName2Identifier(name))
 {
-   m_id = ConvertName2Identifier(name);
    Initialize(m_id);
 }
 
@@ -77,7 +136,7 @@ Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
     PlanetId planetId = PlanetId::Invalid;
     for (auto it = m_planetInfo.begin(); it != m_planetInfo.end(); ++it)
     {
-        if (it->second.name == name)
+        if ((it->second).first == name)
         {
             planetId = it->first;
             break;
@@ -85,7 +144,7 @@ Planet::PlanetId Planet::ConvertName2Identifier(const std::string& name)
     }
     if (planetId == PlanetId::Invalid)
     {
-        OTL_ERROR() << "Planet name [" << name << "] not found";
+        OTL_ERROR() << "Planet name " << Bracket(name) << " not found";
     }
     return planetId;
 }
@@ -96,9 +155,10 @@ std::string Planet::ConvertIdentifier2Name(PlanetId planetId)
     PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
     if (it == m_planetInfo.end())
     {
-        OTL_ERROR() << "Planet name not found for id [" << planetId << "]";
+       OTL_ERROR() << "Planet name not found for id " << Bracket(planetId);
+       return std::string();
     }
-    return it->second.name;
+    return it->second.first;
 }
 
 ////////////////////////////////////////////////////////////
@@ -129,22 +189,11 @@ std::string Planet::ToDetailedString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 void Planet::Initialize(Planet::PlanetId planetId)
 {
-   PlanetDictionary::const_iterator it = m_planetInfo.find(planetId);
-   OTL_ERROR_IF(it == m_planetInfo.end(), "Invalid planet ID " << Bracket(planetId));
-
-   const PlanetInfo& planetInfo = it->second;
-
-   SetName(planetInfo.name);
-   SetMu(ASTRO_MU_SUN);
-   SetPhysicalProperties(NaturalBody::PhysicalProperties(
-      planetInfo.mu / ASTRO_GRAVITATIONAL_CONSTANT,
-      planetInfo.mu,
-      planetInfo.radius));
-
-
    // Initialize ephemeris
-   UseEphemerisForPropagation(true);
-   SetEphemeris(EphemerisPointer(new JplApproximateEphemeris()));
+   SetEphemeris(std::make_shared<JplApproximateEphemeris>());
+
+   // Initialize orbital elements based on given epoch
+   QueryOrbitalElements(GetEpoch());
 }
 
 ////////////////////////////////////////////////////////////
@@ -152,18 +201,47 @@ Planet::PlanetDictionary Planet::CreatePlanetInfo()
 {
    PlanetDictionary planetInfo;
 
-   //         Planet Id                         Name          Equatorial Radius      Gravitational Parameter    
-   planetInfo[PlanetId::Mercury]   = PlanetInfo("Mercury",    ASTRO_RADIUS_MERCURY,  ASTRO_MU_MERCURY);
-   planetInfo[PlanetId::Venus]     = PlanetInfo("Venus",      ASTRO_RADIUS_VENUS,    ASTRO_MU_VENUS);
-   planetInfo[PlanetId::Earth]     = PlanetInfo("Earth",      ASTRO_RADIUS_EARTH,    ASTRO_MU_EARTH);
-   planetInfo[PlanetId::Mars]      = PlanetInfo("Mars",       ASTRO_RADIUS_MARS,     ASTRO_MU_MARS);
-   planetInfo[PlanetId::Jupiter]   = PlanetInfo("Jupiter",    ASTRO_RADIUS_JUPITER,  ASTRO_MU_JUPITER);
-   planetInfo[PlanetId::Saturn]    = PlanetInfo("Saturn",     ASTRO_RADIUS_SATURN,   ASTRO_MU_SATURN);
-   planetInfo[PlanetId::Uranus]    = PlanetInfo("Uranus",     ASTRO_RADIUS_URANUS,   ASTRO_MU_URANUS);
-   planetInfo[PlanetId::Neptune]   = PlanetInfo("Neptune",    ASTRO_RADIUS_NEPTUNE,  ASTRO_MU_NEPTUNE);
-   planetInfo[PlanetId::Pluto]     = PlanetInfo("Pluto",      ASTRO_RADIUS_PLUTO,    ASTRO_MU_PLUTO);
+   ////         Planet Id                         Name          Equatorial Radius      Gravitational Parameter    
+   //planetInfo[PlanetId::Mercury]   = PlanetInfo("Mercury",    ASTRO_RADIUS_MERCURY,  ASTRO_MU_MERCURY);
+   //planetInfo[PlanetId::Venus]     = PlanetInfo("Venus",      ASTRO_RADIUS_VENUS,    ASTRO_MU_VENUS);
+   //planetInfo[PlanetId::Earth]     = PlanetInfo("Earth",      ASTRO_RADIUS_EARTH,    ASTRO_MU_EARTH);
+   //planetInfo[PlanetId::Mars]      = PlanetInfo("Mars",       ASTRO_RADIUS_MARS,     ASTRO_MU_MARS);
+   //planetInfo[PlanetId::Jupiter]   = PlanetInfo("Jupiter",    ASTRO_RADIUS_JUPITER,  ASTRO_MU_JUPITER);
+   //planetInfo[PlanetId::Saturn]    = PlanetInfo("Saturn",     ASTRO_RADIUS_SATURN,   ASTRO_MU_SATURN);
+   //planetInfo[PlanetId::Uranus]    = PlanetInfo("Uranus",     ASTRO_RADIUS_URANUS,   ASTRO_MU_URANUS);
+   //planetInfo[PlanetId::Neptune]   = PlanetInfo("Neptune",    ASTRO_RADIUS_NEPTUNE,  ASTRO_MU_NEPTUNE);
+   //planetInfo[PlanetId::Pluto]     = PlanetInfo("Pluto",      ASTRO_RADIUS_PLUTO,    ASTRO_MU_PLUTO);
+
+   //         Planet Id                           Name                            Equatorial Radius     Gravitational Parameter
+   planetInfo[PlanetId::Mercury] = std::make_pair("Mercury",   PhysicalProperties(ASTRO_RADIUS_MERCURY, ASTRO_MU_MERCURY));
+   planetInfo[PlanetId::Venus]   = std::make_pair("Venus",     PhysicalProperties(ASTRO_RADIUS_VENUS,   ASTRO_MU_VENUS));
+   planetInfo[PlanetId::Earth]   = std::make_pair("Earth",     PhysicalProperties(ASTRO_RADIUS_EARTH,   ASTRO_MU_EARTH));
+   planetInfo[PlanetId::Mars]    = std::make_pair("Mars",      PhysicalProperties(ASTRO_RADIUS_MARS,    ASTRO_MU_MARS));
+   planetInfo[PlanetId::Jupiter] = std::make_pair("Jupiter",   PhysicalProperties(ASTRO_RADIUS_JUPITER, ASTRO_MU_JUPITER));
+   planetInfo[PlanetId::Saturn]  = std::make_pair("Saturn",    PhysicalProperties(ASTRO_RADIUS_SATURN,  ASTRO_MU_SATURN));
+   planetInfo[PlanetId::Uranus]  = std::make_pair("Uranus",    PhysicalProperties(ASTRO_RADIUS_URANUS,  ASTRO_MU_URANUS));
+   planetInfo[PlanetId::Neptune] = std::make_pair("Neptune",   PhysicalProperties(ASTRO_RADIUS_NEPTUNE, ASTRO_MU_NEPTUNE));
+   planetInfo[PlanetId::Pluto]   = std::make_pair("Pluto",     PhysicalProperties(ASTRO_RADIUS_PLUTO,   ASTRO_MU_PLUTO));
 
    return planetInfo;
 }
+
+PhysicalProperties Planet::LookupPhysicalProperties(const PlanetId& planetId)
+{
+   const auto it = m_planetInfo.find(planetId);
+   if (it == m_planetInfo.end())
+   {
+      OTL_ERROR("Invalid planet id " << Bracket(planetId));
+      return PhysicalProperties();     
+   }
+   return (it->second).second; 
+}
+
+PhysicalProperties Planet::LookupPhysicalProperties(const std::string& planetName)
+{
+   const auto& planetId = ConvertName2Identifier(planetName);
+   return LookupPhysicalProperties(planetId);
+}
+
 
 } // namespace otl

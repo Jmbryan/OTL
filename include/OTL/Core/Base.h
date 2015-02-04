@@ -85,6 +85,15 @@ enum class PropagationType
    Count             ///< Number of propagation types
 };
 
+enum class EphemerisQueryType
+{
+   Invalid = -1,
+   OrbitalElements,
+   StateVector,
+   PhysicalProperties,
+   Count
+};
+
 // Math constants
 const double MATH_DEG_TO_RAD        = 0.0174532925;
 const double MATH_RAD_TO_DEG        = 57.29577951;

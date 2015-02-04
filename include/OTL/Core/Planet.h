@@ -23,12 +23,12 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/NaturalBody.h>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {
 
-class OTL_CORE_API Planet : public NaturalBody
+class OTL_CORE_API Planet : public OrbitalBody
 {
 public:
 
@@ -80,7 +80,8 @@ public:
    ////////////////////////////////////////////////////////////
    /// Typedefs
    ////////////////////////////////////////////////////////////
-   typedef std::map<PlanetId, PlanetInfo> PlanetDictionary;
+   //typedef std::map<PlanetId, PlanetInfo> PlanetDictionary;
+   typedef std::map<PlanetId, std::pair<std::string, PhysicalProperties>> PlanetDictionary;
 
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
@@ -93,7 +94,7 @@ public:
    /// \param planetId Identifier of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(PlanetId planetId);
+   explicit Planet(PlanetId planetId, const Epoch& epoch = Epoch::Today());
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet according to name
@@ -101,25 +102,7 @@ public:
    /// \param name Name of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(const std::string& name);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the state vector of the planet at the the epoch
-   ///
-   /// \param epoch Epoch at which state vector is desired
-   /// \param stateVector Resulting state vector 
-   ///
-   ////////////////////////////////////////////////////////////
-   //virtual void GetStateVectorAtEpoch(const Epoch& epoch, StateVector& stateVector);
-   
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the orbital elements of the planet at the the epoch
-   ///
-   /// \param epoch Epoch at which state vector is desired
-   /// \param orbitalElements Resulting orbital elements 
-   ///
-   ////////////////////////////////////////////////////////////
-   //virtual void GetOrbitalElementsAtEpoch(const Epoch& epoch, OrbitalElements& orbitalElements);
+   explicit Planet(const std::string& name, const Epoch& epoch = Epoch::Today());
 
    ////////////////////////////////////////////////////////////
    /// \brief Convert a planet name into an planet identifier
@@ -161,6 +144,10 @@ private:
    ///
    ////////////////////////////////////////////////////////////
    static PlanetDictionary CreatePlanetInfo();
+
+   PhysicalProperties LookupPhysicalProperties(const PlanetId& planetId);
+   PhysicalProperties LookupPhysicalProperties(const std::string& planetName);
+   
 
 private:
    ////////////////////////////////////////////////////////////
