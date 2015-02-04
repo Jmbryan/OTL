@@ -222,6 +222,8 @@ public:
    ////////////////////////////////////////////////////////////
    const OrbitalElements& GetOrbitalElements() const;
 
+   const Time& GetElapsedPropagationTime() const { return m_elapsedPropagationTime; }
+
    ////////////////////////////////////////////////////////////
    /// \brief Is the orbit of this type
    ///
@@ -402,20 +404,20 @@ private:
    void UpdateOrbitType() const;
 
 private:
-   bool m_useStateVectorForStringOutput;                 ///< If TRUE, the ToString() method will print the state vector. By default, orbital elements are printed.
-   double m_mu;                                          ///< Gravitational parameter of the central body (kg^2/m^3)
-   Time m_elapsedPropagationTime;                        ///< Total elapsed propagation time since the reference orbital elements or state vector
-   PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
-   mutable double m_orbitRadius;                         ///< Radius of the orbit (m)
-   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
-   mutable OrbitalElements m_orbitalElements;            ///< Orbital Elements representing the orbit
-   mutable OrbitalElements m_referenceOrbitalElements;   ///< Reference orbital elements
-   mutable StateVector m_stateVector;                    ///< State Vector representing the orbit
-   mutable StateVector m_referenceStateVector;           ///< Reference state vector
    mutable bool m_orbitalElementsDirty;                  ///< Flag which when TRUE indicates the orbital elements need to be updated
    mutable bool m_referenceOrbitalElementsDirty;         ///< Flag which when TRUE indicates the reference orbital elements need to be updated
    mutable bool m_stateVectorDirty;                      ///< Flag which when TRUE indicates the state vector needs to be updated
    mutable bool m_referenceStateVectorDirty;             ///< Flag which when TRUE indicates the reference state vector needs to be updated
+   bool m_useStateVectorForStringOutput;                 ///< If TRUE, the ToString() method will print the state vector. By default, orbital elements are printed.
+   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   double m_mu;                                          ///< Gravitational parameter of the central body (kg^2/m^3)
+   Time m_elapsedPropagationTime;                        ///< Total elapsed propagation time since the reference orbital elements or state vector
+   PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
+   mutable double m_orbitRadius;                         ///< Radius of the orbit (m)
+   mutable OrbitalElements m_orbitalElements;            ///< Orbital Elements representing the orbit
+   mutable OrbitalElements m_referenceOrbitalElements;   ///< Reference orbital elements
+   mutable StateVector m_stateVector;                    ///< State Vector representing the orbit
+   mutable StateVector m_referenceStateVector;           ///< Reference state vector  
 };
 
 ////////////////////////////////////////////////////////////

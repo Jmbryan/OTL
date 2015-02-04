@@ -226,7 +226,7 @@ bool Time::IsZero() const
 ////////////////////////////////////////////////////////////
 bool Time::IsInfinity() const
 {
-   return IsApprox(fabs(m_seconds), MATH_INFINITY);
+   return fabs(m_seconds) == MATH_INFINITY;
 }
 
 ////////////////////////////////////////////////////////////

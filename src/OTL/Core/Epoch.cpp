@@ -113,6 +113,20 @@ Epoch Epoch::Gregorian(const GregorianDateTime& dateTime)
 }
 
 ////////////////////////////////////////////////////////////
+Epoch Epoch::Today()
+{
+   Epoch epoch;
+   return epoch;
+}
+
+////////////////////////////////////////////////////////////
+Epoch Epoch::Now()
+{
+   Epoch epoch;
+   return epoch;
+}
+
+////////////////////////////////////////////////////////////
 void Epoch::SetJD(double julianDate)
 {
    m_mjd2000 = ConvertJD2MJD2000(julianDate);

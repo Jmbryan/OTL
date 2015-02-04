@@ -58,7 +58,7 @@ private:
 class OTL_CORE_API RadiationSource : public OrbitalBody
 {
 public:
-    RadiationSource(double radiationPressure) : OrbitalBody("RadiationSource", 1.0) { m_RadiationPressure = radiationPressure; }
+    //RadiationSource(double radiationPressure) : OrbitalBody("RadiationSource", 1.0) { m_RadiationPressure = radiationPressure; }
     virtual ~RadiationSource() {}
 
     virtual void Update(const Time& deltaTime) {}
@@ -73,7 +73,7 @@ typedef std::shared_ptr<RadiationSource> RadiationSourcePointer;
 class OTL_CORE_API Sun : public RadiationSource
 {
 public:
-    Sun() : RadiationSource(1.0) {}
+    //Sun() : RadiationSource(1.0) {}
 
     virtual void Update(const Time& deltaTime) {}
 };

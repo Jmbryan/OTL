@@ -617,8 +617,8 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
     // Trajectory initial conditions
     m_finalEpoch.SetMJD2000(states[iState++]);
-    m_legs.front().initialPlanet.SetEpoch(m_finalEpoch);
-    m_finalStateVector = m_legs.front().initialPlanet.GetStateVector();
+    m_legs.front().initialPlanet.QueryStateVector(m_finalEpoch);
+    m_finalStateVector = m_legs.front().initialPlanet.GetOrbit().GetStateVector();
 
    // Calculate the trajectory one leg at a time
    for (std::size_t iLeg = 0; iLeg < m_legs.size(); ++iLeg)
@@ -652,8 +652,8 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
 
    // Leg final conditions
    m_finalEpoch = m_initialEpoch + Time::Seconds(timeOfFlightLeg);
-   planet.SetEpoch(m_finalEpoch);
-   m_planetStateVector = planet.GetStateVector();
+   planet.QueryStateVector(m_finalEpoch);
+   m_planetStateVector = planet.GetOrbit().GetStateVector();
    m_finalStateVector = m_planetStateVector;
 
    // Handle departure event
@@ -743,7 +743,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
       //double orbitTime = states[iState++];
 
       // Orbit insertion
-      double mu = planet.GetMu();
+      double mu = planet.GetPhysicalProperties().GetGravitationalParameter();
       double h  = 0;//
       double e  = leg.insertionOrbit.eccentricity;
       double rp = h * h / mu / (1 + e);

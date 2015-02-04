@@ -38,7 +38,46 @@ int main()
 
     if (true)
     {
-       auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>();
+       auto currentDirectory = gSystem.GetCurrentDirectory();
+       auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
+       auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
+
+       Planet p("Mars", Epoch());
+       p.SetEphemeris(jplEphemeris);
+       auto coes = p.GetOrbit().GetOrbitalElements();
+       auto sv = p.GetOrbit().GetStateVector();
+
+       bool b = true;
+       auto en = keplerian::Orbit::Type::Elliptical;
+       std::function<void(const Epoch&)> myfun = nullptr;
+
+       auto sizeofbool = sizeof(b);
+       auto sizeofenum = sizeof(en);
+       auto sizeofname = sizeof(p.GetName());
+       auto sizeofprop = sizeof(p.GetPhysicalProperties());
+       auto sizeofepoch = sizeof(p.GetEpoch());
+       auto sizeoftime = sizeof(Time::Days(1));
+       auto sizeofephm = sizeof(jplEphemeris);
+       auto sizeofcoes = sizeof(p.GetOrbit().GetOrbitalElements());
+       auto sizeofsv = sizeof(p.GetOrbit().GetStateVector());
+       auto sizeoffun = sizeof(myfun);
+       auto sizeoforbit = sizeof(p.GetOrbit());
+       auto sizeoforbitalbody = sizeof(p);
+
+       p.SetMaxPropagationTime(Time::Days(20));
+
+       p.QueryEphemeris(p.GetEpoch() + Time::Days(10));
+       p.Propagate(Time::Days(10));
+       p.Propagate(Time::Days(5));
+       p.Propagate(Time::Days(10));
+       auto coes2 = p.GetOrbit().GetOrbitalElements();
+       auto sv2 = p.GetOrbit().GetStateVector();
+
+       
+
+       double d = 1.0;
+
+       //auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>();
 
        //auto ceres = OrbitalBody2("Ceres", ASTRO_MU_SUN);
 
@@ -88,16 +127,15 @@ int main()
     std::cout << orbit << std::endl;
     std::cout << orbit.ToDetailedString() << std::endl;
 
-    OrbitalBody orbitalBody("Ceres", 895.8e18);
-    std::cout << orbitalBody << std::endl;
-    std::cout << orbitalBody.ToDetailedString() << std::endl;
+    //OrbitalBody orbitalBody("Ceres", 895.8e18);
+    //std::cout << orbitalBody << std::endl;
+    //std::cout << orbitalBody.ToDetailedString() << std::endl;
 
-    NaturalBody naturalBody("Ceres", 895.8e18, 476.2, epoch);
-    std::cout << naturalBody << std::endl;
-    std::cout << naturalBody.ToDetailedString() << std::endl;
+    //NaturalBody naturalBody("Ceres", 895.8e18, 476.2, epoch);
+    //std::cout << naturalBody << std::endl;
+    //std::cout << naturalBody.ToDetailedString() << std::endl;
 
-    Planet planet("Earth");
-    planet.SetEpoch(Epoch::Gregorian(GregorianDateTime(2015, 1, 28, 20, 58, 0.0)));
+    Planet planet("Earth", Epoch::Gregorian(GregorianDateTime(2015, 1, 28, 20, 58, 0.0)));
     std::cout << "Planet: " << Bracket(planet) << std::endl;
     std::cout << "Planet:" << std::endl << planet.ToDetailedString("   ") << std::endl;
 
@@ -498,10 +536,9 @@ int main()
        mpcorbEphemeris->GetStateVector("Ceres", epoch, stateVector4);
        mpcorbEphemeris->GetOrbitalElements("Ceres", epoch, orbitalElements4);
           
-       Planet p("Earth");
+       Planet p("Earth", Epoch::Gregorian(date));
        p.SetEphemeris(jplEphemeris);
-       p.SetEpoch(Epoch::Gregorian(date));
-       auto sv = p.GetStateVector();
+       auto sv = p.GetOrbit().GetStateVector();
     }
 
     double d = 1.0;

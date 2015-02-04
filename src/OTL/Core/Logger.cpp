@@ -74,6 +74,14 @@ void Logger::Log(const std::string& message, const LogLevel& logLevel)
 }
 
 ////////////////////////////////////////////////////////////
+LineLogger Logger::Debug()
+{
+   if (!m_initialized)
+      Initialize();
+   return LineLogger(std::make_shared<Logger>(*this), LogLevel::Debug);
+}
+
+////////////////////////////////////////////////////////////
 LineLogger Logger::Info()
 {
     if (!m_initialized)

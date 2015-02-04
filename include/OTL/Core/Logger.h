@@ -14,6 +14,7 @@ typedef std::shared_ptr<Logger> LoggerPointer;
 enum class LogLevel
 {
    Invalid = -1,  ///< Invalid log level
+   Debug,         ///< Logs if logLEvel is <= Debug
    Info,          ///< Logs if logLevel is <= Info
    Warning,       ///< Logs if logLevel is <= Warning
    Error,         ///< Logs if logLevel is <= Error, throws Exception()
@@ -56,6 +57,7 @@ public:
 
     void Log(const std::string& message, const LogLevel& logLevel);
 
+    LineLogger Debug();
     LineLogger Info();
     LineLogger Warn();
     LineLogger Error();
@@ -96,6 +98,7 @@ std::string Bracket(const T& object)
 extern Logger OTL_CORE_API gLogger;
 
 // Logging macros similar to std::cout
+#define OTL_DEBUG() gLogger.Debug()
 #define OTL_INFO() gLogger.Info()
 #define OTL_WARN() gLogger.Warn()
 #define OTL_ERROR() gLogger.Error()
@@ -107,6 +110,8 @@ extern Logger OTL_CORE_API gLogger;
 
 // Conditional logging macros
 // No processing occurs if the condition is false
+#define OTL_DEBUG_IF(condition, message) do \
+   { if ((condition)) { OTL_LOG(message, LogLevel::Debug); } } while(0)
 #define OTL_INFO_IF(condition, message) do \
    { if ((condition)) { OTL_LOG(message, LogLevel::Info); } } while(0)
 #define OTL_WARN_IF(condition, message) do \

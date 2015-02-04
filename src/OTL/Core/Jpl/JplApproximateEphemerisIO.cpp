@@ -138,7 +138,7 @@ void JplApproximateEphemerisIO::Initialize()
       return;
    }
 
-   OTL_INFO() << "No JPL approximate ephemeris data file was specified: Using default values";
+   OTL_DEBUG() << "No JPL approximate ephemeris data file was specified: Using default values";
 
    // Keplerian elements and rates provided by JPL.
    // The first six entries are the keplerian elements

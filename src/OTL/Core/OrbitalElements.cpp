@@ -123,12 +123,12 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
 ////////////////////////////////////////////////////////////
 bool OrbitalElements::IsZero() const
 {
-   return !(IsApprox(semiMajorAxis, 0.0) &&
-            IsApprox(eccentricity, 0.0) &&
-            IsApprox(trueAnomaly, 0.0) &&
-            IsApprox(inclination, 0.0) &&
-            IsApprox(argOfPericenter, 0.0) &&
-            IsApprox(lonOfAscendingNode, 0.0));
+   return (IsApprox(semiMajorAxis, 0.0) &&
+           IsApprox(eccentricity, 0.0) &&
+           IsApprox(trueAnomaly, 0.0) &&
+           IsApprox(inclination, 0.0) &&
+           IsApprox(argOfPericenter, 0.0) &&
+           IsApprox(lonOfAscendingNode, 0.0));
 }
 
 ////////////////////////////////////////////////////////////

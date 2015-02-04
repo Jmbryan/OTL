@@ -104,22 +104,6 @@ public:
    ////////////////////////////////////////////////////////////
    explicit Planet(const std::string& name, const Epoch& epoch = Epoch::Today());
 
-   ////////////////////////////////////////////////////////////
-   /// \brief Convert a planet name into an planet identifier
-   ///
-   /// \param name Name of the planet
-   ///
-   ////////////////////////////////////////////////////////////
-   static PlanetId ConvertName2Identifier(const std::string& name);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Convert a planet identifier into an planet name
-   ///
-   /// \param planetId Identifier of the planet
-   ///
-   ////////////////////////////////////////////////////////////
-   static std::string ConvertIdentifier2Name(PlanetId planetId);
-
    std::string ToString() const;
    std::string ToDetailedString(std::string prefix = "") const;
 
@@ -143,18 +127,14 @@ private:
    /// planet given an identifier.
    ///
    ////////////////////////////////////////////////////////////
-   static PlanetDictionary CreatePlanetInfo();
-
-   PhysicalProperties LookupPhysicalProperties(const PlanetId& planetId);
-   PhysicalProperties LookupPhysicalProperties(const std::string& planetName);
-   
+   //static PlanetDictionary CreatePlanetInfo();
 
 private:
    ////////////////////////////////////////////////////////////
    // Private Member data
    ////////////////////////////////////////////////////////////
    PlanetId m_id; ///< Planet identifier
-   static const PlanetDictionary m_planetInfo; // Planet info lookup table
+   //static const PlanetDictionary m_planetInfo; // Planet info lookup table
 };
 
 ////////////////////////////////////////////////////////////
@@ -189,6 +169,38 @@ T& operator<<(T& stream, const Planet::PlanetId& planetId)
     stream << static_cast<int>(planetId);
     return stream;
 }
+
+////////////////////////////////////////////////////////////
+/// \brief Convert a planet name into an planet identifier
+///
+/// \param name Name of the planet
+///
+////////////////////////////////////////////////////////////
+Planet::PlanetId ConvertPlanetName2Identifier(const std::string& name);
+
+////////////////////////////////////////////////////////////
+/// \brief Convert a planet identifier into an planet name
+///
+/// \param planetId Identifier of the planet
+///
+////////////////////////////////////////////////////////////
+std::string ConvertPlanetIdentifier2Name(Planet::PlanetId planetId);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for retrieving the physical properties of a solar system planet
+///
+/// \param planetId Planet::PlanetId identifier code for the planet
+///
+////////////////////////////////////////////////////////////
+PhysicalProperties GetPlanetPhysicalProperties(const Planet::PlanetId& planetId);
+
+////////////////////////////////////////////////////////////
+/// \brief Helper function for retrieving the physical properties of a solar system planet
+///
+/// \param name Name of the planet
+///
+////////////////////////////////////////////////////////////
+PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
 
 } // namespace otl
 

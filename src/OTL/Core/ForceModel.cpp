@@ -28,13 +28,13 @@ void GravityModel::Update(const Time& deltaTime)
 {
    m_Forces.Zero();
 
-   double myMass = m_OrbitalBody->GetMass();
-   const auto& myPosition = m_OrbitalBody->GetPosition();
+   double myMass = m_OrbitalBody->GetPhysicalProperties().GetMass();
+   const auto& myPosition = m_OrbitalBody->GetOrbit().GetPosition();
 
    for (const auto& externalBody : m_ExternalBodies)
    {
-      double otherMass = externalBody->GetMass();
-      const auto& otherPosition = externalBody->GetPosition();
+      double otherMass = externalBody->GetPhysicalProperties().GetMass();
+      const auto& otherPosition = externalBody->GetOrbit().GetPosition();
 
       Vector3d distanceVector = (otherPosition - myPosition);
       double distanceSquared = distanceVector.squaredNorm();
@@ -54,7 +54,7 @@ SolarPressureModel::SolarPressureModel(const RadiationSourcePointer& radiationSo
 
 void SolarPressureModel::Update(const Time& deltaTime)
 {
-    const auto& sourcePosition = m_RadiationSource->GetPosition();
+   const auto& sourcePosition = m_RadiationSource->GetOrbit().GetPosition();
     const auto& radiationPressure = m_RadiationSource->GetRadiationPressure();
 
     const auto& myPosition = m_Spacecraft->GetPosition();

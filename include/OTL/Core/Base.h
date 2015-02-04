@@ -90,7 +90,6 @@ enum class EphemerisQueryType
    Invalid = -1,
    OrbitalElements,
    StateVector,
-   PhysicalProperties,
    Count
 };
 

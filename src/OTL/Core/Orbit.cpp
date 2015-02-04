@@ -119,7 +119,7 @@ void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
 
    // State vectors are dirty
    m_stateVectorDirty = true;
-   m_referenceOrbitalElementsDirty = true;   
+   m_referenceStateVectorDirty = true;   
 }
 
 ////////////////////////////////////////////////////////////
