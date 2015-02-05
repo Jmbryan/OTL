@@ -23,44 +23,35 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.h>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {
 
-// Forward declarations
-class Epoch;
-namespace keplerian {
-   class IKeplersEquation;
-   typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
-}
-class PhysicalProperties;
+// Foreward declarations
+class SpiceEphemeris;
+typedef std::shared_ptr<SpiceEphemeris> SpiceEphemerisPointer;
 
-class JplApproximateEphemerisIO
+class OTL_CORE_API SpiceBody : public OrbitalBody
 {
 public:
-   JplApproximateEphemerisIO();
-   explicit JplApproximateEphemerisIO(const std::string& dataFilename);
-   JplApproximateEphemerisIO(const JplApproximateEphemerisIO& other) = delete;
-   JplApproximateEphemerisIO& operator=(const JplApproximateEphemerisIO&) = delete;
+   SpiceBody();
+   SpiceBody(const std::string& name,
+             const std::string& dataFilename,
+             const Epoch& epoch = Epoch::MJD2000(0.0));
+   SpiceBody(const std::string& name,
+             const SpiceEphemerisPointer& spiceEphemeris,
+             const Epoch& epoch = Epoch::MJD2000(0.0));
 
-   void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
-   //PhysicalProperties GetPhysicalProperties(const std::string& name);
+protected:
+   virtual void VQueryPhysicalProperties() override;
+   virtual void VQueryCentralBodyMu() override;
 
-   bool IsValidName(const std::string& name) const;
-   bool IsValidEpoch(const Epoch& epoch) const;
-
+private:
    void Initialize();
 
 private:
-   void Load();
-
-private:
-   std::string m_dataFilename;
-   bool m_initialized;
-   int m_startYear;
-   int m_endYear;
-   keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly 
+   SpiceEphemerisPointer m_spiceEphemeris;
 };
 
 } // namespace otl

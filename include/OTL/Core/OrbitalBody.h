@@ -33,8 +33,9 @@ namespace otl
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 
-struct PhysicalProperties
+class PhysicalProperties
 {
+public:
    PhysicalProperties();
    PhysicalProperties(double mass, double radius);
    PhysicalProperties(double mass, double radius, double safeRadius);
@@ -345,6 +346,9 @@ public:
    ////////////////////////////////////////////////////////////
    void QueryStateVector(const Epoch& epoch);
 
+   void QueryPhysicalProperties();
+   void QueryCentralBodyMu();
+
    std::string ToString() const;
    std::string ToDetailedString(std::string prefix = "") const;
 
@@ -355,23 +359,30 @@ protected:
    virtual void VQueryEphemeris(const Epoch& epoch, const EphemerisQueryType& queryType);
    virtual void VQueryOrbitalElements(const Epoch& epoch);
    virtual void VQueryStateVector(const Epoch& epoch);
+   virtual void VQueryPhysicalProperties();
+   virtual void VQueryCentralBodyMu();
 
-   virtual bool VInitializeEphemeris();
+   void SetPhysicalProperties(const PhysicalProperties& physicalProperties);
+   void SetGravitationalParameterCentralBody(double centralBodyMu);
 
 private:
    bool IsEphemerisUpdateRequired(const Time& timeDelta);
    void PropagateEpoch(const Time& timeDelta);
 
    void ExecuteDelayedEphemerisQuery() const;
+   void ExecuteDelayedEphemerisQuery(const std::string& name) const;
 
 private:
+   typedef std::map<std::string, std::function<void(void)>> EphemerisQueue;
+
     std::string m_name;                       ///< Name of the orbital body
     PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
     Epoch m_epoch;                            ///< Current epoch of the orbital body
     keplerian::Orbit m_orbit;                 ///< Keplerian orbit of the orbital body
     EphemerisPointer m_ephemeris;             ///< Smart pointer to ephemeris database
     Time m_maxPropagationTime;                ///< Max propagation time before next ephemeris update
-    mutable std::function<void(const Epoch&)> m_delayedEphemerisQuery;
+    mutable EphemerisQueue m_ephemerisQueue;
+    //mutable std::function<void(void)> m_delayedEphemerisQuery;
 };
 
 ////////////////////////////////////////////////////////////

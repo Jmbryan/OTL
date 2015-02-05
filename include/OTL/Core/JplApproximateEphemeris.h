@@ -162,6 +162,8 @@ protected:
    ////////////////////////////////////////////////////////////
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
     
+   //virtual PhysicalProperties VGetPhysicalProperties(const std::string& name) override;
+
 private:
    std::string m_dataFilename; ///< Full path to the ephemeris data file
 };

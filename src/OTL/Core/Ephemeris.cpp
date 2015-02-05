@@ -26,6 +26,8 @@
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
 
+#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
+
 namespace otl
 {
 
@@ -60,12 +62,12 @@ void IEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector
       }
       else
       {
-         OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
+         OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
       }
    }
    else
    {
-      OTL_ERROR() << "Name [" << name << "] not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
 }
 
@@ -87,12 +89,12 @@ void IEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector
       }
       else
       {
-         OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
+         OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
       }
    }
    else
    {
-      OTL_ERROR() << "Name [" << name << "] not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
 }
 
@@ -114,12 +116,12 @@ void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, Sta
       }
       else
       {
-          OTL_ERROR() << "Epoch [" << epoch << "] is outside the accepted range";
+          OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
       }
    }
    else
    {
-       OTL_ERROR() << "Name [" << name << "] not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
 }
 
@@ -146,9 +148,35 @@ void IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch,
    }
    else
    {
-       OTL_ERROR() << "Name [" << name << "] not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
 }
+
+//////////////////////////////////////////////////////////////
+//PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
+//{
+//   std::lock_guard<std::mutex> lock(m_mutex);
+//
+//   if (!m_initialized)
+//   {
+//      Initialize();
+//   }
+//
+//   if (VIsValidName(name))
+//   {
+//      return VGetPhysicalProperties(name);
+//   }
+//   else
+//   {
+//      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+//      return PhysicalProperties();
+//   }
+//}
+//
+//PhysicalProperties IEphemeris::VGetPhysicalProperties(const std::string& name)
+//{
+//   return PhysicalProperties();
+//}
 
 ////////////////////////////////////////////////////////////
 void IEphemeris::Initialize()

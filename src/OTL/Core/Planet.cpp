@@ -65,7 +65,8 @@ mu(Mu)
 
 ////////////////////////////////////////////////////////////
 Planet::Planet() :
-OrbitalBody("Earth", GetPlanetPhysicalProperties("Earth"), ASTRO_MU_SUN, OrbitalElements()),
+//OrbitalBody("Earth", GetPlanetPhysicalProperties("Earth"), ASTRO_MU_SUN, OrbitalElements()),
+OrbitalBody("Earth", PhysicalProperties(), 1.0, OrbitalElements()),
 m_id(PlanetId::Earth)
 {
 
@@ -73,7 +74,8 @@ m_id(PlanetId::Earth)
 
 ////////////////////////////////////////////////////////////
 Planet::Planet(Planet::PlanetId planetId, const Epoch& epoch) :
-OrbitalBody(ConvertPlanetIdentifier2Name(planetId), GetPlanetPhysicalProperties(planetId), ASTRO_MU_SUN, OrbitalElements(), epoch),
+//OrbitalBody(ConvertPlanetIdentifier2Name(planetId), GetPlanetPhysicalProperties(planetId), ASTRO_MU_SUN, OrbitalElements(), epoch),
+OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, OrbitalElements(), epoch),
 m_id(planetId)
 {
    Initialize(m_id);
@@ -81,7 +83,8 @@ m_id(planetId)
 
 ////////////////////////////////////////////////////////////
 Planet::Planet(const std::string& name, const Epoch& epoch) :
-OrbitalBody(name, GetPlanetPhysicalProperties(name), ASTRO_MU_SUN, OrbitalElements(), epoch),
+//OrbitalBody(name, GetPlanetPhysicalProperties(name), ASTRO_MU_SUN, OrbitalElements(), epoch),
+OrbitalBody(name, PhysicalProperties(), 1.0, OrbitalElements(), epoch),
 m_id(ConvertPlanetName2Identifier(name))
 {
    Initialize(m_id);
@@ -113,12 +116,27 @@ std::string Planet::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
+void Planet::VQueryPhysicalProperties()
+{
+   const auto& physicalProperties = GetPlanetPhysicalProperties(GetName());
+   SetPhysicalProperties(physicalProperties);
+}
+
+////////////////////////////////////////////////////////////
+void Planet::VQueryCentralBodyMu()
+{
+   SetGravitationalParameterCentralBody(ASTRO_MU_SUN);
+}
+
+////////////////////////////////////////////////////////////
 void Planet::Initialize(Planet::PlanetId planetId)
 {
    // Initialize ephemeris
    SetEphemeris(std::make_shared<JplApproximateEphemeris>());
 
-   // Initialize orbital elements based on given epoch
+   // Queue up an ephemeris query for the physical properties and orbital elements
+   QueryPhysicalProperties();
+   QueryCentralBodyMu();
    QueryOrbitalElements(GetEpoch());
 }
 

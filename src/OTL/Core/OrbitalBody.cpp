@@ -182,12 +182,14 @@ const std::string& OrbitalBody::GetName() const
 ////////////////////////////////////////////////////////////
 const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
 {
+   ExecuteDelayedEphemerisQuery("PhysicalProperties");
    return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
 double OrbitalBody::GetGravitationalParameterCentralBody() const
 {
+   ExecuteDelayedEphemerisQuery("CentralBodyMu");
    return m_orbit.GetMu();
 }
 
@@ -328,7 +330,8 @@ void OrbitalBody::QueryEphemeris(const Epoch& epoch, const EphemerisQueryType& q
 void OrbitalBody::QueryOrbitalElements(const Epoch& epoch)
 {
    m_epoch = epoch;
-   m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch);
+   m_ephemerisQueue["Orbit"] = std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch);
+   //m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch);
    //VQueryOrbitalElements(epoch);
 }
 
@@ -336,8 +339,21 @@ void OrbitalBody::QueryOrbitalElements(const Epoch& epoch)
 void OrbitalBody::QueryStateVector(const Epoch& epoch)
 {
    m_epoch = epoch;
-   m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryStateVector, this, epoch);
+   m_ephemerisQueue["Orbit"] = std::bind(&OrbitalBody::VQueryStateVector, this, epoch);
+   //m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryStateVector, this, epoch);
    //VQueryStateVector(epoch);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::QueryPhysicalProperties()
+{
+   m_ephemerisQueue["PhysicalProperties"] = std::bind(&OrbitalBody::VQueryPhysicalProperties, this);
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::QueryCentralBodyMu()
+{
+   m_ephemerisQueue["CentralBodyMu"] = std::bind(&OrbitalBody::VQueryCentralBodyMu, this);
 }
 
 ////////////////////////////////////////////////////////////
@@ -434,9 +450,34 @@ void OrbitalBody::VQueryStateVector(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
-bool OrbitalBody::VInitializeEphemeris()
+void OrbitalBody::VQueryPhysicalProperties()
 {
-   return true;
+   if (m_ephemeris)
+   {
+      //m_physicalProperties = m_ephemeris->GetPhysicalProperties(m_name);
+   }
+   else
+   {
+      OTL_ERROR() << "Failed to query physical properties for orbital body " << Bracket(m_name) << ": Invalid ephemeris pointer.";
+   }
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::VQueryCentralBodyMu()
+{
+
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetPhysicalProperties(const PhysicalProperties& physicalProperties)
+{
+   m_physicalProperties = physicalProperties;
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetGravitationalParameterCentralBody(double centralBodyMu)
+{
+   m_orbit.SetMu(centralBodyMu);
 }
 
 ////////////////////////////////////////////////////////////
@@ -454,10 +495,27 @@ void OrbitalBody::PropagateEpoch(const Time& timeDelta)
 ////////////////////////////////////////////////////////////
 void OrbitalBody::ExecuteDelayedEphemerisQuery() const
 {
-   if (m_delayedEphemerisQuery)
+   auto it = m_ephemerisQueue.begin();
+   while (it != m_ephemerisQueue.end())
    {
-      m_delayedEphemerisQuery(m_epoch);
-      m_delayedEphemerisQuery = nullptr;
+      it->second();
+      it = m_ephemerisQueue.erase(it);
+   }
+   //if (m_delayedEphemerisQuery)
+   //{
+   //   m_delayedEphemerisQuery();
+   //   m_delayedEphemerisQuery = nullptr;
+   //}
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::ExecuteDelayedEphemerisQuery(const std::string& name) const
+{
+   auto it = m_ephemerisQueue.find(name);
+   if (it != m_ephemerisQueue.end())
+   {
+      it->second();
+      m_ephemerisQueue.erase(it);
    }
 }
 

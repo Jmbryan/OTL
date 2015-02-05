@@ -30,6 +30,8 @@
 #include <fstream>
 #include <vector>
 
+#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
+
 namespace otl
 {
 
@@ -114,6 +116,13 @@ void JplApproximateEphemerisIO::GetOrbitalElements(const std::string& name, cons
    orbitalElements.argOfPericenter     = w         * MATH_DEG_TO_RAD;
    orbitalElements.trueAnomaly         = ta;
 }
+
+////////////////////////////////////////////////////////////
+//PhysicalProperties JplApproximateEphemerisIO::GetPhysicalProperties(const std::string& name)
+//{
+//   PhysicalProperties properties(1.0, 1.0);
+//   return properties;
+//}
 
 ////////////////////////////////////////////////////////////
 bool JplApproximateEphemerisIO::IsValidName(const std::string& name) const

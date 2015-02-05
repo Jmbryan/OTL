@@ -28,6 +28,8 @@
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
 
+#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
+
 namespace otl
 {
 
@@ -149,5 +151,20 @@ void JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const
          " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
    }
 }
+
+////////////////////////////////////////////////////////////
+//PhysicalProperties JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name)
+//{
+//   try
+//   {
+//      return g_ephemerisDatabase->GetPhysicalProperties(name);
+//   }
+//   catch (std::exception ex)
+//   {
+//      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+//         << Bracket(name) << ": " << Bracket(ex.what());
+//      return PhysicalProperties();
+//   }
+//}
 
 } // namespace otl

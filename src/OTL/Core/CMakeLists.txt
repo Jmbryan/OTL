@@ -41,8 +41,6 @@ set(SRC
 	${INCROOT}/MGADSMTrajectory.h
 	${SRCROOT}/MpcorbEphemeris.cpp
 	${INCROOT}/MpcorbEphemeris.h
-	${SRCROOT}/NaturalBody.cpp
-	${INCROOT}/NaturalBody.h
 	${SRCROOT}/Orbit.cpp
 	${INCROOT}/Orbit.h
 	${SRCROOT}/OrbitalBody.cpp	
@@ -53,8 +51,6 @@ set(SRC
 	${INCROOT}/Planet.h
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
-	${SRCROOT}/SpiceEphemeris.cpp
-	${INCROOT}/SpiceEphemeris.h
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp
@@ -99,6 +95,17 @@ else()
 	source_group("unix" FILES ${PLATFORM_SRC})
 endif()
 
+# add SPICE files
+if(OTL_BUILD_SPICE)
+	set(SPICE_SRC
+		${SRCROOT}/SpiceBody.cpp
+		${INCROOT}/SpiceBody.h	
+		${SRCROOT}/SpiceEphemeris.cpp
+		${INCROOT}/SpiceEphemeris.h	
+	)
+	source_group("spice" FILES ${SPICE_SRC})
+endif()
+
 # add the built-in external libraries paths
 include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
 if(OTL_BUILD_SPICE)
@@ -108,13 +115,12 @@ endif()
 # add the OTL sources path
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-set(CORE_DEPENDS)
 if(OTL_BUILD_SPICE)
 	set(CORE_DEPENDS cspice)
 endif()
 
 # define the otl-core target
 otl_add_library(otl-core
-                SOURCES ${SRC} ${INTERNAL_SRC} ${PLATFORM_SRC}
+                SOURCES ${SRC} ${INTERNAL_SRC} ${PLATFORM_SRC} ${SPICE_SRC}
 				FOLDER "OTL"
 				DEPENDS ${CORE_DEPENDS})

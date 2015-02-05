@@ -4,6 +4,7 @@
 
 #include <OTL/Core/MGADSMTrajectory.h>
 #include <OTL/Core/Planet.h>
+#include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/Orbit.h>
 
 #include <OTL/Core/KeplerianPropagator.h>
@@ -42,8 +43,16 @@ int main()
        auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
-       Planet p("Mars", Epoch());
-       p.SetEphemeris(jplEphemeris);
+       auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
+       auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+
+       //Planet p("Mars");
+       //p.SetEphemeris(jplEphemeris);
+
+       SpiceBody p("Earth", spiceEphemeris);
+
+       auto prop = p.GetPhysicalProperties();
+       auto cbmu = p.GetGravitationalParameterCentralBody();
        auto coes = p.GetOrbit().GetOrbitalElements();
        auto sv = p.GetOrbit().GetStateVector();
 

@@ -94,7 +94,7 @@ public:
    /// \param planetId Identifier of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(PlanetId planetId, const Epoch& epoch = Epoch::Today());
+   explicit Planet(PlanetId planetId, const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet according to name
@@ -102,10 +102,14 @@ public:
    /// \param name Name of the planet to be created
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(const std::string& name, const Epoch& epoch = Epoch::Today());
+   explicit Planet(const std::string& name, const Epoch& epoch = Epoch::MJD2000(0.0));
 
    std::string ToString() const;
    std::string ToDetailedString(std::string prefix = "") const;
+
+protected:
+   virtual void VQueryPhysicalProperties() override;
+   virtual void VQueryCentralBodyMu() override;
 
 private:
    ////////////////////////////////////////////////////////////
