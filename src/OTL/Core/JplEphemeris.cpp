@@ -198,4 +198,30 @@ void JplEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epo
     orbitalElements = ConvertStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
 }
 
+////////////////////////////////////////////////////////////
+void JplEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+{
+   auto entity = g_entityDictionary[name];
+
+   double pos[3], vel[3];
+   try
+   {
+      g_ephemerisDatabase->getPosVel(epoch.GetJD(), entity, pos, vel);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve state vector for " << Bracket(name) <<
+         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
+   }
+
+   StateVector cartesianStateVector;
+   for (int i = 0; i < 3; ++i)
+   {
+      cartesianStateVector.position[i] = pos[i];
+      cartesianStateVector.velocity[i] = vel[i] / MATH_DAY_TO_SEC;
+   }
+
+   stateVector = cartesianStateVector;
+}
+
 } // namespace otl

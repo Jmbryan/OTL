@@ -167,4 +167,17 @@ void JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const
 //   }
 //}
 
+void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+{
+   try
+   {
+      g_ephemerisDatabase->GetStateVector(name, epoch, stateVector);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve state vector for " << Bracket(name) <<
+         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
+   }
+}
+
 } // namespace otl

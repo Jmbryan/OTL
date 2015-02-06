@@ -137,22 +137,45 @@ double Orbit::GetMu() const
 ////////////////////////////////////////////////////////////
 double Orbit::GetOrbitRadius() const
 {
-   if (m_stateVectorDirty)
+   //if (m_stateVectorDirty)
+   //{
+   //   UpdateStateVector();
+   //   UpdateOrbitRadius();
+   //}
+
+   switch (m_stateVectorr.GetType())
    {
-      UpdateStateVector();
-      UpdateOrbitRadius();
+   case StateVectorType::Orbital:
+      break;
+
+   case StateVectorType::Cartesian:
+      return m_orbitRadius;
+      //return m_stateVectorr.GetCartesianStateVector().position.norm();
+      break;
    }
+
    return m_orbitRadius;
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Type Orbit::GetOrbitType() const
 {
-   if (m_orbitalElementsDirty)
-   {
-      UpdateOrbitalElements();
-      UpdateOrbitType();
-   }
+   //if (m_orbitalElementsDirty)
+   //{
+   //   UpdateOrbitalElements();
+   //   UpdateOrbitType();
+   //}
+   
+   //switch (m_stateVectorr.GetType())
+   //{
+   //case StateVectorType::Orbital:
+   //   break;
+
+   //case StateVectorType::Cartesian:
+   //   return m_stateVectorr.GetCartesianStateVector().position.norm();
+   //   break;
+   //}
+
    return m_orbitType;
 }
 
@@ -197,30 +220,43 @@ bool Orbit::IsType(Type orbitType) const
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::Propagate(const Time& timeDelta, const PropagationType& propagationType)
+void Orbit::Propagate(const Time& timeDelta)
 {
-   if (m_propagator)
-   {
-      switch (propagationType)
-      {
-      case PropagationType::OrbitalElements:
-         PropagateOrbitalElements(timeDelta);
-         break;
+   // Update the elapsed time since the reference state vector
+   m_elapsedPropagationTime += timeDelta;
 
-      case PropagationType::StateVector:
-         PropagateStateVector(timeDelta);
-         break;
+   // Propagate from the reference orbital elements and update orbit type
+   m_propagator->Propagate(m_referenceStateVectorr, m_elapsedPropagationTime, m_mu, m_stateVectorr);
 
-      default:
-         OTL_ERROR() << "Failed to propagate orbit. Invalid propagation type";
-         break;
-      }
-   }
-   else
-   {
-       OTL_ERROR() << "Failed to propagate orbit. Invalid propagator pointer";
-   }
+   // Update orbit type
+   //UpdateOrbitType();
 }
+
+////////////////////////////////////////////////////////////
+//void Orbit::Propagate(const Time& timeDelta, const PropagationType& propagationType)
+//{
+//   if (m_propagator)
+//   {
+//      switch (propagationType)
+//      {
+//      case PropagationType::OrbitalElements:
+//         PropagateOrbitalElements(timeDelta);
+//         break;
+//
+//      case PropagationType::StateVector:
+//         PropagateStateVector(timeDelta);
+//         break;
+//
+//      default:
+//         OTL_ERROR() << "Failed to propagate orbit. Invalid propagation type";
+//         break;
+//      }
+//   }
+//   else
+//   {
+//       OTL_ERROR() << "Failed to propagate orbit. Invalid propagator pointer";
+//   }
+//}
 
 void Orbit::PropagateOrbitalElements(const Time& timeDelta)
 {

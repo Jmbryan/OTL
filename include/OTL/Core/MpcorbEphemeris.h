@@ -162,6 +162,8 @@ protected:
    ////////////////////////////////////////////////////////////
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
+
 private:
    std::string m_dataFilename;                  ///< Full path to the ephemeris data file
    PropagatorPointer m_propagator;              ///< Smart pointer to propagator algorithm for propagating the reference orbits

@@ -185,4 +185,33 @@ void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& 
    }
 }
 
+////////////////////////////////////////////////////////////
+void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+{
+   // Get the reference epoch and orbital elements
+   try
+   {
+      g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
+      g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
+      return;
+   }
+
+   // Time since the reference epoch
+   auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
+
+   // Propagate the state vector to the desired epoch
+   if (m_propagator)
+   {
+      m_propagator->Propagate(test::StateVector(m_referenceOrbitalElements), timeDelta, ASTRO_MU_SUN, stateVector);
+   }
+   else
+   {
+      OTL_ERROR() << "Invalid propagator pointer";
+   }
+}
+
 } // namespace otl

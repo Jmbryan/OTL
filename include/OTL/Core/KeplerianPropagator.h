@@ -74,6 +74,8 @@ public:
    virtual ~KeplerianPropagator();
 
 protected:
+   virtual void VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector) override;
+
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital elements in time using Kepler's equations
    ///

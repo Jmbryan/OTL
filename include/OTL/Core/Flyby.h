@@ -58,11 +58,11 @@ public:
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
    ///
-   /// \param approachVelocity Absolute velocity before the flyby
+   /// \param approachVelocity Absolute cartesian velocity before the flyby
    /// \param orbitalBody OrbitalBody to flyby
    /// \param altitude Minimum altitude of the flyby hyperbola
    /// \param BPlaneAngle Orientation of the flyby hyperbola
-   /// \param [out] departureVelocity Absolute velocity after the flyby
+   /// \param [out] departureVelocity Absolute cartesian velocity after the flyby
    ///
    ////////////////////////////////////////////////////////////
    virtual void Evaluate(const Vector3d& approachVelocity,

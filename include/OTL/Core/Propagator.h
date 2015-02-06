@@ -41,6 +41,9 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~IPropagator();
 
+   test::StateVector Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu);
+   void Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector);
+
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital elements in time
    ///
@@ -72,6 +75,9 @@ public:
    StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
 
 protected:
+
+   virtual void VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector) = 0;
+
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital elements in time
    ///

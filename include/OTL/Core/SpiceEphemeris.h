@@ -174,6 +174,8 @@ protected:
    ////////////////////////////////////////////////////////////
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
+
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Calculate SPICE ephemeris time from epoch

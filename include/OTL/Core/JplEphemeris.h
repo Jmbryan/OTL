@@ -165,6 +165,8 @@ protected:
    ////////////////////////////////////////////////////////////
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
+   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
+
 private:
    std::string m_dataFilename;               ///< Full path to the ephemeris data file
    JplEphemerisConverterPointer m_converter; ///< Smart pointer to the converter helper object

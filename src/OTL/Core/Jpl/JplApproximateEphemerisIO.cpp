@@ -125,6 +125,66 @@ void JplApproximateEphemerisIO::GetOrbitalElements(const std::string& name, cons
 //}
 
 ////////////////////////////////////////////////////////////
+void JplApproximateEphemerisIO::GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+{
+   // Number of centuries since J2000
+   double T = (epoch.GetJD() - 2451545.0) / 36525.0;
+
+   // Compute the orbital elements at the given epoch
+   // The formula is element = element0 + elementRate * T
+   // a has units AU
+   // e has no units
+   // all other elemnets have units of degrees
+   const auto& data = g_database[name];
+   double a        = data[0] + data[6]  * T;
+   double e        = data[1] + data[7]  * T;
+   double I        = data[2] + data[8]  * T;
+   double L        = data[3] + data[9]  * T;
+   double longPeri = data[4] + data[10] * T;
+   double longNode = data[5] + data[11] * T;
+
+   // Extract the additional terms used for computing the
+   // mean anomaly
+   double b = data[12];
+   double c = data[13];
+   double s = data[14];
+   double f = data[15];
+
+   // Compute argument of pericenter (degrees)
+   double w = longPeri - longNode;
+
+   // Compute mean anomaly (degrees)
+   double M = L - longPeri +
+   b * SQR(T) +
+   c * cos(f * T) +
+   s * sin(f * T);
+
+   // Compute modulo of the mean anomaly and then limit to -180..180 degrees
+   M = Modulo(M, 360.0);
+   if (M > 180.0)
+   {
+      M -= 360.0;
+   }
+
+   // Convert mean anomaly to eccentric anomaly (radians)
+   double E = m_keplersEquation->Evaluate(e, M * MATH_DEG_TO_RAD);
+
+   // Convert eccentric anomaly to true anomaly (radians)
+   double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
+
+   // Package the orbital elements after converting to standard units (km, rad)
+   OrbitalElements orbitalElements;
+   orbitalElements.semiMajorAxis       = a         * ASTRO_AU_TO_KM;
+   orbitalElements.eccentricity        = e;
+   orbitalElements.trueAnomaly = ta;
+   orbitalElements.inclination         = I         * MATH_DEG_TO_RAD;
+   orbitalElements.lonOfAscendingNode  = longNode  * MATH_DEG_TO_RAD;
+   orbitalElements.argOfPericenter     = w         * MATH_DEG_TO_RAD;
+
+   stateVector = orbitalElements;
+}
+
+////////////////////////////////////////////////////////////
 bool JplApproximateEphemerisIO::IsValidName(const std::string& name) const
 {
    const auto it = g_database.find(name);

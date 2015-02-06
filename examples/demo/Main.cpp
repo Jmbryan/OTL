@@ -43,11 +43,12 @@ int main()
        auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
-       auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
-       auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+       //auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
+       //auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+       //SpiceBody p("Earth", spiceEphemeris);
 
-       //Planet p("Mars");
-       //p.SetEphemeris(jplEphemeris);
+       Planet p("Mars");
+       p.SetEphemeris(jplEphemeris);
 
        OrbitalElements coes0(1000, 0.1, 3.14, 0, 0, 0), coesf;
        StateVector sv0(1, 2, 3, 4, 5, 6), svf;
@@ -73,11 +74,6 @@ int main()
      
        auto coesc = stateVector.ToOrbitalElements(ASTRO_MU_EARTH);
        auto svc = stateVector.ToCartesianStateVector(ASTRO_MU_EARTH);
-
-       keplerian::SimpleOrbit simpleOrbit;
-       auto sizeofso = sizeof(simpleOrbit);
-
-       SpiceBody p("Earth", spiceEphemeris);
 
        auto prop = p.GetPhysicalProperties();
        auto cbmu = p.GetGravitationalParameterCentralBody();

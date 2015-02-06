@@ -46,6 +46,7 @@ public:
 
    void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
    //PhysicalProperties GetPhysicalProperties(const std::string& name);
+   void GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector);
 
    bool IsValidName(const std::string& name) const;
    bool IsValidEpoch(const Epoch& epoch) const;

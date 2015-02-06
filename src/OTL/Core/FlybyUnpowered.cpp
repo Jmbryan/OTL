@@ -33,10 +33,10 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
-                         const OrbitalBody& orbitalBody,
-                         double altitude,
-                         double BPlaneAngle,
-                         Vector3d& departureVelocity)
+                              const OrbitalBody& orbitalBody,
+                              double altitude,
+                              double BPlaneAngle,
+                              Vector3d& departureVelocity)
 {
    const Vector3d& planetVelocity = orbitalBody.GetOrbit().GetVelocity();
 

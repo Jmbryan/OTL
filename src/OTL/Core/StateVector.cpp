@@ -23,144 +23,139 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/StateVector.h>
-#include <OTL/Core/Base.h>
+#include <OTL/Core/CartesianStateVector.h>
+#include <OTL/Core/OrbitalElements.h>
+#include <OTL/Core/Conversion.h>
 
 namespace otl
 {
 
-////////////////////////////////////////////////////////////
+namespace test
+{
+
 StateVector::StateVector() :
-position({0.0, 0.0, 0.0}), velocity({0.0, 0.0, 0.0})
+   m_type(StateVectorType::Invalid)
 {
-
+   m_state.fill(0.0);
 }
 
-////////////////////////////////////////////////////////////
-StateVector::StateVector(const StateVector& other) :
-position(other.position),
-velocity(other.velocity)
+StateVector::StateVector(const StateVector& other)
 {
-
+   *this = other;
 }
 
-////////////////////////////////////////////////////////////
-StateVector::StateVector(const StateVector&& other) :
-position(std::move(other.position)),
-velocity(std::move(other.velocity))
+StateVector::StateVector(const Vector6d& genericStateVector)
 {
-
+   *this = genericStateVector;
 }
 
-////////////////////////////////////////////////////////////
-StateVector::StateVector(const Vector3d& _position, const Vector3d& _velocity) :
-position(_position),
-velocity(_velocity)
+StateVector::StateVector(const OrbitalElements& orbitalElements)
 {
-
+   *this = orbitalElements;
 }
 
-////////////////////////////////////////////////////////////
-StateVector::StateVector(double x, double y, double z, double vx, double vy, double vz) :
-position({ x, y, z }),
-velocity({ vx, vy, vz })
+StateVector::StateVector(const CartesianStateVector& cartesianStateVector)
 {
-
+   *this = cartesianStateVector;
 }
 
-////////////////////////////////////////////////////////////
-StateVector::StateVector(std::initializer_list<double> list)
-{
-   auto it = list.begin();
-   int index = 0;
-   for (; it != list.end() && index < 3; ++it, ++index)
-   {
-      position[index] = static_cast<double>(*it);
-   }
-   for (; index < 3; ++index)
-   {
-      position[index] = 0.0;
-   }
-
-   index = 0;
-   for (; it != list.end() && index < 3; ++it, ++index)
-   {
-      velocity[index] = static_cast<double>(*it);
-   } 
-   for (; index < 3; ++index)
-   {
-      velocity[index] = 0.0;
-   }
-}
-
-////////////////////////////////////////////////////////////
 StateVector& StateVector::operator =(const StateVector& other)
 {
    if (this != &other)
    {
-      position = other.position;
-      velocity = other.velocity;
+      m_type = other.GetType();
+      m_state = other.GetGenericStateVector();
    }
    return *this;
 }
 
-////////////////////////////////////////////////////////////
-StateVector& StateVector::operator =(const StateVector&& other)
+StateVector& StateVector::operator =(const Vector6d& genericStateVector)
 {
-   if (this != &other)
+   m_type = StateVectorType::Generic;
+   m_state = genericStateVector;
+   return *this;
+}
+
+StateVector& StateVector::operator =(const CartesianStateVector& cartesianStateVector)
+{
+   m_type = StateVectorType::Cartesian;
+   m_state.segment(0, 3) = cartesianStateVector.position;
+   m_state.segment(3, 3) = cartesianStateVector.velocity;
+   return *this;
+}
+
+StateVector& StateVector::operator =(const OrbitalElements& orbitalElements)
+{
+   m_type = StateVectorType::Orbital;
+   m_state[0] = orbitalElements.semiMajorAxis;
+   m_state[1] = orbitalElements.eccentricity;
+   m_state[2] = orbitalElements.trueAnomaly;
+   m_state[3] = orbitalElements.inclination;
+   m_state[4] = orbitalElements.argOfPericenter;
+   m_state[5] = orbitalElements.lonOfAscendingNode;
+   return *this;
+}
+
+StateVectorType StateVector::GetType() const
+{
+   return m_type;
+}
+
+Vector6d StateVector::GetGenericStateVector() const
+{
+   return m_state;
+}
+
+CartesianStateVector StateVector::GetCartesianStateVector() const
+{
+   OTL_ASSERT(m_type == StateVectorType::Cartesian, "Invalid state vector type");
+   return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
+}
+
+OrbitalElements StateVector::GetOrbitalElements() const
+{
+   OTL_ASSERT(m_type == StateVectorType::Orbital, "Invalid state vector type");
+   return OrbitalElements(m_state[0], m_state[1], m_state[2], m_state[3], m_state[4], m_state[5]);
+}
+
+CartesianStateVector StateVector::ToCartesianStateVector(double mu) const
+{
+   switch (m_type)
    {
-      position = std::move(other.position);
-      velocity = std::move(other.velocity);
+   case StateVectorType::Cartesian:
+      return GetCartesianStateVector();
+      break;
+
+   case StateVectorType::Orbital:
+      return ConvertOrbitalElements2StateVector(GetOrbitalElements(), mu);
+      break;
+
+   default:
+      OTL_ERROR() << "Failed to convert to state vector. Invalid or unknown state vector type";
+      return CartesianStateVector();
+      break;
    }
-   return *this;
 }
 
-////////////////////////////////////////////////////////////
-bool StateVector::IsZero() const
+OrbitalElements StateVector::ToOrbitalElements(double mu) const
 {
-   return (position.isZero() && velocity.isZero());
+   switch (m_type)
+   {
+   case StateVectorType::Orbital:
+      return GetOrbitalElements();
+      break;
+
+   case StateVectorType::Cartesian:
+      //return ConvertStateVector2OrbitalElements(GetCartesianStateVector(), mu);
+      break;
+
+   default:
+      OTL_ERROR() << "Failed to convert to orbital elements. Invalid or unknown state vector type";
+      return OrbitalElements();
+      break;
+   }
 }
 
-////////////////////////////////////////////////////////////
-std::string StateVector::ToString() const
-{
-   std::ostringstream os;
-   os << "x=" << position.x() << " "
-      << "y=" << position.y() << " "
-      << "z=" << position.z() << " "
-      << "vx=" << velocity.x() << " "
-      << "vy=" << velocity.y() << " "
-      << "vz=" << velocity.z();
-
-   return os.str();
-}
-
-////////////////////////////////////////////////////////////
-std::string StateVector::ToDetailedString(std::string prefix) const
-{
-   std::ostringstream os;
-   os << prefix << "Position:" << std::endl;
-   os << prefix << "   X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
-   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
-   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
-   os << prefix << "Velocity:" << std::endl;
-   os << prefix << "   X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
-   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
-   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
-
-   return os.str();
-}
-
-////////////////////////////////////////////////////////////
-bool operator==(const StateVector& lhs, const StateVector& rhs)
-{
-   return (lhs.position.isApprox(rhs.position, 2.0 * MATH_EPSILON) &&
-           lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
-}
-
-////////////////////////////////////////////////////////////
-bool operator!=(const StateVector& lhs, const StateVector& rhs)
-{
-   return !(lhs == rhs);
-}
+} // namespace test
 
 } // namespace otl

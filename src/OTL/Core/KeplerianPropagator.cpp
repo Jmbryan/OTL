@@ -44,6 +44,59 @@ KeplerianPropagator::~KeplerianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
+void KeplerianPropagator::VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector)
+{
+   // Convert the state vector to orbital elements
+   const OrbitalElements& initialOrbitalElements = initialStateVector.ToOrbitalElements(mu);
+
+   // Unpack relevent orbital elements
+   const double a = initialOrbitalElements.semiMajorAxis;
+   const double e = initialOrbitalElements.eccentricity;
+   const double TA1 = initialOrbitalElements.trueAnomaly;
+
+   // Solve Kepler's Equation depending on orbit type
+   double TA2 = 0.0;
+   if (e < (1.0 - MATH_TOLERANCE)) // Circular or elliptical
+   {
+      double n = sqrt(mu / pow(a, 3.0));
+      double E0 = ConvertTrueAnomaly2EccentricAnomaly(e, TA1);
+      double M0 = E0 - e*sin(E0);
+      double M = M0 + n * timeDelta.Seconds();
+      double E = m_keplerElliptical.Evaluate(e, M);
+      TA2 = ConvertEccentricAnomaly2TrueAnomaly(e, E);
+   }
+   else if (e > (1.0 + MATH_TOLERANCE)) // Hyperbolic
+   {
+      double n = sqrt(mu / pow(-a, 3.0));
+      double H0 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA1);
+      double M0 = e * sinh(H0) - H0;
+      double M = M0 + n * timeDelta.Seconds();
+      double H = m_keplerHyperbolic.Evaluate(e, M);
+      TA2 = ConvertHyperbolicAnomaly2TrueAnomaly(e, H);
+   }
+   else // Parabolic
+   {
+      OTL_ERROR() << "Parabolic orbits are not implemented yet";
+      //auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu); // this cannot be necessary
+      //double h = stateVector.position.cross(stateVector.velocity).norm();
+      //double p = SQR(h) / mu;
+      //double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA1);
+      //double M0 = B0 + pow(B0, 3.0) / 3.0;
+      //double B = m_keplerParabolic.Evaluate(p, timeDelta);
+      //TA2 = ConvertParabolicAnomaly2TrueAnomaly(B);
+   }
+
+   finalStateVector = OrbitalElements(
+      a,
+      e,
+      TA2,
+      initialOrbitalElements.inclination,
+      initialOrbitalElements.argOfPericenter,
+      initialOrbitalElements.lonOfAscendingNode);
+}
+
+
+////////////////////////////////////////////////////////////
 OrbitalElements KeplerianPropagator::VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu)
 {
    // Unpack the inputs

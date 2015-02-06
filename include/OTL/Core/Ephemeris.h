@@ -104,6 +104,9 @@ public:
 
     //PhysicalProperties GetPhysicalProperties(const std::string& name);
 
+    test::StateVector GetStateVector(const std::string& name, const Epoch& epoch);
+    void GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector);
+
 protected:
     virtual void VLoad() = 0;
     virtual void VInitialize() = 0;
@@ -113,7 +116,10 @@ protected:
     virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) = 0;
     virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
     virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
+
+
     //virtual PhysicalProperties VGetPhysicalProperties(const std::string& name);
+    virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) = 0;
 
 private:
     void Initialize();

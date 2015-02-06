@@ -212,6 +212,32 @@ void SpiceEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& e
 }
 
 ////////////////////////////////////////////////////////////
+void SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+{
+   std::string targetBody = g_bodyDictionary[name];
+   double ephemerisTime = CalculateEphemerisTime(epoch);
+   double state[6];
+   double lightTime;
+
+   spkezr_c(targetBody.c_str(),
+            ephemerisTime,
+            m_referenceFrame.c_str(),
+            m_abberationCorrections.c_str(),
+            m_observerBody.c_str(),
+            state,
+            &lightTime);
+
+   StateVector cartesianStateVector;
+   for (int i = 0; i < 3; ++i)
+   {
+      cartesianStateVector.position[i] = state[i];
+      cartesianStateVector.velocity[i] = state[i + 3];
+   }
+
+   stateVector = cartesianStateVector;
+}
+
+////////////////////////////////////////////////////////////
 double SpiceEphemeris::CalculateEphemerisTime(const Epoch& epoch) const
 {
    return (epoch.GetJD() - j2000_c()) * spd_c();

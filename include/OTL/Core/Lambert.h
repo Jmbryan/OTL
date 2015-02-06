@@ -55,14 +55,14 @@ public:
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
    ///
-   /// \param initialPosition Vector3d consisting of the initial position
-   /// \param finalPosition Vector3d consisting of the final position
+   /// \param initialPosition Vector3d consisting of the initial cartesian position
+   /// \param finalPosition Vector3d consisting of the final cartesian position
    /// \param timeDelta Total time of flight between initial and final positions
    /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
    /// \param maxRevolutions Maximum number of revolutions allowed
    /// \param mu Gravitational parameter of the central body
-   /// \param [out] initialVelocity Vector3d consisting of computed initial velocity
-   /// \param [out] finalVelocity Vector3d consisting of computed final velocity
+   /// \param [out] initialVelocity Vector3d consisting of computed initial cartesian velocity
+   /// \param [out] finalVelocity Vector3d consisting of computed final cartesian velocity
    ///
    ////////////////////////////////////////////////////////////
    virtual void Evaluate(const Vector3d& initialPosition,
