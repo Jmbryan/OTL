@@ -49,6 +49,34 @@ int main()
        //Planet p("Mars");
        //p.SetEphemeris(jplEphemeris);
 
+       OrbitalElements coes0(1000, 0.1, 3.14, 0, 0, 0), coesf;
+       StateVector sv0(1, 2, 3, 4, 5, 6), svf;
+       otl::test::StateVector stateVector;
+       auto sizeofos = sizeof(stateVector);
+
+       stateVector = coes0;
+       auto type1 = stateVector.GetType();
+       //orbitState = sv0;
+       auto type2 = stateVector.GetType();
+
+       auto gen = stateVector.GetGenericStateVector();
+       switch (stateVector.GetType())
+       {
+       case StateVectorType::Orbital:
+          coesf = stateVector.GetOrbitalElements();
+          break;
+
+       case StateVectorType::Cartesian:
+          svf = stateVector.GetCartesianStateVector();
+          break;
+       }
+     
+       auto coesc = stateVector.ToOrbitalElements(ASTRO_MU_EARTH);
+       auto svc = stateVector.ToCartesianStateVector(ASTRO_MU_EARTH);
+
+       keplerian::SimpleOrbit simpleOrbit;
+       auto sizeofso = sizeof(simpleOrbit);
+
        SpiceBody p("Earth", spiceEphemeris);
 
        auto prop = p.GetPhysicalProperties();

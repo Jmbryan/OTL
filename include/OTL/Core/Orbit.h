@@ -25,6 +25,8 @@
 #pragma once
 #include <OTL/Core/Base.h>
 
+#include <OTL/Core/Conversion.h>
+
 namespace otl
 {
 
@@ -32,8 +34,310 @@ namespace otl
 class IPropagator;
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
+enum class StateVectorType
+{
+   Invalid = -1,  ///< Invalid state vector type
+   Generic,       ///< The state vector is represented as a Vector6d which is generic 6-dimensional vector
+   Cartesian,     ///< The state vector is represented as a CartesianStateVector consisting of 3-dimensional position and velocity vectors
+   Orbital,       ///< The state vector is represented as a OrbitalElements consisting of the 6 classic orbital elements
+   Count          ///< Number of state vector types
+};
+
+enum class RotationType
+{
+   Invalid = -1,
+   Generic,
+   Quaternion,
+   Matrix,
+   Euler,
+   Count
+};
+
+namespace test
+{
+
+struct AngularStateVector
+{
+   Quaterniond orientation;
+   Quaterniond velocity;
+};
+
+struct EulerAngles
+{
+   int a1;
+   int a2;
+   int a3;
+   Vector3d angles;
+
+   EulerAngles(const Vector3d& angles, int a1, int a2, int a3) :
+   angles(angles),
+   a1(a1),
+   a2(a2),
+   a3(a3)
+   {
+      OTL_ASSERT(a1 >= 1 && a1 <= 3, "Euler axis must be 1, 2, or 3");
+      OTL_ASSERT(a2 >= 1 && a2 <= 3, "Euler axis must be 1, 2, or 3");
+      OTL_ASSERT(a3 >= 1 && a3 <= 3, "Euler axis must be 1, 2, or 3");
+   }
+};
+
+class Rotation
+{
+public:
+
+   Rotation(const Rotation& other)
+   {
+      *this = other;
+   }
+
+   Rotation(const Quaterniond& quaternion)
+   {
+      *this = quaternion;
+   }
+
+   Rotation(const Matrix3d& rotationMatrix)
+   {
+      *this = rotationMatrix;
+   }
+
+   Rotation(const EulerAngles& eulerAngles)
+   {
+      *this = eulerAngles;
+   }
+
+   Rotation& operator =(const Rotation& other)
+   {
+      if (this != &other)
+      {
+         m_matrix = other.GetRawState();
+      }
+      return *this;
+   }
+
+   Rotation& operator =(const Quaterniond& quaternion)
+   {
+      m_matrix = quaternion.toRotationMatrix();
+      return *this;
+   }
+
+   Rotation& operator =(const EulerAngles& eulerAngles)
+   {
+      m_matrix = Eigen::AngleAxisd(eulerAngles.angles.x(), eulerAngles.a1 == 1 ? Vector3d::UnitX() : eulerAngles.a1 == 2 ? Vector3d::UnitY() : Vector3d::UnitZ()) *
+                 Eigen::AngleAxisd(eulerAngles.angles.y(), eulerAngles.a2 == 1 ? Vector3d::UnitX() : eulerAngles.a2 == 2 ? Vector3d::UnitY() : Vector3d::UnitZ()) *
+                 Eigen::AngleAxisd(eulerAngles.angles.z(), eulerAngles.a3 == 1 ? Vector3d::UnitX() : eulerAngles.a3 == 2 ? Vector3d::UnitY() : Vector3d::UnitZ());
+      return *this;
+   }
+
+   Rotation& operator =(const Matrix3d& rotationMatrix)
+   {
+      m_matrix = rotationMatrix;
+      return *this;
+   }
+
+   Quaterniond GetQuaternion() const
+   {
+      OTL_ASSERT(m_type == RotationType::Quaternion, "Invalid rotation type");
+      return Quaterniond(m_matrix);
+   }
+
+   Matrix3d GetRotationMatrix() const
+   {
+      OTL_ASSERT(m_type == RotationType::Matrix, "Invalid rotation type");
+      return m_matrix;
+   }
+
+   EulerAngles GetEulerAngles() const
+   {
+      OTL_ASSERT(m_type == RotationType::Euler, "Invalid rotation type");
+      return EulerAngles(m_matrix.eulerAngles(1, 2, 3), 1, 2, 3);
+   }
+
+   const Matrix3d& GetRawState() const
+   {
+      return m_matrix;
+   }
+
+private:
+   RotationType m_type;
+   Matrix3d m_matrix;
+};
+
+
+typedef otl::StateVector CartesianStateVector;
+
+class StateVector
+{
+public:
+   StateVector() :
+   m_type(StateVectorType::Invalid)
+   {
+      m_state.fill(0.0);
+   }
+
+   StateVector(const StateVector& other)
+   {
+      *this = other;
+   }
+
+   explicit StateVector(const Vector6d& genericStateVector)
+   {
+      *this = genericStateVector;
+   }
+
+   explicit StateVector(const OrbitalElements& orbitalElements)
+   {
+      *this = orbitalElements;
+   }
+
+   explicit StateVector(const CartesianStateVector& cartesianStateVector)
+   {
+      *this = cartesianStateVector;
+   }
+
+   StateVector& operator =(const StateVector& other)
+   {
+      if (this != &other)
+      {
+         m_type = other.GetType();
+         m_state = other.GetGenericStateVector();
+      }
+      return *this;
+   }
+
+   StateVector& operator =(const Vector6d& genericStateVector)
+   {
+      m_type = StateVectorType::Generic;
+      m_state = genericStateVector;
+      return *this;
+   }
+
+   StateVector& operator =(const CartesianStateVector& cartesianStateVector)
+   {
+      m_type = StateVectorType::Cartesian;
+      m_state.segment(0, 3) = cartesianStateVector.position;
+      m_state.segment(3, 3) = cartesianStateVector.velocity;
+      return *this;
+   }
+
+   StateVector& operator =(const OrbitalElements& orbitalElements)
+   {
+      m_type = StateVectorType::Orbital;
+      m_state[0] = orbitalElements.semiMajorAxis;
+      m_state[1] = orbitalElements.eccentricity;
+      m_state[2] = orbitalElements.trueAnomaly;
+      m_state[3] = orbitalElements.inclination;
+      m_state[4] = orbitalElements.argOfPericenter;
+      m_state[5] = orbitalElements.lonOfAscendingNode;
+      return *this;
+   }
+
+   Vector6d GetGenericStateVector() const
+   {
+      return m_state;
+   }
+
+   CartesianStateVector GetCartesianStateVector() const
+   {
+      OTL_ASSERT(m_type == StateVectorType::Cartesian, "Invalid state vector type");
+      return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
+   }
+
+   OrbitalElements GetOrbitalElements() const
+   {
+      OTL_ASSERT(m_type == StateVectorType::Orbital, "Invalid state vector type");
+      return OrbitalElements(m_state[0], m_state[1], m_state[2], m_state[3], m_state[4], m_state[5]);
+   }
+
+   CartesianStateVector ToCartesianStateVector(double mu) const
+   {
+      switch (m_type)
+      {
+      case StateVectorType::Cartesian:
+         return GetCartesianStateVector();
+         break;
+
+      case StateVectorType::Orbital:
+         return ConvertOrbitalElements2StateVector(GetOrbitalElements(), mu);
+         break;
+
+      default:
+         OTL_ERROR() << "Failed to convert to state vector. Invalid or unknown state vector type";
+         return CartesianStateVector();
+         break;
+      }
+   }
+
+   OrbitalElements ToOrbitalElements(double mu) const
+   {
+      switch (m_type)
+      {
+      case StateVectorType::Orbital:
+         return GetOrbitalElements();
+         break;
+
+      case StateVectorType::Cartesian:
+         //return ConvertStateVector2OrbitalElements(GetCartesianStateVector(), mu);
+         break;
+
+      default:
+         OTL_ERROR() << "Failed to convert to orbital elements. Invalid or unknown state vector type";
+         return OrbitalElements();
+         break;
+      }
+   }
+
+   StateVectorType GetType() const
+   {
+      return m_type;
+   }
+
+private:
+   StateVectorType m_type;
+   Vector6d m_state;
+};
+
+}
+
+
 namespace keplerian
 {
+
+class SimpleOrbit
+{
+public:
+   ////////////////////////////////////////////////////////////
+   /// \brief Orbit directions
+   ////////////////////////////////////////////////////////////
+   enum class Direction
+   {
+      Invalid = -1,  ///< Invalid orbit direction
+      Prograde,      ///< Prograde (counterclockwise as viewed from above the orbit)
+      Retrograde,    ///< Retrograde (clockwise as viewed from above the orbit)
+      Count          ///< Number of orbit directions
+   };
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Orbit types
+   ////////////////////////////////////////////////////////////
+   enum class Type
+   {
+      Invalid = -1,  ///< Invalid orbit type
+      Circular,      ///< Circular orbit (eccentricity equal to zero)
+      Elliptical,    ///< Elliptical orbit (eccentricity between zero and one)
+      Parabolic,     ///< Parabolic orbit (eccentricity equal to one)
+      Hyperbolic,    ///< Hyperbolic orbit (eccentricity greater than one)
+      Count          ///< Number of orbit types
+   };
+
+private:
+   mutable bool m_orbitalElementsDirty;                  ///< Flag which when TRUE indicates the orbital elements need to be updated
+   mutable bool m_stateVectorDirty;                      ///< Flag which when TRUE indicates the state vector needs to be updated
+   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   double m_mu;                                          ///< Gravitational parameter of the central body (kg^2/m^3)
+   mutable double m_orbitRadius;                         ///< Radius of the orbit (m)
+   mutable OrbitalElements m_orbitalElements;            ///< Orbital Elements representing the orbit
+   mutable StateVector m_stateVector;                    ///< State Vector representing the orbit
+};
 
 class OTL_CORE_API Orbit
 {
@@ -417,7 +721,10 @@ private:
    mutable OrbitalElements m_orbitalElements;            ///< Orbital Elements representing the orbit
    mutable OrbitalElements m_referenceOrbitalElements;   ///< Reference orbital elements
    mutable StateVector m_stateVector;                    ///< State Vector representing the orbit
-   mutable StateVector m_referenceStateVector;           ///< Reference state vector  
+   mutable StateVector m_referenceStateVector;           ///< Reference state vector 
+
+   //otl::test::StateVector m_stateVectorr;
+   //otl::test::StateVector m_referenceStateVectorr;
 };
 
 ////////////////////////////////////////////////////////////

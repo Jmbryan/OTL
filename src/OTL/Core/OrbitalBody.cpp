@@ -182,14 +182,14 @@ const std::string& OrbitalBody::GetName() const
 ////////////////////////////////////////////////////////////
 const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
 {
-   ExecuteDelayedEphemerisQuery("PhysicalProperties");
+   ExecuteDelayedCommand("PhysicalProperties");
    return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
 double OrbitalBody::GetGravitationalParameterCentralBody() const
 {
-   ExecuteDelayedEphemerisQuery("CentralBodyMu");
+   ExecuteDelayedCommand("CentralBodyMu");
    return m_orbit.GetMu();
 }
 
@@ -220,7 +220,7 @@ double OrbitalBody::GetGravitationalParameterCentralBody() const
 ////////////////////////////////////////////////////////////
 const keplerian::Orbit& OrbitalBody::GetOrbit() const
 {
-   ExecuteDelayedEphemerisQuery();
+   ExecuteAllDelayedCommands();
    return m_orbit;
 }
 
@@ -267,7 +267,7 @@ void OrbitalBody::Propagate(const Time& timeDelta, const PropagationType& propag
    }
    else
    {
-      ExecuteDelayedEphemerisQuery();
+      ExecuteAllDelayedCommands();
       VPropagate(timeDelta, propagationType);
    }
 }
@@ -288,7 +288,7 @@ void OrbitalBody::PropagateOrbitalElements(const Time& timeDelta)
    }
    else
    {
-      ExecuteDelayedEphemerisQuery();
+      ExecuteAllDelayedCommands();
       VPropagateOrbitalElements(timeDelta);
    }
 }
@@ -309,7 +309,7 @@ void OrbitalBody::PropagateStateVector(const Time& timeDelta)
    }
    else
    {
-      ExecuteDelayedEphemerisQuery();
+      ExecuteAllDelayedCommands();
       VPropagateStateVector(timeDelta);
    }
 }
@@ -330,30 +330,32 @@ void OrbitalBody::QueryEphemeris(const Epoch& epoch, const EphemerisQueryType& q
 void OrbitalBody::QueryOrbitalElements(const Epoch& epoch)
 {
    m_epoch = epoch;
-   m_ephemerisQueue["Orbit"] = std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch);
-   //m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch);
-   //VQueryOrbitalElements(epoch);
+   AddDelayedCommand("Orbit", std::bind(&OrbitalBody::VQueryOrbitalElements, this, epoch));
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::QueryStateVector(const Epoch& epoch)
 {
    m_epoch = epoch;
-   m_ephemerisQueue["Orbit"] = std::bind(&OrbitalBody::VQueryStateVector, this, epoch);
-   //m_delayedEphemerisQuery = std::bind(&OrbitalBody::VQueryStateVector, this, epoch);
-   //VQueryStateVector(epoch);
+   AddDelayedCommand("Orbit", std::bind(&OrbitalBody::VQueryStateVector, this, epoch));
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::QueryOrbit(const Epoch& epoch)
+{
+   AddDelayedCommand("Orbit", std::bind(&OrbitalBody::VQueryOrbit, this, epoch));
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::QueryPhysicalProperties()
 {
-   m_ephemerisQueue["PhysicalProperties"] = std::bind(&OrbitalBody::VQueryPhysicalProperties, this);
+   AddDelayedCommand("PhysicalProperties", std::bind(&OrbitalBody::VQueryPhysicalProperties, this));
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::QueryCentralBodyMu()
 {
-   m_ephemerisQueue["CentralBodyMu"] = std::bind(&OrbitalBody::VQueryCentralBodyMu, this);
+   AddDelayedCommand("CentralBodyMu", std::bind(&OrbitalBody::VQueryCentralBodyMu, this));
 }
 
 ////////////////////////////////////////////////////////////
@@ -401,13 +403,11 @@ void OrbitalBody::VQueryEphemeris(const Epoch& epoch, const EphemerisQueryType& 
    {
    case EphemerisQueryType::OrbitalElements:
       QueryOrbitalElements(epoch);
-      //m_delayedEphemerisQuery = std::bind(&OrbitalBody::QueryOrbitalElements, this, std::placeholders::_1);
       //VQueryOrbitalElements(epoch);
       break;
 
    case EphemerisQueryType::StateVector:
       QueryStateVector(epoch);
-      //m_delayedEphemerisQuery = std::bind(&OrbitalBody::QueryStateVector, this, std::placeholders::_1);
       //VQueryStateVector(epoch);
       break;
 
@@ -450,6 +450,19 @@ void OrbitalBody::VQueryStateVector(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
+void OrbitalBody::VQueryOrbit(const Epoch& epoch)
+{
+   if (m_ephemeris)
+   {
+      //m_physicalProperties = m_ephemeris->GetOrbit(m_name, epoch);
+   }
+   else
+   {
+      OTL_ERROR() << "Failed to query orbit for orbital body " << Bracket(m_name) << ": Invalid ephemeris pointer.";
+   }
+}
+
+////////////////////////////////////////////////////////////
 void OrbitalBody::VQueryPhysicalProperties()
 {
    if (m_ephemeris)
@@ -466,6 +479,12 @@ void OrbitalBody::VQueryPhysicalProperties()
 void OrbitalBody::VQueryCentralBodyMu()
 {
 
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::AddDelayedCommand(const std::string& name, const DelayedCommand& delayedCommand)
+{
+   m_delayedCommands[name] = delayedCommand;
 }
 
 ////////////////////////////////////////////////////////////
@@ -493,29 +512,24 @@ void OrbitalBody::PropagateEpoch(const Time& timeDelta)
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::ExecuteDelayedEphemerisQuery() const
+void OrbitalBody::ExecuteDelayedCommand(const std::string& name) const
 {
-   auto it = m_ephemerisQueue.begin();
-   while (it != m_ephemerisQueue.end())
+   auto it = m_delayedCommands.find(name);
+   if (it != m_delayedCommands.end())
    {
       it->second();
-      it = m_ephemerisQueue.erase(it);
+      m_delayedCommands.erase(it);
    }
-   //if (m_delayedEphemerisQuery)
-   //{
-   //   m_delayedEphemerisQuery();
-   //   m_delayedEphemerisQuery = nullptr;
-   //}
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::ExecuteDelayedEphemerisQuery(const std::string& name) const
+void OrbitalBody::ExecuteAllDelayedCommands() const
 {
-   auto it = m_ephemerisQueue.find(name);
-   if (it != m_ephemerisQueue.end())
+   auto it = m_delayedCommands.begin();
+   while (it != m_delayedCommands.end())
    {
       it->second();
-      m_ephemerisQueue.erase(it);
+      it = m_delayedCommands.erase(it);
    }
 }
 
