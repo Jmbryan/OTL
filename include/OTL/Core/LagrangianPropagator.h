@@ -67,6 +67,8 @@ public:
 
 protected:
    virtual void VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector) override;
+   virtual OrbitalElements VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu) override { return OrbitalElements(); }
+   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override { return StateVector(); }
 
 private:
    UniversalVariableResult CalculateUniversalVariable(double r0, double v0, double rdotv, double seconds, double mu);

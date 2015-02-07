@@ -15,6 +15,7 @@ void LoggerImpl::Init(const std::string& logDirectory, const std::string& logFil
    bool auto_flush = true;
    std::string logFile = logDirectory + "\\" + logFilename;
 
+   gLogLevelMap[LogLevel::Debug] = spdlog::level::debug;
    gLogLevelMap[LogLevel::Info] = spdlog::level::info;
    gLogLevelMap[LogLevel::Warning] = spdlog::level::warn;
    gLogLevelMap[LogLevel::Error] = spdlog::level::err;

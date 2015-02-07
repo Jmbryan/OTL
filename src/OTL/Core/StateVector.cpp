@@ -146,6 +146,7 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
       break;
 
    case StateVectorType::Cartesian:
+      return OrbitalElements();
       //return ConvertStateVector2OrbitalElements(GetCartesianStateVector(), mu);
       break;
 

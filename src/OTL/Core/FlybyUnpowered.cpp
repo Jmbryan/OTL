@@ -38,7 +38,7 @@ void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
                               double BPlaneAngle,
                               Vector3d& departureVelocity)
 {
-   const Vector3d& planetVelocity = orbitalBody.GetOrbit().GetVelocity();
+   const Vector3d& planetVelocity = orbitalBody.GetCartesianStateVector().velocity;
 
    // VInfinityIn is the relative velocity of the object
    // as it approaches the planet.

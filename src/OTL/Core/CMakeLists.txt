@@ -6,6 +6,8 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 set(SRC
 	${INCROOT}/Base.h
 	${INCROOT}/Config.h
+	${SRCROOT}/CartesianStateVector.cpp
+	${INCROOT}/CartesianStateVector.h	
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
@@ -29,11 +31,14 @@ set(SRC
 	${SRCROOT}/KeplersEquations.cpp
 	${INCROOT}/KeplersEquations.h
 	${INCROOT}/KeplersEquations.inl
+	${SRCROOT}/LagrangianPropagator.cpp
+	${INCROOT}/LagrangianPropagator.h	
 	${INCROOT}/Lambert.h
 	${SRCROOT}/LambertExponentialSinusoid.cpp
 	${INCROOT}/LambertExponentialSinusoid.h
 	${SRCROOT}/Logger.cpp
 	${INCROOT}/Logger.h
+	${INCROOT}/Matrix.h>
 	${INCROOT}/MatrixPlugin.h>	
 	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
@@ -51,6 +56,8 @@ set(SRC
 	${INCROOT}/Planet.h
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
+	${SRCROOT}/Rotation.cpp
+	${INCROOT}/Rotation.h
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp

@@ -8,6 +8,7 @@
 #include <OTL/Core/Orbit.h>
 
 #include <OTL/Core/KeplerianPropagator.h>
+#include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Conversion.h>
 
 #include <OTL/Core/LambertExponentialSinusoid.h>
@@ -36,6 +37,68 @@ using namespace otl;
 int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);
+
+    // Sizes
+    if (true)
+    {
+       // Base
+       auto sizeofbool = sizeof(bool);
+       auto sizeofenum = sizeof(StateVectorType);
+       auto sizeofint = sizeof(int);
+       auto sizeoffloat = sizeof(float);
+       auto sizeofdouble = sizeof(double);
+
+       auto sizeofcoes = sizeof(OrbitalElements);
+       auto sizeofsv = sizeof(StateVector);
+
+       // StateVector       
+       auto sizeofvector6d = sizeof(Vector6d);
+       auto sizeofos = sizeof(test::StateVector);
+
+       // Orbit
+       auto sizeofprop = sizeof(PropagatorPointer);
+       auto sizeoftime = sizeof(Time);
+       auto sizeoforbit = sizeof(keplerian::Orbit);
+
+       // OrbitalBody
+       auto sizeofname = sizeof(std::string);
+       auto sizeofphys = sizeof(PhysicalProperties);
+       auto sizeofepoch = sizeof(Epoch);
+       auto sizeofephm = sizeof(EphemerisPointer);
+       auto sizeoffun = sizeof(std::function<void(void)>);
+       auto sizeoforbitalbody = sizeof(OrbitalBody);
+
+       // Planet
+       auto sizeofplanet = sizeof(Planet);
+
+       double d = 1.0;
+    }
+
+    if (true)
+    {
+       test::StateVector stateVector;
+       stateVector = StateVector(
+          Vector3d(6524.834, 6862.875, 6448.296),
+          Vector3d(4.901327, 5.533756, -1.976341));
+       double mu = otl::ASTRO_MU_EARTH;
+
+       //OrbitalBody o("Satellite", PhysicalProperties(1000, 10), mu, stateVector);
+       Planet o("Earth");
+
+       //o.SetPropagator(std::make_shared<LagrangianPropagator>());
+
+       auto sv1 = o.GetCartesianStateVector();
+       auto coes1 = o.GetOrbitalElements();
+       auto sv2 = o.GetCartesianStateVector();
+       auto coes2 = o.GetOrbitalElements();
+       o.Propagate(Time::Days(10));
+       auto sv3 = o.GetCartesianStateVector();
+       auto coes3 = o.GetOrbitalElements();
+       auto sv4 = o.GetCartesianStateVector();
+       auto coes4 = o.GetOrbitalElements();
+
+       double d = 1.0;
+    }
 
     // Eccentricity test
     if (false)
@@ -98,7 +161,6 @@ int main()
        OrbitalElements coes0(1000, 0.1, 3.14, 0, 0, 0), coesf;
        StateVector sv0(1, 2, 3, 4, 5, 6), svf;
        otl::test::StateVector stateVector;
-       auto sizeofos = sizeof(stateVector);
 
        stateVector = coes0;
        auto type1 = stateVector.GetType();
@@ -129,22 +191,11 @@ int main()
        auto en = keplerian::Orbit::Type::Elliptical;
        std::function<void(const Epoch&)> myfun = nullptr;
 
-       auto sizeofbool = sizeof(b);
-       auto sizeofenum = sizeof(en);
-       auto sizeofname = sizeof(p.GetName());
-       auto sizeofprop = sizeof(p.GetPhysicalProperties());
-       auto sizeofepoch = sizeof(p.GetEpoch());
-       auto sizeoftime = sizeof(Time::Days(1));
-       auto sizeofephm = sizeof(jplEphemeris);
-       auto sizeofcoes = sizeof(p.GetOrbit().GetOrbitalElements());
-       auto sizeofsv = sizeof(p.GetOrbit().GetStateVector());
-       auto sizeoffun = sizeof(myfun);
-       auto sizeoforbit = sizeof(p.GetOrbit());
-       auto sizeoforbitalbody = sizeof(p);
+       
 
        p.SetMaxPropagationTime(Time::Days(20));
 
-       p.QueryEphemeris(p.GetEpoch() + Time::Days(10));
+       p.QueryStateVector(p.GetEpoch() + Time::Days(10));
        p.Propagate(Time::Days(10));
        p.Propagate(Time::Days(5));
        p.Propagate(Time::Days(10));
@@ -200,7 +251,7 @@ int main()
     std::cout << sv << std::endl;
     std::cout << sv.ToDetailedString() << std::endl;
 
-    keplerian::Orbit orbit(ASTRO_MU_EARTH, sv);
+    keplerian::Orbit orbit(ASTRO_MU_EARTH, test::StateVector(sv));
     //orbit.UseStateVectorForStringOutput(true);
     std::cout << orbit << std::endl;
     std::cout << orbit.ToDetailedString() << std::endl;
