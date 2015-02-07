@@ -37,6 +37,51 @@ int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);
 
+    // Eccentricity test
+    if (false)
+    {
+       test::StateVector stateVector;
+       stateVector = StateVector(
+          Vector3d(6524.834, 6862.875, 6448.296),
+          Vector3d(4.901327, 5.533756, -1.976341));
+       double mu = otl::ASTRO_MU_EARTH;
+
+       int numIter = 100000;
+
+       const auto& cartesianStateVector = stateVector.GetCartesianStateVector();
+       double alpha;
+       double e;
+
+       std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          
+          double r = cartesianStateVector.position.norm();
+          double v = cartesianStateVector.velocity.norm();
+          alpha = 2.0 / r - SQR(v) / mu; // Reciprocal of semi-major axis
+       }
+       std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+       std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+       for (int i = 0; i < numIter; ++i)
+       {
+          const auto& R = cartesianStateVector.position;
+          const auto& V = cartesianStateVector.velocity;
+          double r = R.norm();
+          double v = V.norm();
+          e = ((SQR(v) / mu - 1.0 / r) * R - (R.dot(V) / mu) * V).norm();
+       }
+       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+
+       auto duration1 = t2 - t1;
+       auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+
+       auto duration2 = t4 - t3;
+       auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+
+       double d = 1.0;
+    }
+
     if (true)
     {
        auto currentDirectory = gSystem.GetCurrentDirectory();

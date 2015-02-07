@@ -29,12 +29,12 @@
 namespace otl
 {
 
-using Vector3d = Eigen::Matrix<double, 3, 1>;   ///< Alias for a static 3 dimensional column vector of type double
-using Vector6d = Eigen::Matrix<double, 6, 1>;   ///< Alias for a static 6 dimensional column vector of type double
+using Vector3d = Eigen::Matrix<double, 3, 1>;   ///< Alias for static 3 dimensional column vector of type double
+using Vector6d = Eigen::Matrix<double, 6, 1>;   ///< Alias for static 6 dimensional column vector of type double
 
-using Matrix3d = Eigen::Matrix<double, 3, 3>;   ///< Alias for a static 3 dimensional square matrix of type double
-using Matrix6d = Eigen::Matrix<double, 6, 6>;   ///< Alias for a static 6 dimensional square matrix of type double
+using Matrix3d = Eigen::Matrix<double, 3, 3>;   ///< Alias for static 3 dimensional square matrix of type double
+using Matrix6d = Eigen::Matrix<double, 6, 6>;   ///< Alias for static 6 dimensional square matrix of type double
 
-using Quaterniond = Eigen::Quaterniond;         ///< Alias for a quaternion vector of type double
+using Quaterniond = Eigen::Quaterniond;         ///< Alias for quaternion vector of type double
 
 }

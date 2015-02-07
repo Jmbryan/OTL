@@ -381,7 +381,8 @@ std::string OrbitalBody::ToDetailedString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 void OrbitalBody::VPropagate(const Time& timeDelta, const PropagationType& propagationType)
 {
-   m_orbit.Propagate(timeDelta, propagationType);
+   //m_orbit.Propagate(timeDelta, propagationType);
+   m_orbit.Propagate(timeDelta);
 }
 
 ////////////////////////////////////////////////////////////

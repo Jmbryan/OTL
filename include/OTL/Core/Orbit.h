@@ -112,6 +112,8 @@ public:
    ////////////////////////////////////////////////////////////
    void SetMu(double mu);
 
+   void SetStateVector(const test::StateVector& stateVector);
+
    ////////////////////////////////////////////////////////////
    /// \brief Set thea new state vector of the orbit
    ///
@@ -406,6 +408,8 @@ private:
    ////////////////////////////////////////////////////////////
    void UpdateOrbitType() const;
 
+   void UpdateOrbitProperties() const;
+
 private:
    mutable bool m_orbitalElementsDirty;                  ///< Flag which when TRUE indicates the orbital elements need to be updated
    mutable bool m_referenceOrbitalElementsDirty;         ///< Flag which when TRUE indicates the reference orbital elements need to be updated
@@ -443,6 +447,9 @@ T& operator<<(T& stream, const Orbit& orbit)
    stream << orbit.ToString();
    return stream;
 }
+
+double ComputeOrbitRadius(const test::StateVector& stateVector);
+Orbit::Type ComputeOrbitType(const test::StateVector& stateVector, double mu);
 
 } // namespace keplerian
 
