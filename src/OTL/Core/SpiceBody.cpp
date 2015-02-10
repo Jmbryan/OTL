@@ -40,7 +40,7 @@ m_spiceEphemeris()
 SpiceBody::SpiceBody(const std::string& name,
                      const std::string& dataFilename,
                      const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
+OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
 m_spiceEphemeris(std::make_shared<SpiceEphemeris>(dataFilename))
 {
    Initialize();
@@ -50,26 +50,10 @@ m_spiceEphemeris(std::make_shared<SpiceEphemeris>(dataFilename))
 SpiceBody::SpiceBody(const std::string& name,
                      const SpiceEphemerisPointer& spiceEphemeris,
                      const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
+OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
 m_spiceEphemeris(spiceEphemeris)
 {
    Initialize();
-}
-
-////////////////////////////////////////////////////////////
-void SpiceBody::VQueryPhysicalProperties()
-{
-   //m_spiceEphemeris->GetPhysicalProperties(GetName());
-   PhysicalProperties phys;
-   SetPhysicalProperties(phys); 
-}
-
-////////////////////////////////////////////////////////////
-void SpiceBody::VQueryCentralBodyMu()
-{
-   //m_spiceEphemeris->GetPhysicalProperties(GetName());
-   double mu = ASTRO_MU_SUN;
-   SetGravitationalParameterCentralBody(mu); 
 }
 
 ////////////////////////////////////////////////////////////
@@ -78,10 +62,10 @@ void SpiceBody::Initialize()
    // Initialize ephemeris
    SetEphemeris(m_spiceEphemeris);
 
-   // Queue up an ephemeris query for the physical properties and orbital elements
-   QueryPhysicalProperties();
-   QueryCentralBodyMu();
-   QueryStateVector(GetEpoch());
+   // Lazily query the body data from the ephemeris database
+   LazyQueryPhysicalProperties();
+   LazyQueryCentralBodyMu();
+   LazyQueryStateVector(GetEpoch());
 }
 
 } // namespace otl

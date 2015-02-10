@@ -152,31 +152,62 @@ void IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch,
    }
 }
 
-//////////////////////////////////////////////////////////////
-//PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
-//{
-//   std::lock_guard<std::mutex> lock(m_mutex);
-//
-//   if (!m_initialized)
-//   {
-//      Initialize();
-//   }
-//
-//   if (VIsValidName(name))
-//   {
-//      return VGetPhysicalProperties(name);
-//   }
-//   else
-//   {
-//      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-//      return PhysicalProperties();
-//   }
-//}
-//
-//PhysicalProperties IEphemeris::VGetPhysicalProperties(const std::string& name)
-//{
-//   return PhysicalProperties();
-//}
+
+////////////////////////////////////////////////////////////
+PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
+{
+   PhysicalProperties physicalProperties;
+   GetPhysicalProperties(name, physicalProperties);
+   return physicalProperties;
+}
+
+////////////////////////////////////////////////////////////
+void IEphemeris::GetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+{
+   std::lock_guard<std::mutex> lock(m_mutex);
+
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (VIsValidName(name))
+   {
+      VGetPhysicalProperties(name, physicalProperties);
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+}
+
+////////////////////////////////////////////////////////////
+double IEphemeris::GetGravitationalParameterCentralBody(const std::string& name)
+{
+   double mu;
+   GetGravitationalParameterCentralBody(name, mu);
+   return mu;
+}
+
+////////////////////////////////////////////////////////////
+void IEphemeris::GetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+{
+   std::lock_guard<std::mutex> lock(m_mutex);
+
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (VIsValidName(name))
+   {
+      VGetGravitationalParameterCentralBody(name, gravitationalParameterCentralBody);
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+}
 
 ////////////////////////////////////////////////////////////
 test::StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)

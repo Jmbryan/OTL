@@ -127,7 +127,7 @@ CartesianStateVector StateVector::ToCartesianStateVector(double mu) const
       break;
 
    case StateVectorType::Orbital:
-      return ConvertOrbitalElements2StateVector(GetOrbitalElements(), mu);
+      return ConvertOrbitalElements2CartesianStateVector(GetOrbitalElements(), mu);
       break;
 
    default:
@@ -147,7 +147,7 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
 
    case StateVectorType::Cartesian:
       return OrbitalElements();
-      //return ConvertStateVector2OrbitalElements(GetCartesianStateVector(), mu);
+      return ConvertCartesianStateVector2OrbitalElements(GetCartesianStateVector(), mu);
       break;
 
    default:

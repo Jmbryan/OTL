@@ -292,6 +292,52 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Query the ephemeris database for the physical properties of the orbital body
    ///
+   /// Immediately execute the database query and return the
+   /// result. This function calls the VQueryPhysicalProperties()
+   /// virtual method which may be re-implemented by derived classes.
+   ///
+   /// This function is only applicable if an ephemeris database
+   /// has been specified by calling the SetEphemeris() method.
+   ///
+   /// \returns PhysicalProperties of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   const PhysicalProperties& QueryPhysicalProperties();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database for the gravitational parameter of the central body
+   ///
+   /// Immediately execute the database query and return the
+   /// result. This function calls the VQueryPhysicalProperties()
+   /// virtual method which may be re-implemented by derived classes.
+   ///
+   /// This function is only applicable if an ephemeris database
+   /// has been specified by calling the SetEphemeris() method.
+   ///
+   /// \returns Gravitational parameter of the central body
+   ///
+   ////////////////////////////////////////////////////////////
+   double QueryCentralBodyMu();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the ephemeris database for the state vector of the orbital body at a given epoch
+   ///
+   /// Immediately execute the database query and return the
+   /// result. This function calls the VQueryPhysicalProperties()
+   /// virtual method which may be re-implemented by derived classes.
+   ///
+   /// This function is only applicable if an ephemeris database
+   /// has been specified by calling the SetEphemeris() method.
+   ///
+   /// \param Epoch at which the state vector is desired
+   /// \returns StateVector of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   const test::StateVector& QueryStateVector(const Epoch& epoch);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Lazily query the ephemeris database for the physical properties of the orbital body
+   ///
    /// Lazy evaluation is used. This means that instead of
    /// immediately executing the database query, the query
    /// command gets stored in a queue which doesn't get
@@ -304,11 +350,11 @@ public:
    /// This function is only applicable if an ephemeris database
    /// has been specified by calling the SetEphemeris() method.
    ///
-   ////////////////////////////////////////////////////////////
-   void QueryPhysicalProperties();
+   ////////////////////////////////////////////////////////////  
+   void LazyQueryPhysicalProperties();
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the ephemeris database for the gravitational parameter of the central body
+   /// \brief Lazily query the ephemeris database for the gravitational parameter of the central body
    ///
    /// Lazy evaluation is used. This means that instead of
    /// immediately executing the database query, the query
@@ -324,10 +370,10 @@ public:
    /// has been specified by calling the SetEphemeris() method.
    ///
    ////////////////////////////////////////////////////////////
-   void QueryCentralBodyMu();
+   void LazyQueryCentralBodyMu();
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the ephemeris database for the state vector at a given epoch
+   /// \brief Lazily query the ephemeris database for the state vector at a given epoch
    ///
    /// Lazy evaluation is used. This means that instead of
    /// immediately executing the database query, the query
@@ -344,7 +390,7 @@ public:
    /// \param epoch Desired Epoch
    ///
    ////////////////////////////////////////////////////////////
-   void QueryStateVector(const Epoch& epoch);
+   void LazyQueryStateVector(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbital body to a single-line formatted string
@@ -430,6 +476,7 @@ protected:
    void SetStateVector(const test::StateVector& stateVector);
 
    void AddDelayedCommand(const std::string& name, const DelayedCommand& delayedCommand);
+   void RemoveDelayedCommand(const std::string& name) const;
 
 private:
    void PropagateEpoch(const Time& timeDelta);
@@ -437,7 +484,7 @@ private:
 
    void ExecuteDelayedCommand(const std::string& name) const;
    void ExecuteAllDelayedCommands() const;
-
+   
 private:
     std::string m_name;                       ///< Name of the orbital body
     PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body

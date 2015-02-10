@@ -43,10 +43,6 @@ public:
              const SpiceEphemerisPointer& spiceEphemeris,
              const Epoch& epoch = Epoch::MJD2000(0.0));
 
-protected:
-   virtual void VQueryPhysicalProperties() override;
-   virtual void VQueryCentralBodyMu() override;
-
 private:
    void Initialize();
 

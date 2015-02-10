@@ -195,7 +195,37 @@ void JplEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epo
     VGetStateVector(name, epoch, stateVector);
 
     // Convert state vector to orbital elements
-    orbitalElements = ConvertStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
+    orbitalElements = ConvertCartesianStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+{
+   try
+   {
+      OTL_ERROR() << "This ephemeris does not support this query";
+      //g_ephemerisDatabase->GetPhysicalProperties(name, physicalProperties);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
+}
+
+////////////////////////////////////////////////////////////
+void JplEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+{
+   try
+   {
+      OTL_ERROR() << "This ephemeris does not support this query";
+      //g_ephemerisDatabase->VGetGravitationalParameterCentralBody(name, gravitationalParameterCentralBody);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
 }
 
 ////////////////////////////////////////////////////////////

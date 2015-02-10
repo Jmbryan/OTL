@@ -257,10 +257,8 @@ PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
 /// Represents a solar system planetary body. The state
 /// vector of the planet at a desired Epoch can be obtained
 /// by calling the inherited member function QueryStateVector().
-/// The state vector can then be retrieved in generic format
-/// by calling GetStateVector(). Convenience functions for
-/// retrieving the CartesianStateVector and OrbitalElements
-/// are also provided:
+/// Convenience functions for retrieving the CartesianStateVector
+/// and OrbitalElements are also provided:
 /// \li GetCartesianStateVector()
 /// \li GetOrbitalElements()
 ///

@@ -43,7 +43,7 @@ void CalculateCanonicalUnits(double radius, double mu,
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVector, double mu)
+OrbitalElements ConvertCartesianStateVector2OrbitalElements(const StateVector& stateVector, double mu)
 {
    // Position and velocity
    const Vector3d& R = stateVector.position;
@@ -154,7 +154,7 @@ OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVecto
 }
 
 ////////////////////////////////////////////////////////////
-StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu)
+StateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu)
 {
    double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;

@@ -17,7 +17,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         stateVector.velocity = otl::Vector3d({4.901327, 5.533756, -1.976341}); // [km/s]
         mu = otl::ASTRO_MU_EARTH;                                            // [km^3/s^2]
         
-        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(36127.343));                     // [km]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
@@ -34,7 +34,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         stateVector.velocity = otl::Vector3d({0.62, 0.7, -0.25});    // [ER/TU]
         mu = 1.0;                                                  // [ER^3/TU^2]
         
-        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(5.664247));                      // [ER]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
@@ -51,7 +51,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
        stateVector.velocity = otl::Vector3d({ -3.457, 6.618, 2.533 });     // [km/s]
         mu = 398600.0;                                                  // [km^3/s^2]
         
-        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(8788.1));                         // [km]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.171212));
@@ -79,7 +79,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.trueAnomaly        = 92.335 * otl::MATH_DEG_TO_RAD; // [rad]
         mu = otl::ASTRO_MU_EARTH;                                           // [km^3/s^2]
         
-        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(6525.344));  // [km]
         CHECK(stateVector.position.y() == OTL_APPROX(6861.535));  // [km]
@@ -100,7 +100,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.trueAnomaly        = 92.335 * otl::MATH_DEG_TO_RAD; // [rad]
         mu = 1.0;                                                           // [ER^3/TU^2]
         
-        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(1.02308));  // [ER]
         CHECK(stateVector.position.y() == OTL_APPROX(1.07579));  // [ER]
@@ -125,7 +125,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.trueAnomaly        = 30.0 * otl::MATH_DEG_TO_RAD; // [rad]
         mu = 398600.0;                                                    // [km^3/s^2]
         
-        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(-4039.9));  // [km]
         CHECK(stateVector.position.y() == OTL_APPROX(4814.56));  // [km]

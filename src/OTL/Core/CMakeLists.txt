@@ -56,8 +56,6 @@ set(SRC
 	${INCROOT}/Planet.h
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
-	${SRCROOT}/Rotation.cpp
-	${INCROOT}/Rotation.h
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp

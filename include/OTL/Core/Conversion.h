@@ -66,36 +66,36 @@ OTL_CORE_API void CalculateCanonicalUnits(double radius, double mu,
                                           double& DU, double& TU, double& VU);
 
 ////////////////////////////////////////////////////////////
-/// \brief Convert state vectors to orbital elements
+/// \brief Convert cartesian state vectors to orbital elements
 /// \ingroup otl
 /// 
 /// Calculates the classical orbital elements of an object
-/// given its position and velocity (state) vectors.
+/// given its cartesian position and velocity (state) vectors.
 ///
 /// \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 9
 ///
-/// \param stateVector Position and velocity vectors
+/// \param cartesianStateVector CartesianStateVector before conversion
 /// \param mu Gravitational parameter of the central body
 /// \returns OrbitalElements after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& stateVector, double mu);
+OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const StateVector& cartesianStateVector, double mu);
 
 ////////////////////////////////////////////////////////////
-/// \brief Convert orbital elements to state vectors
+/// \brief Convert orbital elements to cartesian state vectors
 /// \ingroup otl
 ///
-/// Calculates the position and velocity (state) vectors of an
-/// object given its classical orbital elements.
+/// Calculates the cartesian position and velocity (state)
+/// vectors of an object given its classical orbital elements.
 ///
 /// \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 10
 ///
-/// \param orbitalElements orbital elements
+/// \param orbitalElements OrbitalElements before conversion
 /// \param mu Gravitational parameter of the central body
-/// \param [out] stateVector Computed position and velocity vectors
+/// \param [out] CartesianStateVector after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu);
+OTL_CORE_API StateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts normalized spherical coordinates into a Cartesian vector

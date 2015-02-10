@@ -45,7 +45,7 @@ static PlanetDictionary g_planetInfo =
 
 ////////////////////////////////////////////////////////////
 Planet::Planet() :
-OrbitalBody("Unknown", PhysicalProperties(), 1.0, test::StateVector(OrbitalElements())),
+OrbitalBody("Unknown", PhysicalProperties(), 1.0, test::StateVector()),
 m_id(PlanetId::Invalid)
 {
 
@@ -53,7 +53,7 @@ m_id(PlanetId::Invalid)
 
 ////////////////////////////////////////////////////////////
 Planet::Planet(Planet::PlanetId planetId, const Epoch& epoch) :
-OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
+OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
 m_id(planetId)
 {
    Initialize(m_id, std::make_shared<JplApproximateEphemeris>());
@@ -61,7 +61,7 @@ m_id(planetId)
 
 ////////////////////////////////////////////////////////////
 Planet::Planet(const std::string& name, const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
+OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
 m_id(ConvertPlanetName2Identifier(name))
 {
    Initialize(m_id, std::make_shared<JplApproximateEphemeris>());
@@ -69,7 +69,7 @@ m_id(ConvertPlanetName2Identifier(name))
 
 ////////////////////////////////////////////////////////////
 Planet::Planet(PlanetId planetId, const EphemerisPointer& ephemeris, const Epoch& epoch) :
-OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
+OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
 m_id(planetId)
 {
    Initialize(m_id, ephemeris);
@@ -122,10 +122,10 @@ void Planet::Initialize(Planet::PlanetId planetId, const EphemerisPointer& ephem
    // Initialize ephemeris
    SetEphemeris(ephemeris);
 
-   // Query the planet data from the ephemeris database
-   QueryPhysicalProperties();
-   QueryCentralBodyMu();
-   QueryStateVector(GetEpoch());
+   // Lazily query the planet data from the ephemeris database
+   LazyQueryPhysicalProperties();
+   LazyQueryCentralBodyMu();
+   LazyQueryStateVector(GetEpoch());
 }
 
 ////////////////////////////////////////////////////////////

@@ -342,7 +342,7 @@ int main()
        //orbitalElements.semiMajorAxis = -19655;
        //orbitalElements.eccentricity = 1.4682;
        //orbitalElements.trueAnomaly = 30.0 * MATH_DEG_TO_RAD;
-       orbitalElements = ConvertStateVector2OrbitalElements(stateVector, mu);
+       orbitalElements = ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
        OrbitalElements finalOrbitalElements1, finalOrbitalElements2;
 
@@ -351,7 +351,7 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           propagator->PropagateK(orbitalElements, mu, timeDelta, finalOrbitalElements1);
-          finalStateVector1 = ConvertOrbitalElements2StateVector(finalOrbitalElements1, mu);
+          finalStateVector1 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements1, mu);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
@@ -368,7 +368,7 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           finalOrbitalElements2 = propagator->Propagate(orbitalElements, timeDelta, mu);
-          finalStateVector3 = ConvertOrbitalElements2StateVector(finalOrbitalElements2, mu);
+          finalStateVector3 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements2, mu);
        }
        std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
 

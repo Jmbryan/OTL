@@ -30,8 +30,8 @@ TEST_CASE("KeplerianPropagator", "")
             mu = otl::ASTRO_MU_EARTH;                                                              // [km^3/s^2]
             timeOfFlight = otl::Time::Minutes(40.0);                                               // [s]
             
-            initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
-            finalExpectedOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalExpectedStateVector, mu);
+            initialOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu);
+            finalExpectedOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(finalExpectedStateVector, mu);
 
             SECTION("OrbitalElements")
             {
@@ -44,7 +44,7 @@ TEST_CASE("KeplerianPropagator", "")
                 CHECK(finalOrbitalElements.lonOfAscendingNode == OTL_APPROX(finalExpectedOrbitalElements.lonOfAscendingNode));
                 CHECK(finalOrbitalElements.trueAnomaly        == OTL_APPROX(finalExpectedOrbitalElements.trueAnomaly));
 
-                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
+                finalStateVector = otl::ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.x() == OTL_APPROX(finalExpectedStateVector.position.x()));
                 CHECK(finalStateVector.position.y() == OTL_APPROX(finalExpectedStateVector.position.y()));
@@ -65,7 +65,7 @@ TEST_CASE("KeplerianPropagator", "")
                CHECK(finalStateVector.velocity.y() == OTL_APPROX(finalExpectedStateVector.velocity.y()));
                CHECK(finalStateVector.velocity.z() == OTL_APPROX(finalExpectedStateVector.velocity.z()));
                
-               finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
+               finalOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(finalStateVector, mu);
 
                CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));
                CHECK(finalOrbitalElements.eccentricity       == OTL_APPROX(finalExpectedOrbitalElements.eccentricity));
@@ -86,11 +86,11 @@ TEST_CASE("KeplerianPropagator", "")
 
             SECTION("OrbitalElements")
             {
-               initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
+               initialOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu);
 
                 finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
-                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
+                finalStateVector = otl::ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.x() == OTL_APPROX(-0.661596)); // [ER]
                 CHECK(finalStateVector.position.y() == OTL_APPROX(0.684060));  // [ER]
@@ -135,11 +135,11 @@ TEST_CASE("KeplerianPropagator", "")
 
             SECTION("StateVector")
             {
-               initialStateVector = otl::ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
+               initialStateVector = otl::ConvertOrbitalElements2CartesianStateVector(initialOrbitalElements, mu);
 
                 finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
+                finalOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(finalStateVector, mu);
 
                 CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(107.78 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
@@ -169,11 +169,11 @@ TEST_CASE("KeplerianPropagator", "")
 
             SECTION("StateVector")
             {
-               initialStateVector = otl::ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
+               initialStateVector = otl::ConvertOrbitalElements2CartesianStateVector(initialOrbitalElements, mu);
 
                 finalStateVector = propagator.Propagate(initialStateVector, timeOfFlight, mu);
 
-                finalOrbitalElements = otl::ConvertStateVector2OrbitalElements(finalStateVector, mu);
+                finalOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(finalStateVector, mu);
 
                 CHECK(finalOrbitalElements.trueAnomaly == OTL_APPROX(100.04 * otl::MATH_DEG_TO_RAD)); // [rad]
             }
@@ -189,11 +189,11 @@ TEST_CASE("KeplerianPropagator", "")
             
             SECTION("OrbitalElements")
             {
-               initialOrbitalElements = otl::ConvertStateVector2OrbitalElements(initialStateVector, mu);
+               initialOrbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu);
 
                 finalOrbitalElements = propagator.Propagate(initialOrbitalElements, timeOfFlight, mu);
 
-                finalStateVector = otl::ConvertOrbitalElements2StateVector(finalOrbitalElements, mu);
+                finalStateVector = otl::ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements, mu);
 
                 CHECK(finalStateVector.position.x() == OTL_APPROX(-3296.8));  // [km]
                 CHECK(finalStateVector.position.y() == OTL_APPROX(7413.9));   // [km]

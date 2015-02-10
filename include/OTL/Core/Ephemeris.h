@@ -102,7 +102,11 @@ public:
     ////////////////////////////////////////////////////////////
     void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
 
-    //PhysicalProperties GetPhysicalProperties(const std::string& name);
+    PhysicalProperties GetPhysicalProperties(const std::string& name);
+    void GetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties);
+
+    double GetGravitationalParameterCentralBody(const std::string& name);
+    void GetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody);
 
     test::StateVector GetStateVector(const std::string& name, const Epoch& epoch);
     void GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector);
@@ -117,8 +121,8 @@ protected:
     virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) = 0;
     virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) = 0;
 
-
-    //virtual PhysicalProperties VGetPhysicalProperties(const std::string& name);
+    virtual void VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties) = 0;
+    virtual void VGetGravitationalParameterCentralBody(const std::string&  name, double& gravitationalParameterCentralBody) = 0;
     virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) = 0;
 
 private:

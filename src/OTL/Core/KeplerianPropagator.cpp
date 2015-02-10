@@ -77,7 +77,7 @@ void KeplerianPropagator::VPropagate(const test::StateVector& initialStateVector
    else // Parabolic
    {
       OTL_ERROR() << "Parabolic orbits are not implemented yet";
-      //auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu); // this cannot be necessary
+      //auto stateVector = ConvertOrbitalElements2CartesianStateVector(initialOrbitalElements, mu); // this cannot be necessary
       //double h = stateVector.position.cross(stateVector.velocity).norm();
       //double p = SQR(h) / mu;
       //double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA1);
@@ -333,7 +333,7 @@ void KeplerianPropagator::PropagateK(const OrbitalElements& initialOrbitalElemen
    else // Parabolic
    {
       OTL_ERROR() << "Propagate for parabolic orbits is not implemented yet";
-      //auto stateVector = ConvertOrbitalElements2StateVector(initialOrbitalElements, mu);
+      //auto stateVector = ConvertOrbitalElements2CartesianStateVector(initialOrbitalElements, mu);
       //double h = stateVector.position.cross(stateVector.velocity).norm();
       //double p = SQR(h) / mu;
       //double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA0);
@@ -348,7 +348,7 @@ void KeplerianPropagator::PropagateK(const OrbitalElements& initialOrbitalElemen
 
 ////////////////////////////////////////////////////////////
 // Much less performant than universal variable approach, but included for completeness
-// Can the deltaTA and r be computed more effienently? i.e. without calling ConvertStateVector2OrbitalElements()
+// Can the deltaTA and r be computed more effienently? i.e. without calling ConvertCartesianStateVector2OrbitalElements()
 // Results are not matching Propagate()
 void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
 {
@@ -363,7 +363,7 @@ void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, doub
    double hSquared = SQR(h);
 
    // Convert to orbital elements
-   auto initialOrbitalElements = ConvertStateVector2OrbitalElements(initialStateVector, mu);
+   auto initialOrbitalElements = ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu);
 
    // Propagate the orbital elements
    OrbitalElements finalOrbitalElements;

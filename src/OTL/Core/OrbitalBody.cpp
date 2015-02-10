@@ -250,19 +250,46 @@ void OrbitalBody::PropagateTo(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::QueryPhysicalProperties()
+const PhysicalProperties& OrbitalBody::QueryPhysicalProperties()
+{
+   RemoveDelayedCommand("PhysicalProperties");
+   VQueryPhysicalProperties();
+   return GetPhysicalProperties();
+}
+
+////////////////////////////////////////////////////////////
+double OrbitalBody::QueryCentralBodyMu()
+{
+   RemoveDelayedCommand("CentralBodyMu");
+   VQueryCentralBodyMu();
+   return m_orbit.GetMu();
+}
+
+////////////////////////////////////////////////////////////
+const test::StateVector& OrbitalBody::QueryStateVector(const Epoch& epoch)
+{
+   m_epoch = epoch;
+   ExecuteDelayedCommand("CentralBodyMu");
+
+   RemoveDelayedCommand("StateVector");
+   VQueryStateVector(epoch);
+   return GetStateVector();
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::LazyQueryPhysicalProperties()
 {
    AddDelayedCommand("PhysicalProperties", std::bind(&OrbitalBody::VQueryPhysicalProperties, this));
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::QueryCentralBodyMu()
+void OrbitalBody::LazyQueryCentralBodyMu()
 {
    AddDelayedCommand("CentralBodyMu", std::bind(&OrbitalBody::VQueryCentralBodyMu, this));
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::QueryStateVector(const Epoch& epoch)
+void OrbitalBody::LazyQueryStateVector(const Epoch& epoch)
 {
    m_epoch = epoch;
    AddDelayedCommand("StateVector", std::bind(&OrbitalBody::VQueryStateVector, this, epoch));
@@ -369,6 +396,16 @@ void OrbitalBody::SetStateVector(const test::StateVector& stateVector)
 void OrbitalBody::AddDelayedCommand(const std::string& name, const DelayedCommand& delayedCommand)
 {
    m_delayedCommands[name] = delayedCommand;
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::RemoveDelayedCommand(const std::string& name) const
+{
+   auto it = m_delayedCommands.find(name);
+   if (it != m_delayedCommands.end())
+   {
+      m_delayedCommands.erase(it);
+   }
 }
 
 ////////////////////////////////////////////////////////////

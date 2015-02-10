@@ -239,12 +239,12 @@ private:
 /// OTL_ASSERT(initialStateVector == initialStateVector2);
 ///
 /// // Let's do the same thing using the orbital elements
-/// auto initialOrbitalElements = ConvertStateVector2OrbitalElements(initialStateVector, mu)
+/// auto initialOrbitalElements = ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu)
 /// auto finalOrbitalElements = propagator->Propagate(initialOrbitalElements, mu, timeDelta);
 ///
 /// // Now convert the final orbital elements to state vector to
 /// // verify that the results agree
-/// auto finalStateVector2 = ConvertOrbitalElements2StateVector(finalOrbitalElements, mu)
+/// auto finalStateVector2 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements, mu)
 ///
 /// OTL_ASSERT(finalStateVector == finalStateVector2);
 /// \endcode

@@ -30,6 +30,9 @@
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
+
+#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
+
 extern "C"
 {
 #include  "cspice/SpiceUsr.h"
@@ -208,7 +211,49 @@ void SpiceEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& e
    VGetStateVector(name, epoch, stateVector);
 
    // Convert state vector to orbital elements
-   orbitalElements = ConvertStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
+   orbitalElements = ConvertCartesianStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+{
+   try
+   {
+      SpiceInt n;
+
+      // Retrieve mu and compute mass
+      SpiceDouble gm;
+      bodvrd_c(name.c_str(), "GM", 1, &n, &gm);
+      double mass = gm / ASTRO_GRAVITATIONAL_CONSTANT;
+
+      // Retrieve mean equatorial radius
+      SpiceDouble rad[3];
+      bodvrd_c(name.c_str(), "RADII", 3, &n, rad);
+      double meanRadius = (rad[0] + rad[1] + rad[2]) / 3.0;
+
+      physicalProperties = PhysicalProperties(
+         mass,
+         meanRadius);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+{
+   try
+   {
+      
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
 }
 
 ////////////////////////////////////////////////////////////

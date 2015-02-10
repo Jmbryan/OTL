@@ -135,7 +135,7 @@ void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epo
     VGetOrbitalElements(name, epoch, orbitalElements);
 
     // Convert orbital elements to state vector
-    stateVector = ConvertOrbitalElements2StateVector(orbitalElements, ASTRO_MU_SUN);
+    stateVector = ConvertOrbitalElements2CartesianStateVector(orbitalElements, ASTRO_MU_SUN);
 }
 
 ////////////////////////////////////////////////////////////
@@ -153,20 +153,36 @@ void JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const
 }
 
 ////////////////////////////////////////////////////////////
-//PhysicalProperties JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name)
-//{
-//   try
-//   {
-//      return g_ephemerisDatabase->GetPhysicalProperties(name);
-//   }
-//   catch (std::exception ex)
-//   {
-//      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
-//         << Bracket(name) << ": " << Bracket(ex.what());
-//      return PhysicalProperties();
-//   }
-//}
+void JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+{
+   try
+   {
+      OTL_ERROR() << "This ephemeris does not support this query";
+      //g_ephemerisDatabase->GetPhysicalProperties(name, physicalProperties);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
+}
 
+////////////////////////////////////////////////////////////
+void JplApproximateEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+{
+   try
+   {
+      OTL_ERROR() << "This ephemeris does not support this query";
+      //g_ephemerisDatabase->VGetGravitationalParameterCentralBody(name, gravitationalParameterCentralBody);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
+         << Bracket(name) << ": " << Bracket(ex.what());
+   }
+}
+
+////////////////////////////////////////////////////////////
 void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
 {
    try

@@ -174,6 +174,8 @@ protected:
    ////////////////////////////////////////////////////////////
    virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
 
+   virtual void VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties) override;
+   virtual void VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody) override;
    virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
 
 private:
