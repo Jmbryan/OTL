@@ -314,17 +314,18 @@ private:
    /// from the state vector.
    ///
    ////////////////////////////////////////////////////////////
-   void UpdateOrbitProperties();
+   void UpdateOrbitProperties() const;
 
 private:
-   Type m_orbitType;                                     ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
-   double m_orbitRadius;                                 ///< Radius of the orbit
+   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   mutable double m_orbitRadius;                         ///< Radius of the orbit
    double m_mu;                                          ///< Gravitational parameter of the central body
    otl::test::StateVector m_stateVector;                 ///< Current state vector
    otl::test::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
    mutable otl::test::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
    PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
    Time m_elapsedPropagationTime;                        ///< Elapsed propagation time between the state vector and reference state vector
+   mutable bool m_orbitPropertiesDirty;
 };
 
 ////////////////////////////////////////////////////////////

@@ -30,37 +30,27 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 SpiceBody::SpiceBody() :
-OrbitalBody(),
-m_spiceEphemeris()
+OrbitalBody()
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-SpiceBody::SpiceBody(const std::string& name,
-                     const std::string& dataFilename,
-                     const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
-m_spiceEphemeris(std::make_shared<SpiceEphemeris>(dataFilename))
-{
-   Initialize();
-}
-
-////////////////////////////////////////////////////////////
-SpiceBody::SpiceBody(const std::string& name,
+SpiceBody::SpiceBody(const std::string& observerBodyName,
+                     const std::string& targetBodyName,
+                     const std::string& referenceFrameName,
                      const SpiceEphemerisPointer& spiceEphemeris,
                      const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
-m_spiceEphemeris(spiceEphemeris)
+OrbitalBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch)
 {
-   Initialize();
+   Initialize(spiceEphemeris);
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceBody::Initialize()
+void SpiceBody::Initialize(const EphemerisPointer& ephemeris)
 {
    // Initialize ephemeris
-   SetEphemeris(m_spiceEphemeris);
+   SetEphemeris(ephemeris);
 
    // Lazily query the body data from the ephemeris database
    LazyQueryPhysicalProperties();

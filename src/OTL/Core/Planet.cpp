@@ -45,7 +45,7 @@ static PlanetDictionary g_planetInfo =
 
 ////////////////////////////////////////////////////////////
 Planet::Planet() :
-OrbitalBody("Unknown", PhysicalProperties(), 1.0, test::StateVector()),
+OrbitalBody(),
 m_id(PlanetId::Invalid)
 {
 

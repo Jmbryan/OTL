@@ -42,7 +42,8 @@ m_stateVector(),
 m_referenceStateVector(),
 m_cachedStateVector(),
 m_propagator(std::make_shared<KeplerianPropagator>()),
-m_elapsedPropagationTime()
+m_elapsedPropagationTime(),
+m_orbitPropertiesDirty(false)
 {
 }
 
@@ -79,8 +80,8 @@ void Orbit::SetStateVector(const test::StateVector& stateVector)
    // Reset elapsed propagation time
    m_elapsedPropagationTime = Time();
 
-   // Update orbit properties
-   UpdateOrbitProperties();
+   // Invalidate orbit properties
+   m_orbitPropertiesDirty = true;
 }
 
 ////////////////////////////////////////////////////////////
@@ -134,12 +135,20 @@ const test::StateVector& Orbit::GetStateVector() const
 ////////////////////////////////////////////////////////////
 double Orbit::GetOrbitRadius() const
 {
+   if (m_orbitPropertiesDirty)
+   {
+      UpdateOrbitProperties();
+   }
    return m_orbitRadius;
 }
 
 ////////////////////////////////////////////////////////////
 Orbit::Type Orbit::GetOrbitType() const
 {
+   if (m_orbitPropertiesDirty)
+   {
+      UpdateOrbitProperties();
+   }
    return m_orbitType;
 }
 
@@ -152,7 +161,7 @@ const Time& Orbit::GetElapsedPropagationTime() const
 ////////////////////////////////////////////////////////////
 bool Orbit::IsType(Type orbitType) const
 {
-   return (m_orbitType == orbitType);
+   return (GetOrbitType() == orbitType);
 }
 
 ////////////////////////////////////////////////////////////
@@ -164,11 +173,11 @@ void Orbit::Propagate(const Time& timeDelta)
    // Propagate from the reference orbital elements and update orbit type
    m_propagator->Propagate(m_referenceStateVector, m_elapsedPropagationTime, m_mu, m_stateVector);
 
-   // Update orbit properties
-   UpdateOrbitProperties();
-
    // Reset the cached state vector
    m_cachedStateVector = m_stateVector;
+
+   // Invalidate orbit properties
+   m_orbitPropertiesDirty = true;
 }
 
 ////////////////////////////////////////////////////////////
@@ -180,6 +189,9 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 
    // Set the new state vector from the orbital elements
    SetStateVector(test::StateVector(orbitalElements));
+
+   // Invalidate orbit properties
+   m_orbitPropertiesDirty = true;
 }
 
 ////////////////////////////////////////////////////////////
@@ -272,10 +284,11 @@ std::string Orbit::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::UpdateOrbitProperties()
+void Orbit::UpdateOrbitProperties() const
 {
    m_orbitRadius = ComputeOrbitRadius(m_stateVector);
    m_orbitType = ComputeOrbitType(m_stateVector, m_mu);
+   m_orbitPropertiesDirty = false;
 }
 
 ////////////////////////////////////////////////////////////

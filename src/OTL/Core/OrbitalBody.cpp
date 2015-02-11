@@ -107,7 +107,7 @@ std::string PhysicalProperties::ToDetailedString(std::string prefix) const
 
 ////////////////////////////////////////////////////////////
 OrbitalBody::OrbitalBody() :
-m_name(""),
+m_name("Unknown"),
 m_physicalProperties(),
 m_epoch(),
 m_orbit(),
@@ -335,7 +335,7 @@ void OrbitalBody::VQueryPhysicalProperties()
    if (m_ephemeris)
    {
       PhysicalProperties physicalProperties;
-      //m_ephemeris->GetPhysicalProperties(m_name, physicalProperties); [TODO]
+      m_ephemeris->GetPhysicalProperties(m_name, physicalProperties);
       SetPhysicalProperties(physicalProperties);
    }
    else
@@ -350,7 +350,7 @@ void OrbitalBody::VQueryCentralBodyMu()
    if (m_ephemeris)
    {
       double gravitationalParameterCentralBody;
-      //m_ephemeris->GeGravitationalParameterCentralBody(m_name, gravitationalParameterCentralBody); [TODO]
+      m_ephemeris->GetGravitationalParameterCentralBody(m_name, gravitationalParameterCentralBody);
       SetGravitationalParameterCentralBody(gravitationalParameterCentralBody);
    }
    else

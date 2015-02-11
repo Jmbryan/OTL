@@ -38,7 +38,9 @@ public:
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   explicit SpiceEphemeris(const std::string& dataFilename);
+   explicit SpiceEphemeris(const std::string& dataFileName,
+                           const std::string& observerBodyName = "SUN",
+                           const std::string& referenceFrameName = "J2000");
 
    ////////////////////////////////////////////////////////////
    /// \brief Disable copy constructor
@@ -61,7 +63,7 @@ public:
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   void SetDataFile(const std::string& dataFilename);
+   void SetDataFile(const std::string& dataFileName);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the reference frame
@@ -69,7 +71,7 @@ public:
    /// \param referenceFrame Name of reference frame
    ///
    ////////////////////////////////////////////////////////////
-   void SetReferenceFrame(const std::string& referenceFrame);
+   void SetReferenceFrame(const std::string& referenceFrameName);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the abberation corrections
@@ -77,7 +79,7 @@ public:
    /// \param abberationCorrections Name of abberation corrections
    ///
    ////////////////////////////////////////////////////////////
-   void SetAbberationCorrections(const std::string& abberationCorrections);
+   void SetAbberationCorrections(const std::string& abberationCorrectionsName);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the observer body
@@ -85,7 +87,22 @@ public:
    /// \param observerBody Name of observer body
    ///
    ////////////////////////////////////////////////////////////
-   void SetObserverBody(const std::string& observerBody);
+   void SetObserverBody(const std::string& observerBodyName);
+
+   double GetBodyProperty(const std::string& targetBodyName, const std::string& propertyName);
+   std::vector<double> GetBodyProperties(const std::string& targetBodyName,
+                                         const std::string& propertyName,
+                                         const int maxDimension = 10);
+
+   OrbitalElements ConvertCartesianStateVectorToOrbitalElements(const StateVector& cartesianStateVector,
+                                                                double gravitationalParameterCentralBody,
+                                                                const Epoch& epoch);
+
+   StateVector ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
+                                                            double gravitationalParameterCentralBody,
+                                                            const Epoch& epoch);
+
+   int GetNumKernalsLoaded() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Load the ephemeris data file into memory
@@ -93,7 +110,7 @@ public:
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   void LoadDataFile(const std::string& dataFilename);
+   void LoadDataFile(const std::string& dataFileName);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -189,9 +206,10 @@ private:
 
 private:
    std::string m_dataFilename;            ///< Full path to the ephemeris data file
-   std::string m_referenceFrame;          ///< Name of reference frame
+   std::string m_observerBodyName;        ///< Name of observer body
+   std::string m_referenceFrameName;      ///< Name of reference frame
    std::string m_abberationCorrections;   ///< Name of aberration corrections
-   std::string m_observerBody;            ///< Name of observer body
+   
 };
 
 } // namespace otl

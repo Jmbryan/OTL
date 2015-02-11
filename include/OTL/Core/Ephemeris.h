@@ -125,7 +125,7 @@ protected:
     virtual void VGetGravitationalParameterCentralBody(const std::string&  name, double& gravitationalParameterCentralBody) = 0;
     virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) = 0;
 
-private:
+public:
     void Initialize();
 
 private:

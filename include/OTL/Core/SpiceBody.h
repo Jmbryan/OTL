@@ -36,18 +36,14 @@ class OTL_CORE_API SpiceBody : public OrbitalBody
 {
 public:
    SpiceBody();
-   SpiceBody(const std::string& name,
-             const std::string& dataFilename,
-             const Epoch& epoch = Epoch::MJD2000(0.0));
-   SpiceBody(const std::string& name,
-             const SpiceEphemerisPointer& spiceEphemeris,
+   SpiceBody(const std::string& observerBodyName,
+             const std::string& targetBodyName = "SUN",
+             const std::string& referenceFrameName = "J2000",
+             const SpiceEphemerisPointer& spiceEphemeris = std::make_shared<SpiceEphemeris>(),
              const Epoch& epoch = Epoch::MJD2000(0.0));
 
 private:
-   void Initialize();
-
-private:
-   SpiceEphemerisPointer m_spiceEphemeris;
+   void Initialize(const EphemerisPointer& ephemeris);
 };
 
 } // namespace otl

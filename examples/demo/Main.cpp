@@ -151,9 +151,16 @@ int main()
        auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
-       //auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
-       //auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+       auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
+       auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
+       spiceEphemeris->Initialize();
+       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\gm_de431.tpc");
+       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\pck00010.tpc");
        //SpiceBody p("Earth", spiceEphemeris);
+
+       int numKernals = spiceEphemeris->GetNumKernalsLoaded();
+       double muc = spiceEphemeris->GetBodyProperty("Sun", "GM");
+       auto props = spiceEphemeris->GetBodyProperties("Sun", "RADII");
 
        Planet p("Mars");
        p.SetEphemeris(jplEphemeris);
@@ -660,10 +667,10 @@ int main()
        spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
 #endif
 
-       auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
-       auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
-       mpcorbEphemeris->GetStateVector("Ceres", epoch, stateVector4);
-       mpcorbEphemeris->GetOrbitalElements("Ceres", epoch, orbitalElements4);
+       //auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
+       //auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
+       //mpcorbEphemeris->GetStateVector("Ceres", epoch, stateVector4);
+       //mpcorbEphemeris->GetOrbitalElements("Ceres", epoch, orbitalElements4);
           
        Planet p("Earth", Epoch::Gregorian(date));
        p.SetEphemeris(jplEphemeris);
