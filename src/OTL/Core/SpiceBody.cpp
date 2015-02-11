@@ -30,32 +30,77 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 SpiceBody::SpiceBody() :
-OrbitalBody()
+IEphemerisBody(),
+m_ephemeris(nullptr)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
 SpiceBody::SpiceBody(const std::string& observerBodyName,
+                     const Epoch& epoch,
                      const std::string& targetBodyName,
-                     const std::string& referenceFrameName,
-                     const SpiceEphemerisPointer& spiceEphemeris,
-                     const Epoch& epoch) :
-OrbitalBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch)
+                     const std::string& referenceFrameName) :
+IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+m_ephemeris(nullptr)
 {
-   Initialize(spiceEphemeris);
+
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceBody::Initialize(const EphemerisPointer& ephemeris)
+SpiceBody::SpiceBody(const std::string& observerBodyName,
+                     const SpiceEphemerisPointer& ephemeris,
+                     const Epoch& epoch,
+                     const std::string& targetBodyName,
+                     const std::string& referenceFrameName) :
+IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+m_ephemeris(ephemeris)
 {
-   // Initialize ephemeris
-   SetEphemeris(ephemeris);
 
-   // Lazily query the body data from the ephemeris database
-   LazyQueryPhysicalProperties();
-   LazyQueryCentralBodyMu();
-   LazyQueryStateVector(GetEpoch());
+}
+
+////////////////////////////////////////////////////////////
+void SpiceBody::SetEphemeris(const SpiceEphemerisPointer& ephemeris)
+{
+   m_ephemeris = ephemeris;
+}
+
+////////////////////////////////////////////////////////////
+void SpiceBody::VInitialize()
+{
+   // Init the ephemeris
+   if (!m_ephemeris)
+   {
+      m_ephemeris = std::make_shared<SpiceEphemeris>();
+   }
+   m_ephemeris->Initialize();
+   
+   // Init the physical properties
+   SetPhysicalProperties(
+      m_ephemeris->GetPhysicalProperties(GetName()));
+
+   // Init the gravitational parameter of central body
+   SetGravitationalParameterCentralBody(
+      m_ephemeris->GetGravitationalParameterCentralBody(GetName()));
+
+   // Init the state vector
+   SetStateVector(
+      m_ephemeris->GetStateVector(GetName(), GetEpoch()));
+}
+
+////////////////////////////////////////////////////////////
+test::StateVector SpiceBody::VQueryStateVectorr(const Epoch& epoch)
+{
+   if (m_ephemeris)
+   {
+      return m_ephemeris->GetStateVector(GetName(), epoch);
+   }
+   else
+   {
+      OTL_ERROR() << "Failed to query state vector for spice body " << Bracket(GetName())
+         << ": Invalid ephemeris pointer.";
+      return test::StateVector();
+   }
 }
 
 } // namespace otl

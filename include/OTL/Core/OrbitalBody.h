@@ -25,6 +25,7 @@
 #pragma once
 #include <OTL/Core/Orbit.h>
 #include <OTL/Core/Epoch.h>
+#include <unordered_map>
 
 namespace otl
 {
@@ -147,7 +148,7 @@ public:
    /// \return PhysicalProperties of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   const PhysicalProperties& GetPhysicalProperties() const;
+   virtual const PhysicalProperties& GetPhysicalProperties() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of central body being orbited
@@ -155,7 +156,7 @@ public:
    /// \return Gravitational parameter of the central body
    ///
    ////////////////////////////////////////////////////////////
-   double GetGravitationalParameterCentralBody() const;
+   virtual double GetGravitationalParameterCentralBody() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current cartesian state vector of the orbital body
@@ -222,7 +223,7 @@ public:
    /// \return Orbit of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   const keplerian::Orbit& GetOrbit() const;
+   virtual const keplerian::Orbit& GetOrbit() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
@@ -485,7 +486,7 @@ private:
    void ExecuteDelayedCommand(const std::string& name) const;
    void ExecuteAllDelayedCommands() const;
    
-private:
+protected:
     std::string m_name;                       ///< Name of the orbital body
     PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
     Epoch m_epoch;                            ///< Current epoch of the orbital body

@@ -166,15 +166,15 @@ const std::string& OrbitalBody::GetName() const
 ////////////////////////////////////////////////////////////
 const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
 {
-   ExecuteDelayedCommand("PhysicalProperties");
+   ExecuteDelayedCommand("PROP");
    return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
 double OrbitalBody::GetGravitationalParameterCentralBody() const
 {
-   ExecuteDelayedCommand("CentralBodyMu");
-   return m_orbit.GetMu();
+   ExecuteDelayedCommand("GM");
+   return GetOrbit().GetMu();
 }
 
 ////////////////////////////////////////////////////////////
@@ -198,8 +198,8 @@ const test::StateVector& OrbitalBody::GetStateVector() const
 ////////////////////////////////////////////////////////////
 const keplerian::Orbit& OrbitalBody::GetOrbit() const
 {
-   ExecuteDelayedCommand("CentralBodyMu");
-   ExecuteDelayedCommand("StateVector");
+   ExecuteDelayedCommand("GM");
+   ExecuteDelayedCommand("SV");
    return m_orbit;
 }
 
@@ -230,17 +230,17 @@ bool OrbitalBody::IsOrbitType(keplerian::Orbit::Type orbitType) const
 ////////////////////////////////////////////////////////////
 void OrbitalBody::Propagate(const Time& timeDelta)
 {
-   PropagateEpoch(timeDelta);
-   if (IsEphemerisUpdateRequired(timeDelta))
-   {
-      QueryStateVector(m_epoch);
-   }
-   else
-   {
-      ExecuteDelayedCommand("CentralBodyMu");
-      ExecuteDelayedCommand("StateVector");
+   //PropagateEpoch(timeDelta);
+   //if (IsEphemerisUpdateRequired(timeDelta))
+   //{
+   //   QueryStateVector(m_epoch);
+   //}
+   //else
+   //{
+      //ExecuteDelayedCommand("CentralBodyMu");
+      //ExecuteDelayedCommand("StateVector");
       VPropagate(timeDelta);
-   }
+   //}
 }
 
 ////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ void OrbitalBody::PropagateTo(const Epoch& epoch)
 ////////////////////////////////////////////////////////////
 const PhysicalProperties& OrbitalBody::QueryPhysicalProperties()
 {
-   RemoveDelayedCommand("PhysicalProperties");
+   RemoveDelayedCommand("PROP");
    VQueryPhysicalProperties();
    return GetPhysicalProperties();
 }
@@ -260,18 +260,18 @@ const PhysicalProperties& OrbitalBody::QueryPhysicalProperties()
 ////////////////////////////////////////////////////////////
 double OrbitalBody::QueryCentralBodyMu()
 {
-   RemoveDelayedCommand("CentralBodyMu");
+   RemoveDelayedCommand("GM");
    VQueryCentralBodyMu();
-   return m_orbit.GetMu();
+   return GetOrbit().GetMu();
 }
 
 ////////////////////////////////////////////////////////////
 const test::StateVector& OrbitalBody::QueryStateVector(const Epoch& epoch)
 {
    m_epoch = epoch;
-   ExecuteDelayedCommand("CentralBodyMu");
+   ExecuteDelayedCommand("GM");
 
-   RemoveDelayedCommand("StateVector");
+   RemoveDelayedCommand("SV");
    VQueryStateVector(epoch);
    return GetStateVector();
 }
@@ -279,20 +279,20 @@ const test::StateVector& OrbitalBody::QueryStateVector(const Epoch& epoch)
 ////////////////////////////////////////////////////////////
 void OrbitalBody::LazyQueryPhysicalProperties()
 {
-   AddDelayedCommand("PhysicalProperties", std::bind(&OrbitalBody::VQueryPhysicalProperties, this));
+   AddDelayedCommand("PROP", std::bind(&OrbitalBody::VQueryPhysicalProperties, this));
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::LazyQueryCentralBodyMu()
 {
-   AddDelayedCommand("CentralBodyMu", std::bind(&OrbitalBody::VQueryCentralBodyMu, this));
+   AddDelayedCommand("GM", std::bind(&OrbitalBody::VQueryCentralBodyMu, this));
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::LazyQueryStateVector(const Epoch& epoch)
 {
    m_epoch = epoch;
-   AddDelayedCommand("StateVector", std::bind(&OrbitalBody::VQueryStateVector, this, epoch));
+   AddDelayedCommand("SV", std::bind(&OrbitalBody::VQueryStateVector, this, epoch));
 }
 
 ////////////////////////////////////////////////////////////

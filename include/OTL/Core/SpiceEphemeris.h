@@ -38,7 +38,7 @@ public:
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   explicit SpiceEphemeris(const std::string& dataFileName,
+   explicit SpiceEphemeris(const std::string& dataFileName = "",
                            const std::string& observerBodyName = "SUN",
                            const std::string& referenceFrameName = "J2000");
 

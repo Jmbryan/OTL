@@ -214,12 +214,12 @@ void SpiceEphemeris::LoadDataFile(const std::string& dataFileName)
 ////////////////////////////////////////////////////////////
 void SpiceEphemeris::VLoad()
 {
-   // If no directory is given, assume the current directory
    if (m_dataFilename.empty())
    {
-      m_dataFilename = gSystem.GetCurrentDirectory();
+      OTL_ERROR() << "Failed to load ephemeris datafile. No file specified";
+      return;
    }
-
+   
    // SPICE doesn't throw exceptions...
    try
    {

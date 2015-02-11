@@ -12,6 +12,8 @@ set(SRC
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
 	${INCROOT}/Ephemeris.h
+	${SRCROOT}/EphemerisBody.cpp
+	${INCROOT}/EphemerisBody.h	
 	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Epoch.h
 	${SRCROOT}/Exceptions.cpp	
@@ -44,6 +46,8 @@ set(SRC
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp
 	${INCROOT}/MGADSMTrajectory.h
+	${SRCROOT}/MpcorbBody.cpp
+	${INCROOT}/MpcorbBody.h	
 	${SRCROOT}/MpcorbEphemeris.cpp
 	${INCROOT}/MpcorbEphemeris.h
 	${SRCROOT}/Orbit.cpp
@@ -53,9 +57,11 @@ set(SRC
 	${SRCROOT}/OrbitalElements.cpp
 	${INCROOT}/OrbitalElements.h
 	${SRCROOT}/Planet.cpp
-	${INCROOT}/Planet.h
+	${INCROOT}/Planet.h	
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
+	${SRCROOT}/Rotation.cpp
+	${INCROOT}/Rotation.h	
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp

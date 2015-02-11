@@ -23,37 +23,38 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/EphemerisBody.h>
+#include <OTL/Core/OrbitalBody.h>
 
 namespace otl
 {
 
-// Foreward declarations
-class SpiceEphemeris;
-typedef std::shared_ptr<SpiceEphemeris> SpiceEphemerisPointer;
-
-class OTL_CORE_API SpiceBody : public IEphemerisBody
+class IEphemerisBody : public OrbitalBody
 {
 public:
-   SpiceBody();
-   explicit SpiceBody(const std::string& observerBodyName,
-                      const Epoch& epoch = Epoch::MJD2000(0.0),
-                      const std::string& targetBodyName = "SUN",
-                      const std::string& referenceFrameName = "J2000");
-   SpiceBody(const std::string& observerBodyName,
-             const SpiceEphemerisPointer& ephemeris,
-             const Epoch& epoch = Epoch::MJD2000(0.0),
-             const std::string& targetBodyName = "SUN",
-             const std::string& referenceFrameName = "J2000");
+   IEphemerisBody();
+   IEphemerisBody(const std::string& name,
+                  const PhysicalProperties& physicalProperties,
+                  double gravitationalParameterCentralBody,
+                  const test::StateVector& stateVector,
+                  const Epoch& epoch = Epoch::MJD2000(0.0));
 
-   void SetEphemeris(const SpiceEphemerisPointer& ephemeris);
+   virtual const PhysicalProperties& GetPhysicalProperties() const override;
+   virtual const keplerian::Orbit& GetOrbit() const override;
+
+   //const PhysicalProperties& QueryPhysicalProperties();
+   //double QueryGravitationalParameterCentralBody();
+   const test::StateVector& QueryStateVector(const Epoch& epoch);
+
+   void ForceInitialize();
 
 protected:
-   virtual void VInitialize() override;
-   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
+   virtual void VPropagate(const Time& timeDelta) override;
+   virtual void VInitialize() = 0;
+   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) = 0;
 
 private:
-   SpiceEphemerisPointer m_ephemeris;
+   mutable bool m_initialized;   ///< TRUE if the ephemeris data has been initialized
+   Time m_maxPropagationTime;    ///< Max propagation time before next ephemeris update
 };
 
 } // namespace otl

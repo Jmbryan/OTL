@@ -62,7 +62,7 @@ public:
 
    StateVectorType GetType() const;
 
-   Vector6d GetGenericStateVector() const;
+   const Vector6d& GetGenericStateVector() const;
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 

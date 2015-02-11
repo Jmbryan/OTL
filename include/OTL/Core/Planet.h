@@ -23,12 +23,16 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/EphemerisBody.h>
 
 namespace otl
 {
 
-class OTL_CORE_API Planet : public OrbitalBody
+// Forward declarations
+class JplApproximateEphemeris;
+typedef std::shared_ptr<JplApproximateEphemeris> JplApproximateEphemerisPointer;
+
+class OTL_CORE_API Planet : public IEphemerisBody
 {
 public:
 
@@ -51,11 +55,6 @@ public:
    };
 
    ////////////////////////////////////////////////////////////
-   /// Typedefs
-   ////////////////////////////////////////////////////////////
-   typedef std::map<PlanetId, std::pair<std::string, PhysicalProperties>> PlanetDictionary;
-
-   ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
    Planet();
@@ -69,7 +68,8 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(PlanetId planetId, const Epoch& epoch = Epoch::MJD2000(0.0));
+   explicit Planet(PlanetId planetId,
+                   const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet from name
@@ -80,7 +80,8 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(const std::string& name, const Epoch& epoch = Epoch::MJD2000(0.0));
+   explicit Planet(const std::string& name,
+                   const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet from identifier and ephemeris database
@@ -90,7 +91,9 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   Planet(PlanetId planetId, const EphemerisPointer& ephemeris, const Epoch& epoch = Epoch::MJD2000(0.0));
+   Planet(PlanetId planetId,
+          const JplApproximateEphemerisPointer& ephemeris,
+          const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet from name and ephemeris database
@@ -100,7 +103,11 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   Planet(const std::string& name, const EphemerisPointer& ephemeris, const Epoch& epoch = Epoch::MJD2000(0.0));
+   Planet(const std::string& name,
+          const JplApproximateEphemerisPointer& ephemeris,
+          const Epoch& epoch = Epoch::MJD2000(0.0));
+
+   void SetEphemeris(const JplApproximateEphemerisPointer& ephemeris);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the planet to a single-line formatted string
@@ -153,10 +160,6 @@ public:
    std::string ToDetailedString(std::string prefix = "") const;
 
 protected:
-   virtual void VQueryPhysicalProperties() override;
-   virtual void VQueryCentralBodyMu() override;
-
-private:
    ////////////////////////////////////////////////////////////
    /// \brief Initialize the planet of type planetId
    ///
@@ -167,20 +170,12 @@ private:
    /// \param ephemeris Smart pointer to ephemeris database
    ///
    ////////////////////////////////////////////////////////////
-   void Initialize(PlanetId id, const EphemerisPointer& ephemeris);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Create the planet dictionary
-   ///
-   /// This function creates a lookup table for retrieving
-   /// the name, radius, and gravitational parameter of a
-   /// planet given an identifier.
-   ///
-   ////////////////////////////////////////////////////////////
-   //static PlanetDictionary CreatePlanetInfo();
+   virtual void VInitialize() override;
+   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
 
 private:
-   PlanetId m_id; ///< Planet identifier enumerator
+   PlanetId m_id;                               ///< Planet identifier enumerator
+   JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to ephemeris database
 };
 
 ////////////////////////////////////////////////////////////

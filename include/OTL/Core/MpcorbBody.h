@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/EphemerisBody.h>
 
 namespace otl
 {
@@ -32,13 +32,26 @@ namespace otl
 class MpcorbEphemeris;
 typedef std::shared_ptr<MpcorbEphemeris> MpcorbEphemerisPointer;
 
-class OTL_CORE_API MpcorbBody : public OrbitalBody
+class OTL_CORE_API MpcorbBody : public IEphemerisBody
 {
 public:
-   explicit MpcorbBody(const std::string& name);
+   MpcorbBody();
+   explicit MpcorbBody(const std::string& name,
+                       const Epoch& epoch = Epoch::MJD2000(0.0));
+   MpcorbBody(const std::string& name,
+              const MpcorbEphemerisPointer& ephemeris,
+              const Epoch& epoch = Epoch::MJD2000(0.0));
+
+   void SetEphemeris(const MpcorbEphemerisPointer& ephemeris);
+
+protected:
+   virtual void VInitialize() override;
+   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
 
 private:
-   MpcorbEphemerisPointer m_mpcorbEphemeris;
+   MpcorbEphemerisPointer m_ephemeris;
+   Epoch m_referenceEpoch;
+   test::StateVector m_referenceStateVector;
 };
 
 } // namespace otl

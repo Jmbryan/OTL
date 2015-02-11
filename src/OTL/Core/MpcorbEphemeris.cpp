@@ -186,6 +186,26 @@ void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& 
 }
 
 ////////////////////////////////////////////////////////////
+void MpcorbEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+{
+   try
+   {
+      //g_ephemerisDatabase->GetPhysicalProperties(name, phyiscalProperties);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while retrieving physical properties for " << Bracket(name);
+      return;
+   }  
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+{
+   gravitationalParameterCentralBody = ASTRO_MU_SUN;
+}
+
+////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
 {
    // Get the reference epoch and orbital elements

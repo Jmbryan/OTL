@@ -45,42 +45,58 @@ static PlanetDictionary g_planetInfo =
 
 ////////////////////////////////////////////////////////////
 Planet::Planet() :
-OrbitalBody(),
+IEphemerisBody(),
 m_id(PlanetId::Invalid)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(Planet::PlanetId planetId, const Epoch& epoch) :
-OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
-m_id(planetId)
+Planet::Planet(Planet::PlanetId planetId,
+               const Epoch& epoch) :
+IEphemerisBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
+m_id(planetId),
+m_ephemeris(nullptr)
 {
-   Initialize(m_id, std::make_shared<JplApproximateEphemeris>());
+
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(const std::string& name, const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
-m_id(ConvertPlanetName2Identifier(name))
+Planet::Planet(const std::string& name,
+               const Epoch& epoch) :
+IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+m_id(ConvertPlanetName2Identifier(name)),
+m_ephemeris(nullptr)
 {
-   Initialize(m_id, std::make_shared<JplApproximateEphemeris>());
+
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(PlanetId planetId, const EphemerisPointer& ephemeris, const Epoch& epoch) :
-OrbitalBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
-m_id(planetId)
+Planet::Planet(PlanetId planetId,
+               const JplApproximateEphemerisPointer& ephemeris,
+               const Epoch& epoch) :
+IEphemerisBody(ConvertPlanetIdentifier2Name(planetId), PhysicalProperties(), 1.0, test::StateVector(), epoch),
+m_id(planetId),
+m_ephemeris(ephemeris)
 {
-   Initialize(m_id, ephemeris);
+
 }
 
 ////////////////////////////////////////////////////////////
-Planet::Planet(const std::string& name, const EphemerisPointer& ephemeris, const Epoch& epoch) :
-OrbitalBody(name, PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
-m_id(ConvertPlanetName2Identifier(name))
+Planet::Planet(const std::string& name,
+               const JplApproximateEphemerisPointer& ephemeris,
+               const Epoch& epoch) :
+IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
+m_id(ConvertPlanetName2Identifier(name)),
+m_ephemeris(ephemeris)
 {
-   Initialize(m_id, ephemeris);
+
+}
+
+////////////////////////////////////////////////////////////
+void Planet::SetEphemeris(const JplApproximateEphemerisPointer& ephemeris)
+{
+   m_ephemeris = ephemeris;
 }
 
 ////////////////////////////////////////////////////////////
@@ -104,28 +120,40 @@ std::string Planet::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
-void Planet::VQueryPhysicalProperties()
+void Planet::VInitialize()
 {
+   // Init the ephemeris
+   if (!m_ephemeris)
+   {
+      m_ephemeris = std::make_shared<JplApproximateEphemeris>();
+   }
+   m_ephemeris->Initialize();
+
+   // Init the physical properties
    const auto& physicalProperties = GetPlanetPhysicalProperties(GetName());
    SetPhysicalProperties(physicalProperties);
-}
 
-////////////////////////////////////////////////////////////
-void Planet::VQueryCentralBodyMu()
-{
+   // Init the gravitational parameter of the central body
    SetGravitationalParameterCentralBody(ASTRO_MU_SUN);
+
+   // Init the state vector
+   SetStateVector(
+      m_ephemeris->GetStateVector(GetName(), GetEpoch()));
 }
 
 ////////////////////////////////////////////////////////////
-void Planet::Initialize(Planet::PlanetId planetId, const EphemerisPointer& ephemeris)
+test::StateVector Planet::VQueryStateVectorr(const Epoch& epoch)
 {
-   // Initialize ephemeris
-   SetEphemeris(ephemeris);
-
-   // Lazily query the planet data from the ephemeris database
-   LazyQueryPhysicalProperties();
-   LazyQueryCentralBodyMu();
-   LazyQueryStateVector(GetEpoch());
+   if (m_ephemeris)
+   {
+      return m_ephemeris->GetStateVector(GetName(), epoch);
+   }
+   else
+   {
+      OTL_ERROR() << "Failed to query state vector for planet " << Bracket(GetName())
+         << ": Invalid ephemeris pointer.";
+      return test::StateVector();
+   }
 }
 
 ////////////////////////////////////////////////////////////
@@ -152,10 +180,9 @@ Planet::PlanetId ConvertPlanetName2Identifier(const std::string& name)
          break;
       }
    }
-   if (planetId == Planet::PlanetId::Invalid)
-   {
-      OTL_ERROR() << "Planet name " << Bracket(name) << " not found";
-   }
+   OTL_ERROR_IF(planetId == Planet::PlanetId::Invalid,
+      "Planet name " << Bracket(name) << " not found");
+
    return planetId;
 }
 

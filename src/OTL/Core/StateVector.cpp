@@ -101,7 +101,7 @@ StateVectorType StateVector::GetType() const
    return m_type;
 }
 
-Vector6d StateVector::GetGenericStateVector() const
+const Vector6d& StateVector::GetGenericStateVector() const
 {
    return m_state;
 }
