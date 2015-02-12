@@ -42,16 +42,73 @@ public:
               const MpcorbEphemerisPointer& ephemeris,
               const Epoch& epoch = Epoch::MJD2000(0.0));
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the MPCORB ephemeris database
+   ///
+   /// \param ephemeris Smart pointer to MPCORB ephemeris database
+   ///
+   ////////////////////////////////////////////////////////////
    void SetEphemeris(const MpcorbEphemerisPointer& ephemeris);
 
 protected:
    virtual void VInitialize() override;
-   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
-
+   virtual EphemerisPointer VGetEphemeris() override;
+   virtual test::StateVector VQueryStateVector(const Epoch& epoch) override;
+   
 private:
    MpcorbEphemerisPointer m_ephemeris;
    Epoch m_referenceEpoch;
    test::StateVector m_referenceStateVector;
 };
 
+/// Convenience alias
+typedef MpcorbBody MinorPlanet;
+
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::MpcorbBody
+/// \ingroup otl
+///
+/// Represents a solar system minor planetary body using the
+/// MPCORB Ephemeris as described here:
+/// [TODO]: reference
+/// 
+/// The state vector of the body at a desired Epoch can be obtained
+/// by calling the inherited member function QueryStateVector().
+/// Convenience functions for retrieving the state vector and
+/// specific variants are also provided:
+/// \li GetStateVector()
+/// \li GetCartesianStateVector()
+/// \li GetOrbitalElements()
+///
+/// The following alias is also provided for convenience:
+/// typedef JplApproximateBody MinorPlanet
+///
+/// Usage example:
+/// \code
+/// // Create a minor planet representing Ceres
+/// otl::MinorPlanet minorPlanet("Ceres");
+///
+/// // Retrieve some information about Ceres
+/// auto dateOfDiscovery = minorPlanet.GetDateOfDiscovery();
+/// auto dateOfLastObservation = minorPlanet.GetDateOfLasteObservation();
+///
+/// // Query the state vector at the epoch Janurary 10, 2014
+/// // The MpcorbEphemeris returns the state vector in
+/// StateVectorType::Orbital format, so a conversion is required
+/// to obtain the CartesianStateVector.
+/// planet.QueryStateVector(Epoch::GregorianDateTime(2014, 1, 10));
+/// auto myOrbitalElements1 = planet.GetOrbitalElements();
+/// auto myCartesianStateVector1 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
+///
+/// // Propagate the planet forward 30 days.
+/// planet.Propagate(Time::Days(30));
+/// auto myOrbitalElements2 = planet.GetOrbitalElements();
+/// auto myCartesianStateVector2 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
+///
+/// \endcode
+///
+/// \see IEphemerisBody, MpcorbEphemeris, StateVector, OrbitalElements, CartesianStateVector
+///
+////////////////////////////////////////////////////////////

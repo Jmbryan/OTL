@@ -77,22 +77,21 @@ enum class FlybyType
 };
 
 ////////////////////////////////////////////////////////////
-/// \brief Propagation types
+/// \brief Planetary body identifiers
 ////////////////////////////////////////////////////////////
-enum class PropagationType
+enum class PlanetId
 {
-   Invalid = -1,     ///< Invalid propagation type
-   OrbitalElements,  ///< Propagate the orbital elements
-   StateVector,      ///< Propagate the state vector
-   Count             ///< Number of propagation types
-};
-
-enum class EphemerisQueryType
-{
-   Invalid = -1,
-   OrbitalElements,
-   StateVector,
-   Count
+   Invalid = -1,  ///< Invalid planet identifier
+   Mercury,       ///< Mercury
+   Venus,         ///< Venus
+   Earth,         ///< Earth
+   Mars,          ///< Mars
+   Jupiter,       ///< Jupiter
+   Saturn,        ///< Saturn
+   Uranus,        ///< Uranus
+   Neptune,       ///< Neptune
+   Pluto,         ///< Pluto
+   Count          ///< Number of planets
 };
 
 // Math constants

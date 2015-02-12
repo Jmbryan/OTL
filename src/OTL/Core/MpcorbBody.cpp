@@ -79,27 +79,25 @@ void MpcorbBody::VInitialize()
    SetGravitationalParameterCentralBody(
       m_ephemeris->GetGravitationalParameterCentralBody(GetName()));
 
-   // Init the state vector
+   // Init the reference state vector
    SetStateVector(
-      m_ephemeris->GetStateVector(GetName(), GetEpoch()));
+      m_ephemeris->GetReferenceStateVector(GetName()));
+   
+   // Propagate to current epoch
+   PropagateTo(GetEpoch());
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector MpcorbBody::VQueryStateVectorr(const Epoch& epoch)
+EphemerisPointer MpcorbBody::VGetEphemeris()
 {
-   PropagateTo(epoch);
-   return GetStateVector();
+   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+}
 
-   //if (m_ephemeris)
-   //{
-   //   return m_ephemeris->GetStateVector(GetName(), epoch);
-   //}
-   //else
-   //{
-   //   OTL_ERROR() << "Failed to query state vector for mpcorb body " << Bracket(GetName())
-   //      << ": Invalid ephemeris pointer.";
-   //   return test::StateVector();
-   //}
+////////////////////////////////////////////////////////////
+test::StateVector MpcorbBody::VQueryStateVector(const Epoch& epoch)
+{
+   OrbitalBody::PropagateTo(epoch);
+   return GetStateVector();
 }
 
 } // namespace otl

@@ -21,7 +21,7 @@
 
 #pragma once
 #include <OTL/Core/MGADSMNodes.h>
-#include <OTL/Core/Planet.h>
+#include <OTL/Core/JplApproximateBody.h>
 #include <OTL/Core/Propagator.h>
 #include <OTL/Core/Lambert.h>
 #include <OTL/Core/Flyby.h>

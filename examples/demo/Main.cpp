@@ -3,7 +3,7 @@
 #include <chrono>
 
 #include <OTL/Core/MGADSMTrajectory.h>
-#include <OTL/Core/Planet.h>
+#include <OTL/Core/JplApproximateBody.h>
 #include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/MpcorbBody.h>
 #include <OTL/Core/Orbit.h>
@@ -40,7 +40,7 @@ int main()
     gLogger.SetLogLevel(LogLevel::Info);
 
     // Sizes
-    if (false)
+    if (true)
     {
        // Base
        auto sizeofbool = sizeof(bool);
@@ -64,13 +64,13 @@ int main()
        // OrbitalBody
        auto sizeofname = sizeof(std::string);
        auto sizeofphys = sizeof(PhysicalProperties);
-       auto sizeofepoch = sizeof(Epoch);
-       auto sizeofephm = sizeof(EphemerisPointer);
-       auto sizeoffun = sizeof(std::function<void(void)>);
+       auto sizeofepoch = sizeof(Epoch);     
        auto sizeoforbitalbody = sizeof(OrbitalBody);
 
-       // Planet
+       // Planets
        auto sizeofplanet = sizeof(Planet);
+       auto sizeofmpcorb = sizeof(MpcorbBody);
+       auto sizeofspice = sizeof(SpiceBody);
 
        double d = 1.0;
     }
@@ -166,7 +166,8 @@ int main()
        //SpiceBody p("Earth", spiceEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
 
-       Planet p("Earth");
+       //Planet p("Earth");
+       Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
 
@@ -179,35 +180,24 @@ int main()
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          //p.LazyQueryStateVector(epoch);
-          //auto sv = p.GetStateVector();
+          auto sv = p.QueryStateVector(epoch);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
+       p.QueryStateVector(Epoch::MJD2000(0.0));
        std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
-       for (int i = 0; i < numIter; ++i)
-       {
-          auto sv = p.QueryStateVector(epoch);
-       }
-       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
-
-       p.QueryStateVector(Epoch::MJD2000(0.0));     
-       std::chrono::system_clock::time_point t5 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
           p.PropagateTo(epoch);
           auto sv = p.GetStateVector();
        }
-       std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
+       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
        auto duration1 = t2 - t1;
        auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
 
        auto duration2 = t4 - t3;
        auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
-
-       auto duration3 = t6 - t5;
-       auto milli3 = std::chrono::duration_cast<std::chrono::milliseconds>(duration3);
 
        double dd = 1.0;
 

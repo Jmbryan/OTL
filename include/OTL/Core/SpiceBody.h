@@ -50,7 +50,8 @@ public:
 
 protected:
    virtual void VInitialize() override;
-   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
+   virtual EphemerisPointer VGetEphemeris() override;
+   virtual test::StateVector VQueryStateVector(const Epoch& epoch) override;
 
 private:
    SpiceEphemerisPointer m_ephemeris;

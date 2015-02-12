@@ -89,7 +89,13 @@ void SpiceBody::VInitialize()
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector SpiceBody::VQueryStateVectorr(const Epoch& epoch)
+EphemerisPointer SpiceBody::VGetEphemeris()
+{
+   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+}
+
+////////////////////////////////////////////////////////////
+test::StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
 {
    if (m_ephemeris)
    {

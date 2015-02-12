@@ -30,51 +30,74 @@ namespace otl
 ////////////////////////////////////////////////////////////
 IEphemerisBody::IEphemerisBody() :
 OrbitalBody(),
-m_initialized(false)
+m_initialized(false),
+m_maxPropagationTime(Time::Infinity())
 {
 
 }
 
+////////////////////////////////////////////////////////////
 IEphemerisBody::IEphemerisBody(const std::string& name,
                                const PhysicalProperties& physicalProperties,
                                double gravitationalParameterCentralBody,
                                const test::StateVector& stateVector,
                                const Epoch& epoch) :
 OrbitalBody(name, physicalProperties, gravitationalParameterCentralBody, stateVector, epoch),
-m_initialized(false)
+m_initialized(false),
+m_maxPropagationTime(Time::Infinity())
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-const PhysicalProperties& IEphemerisBody::GetPhysicalProperties() const
+IEphemerisBody::~IEphemerisBody()
+{
+
+}
+
+////////////////////////////////////////////////////////////
+PhysicalProperties IEphemerisBody::GetPhysicalProperties() const
 {
    if (!m_initialized)
    {
       const_cast<IEphemerisBody*>(this)->ForceInitialize();
    }
-   return m_physicalProperties;
+   return OrbitalBody::GetPhysicalProperties();
 }
 
 ////////////////////////////////////////////////////////////
-const keplerian::Orbit& IEphemerisBody::GetOrbit() const
+keplerian::Orbit IEphemerisBody::GetOrbit() const
 {
    if (!m_initialized)
    {
       const_cast<IEphemerisBody*>(this)->ForceInitialize();
    }
-   return m_orbit;
+   return OrbitalBody::GetOrbit();
 }
 
 ////////////////////////////////////////////////////////////
-const test::StateVector& IEphemerisBody::QueryStateVector(const Epoch& epoch)
+void IEphemerisBody::BlendedPropagate(const Time& timeDelta)
 {
-   if (!m_initialized)
+   if (IsEphemerisUpdateRequired(timeDelta))
    {
-   const_cast<IEphemerisBody*>(this)->ForceInitialize();
+      QueryStateVector(GetEpoch());
    }
-   SetStateVector(VQueryStateVectorr(epoch));
-   return GetStateVector();
+   else
+   {
+      OrbitalBody::Propagate(timeDelta);
+   }
+}
+
+////////////////////////////////////////////////////////////
+void IEphemerisBody::BlendedPropagateTo(const Epoch& epoch)
+{
+   BlendedPropagate(epoch - GetEpoch());
+}
+
+////////////////////////////////////////////////////////////
+void IEphemerisBody::SetMaxPropagationTime(const Time& maxTime)
+{
+   m_maxPropagationTime = maxTime;
 }
 
 ////////////////////////////////////////////////////////////
@@ -85,9 +108,20 @@ void IEphemerisBody::ForceInitialize()
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemerisBody::VPropagate(const Time& timeDelta)
+const test::StateVector& IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
-   OrbitalBody::VPropagate(timeDelta);
+   if (!m_initialized)
+   {
+      const_cast<IEphemerisBody*>(this)->ForceInitialize();
+   }
+   SetStateVector(VQueryStateVector(epoch));
+   return GetStateVector();
+}
+
+////////////////////////////////////////////////////////////
+bool IEphemerisBody::IsEphemerisUpdateRequired(const Time& timeDelta)
+{
+   return (VGetEphemeris() && (GetOrbit().GetElapsedPropagationTime() + timeDelta) > m_maxPropagationTime);
 }
 
 } // namespace otl

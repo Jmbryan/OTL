@@ -24,6 +24,8 @@ set(SRC
 	${INCROOT}/FlybyUnpowered.h
 	${SRCROOT}/ForceModel.cpp
 	${INCROOT}/ForceModel.h
+	${SRCROOT}/JplApproximateBody.cpp
+	${INCROOT}/JplApproximateBody.h	
 	${SRCROOT}/JplApproximateEphemeris.cpp
 	${INCROOT}/JplApproximateEphemeris.h
 	${SRCROOT}/JplEphemeris.cpp
@@ -56,8 +58,6 @@ set(SRC
 	${INCROOT}/OrbitalBody.h
 	${SRCROOT}/OrbitalElements.cpp
 	${INCROOT}/OrbitalElements.h
-	${SRCROOT}/Planet.cpp
-	${INCROOT}/Planet.h	
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
 	${SRCROOT}/Rotation.cpp

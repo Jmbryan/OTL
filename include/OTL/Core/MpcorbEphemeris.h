@@ -82,6 +82,9 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void LoadDataFile(const std::string& dataFilename);
+
+   test::StateVector GetReferenceStateVector(const std::string& name);
+   Epoch GetReferenceEpoch(const std::string& name);
    
 protected:
    ////////////////////////////////////////////////////////////
@@ -170,8 +173,9 @@ private:
    std::string m_dataFilename;                  ///< Full path to the ephemeris data file
    PropagatorPointer m_propagator;              ///< Smart pointer to propagator algorithm for propagating the reference orbits
    Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
-   StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
-   OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
+   //StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
+   //OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
+   test::StateVector m_referenceStateVector;
 };
 
 } // namespace otl

@@ -24,9 +24,6 @@
 
 #include <OTL/Core/OrbitalBody.h>
 
-#include <OTL/Core/KeplerianPropagator.h>
-#include <OTL/Core/Ephemeris.h>
-
 namespace otl
 {
 
@@ -110,9 +107,7 @@ OrbitalBody::OrbitalBody() :
 m_name("Unknown"),
 m_physicalProperties(),
 m_epoch(),
-m_orbit(),
-m_ephemeris(nullptr),
-m_maxPropagationTime(Time::Infinity())
+m_orbit()
 {
 
 }
@@ -126,9 +121,7 @@ OrbitalBody::OrbitalBody(const std::string& name,
 m_name(name),
 m_physicalProperties(physicalProperties),
 m_epoch(epoch),
-m_orbit(gravitationalParameterCentralBody, stateVector),
-m_ephemeris(nullptr),
-m_maxPropagationTime(Time::Infinity())
+m_orbit(gravitationalParameterCentralBody, stateVector)
 {
 
 }
@@ -146,35 +139,21 @@ void OrbitalBody::SetPropagator(const PropagatorPointer& propagator)
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::SetEphemeris(const EphemerisPointer& ephemeris)
-{
-   m_ephemeris = ephemeris;
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::SetMaxPropagationTime(const Time& maxTime)
-{
-   m_maxPropagationTime = maxTime;
-}
-
-////////////////////////////////////////////////////////////
-const std::string& OrbitalBody::GetName() const
+std::string OrbitalBody::GetName() const
 {
    return m_name;
 }
 
 ////////////////////////////////////////////////////////////
-const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
+PhysicalProperties OrbitalBody::GetPhysicalProperties() const
 {
-   ExecuteDelayedCommand("PROP");
    return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
-double OrbitalBody::GetGravitationalParameterCentralBody() const
+Epoch OrbitalBody::GetEpoch() const
 {
-   ExecuteDelayedCommand("GM");
-   return GetOrbit().GetMu();
+   return m_epoch;
 }
 
 ////////////////////////////////////////////////////////////
@@ -190,16 +169,14 @@ OrbitalElements OrbitalBody::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
-const test::StateVector& OrbitalBody::GetStateVector() const
+test::StateVector OrbitalBody::GetStateVector() const
 {
    return GetOrbit().GetStateVector();
 }
 
 ////////////////////////////////////////////////////////////
-const keplerian::Orbit& OrbitalBody::GetOrbit() const
+keplerian::Orbit OrbitalBody::GetOrbit() const
 {
-   ExecuteDelayedCommand("GM");
-   ExecuteDelayedCommand("SV");
    return m_orbit;
 }
 
@@ -216,9 +193,9 @@ double OrbitalBody::GetOrbitRadius() const
 }
 
 ////////////////////////////////////////////////////////////
-const Epoch& OrbitalBody::GetEpoch() const
+double OrbitalBody::GetGravitationalParameterCentralBody() const
 {
-   return m_epoch;
+   return GetOrbit().GetMu();
 }
 
 ////////////////////////////////////////////////////////////
@@ -230,69 +207,15 @@ bool OrbitalBody::IsOrbitType(keplerian::Orbit::Type orbitType) const
 ////////////////////////////////////////////////////////////
 void OrbitalBody::Propagate(const Time& timeDelta)
 {
-   //PropagateEpoch(timeDelta);
-   //if (IsEphemerisUpdateRequired(timeDelta))
-   //{
-   //   QueryStateVector(m_epoch);
-   //}
-   //else
-   //{
-      //ExecuteDelayedCommand("CentralBodyMu");
-      //ExecuteDelayedCommand("StateVector");
-      VPropagate(timeDelta);
-   //}
+   m_epoch += timeDelta;
+   GetOrbit();
+   m_orbit.Propagate(timeDelta);
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::PropagateTo(const Epoch& epoch)
 {
    Propagate(epoch - m_epoch);
-}
-
-////////////////////////////////////////////////////////////
-const PhysicalProperties& OrbitalBody::QueryPhysicalProperties()
-{
-   RemoveDelayedCommand("PROP");
-   VQueryPhysicalProperties();
-   return GetPhysicalProperties();
-}
-
-////////////////////////////////////////////////////////////
-double OrbitalBody::QueryCentralBodyMu()
-{
-   RemoveDelayedCommand("GM");
-   VQueryCentralBodyMu();
-   return GetOrbit().GetMu();
-}
-
-////////////////////////////////////////////////////////////
-const test::StateVector& OrbitalBody::QueryStateVector(const Epoch& epoch)
-{
-   m_epoch = epoch;
-   ExecuteDelayedCommand("GM");
-
-   RemoveDelayedCommand("SV");
-   VQueryStateVector(epoch);
-   return GetStateVector();
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::LazyQueryPhysicalProperties()
-{
-   AddDelayedCommand("PROP", std::bind(&OrbitalBody::VQueryPhysicalProperties, this));
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::LazyQueryCentralBodyMu()
-{
-   AddDelayedCommand("GM", std::bind(&OrbitalBody::VQueryCentralBodyMu, this));
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::LazyQueryStateVector(const Epoch& epoch)
-{
-   m_epoch = epoch;
-   AddDelayedCommand("SV", std::bind(&OrbitalBody::VQueryStateVector, this, epoch));
 }
 
 ////////////////////////////////////////////////////////////
@@ -317,61 +240,10 @@ std::string OrbitalBody::ToDetailedString(std::string prefix) const
    os << GetOrbit().ToDetailedString(prefix + "   ");
    os << prefix << "Ephemeris:" << std::endl;
    //os << m_ephemeris->ToDetailedString(prefix + "   "); [TODO]
-   os << prefix << "Max propagation time:" << std::endl;
-   os << m_maxPropagationTime.ToDetailedString(prefix + "   ");
+   //os << prefix << "Max propagation time:" << std::endl;
+   //os << m_maxPropagationTime.ToDetailedString(prefix + "   ");
 
    return os.str();
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::VPropagate(const Time& timeDelta)
-{
-   m_orbit.Propagate(timeDelta);
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::VQueryPhysicalProperties()
-{
-   if (m_ephemeris)
-   {
-      PhysicalProperties physicalProperties;
-      m_ephemeris->GetPhysicalProperties(m_name, physicalProperties);
-      SetPhysicalProperties(physicalProperties);
-   }
-   else
-   {
-      OTL_ERROR() << "Failed to query physical properties for orbital body " << Bracket(m_name) << ": Invalid ephemeris pointer.";
-   }
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::VQueryCentralBodyMu()
-{
-   if (m_ephemeris)
-   {
-      double gravitationalParameterCentralBody;
-      m_ephemeris->GetGravitationalParameterCentralBody(m_name, gravitationalParameterCentralBody);
-      SetGravitationalParameterCentralBody(gravitationalParameterCentralBody);
-   }
-   else
-   {
-      OTL_ERROR() << "Failed to query gravitational parameter of central body for orbital body " << Bracket(m_name) << ": Invalid ephemeris pointer.";
-   }
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::VQueryStateVector(const Epoch& epoch)
-{
-   if (m_ephemeris)
-   {
-      test::StateVector stateVector;
-      m_ephemeris->GetStateVector(m_name, epoch, stateVector);
-      m_orbit.SetStateVector(stateVector);
-   }
-   else
-   {
-      OTL_ERROR() << "Failed to query state vector for orbital body " << Bracket(m_name) << ": Invalid ephemeris pointer.";
-   }
 }
 
 ////////////////////////////////////////////////////////////
@@ -381,65 +253,15 @@ void OrbitalBody::SetPhysicalProperties(const PhysicalProperties& physicalProper
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::SetGravitationalParameterCentralBody(double centralBodyMu)
+void OrbitalBody::SetGravitationalParameterCentralBody(double gravitationalParameterCentralBody)
 {
-   m_orbit.SetMu(centralBodyMu);
+   m_orbit.SetMu(gravitationalParameterCentralBody);
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::SetStateVector(const test::StateVector& stateVector)
 {
    m_orbit.SetStateVector(stateVector);
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::AddDelayedCommand(const std::string& name, const DelayedCommand& delayedCommand)
-{
-   m_delayedCommands[name] = delayedCommand;
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::RemoveDelayedCommand(const std::string& name) const
-{
-   auto it = m_delayedCommands.find(name);
-   if (it != m_delayedCommands.end())
-   {
-      m_delayedCommands.erase(it);
-   }
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::PropagateEpoch(const Time& timeDelta)
-{
-   m_epoch += timeDelta;
-}
-
-////////////////////////////////////////////////////////////
-bool OrbitalBody::IsEphemerisUpdateRequired(const Time& timeDelta)
-{
-   return (m_ephemeris && (m_orbit.GetElapsedPropagationTime() + timeDelta) > m_maxPropagationTime);
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::ExecuteDelayedCommand(const std::string& name) const
-{
-   auto it = m_delayedCommands.find(name);
-   if (it != m_delayedCommands.end())
-   {
-      it->second();
-      m_delayedCommands.erase(it);
-   }
-}
-
-////////////////////////////////////////////////////////////
-void OrbitalBody::ExecuteAllDelayedCommands() const
-{
-   auto it = m_delayedCommands.begin();
-   while (it != m_delayedCommands.end())
-   {
-      it->second();
-      it = m_delayedCommands.erase(it);
-   }
 }
 
 } // namespace otl

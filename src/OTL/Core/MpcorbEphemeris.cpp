@@ -72,6 +72,37 @@ void MpcorbEphemeris::LoadDataFile(const std::string& dataFilename)
 }
 
 ////////////////////////////////////////////////////////////
+test::StateVector MpcorbEphemeris::GetReferenceStateVector(const std::string& name)
+{
+   // TODO MpcorbEphemerisIO should return test::StateVector 
+   StateVector referenceStateVector;
+   try
+   {    
+      g_ephemerisDatabase->GetStateVector(name, referenceStateVector);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while retrieving reference state vector for " << Bracket(name);
+   }
+   return test::StateVector(referenceStateVector);
+}
+
+////////////////////////////////////////////////////////////
+Epoch MpcorbEphemeris::GetReferenceEpoch(const std::string& name)
+{
+   Epoch referenceEpoch;
+   try
+   {
+      g_ephemerisDatabase->GetEpoch(name, referenceEpoch);
+   }
+   catch (std::exception ex)
+   {
+      OTL_ERROR() << "Exception caught while retrieving reference epoch for " << Bracket(name);
+   }
+   return referenceEpoch;
+}
+
+////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
 {
    // make_unique not supported in c++11
@@ -130,59 +161,59 @@ void MpcorbEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
 {
-   // Get the reference epoch and state vector
-   try
-   {
-      g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
-      g_ephemerisDatabase->GetStateVector(name, m_referenceStateVector);
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while retrieving reference epoch and state vector for " << Bracket(name);
-      return;
-   }
+   //// Get the reference epoch and state vector
+   //try
+   //{
+   //   g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
+   //   g_ephemerisDatabase->GetStateVector(name, m_referenceStateVector);
+   //}
+   //catch (std::exception ex)
+   //{
+   //   OTL_ERROR() << "Exception caught while retrieving reference epoch and state vector for " << Bracket(name);
+   //   return;
+   //}
 
-   // Time since the reference epoch
-   auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
-   
-   // Propagate the state vector to the desired epoch
-   if (m_propagator)
-   {
-      stateVector = m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
-   }
-   else
-   {
-      OTL_ERROR() << "Invalid propagator pointer";
-   }
+   //// Time since the reference epoch
+   //auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
+   //
+   //// Propagate the state vector to the desired epoch
+   //if (m_propagator)
+   //{
+   //   stateVector = m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
+   //}
+   //else
+   //{
+   //   OTL_ERROR() << "Invalid propagator pointer";
+   //}
 }
 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
 {
-   // Get the reference epoch and orbital elements
-   try
-   {
-      g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
-      g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
-      return;
-   }
+   //// Get the reference epoch and orbital elements
+   //try
+   //{
+   //   g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
+   //   g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
+   //}
+   //catch (std::exception ex)
+   //{
+   //   OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
+   //   return;
+   //}
 
-   // Time since the reference epoch
-   auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
+   //// Time since the reference epoch
+   //auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
 
-   // Propagate the state vector to the desired epoch
-   if (m_propagator)
-   {
-      orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, timeDelta, ASTRO_MU_SUN);
-   }
-   else
-   {
-      OTL_ERROR() << "Invalid propagator pointer";
-   }
+   //// Propagate the state vector to the desired epoch
+   //if (m_propagator)
+   //{
+   //   orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, timeDelta, ASTRO_MU_SUN);
+   //}
+   //else
+   //{
+   //   OTL_ERROR() << "Invalid propagator pointer";
+   //}
 }
 
 ////////////////////////////////////////////////////////////
@@ -208,17 +239,9 @@ void MpcorbEphemeris::VGetGravitationalParameterCentralBody(const std::string& n
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
 {
-   // Get the reference epoch and orbital elements
-   try
-   {
-      g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
-      g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
-      return;
-   }
+   // Get the reference epoch and state vector
+   m_referenceEpoch = GetReferenceEpoch(name);
+   m_referenceStateVector = GetReferenceStateVector(name);
 
    // Time since the reference epoch
    auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
@@ -226,7 +249,7 @@ void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoc
    // Propagate the state vector to the desired epoch
    if (m_propagator)
    {
-      m_propagator->Propagate(test::StateVector(m_referenceOrbitalElements), timeDelta, ASTRO_MU_SUN, stateVector);
+      m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN, stateVector);
    }
    else
    {

@@ -32,44 +32,13 @@ namespace otl
 class JplApproximateEphemeris;
 typedef std::shared_ptr<JplApproximateEphemeris> JplApproximateEphemerisPointer;
 
-class OTL_CORE_API Planet : public IEphemerisBody
+class OTL_CORE_API JplApproximateBody : public IEphemerisBody
 {
 public:
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Planetary body identifiers
-   ////////////////////////////////////////////////////////////
-   enum class PlanetId
-   {
-      Invalid = -1,  ///< Invalid planet identifier
-      Mercury,       ///< Mercury
-      Venus,         ///< Venus
-      Earth,         ///< Earth
-      Mars,          ///< Mars
-      Jupiter,       ///< Jupiter
-      Saturn,        ///< Saturn
-      Uranus,        ///< Uranus
-      Neptune,       ///< Neptune
-      Pluto,         ///< Pluto
-      Count          ///< Number of planets
-   };
-
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
-   Planet();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Create the planet from identifier
-   ///
-   /// The ephemeris database defaults to JplApproximateEphemeris.
-   ///
-   /// \param planetId Identifier of the planet to be created
-   /// \param epoch Initial Epoch of the planet
-   ///
-   ////////////////////////////////////////////////////////////
-   explicit Planet(PlanetId planetId,
-                   const Epoch& epoch = Epoch::MJD2000(0.0));
+   JplApproximateBody();
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet from name
@@ -80,20 +49,8 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   explicit Planet(const std::string& name,
-                   const Epoch& epoch = Epoch::MJD2000(0.0));
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Create the planet from identifier and ephemeris database
-   ///
-   /// \param planetId Identifier of the planet to be created
-   /// \param ephemeris Smart pointer to IEphemeris database
-   /// \param epoch Initial Epoch of the planet
-   ///
-   ////////////////////////////////////////////////////////////
-   Planet(PlanetId planetId,
-          const JplApproximateEphemerisPointer& ephemeris,
-          const Epoch& epoch = Epoch::MJD2000(0.0));
+   explicit JplApproximateBody(const std::string& name,
+                               const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the planet from name and ephemeris database
@@ -103,10 +60,16 @@ public:
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
-   Planet(const std::string& name,
-          const JplApproximateEphemerisPointer& ephemeris,
-          const Epoch& epoch = Epoch::MJD2000(0.0));
+   JplApproximateBody(const std::string& name,
+                      const JplApproximateEphemerisPointer& ephemeris,
+                      const Epoch& epoch = Epoch::MJD2000(0.0));
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Set the JPL approximate ephemeris database
+   ///
+   /// \param ephemeris Smart pointer to JPL approximate ephemeris database
+   ///
+   ////////////////////////////////////////////////////////////
    void SetEphemeris(const JplApproximateEphemerisPointer& ephemeris);
 
    ////////////////////////////////////////////////////////////
@@ -115,11 +78,11 @@ public:
    /// The planet is converted to a single-line string
    /// with the following format:
    ///
-   /// "id=[id] name=[name] epoch=[Epoch]"
+   /// "name=[name] epoch=[Epoch]"
    ///
    /// e.g.
    ///
-   /// "id=2 name=Earth epoch=[Epoch]"
+   /// "name=Earth epoch=[Epoch]"
    ///
    /// where [Epoch] is the result from calling the Epoch::ToString()
    /// method.
@@ -137,15 +100,13 @@ public:
    /// The planet is converted to a detailed multi-line string
    /// with the following format:
    ///
-   /// "Identifier: [id]
-   ///  Orbital Body:
+   /// "Orbital Body:
    ///     [OrbitalBody]
    /// "
    ///
    /// e.g.
    ///
-   /// "Identifier: 2
-   ///  Orbital Body:
+   /// "Orbital Body:
    ///     [OrbitalBody]
    /// "
    ///
@@ -171,12 +132,15 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
-   virtual test::StateVector VQueryStateVectorr(const Epoch& epoch) override;
+   virtual EphemerisPointer VGetEphemeris() override;
+   virtual test::StateVector VQueryStateVector(const Epoch& epoch) override; 
 
 private:
-   PlanetId m_id;                               ///< Planet identifier enumerator
    JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to ephemeris database
 };
+
+/// Convenience alias
+typedef JplApproximateBody Planet;
 
 ////////////////////////////////////////////////////////////
 /// \brief Stream operator overload
@@ -190,7 +154,7 @@ private:
 ///
 ////////////////////////////////////////////////////////////
 template<typename T>
-T& operator<<(T& stream, const Planet& planet)
+T& operator<<(T& stream, const JplApproximateBody& planet)
 {
    stream << planet.ToString();
    return stream;
@@ -205,7 +169,7 @@ T& operator<<(T& stream, const Planet& planet)
 ///
 ////////////////////////////////////////////////////////////
 template <typename T>
-T& operator<<(T& stream, const Planet::PlanetId& planetId)
+T& operator<<(T& stream, const PlanetId& planetId)
 {
     stream << static_cast<int>(planetId);
     return stream;
@@ -217,7 +181,7 @@ T& operator<<(T& stream, const Planet::PlanetId& planetId)
 /// \param planetId Planet::PlanetId enumerator identifier of the planet
 ///
 ////////////////////////////////////////////////////////////
-std::string ConvertPlanetIdentifier2Name(Planet::PlanetId planetId);
+OTL_CORE_API std::string ConvertPlanetIdentifier2Name(PlanetId planetId);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for converting a planet name into a planet identifier
@@ -225,7 +189,7 @@ std::string ConvertPlanetIdentifier2Name(Planet::PlanetId planetId);
 /// \param name Name of the planet
 ///
 ////////////////////////////////////////////////////////////
-Planet::PlanetId ConvertPlanetName2Identifier(const std::string& name);
+OTL_CORE_API PlanetId ConvertPlanetName2Identifier(const std::string& name);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for retrieving the physical properties of a solar system planet
@@ -233,7 +197,7 @@ Planet::PlanetId ConvertPlanetName2Identifier(const std::string& name);
 /// \param planetId Planet::PlanetId identifier code of the planet
 ///
 ////////////////////////////////////////////////////////////
-PhysicalProperties GetPlanetPhysicalProperties(const Planet::PlanetId& planetId);
+OTL_CORE_API PhysicalProperties GetPlanetPhysicalProperties(const PlanetId& planetId);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper function for retrieving the physical properties of a solar system planet
@@ -241,38 +205,39 @@ PhysicalProperties GetPlanetPhysicalProperties(const Planet::PlanetId& planetId)
 /// \param name Name of the planet
 ///
 ////////////////////////////////////////////////////////////
-PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
+OTL_CORE_API PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
 
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::Planet
+/// \class otl::JplApproximateBody
 /// \ingroup otl
 ///
-/// Represents a solar system planetary body. The state
-/// vector of the planet at a desired Epoch can be obtained
+/// Represents a solar system major planetary body using the
+/// "JPL Approximate Ephemeris" as described here:
+/// [TODO]: reference
+/// 
+/// The state vector of the body at a desired Epoch can be obtained
 /// by calling the inherited member function QueryStateVector().
-/// Convenience functions for retrieving the CartesianStateVector
-/// and OrbitalElements are also provided:
+/// Convenience functions for retrieving the state vector and
+/// specific variants are also provided:
+/// \li GetStateVector()
 /// \li GetCartesianStateVector()
 /// \li GetOrbitalElements()
 ///
-/// Internally, the state vector is determined based on
-/// the ephemeris algorithm specified. By default, each planet
-/// uses the JplApproximateEphemeris. However, a different
-/// ephemeris can be used by calling the inherited
-/// SetEphemeris() member function.
+/// The following alias is also provided for convenience:
+/// typedef JplApproximateBody Planet
 ///
 /// Usage example:
 /// \code
-/// // Create a planet representing Earth using the default JplApproximateEphemeris
-/// otl::Planet planet(Planet::Earth);
-/// myName = planet.GetName();
-/// OTL_ASSERT(myName == "Earth");
+/// // Create a planet representing Earth
+/// otl::Planet planet(PlanetId::Earth);
+/// OTL_ASSERT(planet.GetName() == "Earth");
 ///
 /// // Query the state vector at the epoch Janurary 10, 2014
-/// // The JplApproximateEphemeris returns the OrbitalElements,
-/// // so a conversion is required to obtain the CartesianStateVector.
+/// // The JplApproximateEphemeris returns the state vector in
+/// StateVectorType::Orbital format, so a conversion is required
+/// to obtain the CartesianStateVector.
 /// planet.QueryStateVector(Epoch::GregorianDateTime(2014, 1, 10));
 /// auto myOrbitalElements1 = planet.GetOrbitalElements();
 /// auto myCartesianStateVector1 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
@@ -282,15 +247,8 @@ PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
 /// auto myOrbitalElements2 = planet.GetOrbitalElements();
 /// auto myCartesianStateVector2 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
 ///
-/// // Switch to JplEphemeris and then query the state vector at the epoch Janurary 10, 2015
-/// // The JplEphemeris returns the CartesianStateVector,
-/// // so a conversion is required to obtain the OrbitalElements.
-/// planet.SetEphemeris(JplEphemeris(dataFilename));
-/// planet.QueryStateVector(Epoch::GregorianDateTime(2015, 1, 10));
-/// auto myOrbitalElements3 = planet.GetOrbitalElements(); // automatic conversion from cartesian state vector
-/// auto myCartesianStateVector3 = planet.GetCartesianStateVector();
 /// \endcode
 ///
-/// \see OrbitalBody, IEphemeris, StateVector, OrbitalElements, CartesianStateVector
+/// \see IEphemerisBody, JplApproximateEphemeris, StateVector, OrbitalElements, CartesianStateVector
 ///
 ////////////////////////////////////////////////////////////
