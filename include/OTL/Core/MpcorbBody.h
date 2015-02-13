@@ -50,6 +50,34 @@ public:
    ////////////////////////////////////////////////////////////
    void SetEphemeris(const MpcorbEphemerisPointer& ephemeris);
 
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the body to a detailed multi-line formatted string
+   ///
+   /// The body is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Orbital Body:
+   ///     [OrbitalBody]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Orbital Body:
+   ///     [OrbitalBody]
+   /// "
+   ///
+   /// where [OrbitalBody] is the result from calling the
+   /// OrbitalBody::ToDetailedString() method.
+   ///
+   /// \see OrbitalBody::ToDetailedString()
+   ///
+   /// \returns std::string Stringified body
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString(std::string prefix = "") const;
+   std::string ToDetailedString(const std::string& prefix = "") const;
+
 protected:
    virtual void VInitialize() override;
    virtual EphemerisPointer VGetEphemeris() override;

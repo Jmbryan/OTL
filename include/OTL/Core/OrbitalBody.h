@@ -23,9 +23,9 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Orbit.h>
+#include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/Epoch.h>
-#include <unordered_map>
+#include <OTL/Core/Orbit.h>
 
 namespace otl
 {
@@ -33,46 +33,6 @@ namespace otl
 // Forward declarations
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
-
-class PhysicalProperties
-{
-public:
-   PhysicalProperties();
-   PhysicalProperties(double mass, double radius);
-   PhysicalProperties(double mass, double radius, double safeRadius);
-
-   double GetMass() const;
-   double GetRadius() const;
-   double GetSafeRadius() const;   
-   double GetGravitationalParameter() const;
-
-   std::string ToString() const;
-   std::string ToDetailedString(std::string prefix = "") const;
-
-private:
-   double m_mass;       ///< Mass
-   double m_radius;     ///< Equatorial radius
-   double m_safeRadius; ///< Safe equatorial radius 
-   double m_mu;         ///< Gravitational parameter
-};
-
-////////////////////////////////////////////////////////////
-/// \brief Stream operator overload
-/// \relates PhysicalProperties
-///
-/// The physical properties are converted to a string by calling the
-/// PhysicalProperties::ToString() method.
-///
-/// \param stream Templated stream object (e.g. ostream)
-/// \returns T Reference to the stream object
-///
-////////////////////////////////////////////////////////////
-template<typename T>
-T& operator<<(T& stream, const PhysicalProperties& physicalProperties)
-{
-   stream << physicalProperties.ToString();
-   return stream;
-}
 
 
 class OTL_CORE_API OrbitalBody
@@ -272,7 +232,7 @@ public:
    /// \returns std::string Stringified orbital body
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToString() const;
+   virtual std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbital body to a detailed multi-line formatted string
@@ -319,7 +279,7 @@ public:
    /// \returns std::string Stringified orbital body
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString(std::string prefix = "") const;
+   virtual std::string ToDetailedString(std::string prefix = "") const;
 
 protected:
    ////////////////////////////////////////////////////////////

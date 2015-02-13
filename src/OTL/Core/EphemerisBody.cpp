@@ -108,6 +108,24 @@ void IEphemerisBody::ForceInitialize()
 }
 
 ////////////////////////////////////////////////////////////
+std::string IEphemerisBody::ToString() const
+{
+   return OrbitalBody::ToString();
+}
+
+////////////////////////////////////////////////////////////
+std::string IEphemerisBody::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Max propagation time:" << std::endl;
+   os << m_maxPropagationTime.ToDetailedString(prefix + "   ");
+   os << prefix << "Orbital Body:" << std::endl;
+   os << OrbitalBody::ToDetailedString(prefix + "   ");
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
 const test::StateVector& IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
    if (!m_initialized)

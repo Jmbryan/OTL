@@ -155,6 +155,49 @@ public:
    ////////////////////////////////////////////////////////////
    void ForceInitialize();
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the body to a single-line formatted string
+   ///
+   /// This function calls the base OrbitalBody::ToString()
+   /// method.
+   ///
+   /// \see OrbitalBody::ToString()
+   ///
+   /// \returns std::string Stringified body
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual std::string ToString() const override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the body to a detailed multi-line formatted string
+   ///
+   /// The body is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "Max propagation time:
+   ///     [Time]
+   ///  Orbital Body:
+   ///     [OrbitalBody]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "Max propagatime time:
+   ///     [Time]
+   ///  Orbital Body:
+   ///     [OrbitalBody]
+   /// "
+   ///
+   /// where [Time] and [OrbitalBody] are the results from calling
+   /// the respective ToDetailedString() methods.
+   ///
+   /// \see Time::ToDetailedString(), OrbitalBody::ToDetailedString()
+   ///
+   /// \returns std::string Stringified body
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual std::string ToDetailedString(std::string prefix = "") const override;
+
 protected:
    ////////////////////////////////////////////////////////////
    /// \brief Initialize the body

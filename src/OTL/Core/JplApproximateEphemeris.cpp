@@ -24,6 +24,7 @@
 
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/Jpl/JplApproximateEphemerisIO.h>
+#include <OTL/Core/Planet.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
@@ -157,8 +158,7 @@ void JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name, Ph
 {
    try
    {
-      OTL_ERROR() << "This ephemeris does not support this query";
-      //g_ephemerisDatabase->GetPhysicalProperties(name, physicalProperties);
+      physicalProperties = GetPlanetPhysicalProperties(name);
    }
    catch (std::exception ex)
    {
@@ -172,8 +172,7 @@ void JplApproximateEphemeris::VGetGravitationalParameterCentralBody(const std::s
 {
    try
    {
-      OTL_ERROR() << "This ephemeris does not support this query";
-      //g_ephemerisDatabase->VGetGravitationalParameterCentralBody(name, gravitationalParameterCentralBody);
+      gravitationalParameterCentralBody = ASTRO_MU_SUN;
    }
    catch (std::exception ex)
    {

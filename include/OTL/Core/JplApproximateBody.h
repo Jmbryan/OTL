@@ -41,11 +41,12 @@ public:
    JplApproximateBody();
 
    ////////////////////////////////////////////////////////////
-   /// \brief Create the planet from name
+   /// \brief Create the body from name
    ///
-   /// The ephemeris database defaults to JplApproximateEphemeris.
+   /// The JPL approximate ephemeris will be created using the
+   /// default constructor.
    ///
-   /// \param name Name of the planet to be created
+   /// \param name Name of the body to be created
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
@@ -53,10 +54,10 @@ public:
                                const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
-   /// \brief Create the planet from name and ephemeris database
+   /// \brief Create the body from name and JPL approximate ephemeris database
    ///
    /// \param name Name of the planet to be created
-   /// \param ephemeris Smart pointer to IEphemeris database
+   /// \param ephemeris Smart pointer to JplApproximateEphemeris database
    /// \param epoch Initial Epoch of the planet
    ///
    ////////////////////////////////////////////////////////////
@@ -73,49 +74,27 @@ public:
    void SetEphemeris(const JplApproximateEphemerisPointer& ephemeris);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Converts the planet to a single-line formatted string
+   /// \brief Converts the body to a single-line formatted string
    ///
-   /// The planet is converted to a single-line string
-   /// with the following format:
-   ///
-   /// "name=[name] epoch=[Epoch]"
-   ///
-   /// e.g.
-   ///
-   /// "name=Earth epoch=[Epoch]"
-   ///
-   /// where [Epoch] is the result from calling the Epoch::ToString()
+   /// This function calls the base IEphemerisBody::ToString()
    /// method.
    ///
-   /// \see Epoch::ToString()
+   /// \see IEphemerisBody::ToString()
    ///
-   /// \returns std::string Stringified planet
+   /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
    std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Converts the planet to a detailed multi-line formatted string
+   /// \brief Converts the body to a detailed multi-line formatted string
    ///
-   /// The planet is converted to a detailed multi-line string
-   /// with the following format:
+   /// This function calls the base IEphemerisBody::ToDetailedString()
+   /// method.
    ///
-   /// "Orbital Body:
-   ///     [OrbitalBody]
-   /// "
+   /// \see IEphemerisBody::ToDetailedString()
    ///
-   /// e.g.
-   ///
-   /// "Orbital Body:
-   ///     [OrbitalBody]
-   /// "
-   ///
-   /// where [OrbitalBody] is the result from calling the
-   /// OrbitalBody::ToDetailedString() method.
-   ///
-   /// \see OrbitalBody::ToDetailedString()
-   ///
-   /// \returns std::string Stringified planet
+   /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
    std::string ToDetailedString(std::string prefix = "") const;
@@ -132,22 +111,41 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get a smart pointer to the JPL approximate ephemeris database
+   ///
+   /// Implements thre pure virtual function for retrieving a
+   /// smart pointer to the ephemeris database.
+   ///
+   /// \return Smart pointer to IEphemeris database
+   ///
+   ////////////////////////////////////////////////////////////
    virtual EphemerisPointer VGetEphemeris() override;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Query the state vector of the body at a given epoch
+   ///
+   /// Implements the pure virtual function for querying the
+   /// state vector of the body at a given epoch using the
+   /// JPL approximate ephemeris database.
+   ///
+   /// \param epoch Desired Epoch
+   /// \return StateVector of the body at the given Epoch
+   ///
+   ////////////////////////////////////////////////////////////
    virtual test::StateVector VQueryStateVector(const Epoch& epoch) override; 
 
 private:
-   JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to ephemeris database
+   JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to JPL approximate ephemeris database
 };
-
-/// Convenience alias
-typedef JplApproximateBody Planet;
 
 ////////////////////////////////////////////////////////////
 /// \brief Stream operator overload
-/// \relates Planet
+/// \relates JplApproximateBody
 ///
-/// The planet is converted to a string by calling the
-/// Planet::ToString() method.
+/// The body is converted to a string by calling the
+/// JplApproximateBody::ToString() method.
 ///
 /// \param stream Templated stream object (e.g. ostream)
 /// \returns T Reference to the stream object
@@ -159,53 +157,6 @@ T& operator<<(T& stream, const JplApproximateBody& planet)
    stream << planet.ToString();
    return stream;
 }
-
-////////////////////////////////////////////////////////////
-/// \brief Stream operator overload
-/// \relates Planet::PlanetId
-///
-/// \param stream Templated stream object (e.g. ostream)
-/// \returns T Reference to the stream object
-///
-////////////////////////////////////////////////////////////
-template <typename T>
-T& operator<<(T& stream, const PlanetId& planetId)
-{
-    stream << static_cast<int>(planetId);
-    return stream;
-}
-
-////////////////////////////////////////////////////////////
-/// \brief Helper function for converting a planet identifier into a planet name
-///
-/// \param planetId Planet::PlanetId enumerator identifier of the planet
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API std::string ConvertPlanetIdentifier2Name(PlanetId planetId);
-
-////////////////////////////////////////////////////////////
-/// \brief Helper function for converting a planet name into a planet identifier
-///
-/// \param name Name of the planet
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API PlanetId ConvertPlanetName2Identifier(const std::string& name);
-
-////////////////////////////////////////////////////////////
-/// \brief Helper function for retrieving the physical properties of a solar system planet
-///
-/// \param planetId Planet::PlanetId identifier code of the planet
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API PhysicalProperties GetPlanetPhysicalProperties(const PlanetId& planetId);
-
-////////////////////////////////////////////////////////////
-/// \brief Helper function for retrieving the physical properties of a solar system planet
-///
-/// \param name Name of the planet
-///
-////////////////////////////////////////////////////////////
-OTL_CORE_API PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName);
 
 } // namespace otl
 
@@ -224,9 +175,6 @@ OTL_CORE_API PhysicalProperties GetPlanetPhysicalProperties(const std::string& p
 /// \li GetStateVector()
 /// \li GetCartesianStateVector()
 /// \li GetOrbitalElements()
-///
-/// The following alias is also provided for convenience:
-/// typedef JplApproximateBody Planet
 ///
 /// Usage example:
 /// \code

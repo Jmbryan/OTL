@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include <OTL/Core/MGADSMTrajectory.h>
+#include <OTL/Core/Planet.h>
 #include <OTL/Core/JplApproximateBody.h>
 #include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/MpcorbBody.h>
@@ -148,6 +149,10 @@ int main()
 
     while (true)
     {
+       static int counter = 0;
+       counter++;
+       test::StateVector* psv = new test::StateVector();
+
        auto currentDirectory = gSystem.GetCurrentDirectory();
        auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
@@ -163,11 +168,11 @@ int main()
 
        //MpcorbBody p("Ceres", mpcorbEphemeris);
 
-       //SpiceBody p("Earth", spiceEphemeris);
-       //p.SetPropagator(std::make_shared<LagrangianPropagator>());
+       SpiceBody p("Earth", spiceEphemeris);
+       p.SetPropagator(std::make_shared<LagrangianPropagator>());
 
        //Planet p("Earth");
-       Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
+       //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
 

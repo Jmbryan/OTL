@@ -259,10 +259,10 @@ void SpiceEphemeris::VInitialize()
 bool SpiceEphemeris::VIsValidName(const std::string& name)
 {
    SpiceBoolean found = false;
+   SpiceInt bodyNaifId;
 
    if (!name.empty())
-   {
-      SpiceInt bodyNaifId;
+   {     
       bods2c_c(name.c_str(), &bodyNaifId, &found);
    }
    

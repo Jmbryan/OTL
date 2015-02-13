@@ -29,20 +29,6 @@
 namespace otl
 {
 
-typedef std::map<PlanetId, std::pair<std::string, PhysicalProperties>> PlanetDictionary;
-static PlanetDictionary g_planetInfo =
-{
-   { PlanetId::Mercury,  std::make_pair("Mercury",  PhysicalProperties(ASTRO_MU_MERCURY / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_MERCURY)) },
-   { PlanetId::Venus,    std::make_pair("Venus",    PhysicalProperties(ASTRO_MU_VENUS   / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_VENUS))   },
-   { PlanetId::Earth,    std::make_pair("Earth",    PhysicalProperties(ASTRO_MU_EARTH   / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_EARTH))   },
-   { PlanetId::Mars,     std::make_pair("Mars",     PhysicalProperties(ASTRO_MU_MARS    / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_MARS))    },
-   { PlanetId::Jupiter,  std::make_pair("Jupiter",  PhysicalProperties(ASTRO_MU_JUPITER / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_JUPITER)) },
-   { PlanetId::Saturn,   std::make_pair("Saturn",   PhysicalProperties(ASTRO_MU_SATURN  / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_SATURN))  },
-   { PlanetId::Uranus,   std::make_pair("Uranus",   PhysicalProperties(ASTRO_MU_URANUS  / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_URANUS))  },
-   { PlanetId::Neptune,  std::make_pair("Neptune",  PhysicalProperties(ASTRO_MU_NEPTUNE / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_NEPTUNE)) },
-   { PlanetId::Pluto,    std::make_pair("Pluto",    PhysicalProperties(ASTRO_MU_PLUTO   / ASTRO_GRAVITATIONAL_CONSTANT, ASTRO_RADIUS_PLUTO))   }
-};
-
 ////////////////////////////////////////////////////////////
 JplApproximateBody::JplApproximateBody() :
 IEphemerisBody()
@@ -104,16 +90,20 @@ void JplApproximateBody::VInitialize()
    }
    m_ephemeris->Initialize();
 
+   const auto& name = GetName();
+   const auto& epoch = GetEpoch();
+
    // Init the physical properties
-   const auto& physicalProperties = GetPlanetPhysicalProperties(GetName());
-   SetPhysicalProperties(physicalProperties);
+   SetPhysicalProperties(
+      m_ephemeris->GetPhysicalProperties(name));
 
    // Init the gravitational parameter of the central body
-   SetGravitationalParameterCentralBody(ASTRO_MU_SUN);
+   SetGravitationalParameterCentralBody(
+      m_ephemeris->GetGravitationalParameterCentralBody(name));
 
    // Init the state vector
    SetStateVector(
-      m_ephemeris->GetStateVector(GetName(), GetEpoch()));
+      m_ephemeris->GetStateVector(name, epoch));
 }
 
 ////////////////////////////////////////////////////////////
@@ -136,55 +126,5 @@ test::StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
       return test::StateVector();
    }
 }
-
-////////////////////////////////////////////////////////////
-std::string ConvertPlanetIdentifier2Name(PlanetId planetId)
-{
-   PlanetDictionary::const_iterator it = g_planetInfo.find(planetId);
-   if (it == g_planetInfo.end())
-   {
-      OTL_ERROR() << "JplApproximateBody name not found for id " << Bracket(planetId);
-      return std::string();
-   }
-   return it->second.first;
-}
-
-////////////////////////////////////////////////////////////
-PlanetId ConvertPlanetName2Identifier(const std::string& name)
-{
-   PlanetId planetId = PlanetId::Invalid;
-   for (auto it = g_planetInfo.begin(); it != g_planetInfo.end(); ++it)
-   {
-      if ((it->second).first == name)
-      {
-         planetId = it->first;
-         break;
-      }
-   }
-   OTL_ERROR_IF(planetId == PlanetId::Invalid,
-      "JplApproximateBody name " << Bracket(name) << " not found");
-
-   return planetId;
-}
-
-////////////////////////////////////////////////////////////
-PhysicalProperties GetPlanetPhysicalProperties(const PlanetId& planetId)
-{
-   const auto it = g_planetInfo.find(planetId);
-   if (it == g_planetInfo.end())
-   {
-      OTL_ERROR() << "Invalid planet id " << Bracket(planetId);
-      return PhysicalProperties();     
-   }
-   return (it->second).second; 
-}
-
-////////////////////////////////////////////////////////////
-PhysicalProperties GetPlanetPhysicalProperties(const std::string& planetName)
-{
-   const auto& planetId = ConvertPlanetName2Identifier(planetName);
-   return GetPlanetPhysicalProperties(planetId);
-}
-
 
 } // namespace otl

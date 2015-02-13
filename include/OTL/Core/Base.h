@@ -76,24 +76,6 @@ enum class FlybyType
    Count
 };
 
-////////////////////////////////////////////////////////////
-/// \brief Planetary body identifiers
-////////////////////////////////////////////////////////////
-enum class PlanetId
-{
-   Invalid = -1,  ///< Invalid planet identifier
-   Mercury,       ///< Mercury
-   Venus,         ///< Venus
-   Earth,         ///< Earth
-   Mars,          ///< Mars
-   Jupiter,       ///< Jupiter
-   Saturn,        ///< Saturn
-   Uranus,        ///< Uranus
-   Neptune,       ///< Neptune
-   Pluto,         ///< Pluto
-   Count          ///< Number of planets
-};
-
 // Math constants
 const double MATH_DEG_TO_RAD        = 0.0174532925;
 const double MATH_RAD_TO_DEG        = 57.29577951;
