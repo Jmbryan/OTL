@@ -53,7 +53,7 @@ otl_set_option(OTL_BUILD_EXAMPLES TRUE BOOL "TRUE to build the OTL examples, FAL
 otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
 # add an option for building the SPICE library
-otl_set_option(OTL_BUILD_SPICE TRUE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
+otl_set_option(OTL_BUILD_SPICE FALSE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
 
 # set install directories
 set(CMAKE_INSTALL_PREFIX ./install)

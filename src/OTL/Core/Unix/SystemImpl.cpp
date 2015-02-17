@@ -26,11 +26,12 @@ std::string SystemImpl::GetCurrentDirectory()
 }
 
 ////////////////////////////////////////////////////////////
-void SystemImpl::GetCurrentTime()
+Time SystemImpl::GetCurrentTime()
 {
-   timespec time;
-   clock_gettime(CLOCK_MONOTONIC, &time);
-   return Time::Seconds(static_cast<Uint64>(time.tv_sec) + time.tv_nsec / 1000000000);
+   //timespec time;
+   //clock_gettime(CLOCK_MONOTONIC, &time);
+   //return Time::Seconds(static_cast<Uint64>(time.tv_sec) + time.tv_nsec / 1000000000);
+   return Time::Seconds(0.0);
 }
 
 } // namespace otl

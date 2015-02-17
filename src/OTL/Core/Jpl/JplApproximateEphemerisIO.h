@@ -58,7 +58,7 @@ private:
 
 private:
    std::string m_dataFilename;
-   bool m_initialized;
+   //bool m_initialized;
    int m_startYear;
    int m_endYear;
    keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly 

@@ -42,8 +42,8 @@ set(SRC
 	${INCROOT}/LambertExponentialSinusoid.h
 	${SRCROOT}/Logger.cpp
 	${INCROOT}/Logger.h
-	${INCROOT}/Matrix.h>
-	${INCROOT}/MatrixPlugin.h>	
+	#${INCROOT}/Matrix.h>
+	#${INCROOT}/MatrixPlugin.h>	
 	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp

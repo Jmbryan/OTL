@@ -233,6 +233,9 @@ std::string Orbit::ToString() const
    case StateVectorType::Cartesian:
       os << m_stateVector.GetCartesianStateVector();
       break;
+         
+      default:
+         break;
    }
 
    return os.str();
@@ -277,6 +280,9 @@ std::string Orbit::ToDetailedString(std::string prefix) const
 
    case StateVectorType::Cartesian:
       os << m_stateVector.GetCartesianStateVector().ToDetailedString(prefix + "   ") << std::endl;
+      break;
+         
+   default:
       break;
    }
 

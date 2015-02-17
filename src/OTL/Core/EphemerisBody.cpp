@@ -126,7 +126,7 @@ std::string IEphemerisBody::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
-const test::StateVector& IEphemerisBody::QueryStateVector(const Epoch& epoch)
+test::StateVector IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
    if (!m_initialized)
    {

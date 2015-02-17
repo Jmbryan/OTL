@@ -142,7 +142,7 @@ public:
    /// \returns StateVector of the body
    ///
    ////////////////////////////////////////////////////////////
-   const test::StateVector& QueryStateVector(const Epoch& epoch);
+   test::StateVector QueryStateVector(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Force initialization of ephemeris body

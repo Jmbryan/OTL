@@ -40,7 +40,7 @@ static JplApproxDatabase g_database;
 
 ////////////////////////////////////////////////////////////
 JplApproximateEphemerisIO::JplApproximateEphemerisIO() :
-m_initialized(false),
+//m_initialized(false),
 m_startYear(0),
 m_endYear(0),
 m_keplersEquation(new keplerian::KeplersEquationElliptical())
@@ -51,7 +51,7 @@ m_keplersEquation(new keplerian::KeplersEquationElliptical())
 ////////////////////////////////////////////////////////////
 JplApproximateEphemerisIO::JplApproximateEphemerisIO(const std::string& dataFilename) :
 m_dataFilename(dataFilename),
-m_initialized(false),
+//m_initialized(false),
 m_startYear(0),
 m_endYear(0),
 m_keplersEquation(new keplerian::KeplersEquationElliptical())

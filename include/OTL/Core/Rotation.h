@@ -49,10 +49,10 @@ struct AngularStateVector
 
 struct EulerAngles
 {
+   Vector3d angles;
    int a1;
    int a2;
    int a3;
-   Vector3d angles;
 
    EulerAngles(const Vector3d& angles, int a1, int a2, int a3);
 };
