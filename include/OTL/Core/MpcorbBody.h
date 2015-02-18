@@ -50,6 +50,7 @@ public:
    ////////////////////////////////////////////////////////////
    void SetEphemeris(const MpcorbEphemerisPointer& ephemeris);
 
+   //virtual std::string ToString() const override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the body to a detailed multi-line formatted string
@@ -75,8 +76,7 @@ public:
    /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString(std::string prefix = "") const;
-   std::string ToDetailedString(const std::string& prefix = "") const;
+   //virtual std::string ToDetailedString(std::string prefix = "") const override;  
 
 protected:
    virtual void VInitialize() override;

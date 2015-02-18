@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Matrix.h>
+#include <vector>
 
 namespace otl
 {
@@ -66,7 +67,9 @@ public:
    StateVectorType GetType() const;
 
    //Vector6d GetGenericStateVector() const;
-   double* GetState();
+   //const double* GetState() const;
+   //std::vector<double> GetState() const;
+   Vector6d GetState() const;
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 
@@ -78,7 +81,9 @@ public:
 private:
    StateVectorType m_type;
    //Vector6d m_state;
-   double* m_state;
+   //double m_state[6];
+   //std::vector<double> m_state;
+   Vector6d m_state;
 };
 
 }

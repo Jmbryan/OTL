@@ -39,12 +39,17 @@ namespace otl
 
 //using Vector3d = Eigen::Matrix<double, 3, 1, Eigen::DontAlign>;   ///< Alias for static 3 dimensional column vector of type double
 //using Vector6d = Eigen::Matrix<double, 6, 1, Eigen::DontAlign>;   ///< Alias for static 6 dimensional column vector of type double
-using Matrix3d = Eigen::Matrix<double, 3, 3, Eigen::DontAlign>;   ///< Alias for static 3 dimensional square matrix of type double
-using Matrix6d = Eigen::Matrix<double, 6, 6, Eigen::DontAlign>;   ///< Alias for static 6 dimensional square matrix of type double
+//using Matrix3d = Eigen::Matrix<double, 3, 3, Eigen::DontAlign>;   ///< Alias for static 3 dimensional square matrix of type double
+//using Matrix6d = Eigen::Matrix<double, 6, 6, Eigen::DontAlign>;   ///< Alias for static 6 dimensional square matrix of type double
 
 using Quaterniond = Eigen::Quaterniond;         ///< Alias for quaternion vector of type double
 
-using Vector3d = otl::test2::Vector3<double>;
-using Vector6d = otl::test2::Vector6<double>;
+//using Vector3d = otl::test2::Vector3<double>;
+//using Vector6d = otl::test2::Vector6<double>;
+
+using Vector3d = otl::test3::Matrix<double, 3, 1>;
+using Vector6d = otl::test3::Matrix<double, 6, 1>;
+using Matrix3d = otl::test3::Matrix<double, 3, 3>;
+using Matrix6d = otl::test3::Matrix<double, 6, 6>;
 
 }

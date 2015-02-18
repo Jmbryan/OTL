@@ -42,7 +42,7 @@ int main()
     gLogger.SetLogLevel(LogLevel::Info);
 
     // Sizes
-    if (true)
+    if (false)
     {
        // Base
        auto sizeofbool = sizeof(bool);
@@ -77,24 +77,126 @@ int main()
        double d = 1.0;
     }
 
-    // OTL Vector3
-    if (true)
+    // OTL Vector3, Matrix
+    if (false)
     {
-       test2::Vector3<double> v1(1.0, 2.0, 3.0);
-       test2::Vector3<double> v2(-2.0, 14.0, 60.0);
-       test2::Vector6<double> vv1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+       if (true)
+       {
+          test2::Vector3<double> v1(1.0, 2.0, 3.0);
+          test2::Vector3<double> v2(-2.0, 14.0, 60.0);
+          test2::Vector6<double> vv1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 
-       auto v1norm = v1.norm();
-       auto vv1norm = vv1.norm();
+          auto v1norm = v1.norm();
+          auto vv1norm = vv1.norm();
+
+          auto dot = v1.dot(v2);
+          auto cross = v1.cross(v2);
+
+          auto v3 = v1 + v2;
+          v3 *= 1.0;
+          auto v4 = 0.5 * v3;
+
+          double d = 1.0;
+       }
        
-       auto dot = v1.dot(v2);
-       auto cross = v1.cross(v2);
+       if (true)
+       {
+          int numIter = 10000;
 
-       auto v3 = v1 + v2;
-       v3 *= 1.0;
-       auto v4 = 0.5 * v3;
+          std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+          double otlResult;
+          for (int iter = 0; iter < numIter; ++iter)
+          {
+             test3::Matrix<double, 2, 2> m22;
+             test3::Matrix<double, 3, 3> m33;
+             test3::Matrix<double, 4, 3> m43;
+             test3::Matrix<double, 1, 3> rv1;
+             test3::Matrix<double, 3, 1> v1;
+             test3::Matrix<double, 3, 1> v2;
 
-       double d = 1.0;
+             m22.fill(5.0);
+             m33.fill(33.0);
+             m43.fill(43.0);
+             rv1.fill(2.0);
+             v1.fill(1.0);
+             v2.fill(2.0);
+
+             m43(0, 0) = -10.0;
+             m43(1, 2) = 6.7;
+             m43(2, 0) = 12.6;
+             m43(3, 2) = 20.0;
+
+             v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
+             v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+
+             auto size = m22.GetSize();
+             auto squaredNorm = v2.squaredNorm();
+             auto norm = v2.norm();
+             auto dot = v1.dot(v2);
+             auto cross = v1.cross(v2);
+             auto v3 = v2.normalized();
+             bool isapprox = v1.isApprox(v2);
+             auto v4 = v1;
+             bool isapprox2 = v1.isApprox(v4);
+             v4 += v2;
+             auto v5 = v4 + v3;
+             auto v6 = m43 * v1;
+             auto m332 = v1 * rv1;
+             otlResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
+          }
+          std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+          std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+          double eigenResult;
+          for (int iter = 0; iter < numIter; ++iter)
+          {
+             Eigen::Matrix<double, 2, 2> m22;
+             Eigen::Matrix<double, 3, 3> m33;
+             Eigen::Matrix<double, 4, 3> m43;
+             Eigen::Matrix<double, 1, 3> rv1;
+             Eigen::Matrix<double, 3, 1> v1;
+             Eigen::Matrix<double, 3, 1> v2;
+
+             m22.fill(5.0);
+             m33.fill(33.0);
+             m43.fill(43.0);
+             rv1.fill(2.0);
+             v1.fill(1.0);
+             v2.fill(2.0);
+
+             m43(0, 0) = -10.0;
+             m43(1, 2) = 6.7;
+             m43(2, 0) = 12.6;
+             m43(3, 2) = 20.0;
+
+             v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
+             v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+
+             auto size = m22.size();// m22.GetSize();
+             auto squaredNorm = v2.squaredNorm();
+             auto norm = v2.norm();
+             auto dot = v1.dot(v2);
+             auto cross = v1.cross(v2);
+             auto v3 = v2.normalized();
+             bool isapprox = v1.isApprox(v2);
+             auto v4 = v1;
+             bool isapprox2 = v1.isApprox(v4);
+             v4 += v2;
+             auto v5 = v4 + v3;
+             auto v6 = m43 * v1;
+             auto m332 = v1 * rv1;
+             eigenResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
+          }
+          std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+
+          auto duration1 = t2 - t1;
+          auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+
+          auto duration2 = t4 - t3;
+          auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+
+          double d = 1.0;
+       }     
     }
 
     if (false)
@@ -168,6 +270,8 @@ int main()
        double d = 1.0;
     }
 
+    __int64 elapsedTime1 = 0;
+    __int64 elapsedTime2 = 0;
     while (true)
     {
        static int counter = 0;
@@ -187,10 +291,10 @@ int main()
        auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
 
-       //MpcorbBody p("Ceres", mpcorbEphemeris);
+       MpcorbBody p("Ceres", mpcorbEphemeris);
 
-       SpiceBody p("Earth", spiceEphemeris);
-       p.SetPropagator(std::make_shared<LagrangianPropagator>());
+       //SpiceBody p("Earth", spiceEphemeris);
+       //p.SetPropagator(std::make_shared<LagrangianPropagator>());
 
        //Planet p("Earth");
        //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
@@ -221,9 +325,15 @@ int main()
 
        auto duration1 = t2 - t1;
        auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+       elapsedTime1 += milli1.count();
 
        auto duration2 = t4 - t3;
        auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+       elapsedTime2 += milli2.count();
+
+       auto state = p.GetStateVector().GetState();
+       auto sv = p.GetStateVector();
+       auto csv = p.GetCartesianStateVector();
 
        double dd = 1.0;
 

@@ -55,7 +55,7 @@ void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
    matrix(2,2) =  (cosIncl);
 
    // Rotate the perifocal vector to inertial coordinates.
-   //inertialVector = matrix * perifocalVector;
+   inertialVector = matrix * perifocalVector;
 }
 
 } // namespace otl

@@ -34,14 +34,18 @@ namespace test
 {
 
 StateVector::StateVector() :
-m_type(StateVectorType::Invalid)
+m_type(StateVectorType::Invalid),
+m_state()
+//m_state(6, 0.0)
 {
-   m_state = new double[6];
-   for (int i = 0; i < 6; ++i)
-   {
-      m_state[i] = 0.0;
-   }
+   //m_state = new double[6];
+   //for (int i = 0; i < 6; ++i)
+   //{
+   //   m_state[i] = 0.0;
+   //}  
    //m_state.fill(0.0);
+
+   //std::fill(m_state, m_state + 6, 0.0);
 }
 
 StateVector::StateVector(const StateVector& other)
@@ -71,11 +75,12 @@ StateVector::StateVector(const CartesianStateVector& cartesianStateVector)
 
 StateVector::~StateVector()
 {
-   if (m_state)
-   {
-      delete[] m_state;
-      m_state = nullptr;
-   }
+   //if (m_state)
+   //{
+   //   delete[] m_state;
+   //   m_state = nullptr;
+   //}
+   double d = 1.0;
 }
 
 StateVector& StateVector::operator =(const StateVector& other)
@@ -83,13 +88,15 @@ StateVector& StateVector::operator =(const StateVector& other)
    if (this != &other)
    {
       m_type = other.GetType();
-      //m_state = other.GetGenericStateVector();
       //memcpy(m_state, other.GetState(), 6);
-      if (!m_state)
-      {
-         m_state = new double[6];
-      }
       m_state = other.GetState();
+
+      //m_state = other.GetGenericStateVector();    
+      //if (!m_state)
+      //{
+      //   m_state = new double[6];
+      //}
+      //m_state = other.GetState();
    }
    return *this;
 }
@@ -99,11 +106,14 @@ StateVector& StateVector::operator =(const StateVector&& other)
    if (this != &other)
    {
       m_type = std::move(other.GetType());
+      //memcpy(m_state, other.GetState(), 6);
+      m_state = std::move(other.GetState());
+
       //m_state = std::move(other.GetGenericStateVector());
       //m_state = std::move(other.GetState());
-      double* state = other.GetState();
-      m_state = state;
-      state = nullptr;
+      //double* state = other.GetState();
+      //m_state = state;
+      //state = nullptr;
 
    }
    return *this;
@@ -152,7 +162,17 @@ StateVectorType StateVector::GetType() const
 //   return m_state;
 //}
 
-double* StateVector::GetState() const
+//const double* StateVector::GetState() const
+//{
+//   return m_state;
+//}
+
+//std::vector<double> StateVector::GetState() const
+//{
+//   return m_state;
+//}
+
+Vector6d StateVector::GetState() const
 {
    return m_state;
 }
@@ -161,7 +181,7 @@ CartesianStateVector StateVector::GetCartesianStateVector() const
 {
    OTL_ASSERT(m_type == StateVectorType::Cartesian, "Invalid state vector type");
    //return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
-   return CartesianStateVector(Vector3d(m_state[0], m_state[0], m_state[0]), Vector3d(m_state[0], m_state[0], m_state[0]));
+   return CartesianStateVector(Vector3d(m_state[0], m_state[1], m_state[2]), Vector3d(m_state[3], m_state[4], m_state[5]));
 }
 
 OrbitalElements StateVector::GetOrbitalElements() const
