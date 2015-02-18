@@ -58,8 +58,12 @@ set(SRC
 	${INCROOT}/OrbitalBody.h
 	${SRCROOT}/OrbitalElements.cpp
 	${INCROOT}/OrbitalElements.h
+	${SRCROOT}/Planet.cpp
+	${INCROOT}/Planet.h	
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
+	${SRCROOT}/PhysicalProperties.cpp
+	${INCROOT}/PhysicalProperties.h	
 	${SRCROOT}/Rotation.cpp
 	${INCROOT}/Rotation.h	
 	${SRCROOT}/StateVector.cpp

@@ -21,6 +21,7 @@
 
 //#include <OTL/Core/Matrix.h>
 //#include <OTL/Core/Mat.h>
+#include <OTL/Core/Vector.h>
 
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
@@ -72,6 +73,26 @@ int main()
        auto sizeofplanet = sizeof(Planet);
        auto sizeofmpcorb = sizeof(MpcorbBody);
        auto sizeofspice = sizeof(SpiceBody);
+
+       double d = 1.0;
+    }
+
+    // OTL Vector3
+    if (true)
+    {
+       test2::Vector3<double> v1(1.0, 2.0, 3.0);
+       test2::Vector3<double> v2(-2.0, 14.0, 60.0);
+       test2::Vector6<double> vv1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+
+       auto v1norm = v1.norm();
+       auto vv1norm = vv1.norm();
+       
+       auto dot = v1.dot(v2);
+       auto cross = v1.cross(v2);
+
+       auto v3 = v1 + v2;
+       v3 *= 1.0;
+       auto v4 = 0.5 * v3;
 
        double d = 1.0;
     }

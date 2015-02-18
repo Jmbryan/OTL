@@ -23,23 +23,28 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#define EIGEN_DONT_ALIGN
 #define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/MatrixPlugin.h>
 #include <Eigen/Dense>
-//#include <Eigen/StdVector>
 
-//EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix<double, 3, 1>)
-//EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix<double, 6, 1>)
-//EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix<double, 3, 3>)
-//EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix<double, 6, 6>)
-//EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Quaternion<double>)
+//#include <armadillo>
+#include <OTL/Core/Vector.h>
 
 namespace otl
 {
-using Vector3d = Eigen::Matrix<double, 3, 1, Eigen::DontAlign>;   ///< Alias for static 3 dimensional column vector of type double
-using Vector6d = Eigen::Matrix<double, 6, 1, Eigen::DontAlign>;   ///< Alias for static 6 dimensional column vector of type double
+//using Vector3d = arma::Col<double>::fixed<3>;
+//using Vector6d = arma::Col<double>::fixed<6>;
+//using Matrix3d = arma::Mat<double>::fixed<3, 3>;
+//using Matrix6d = arma::Mat<double>::fixed<6, 6>;
 
+//using Vector3d = Eigen::Matrix<double, 3, 1, Eigen::DontAlign>;   ///< Alias for static 3 dimensional column vector of type double
+//using Vector6d = Eigen::Matrix<double, 6, 1, Eigen::DontAlign>;   ///< Alias for static 6 dimensional column vector of type double
 using Matrix3d = Eigen::Matrix<double, 3, 3, Eigen::DontAlign>;   ///< Alias for static 3 dimensional square matrix of type double
 using Matrix6d = Eigen::Matrix<double, 6, 6, Eigen::DontAlign>;   ///< Alias for static 6 dimensional square matrix of type double
 
 using Quaterniond = Eigen::Quaterniond;         ///< Alias for quaternion vector of type double
+
+using Vector3d = otl::test2::Vector3<double>;
+using Vector6d = otl::test2::Vector6<double>;
+
 }

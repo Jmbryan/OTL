@@ -34,9 +34,14 @@ namespace test
 {
 
 StateVector::StateVector() :
-   m_type(StateVectorType::Invalid)
+m_type(StateVectorType::Invalid)
 {
-   m_state.fill(0.0);
+   m_state = new double[6];
+   for (int i = 0; i < 6; ++i)
+   {
+      m_state[i] = 0.0;
+   }
+   //m_state.fill(0.0);
 }
 
 StateVector::StateVector(const StateVector& other)
@@ -44,10 +49,15 @@ StateVector::StateVector(const StateVector& other)
    *this = other;
 }
 
-StateVector::StateVector(const Vector6d& genericStateVector)
+StateVector::StateVector(const StateVector&& other)
 {
-   *this = genericStateVector;
+   *this = std::move(other);
 }
+
+//StateVector::StateVector(const Vector6d& genericStateVector)
+//{
+//   *this = genericStateVector;
+//}
 
 StateVector::StateVector(const OrbitalElements& orbitalElements)
 {
@@ -59,28 +69,64 @@ StateVector::StateVector(const CartesianStateVector& cartesianStateVector)
    *this = cartesianStateVector;
 }
 
+StateVector::~StateVector()
+{
+   if (m_state)
+   {
+      delete[] m_state;
+      m_state = nullptr;
+   }
+}
+
 StateVector& StateVector::operator =(const StateVector& other)
 {
    if (this != &other)
    {
       m_type = other.GetType();
-      m_state = other.GetGenericStateVector();
+      //m_state = other.GetGenericStateVector();
+      //memcpy(m_state, other.GetState(), 6);
+      if (!m_state)
+      {
+         m_state = new double[6];
+      }
+      m_state = other.GetState();
    }
    return *this;
 }
 
-StateVector& StateVector::operator =(const Vector6d& genericStateVector)
+StateVector& StateVector::operator =(const StateVector&& other)
 {
-   m_type = StateVectorType::Generic;
-   m_state = genericStateVector;
+   if (this != &other)
+   {
+      m_type = std::move(other.GetType());
+      //m_state = std::move(other.GetGenericStateVector());
+      //m_state = std::move(other.GetState());
+      double* state = other.GetState();
+      m_state = state;
+      state = nullptr;
+
+   }
    return *this;
 }
+
+//StateVector& StateVector::operator =(const Vector6d& genericStateVector)
+//{
+//   m_type = StateVectorType::Generic;
+//   m_state = genericStateVector;
+//   return *this;
+//}
 
 StateVector& StateVector::operator =(const CartesianStateVector& cartesianStateVector)
 {
    m_type = StateVectorType::Cartesian;
-   m_state.segment(0, 3) = cartesianStateVector.position;
-   m_state.segment(3, 3) = cartesianStateVector.velocity;
+   //m_state.segment(0, 3) = cartesianStateVector.position;
+   //m_state.segment(3, 3) = cartesianStateVector.velocity;
+   m_state[0] = cartesianStateVector.position.x();
+   m_state[1] = cartesianStateVector.position.y();
+   m_state[2] = cartesianStateVector.position.z();
+   m_state[3] = cartesianStateVector.velocity.x();
+   m_state[4] = cartesianStateVector.velocity.y();
+   m_state[5] = cartesianStateVector.velocity.z();
    return *this;
 }
 
@@ -101,7 +147,12 @@ StateVectorType StateVector::GetType() const
    return m_type;
 }
 
-const Vector6d& StateVector::GetGenericStateVector() const
+//Vector6d StateVector::GetGenericStateVector() const
+//{
+//   return m_state;
+//}
+
+double* StateVector::GetState() const
 {
    return m_state;
 }
@@ -109,7 +160,8 @@ const Vector6d& StateVector::GetGenericStateVector() const
 CartesianStateVector StateVector::GetCartesianStateVector() const
 {
    OTL_ASSERT(m_type == StateVectorType::Cartesian, "Invalid state vector type");
-   return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
+   //return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
+   return CartesianStateVector(Vector3d(m_state[0], m_state[0], m_state[0]), Vector3d(m_state[0], m_state[0], m_state[0]));
 }
 
 OrbitalElements StateVector::GetOrbitalElements() const
@@ -156,6 +208,12 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
       break;
    }
 }
+
+//void StateVector::Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType)
+//{
+//   m_state = genericStateVector;
+//   m_type = stateVectorType;
+//}
 
 } // namespace test
 

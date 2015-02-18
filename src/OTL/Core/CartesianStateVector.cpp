@@ -154,7 +154,7 @@ namespace otl
    bool operator==(const StateVector& lhs, const StateVector& rhs)
    {
       return (lhs.position.isApprox(rhs.position, 2.0 * MATH_EPSILON) &&
-         lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
+              lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
    }
 
    ////////////////////////////////////////////////////////////

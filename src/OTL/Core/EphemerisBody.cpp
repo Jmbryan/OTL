@@ -84,7 +84,7 @@ void IEphemerisBody::BlendedPropagate(const Time& timeDelta)
    }
    else
    {
-      OrbitalBody::Propagate(timeDelta);
+      Propagate(timeDelta);
    }
 }
 
@@ -130,7 +130,7 @@ test::StateVector IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
    if (!m_initialized)
    {
-      const_cast<IEphemerisBody*>(this)->ForceInitialize();
+      ForceInitialize();
    }
    SetStateVector(VQueryStateVector(epoch));
    return GetStateVector();

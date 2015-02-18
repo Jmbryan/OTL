@@ -51,27 +51,34 @@ class StateVector
 public:
    StateVector();
    StateVector(const StateVector& other);
-   explicit StateVector(const Vector6d& genericStateVector);
+   StateVector(const StateVector&& other);
+   //explicit StateVector(const Vector6d& genericStateVector);
    explicit StateVector(const OrbitalElements& orbitalElements);
    explicit StateVector(const CartesianStateVector& cartesianStateVector);
+   ~StateVector();
 
    StateVector& operator =(const StateVector& other);
-   StateVector& operator =(const Vector6d& genericStateVector);
+   StateVector& operator =(const StateVector&& other);
+   //StateVector& operator =(const Vector6d& genericStateVector);
    StateVector& operator =(const CartesianStateVector& cartesianStateVector);
    StateVector& operator =(const OrbitalElements& orbitalElements);
 
    StateVectorType GetType() const;
 
-   const Vector6d& GetGenericStateVector() const;
+   //Vector6d GetGenericStateVector() const;
+   double* GetState();
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 
    CartesianStateVector ToCartesianStateVector(double mu) const;
    OrbitalElements ToOrbitalElements(double mu) const;
 
+   //void Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType);
+
 private:
    StateVectorType m_type;
-   Vector6d m_state;
+   //Vector6d m_state;
+   double* m_state;
 };
 
 }
