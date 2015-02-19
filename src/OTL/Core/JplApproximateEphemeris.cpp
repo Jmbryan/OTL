@@ -25,11 +25,10 @@
 #include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/Jpl/JplApproximateEphemerisIO.h>
 #include <OTL/Core/Planet.h>
+#include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
-
-#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
 
 namespace otl
 {
@@ -39,16 +38,8 @@ typedef std::unique_ptr<JplApproximateEphemerisIO> EphemerisDatabasePointer;
 static EphemerisDatabasePointer g_ephemerisDatabase;
 
 ////////////////////////////////////////////////////////////
-JplApproximateEphemeris::JplApproximateEphemeris() :
-IEphemeris()
-{
-
-}
-
-////////////////////////////////////////////////////////////
 JplApproximateEphemeris::JplApproximateEphemeris(const std::string& dataFilename) :
-IEphemeris(),
-m_dataFilename(dataFilename)
+IEphemeris(dataFilename)
 {
 
 }
@@ -60,23 +51,10 @@ JplApproximateEphemeris::~JplApproximateEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::SetDataFile(const std::string& dataFilename)
-{
-   m_dataFilename = dataFilename;
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::LoadDataFile(const std::string& dataFilename)
-{
-   SetDataFile(dataFilename);
-   VLoad();
-}
-
-////////////////////////////////////////////////////////////
 void JplApproximateEphemeris::VLoad()
 {
    // make_unique not supported in c++11
-   g_ephemerisDatabase = std::unique_ptr<JplApproximateEphemerisIO>(new JplApproximateEphemerisIO(m_dataFilename));
+   g_ephemerisDatabase = std::unique_ptr<JplApproximateEphemerisIO>(new JplApproximateEphemerisIO(GetDataFilename()));
    try
    {
       g_ephemerisDatabase->Initialize();
@@ -84,7 +62,7 @@ void JplApproximateEphemeris::VLoad()
    catch (std::exception ex)
    {
       OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
-         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
+         Bracket(GetDataFilename()) << ": " << Bracket(ex.what());
    } 
 }
 
@@ -107,92 +85,41 @@ bool JplApproximateEphemeris::VIsValidEpoch(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
-{
-   // Get the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Return the position vector
-   position = stateVector.position;
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
-{
-   // Get the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Return the velocity vector
-   velocity = stateVector.velocity;
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
-{
-    // Get the orbital elements at the given epoch
-    OrbitalElements orbitalElements;
-    VGetOrbitalElements(name, epoch, orbitalElements);
-
-    // Convert orbital elements to state vector
-    stateVector = ConvertOrbitalElements2CartesianStateVector(orbitalElements, ASTRO_MU_SUN);
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
+PhysicalProperties JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name)
 {
    try
    {
-      g_ephemerisDatabase->GetOrbitalElements(name, epoch, orbitalElements);
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while trying to retrieve orbital elements for " << Bracket(name) <<
-         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
-   }
-}
-
-////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
-{
-   try
-   {
-      physicalProperties = GetPlanetPhysicalProperties(name);
+      return GetPlanetPhysicalProperties(name);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
          << Bracket(name) << ": " << Bracket(ex.what());
    }
+
+   return PhysicalProperties();
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+double JplApproximateEphemeris::VGetGravitationalParameterCentralBody(const std::string& name)
 {
-   try
-   {
-      gravitationalParameterCentralBody = ASTRO_MU_SUN;
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
-         << Bracket(name) << ": " << Bracket(ex.what());
-   }
+   return ASTRO_MU_SUN;
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+StateVector JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
 {
    try
    {
-      g_ephemerisDatabase->GetStateVector(name, epoch, stateVector);
+      return g_ephemerisDatabase->GetStateVector(name, epoch);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while trying to retrieve state vector for " << Bracket(name) <<
          " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
    }
+
+   return StateVector();
 }
 
 } // namespace otl

@@ -23,17 +23,26 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/Epoch.h>
+#include <OTL/Core/StateVector.h>
 #include <OTL/Core/Logger.h>
-
-#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
 
 namespace otl
 {
 
 ////////////////////////////////////////////////////////////
 IEphemeris::IEphemeris() :
-m_initialized(false)
+m_initialized(false),
+m_dataFilename("")
+{
+
+}
+
+////////////////////////////////////////////////////////////
+IEphemeris::IEphemeris(const std::string& dataFilename) :
+m_initialized(false),
+m_dataFilename(dataFilename)
 {
 
 }
@@ -45,125 +54,28 @@ IEphemeris::~IEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemeris::GetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+void IEphemeris::LoadDataFile(const std::string& dataFilename)
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (VIsValidName(name))
-   {
-      if (VIsValidEpoch(epoch))
-      {
-         VGetPosition(name, epoch, position);
-      }
-      else
-      {
-         OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
-      }
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
+   m_dataFilename = dataFilename;
+   Initialize();
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemeris::GetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
+void IEphemeris::SetDataFilename(const std::string& dataFilename)
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (VIsValidName(name))
-   {
-      if (VIsValidEpoch(epoch))
-      {
-         VGetVelocity(name, epoch, velocity);
-      }
-      else
-      {
-         OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
-      }
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
+   m_dataFilename = dataFilename;
+   m_initialized = false;
 }
 
 ////////////////////////////////////////////////////////////
-void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
+const std::string& IEphemeris::GetDataFilename() const
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (VIsValidName(name))
-   {
-      if (VIsValidEpoch(epoch))
-      {
-         VGetStateVector(name, epoch, stateVector);
-      }
-      else
-      {
-          OTL_ERROR() << "Epoch " << Bracket(epoch) << " is outside the accepted range";
-      }
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
+   return m_dataFilename;
 }
-
-////////////////////////////////////////////////////////////
-void IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
-{
-   std::lock_guard<std::mutex> lock(m_mutex);
-
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (VIsValidName(name))
-   {
-      if (VIsValidEpoch(epoch))
-      {
-         VGetOrbitalElements(name, epoch, orbitalElements);
-      }
-      else
-      {
-          OTL_ERROR() << "Epoch is outside the accepted range";
-      }
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
-}
-
 
 ////////////////////////////////////////////////////////////
 PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
 {
-   PhysicalProperties physicalProperties;
-   GetPhysicalProperties(name, physicalProperties);
-   return physicalProperties;
-}
-
-////////////////////////////////////////////////////////////
-void IEphemeris::GetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
-{
    std::lock_guard<std::mutex> lock(m_mutex);
 
    if (!m_initialized)
@@ -173,25 +85,19 @@ void IEphemeris::GetPhysicalProperties(const std::string& name, PhysicalProperti
 
    if (VIsValidName(name))
    {
-      VGetPhysicalProperties(name, physicalProperties);
+      return VGetPhysicalProperties(name);
    }
    else
    {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";    
    }
+
+   return PhysicalProperties();
 }
 
 ////////////////////////////////////////////////////////////
 double IEphemeris::GetGravitationalParameterCentralBody(const std::string& name)
 {
-   double mu;
-   GetGravitationalParameterCentralBody(name, mu);
-   return mu;
-}
-
-////////////////////////////////////////////////////////////
-void IEphemeris::GetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
-{
    std::lock_guard<std::mutex> lock(m_mutex);
 
    if (!m_initialized)
@@ -201,24 +107,18 @@ void IEphemeris::GetGravitationalParameterCentralBody(const std::string& name, d
 
    if (VIsValidName(name))
    {
-      VGetGravitationalParameterCentralBody(name, gravitationalParameterCentralBody);
+      return VGetGravitationalParameterCentralBody(name);
    }
    else
    {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";     
    }
+
+   return 0.0;
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)
-{
-   test::StateVector stateVector;
-   GetStateVector(name, epoch, stateVector);
-   return stateVector;
-}
-
-////////////////////////////////////////////////////////////
-void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)
 {
    std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -231,7 +131,7 @@ void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, tes
    {
       if (VIsValidEpoch(epoch))
       {
-         VGetStateVector(name, epoch, stateVector);
+         return VGetStateVector(name, epoch);
       }
       else
       {
@@ -242,6 +142,7 @@ void IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch, tes
    {
       OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
+   return StateVector();
 }
 
 ////////////////////////////////////////////////////////////

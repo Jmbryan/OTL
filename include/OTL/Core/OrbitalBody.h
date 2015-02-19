@@ -56,7 +56,7 @@ public:
    OrbitalBody(const std::string& name,
                const PhysicalProperties& physicalProperties,
                double gravitationalParameterCentralBody,
-               const test::StateVector& stateVector,
+               const StateVector& stateVector,
                const Epoch& epoch = Epoch::MJD2000(0.0));
 
 
@@ -114,7 +114,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   test::StateVector GetStateVector() const;
+   StateVector GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current cartesian state vector of the orbital body
@@ -130,7 +130,7 @@ public:
    /// \return Current CartesianStateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   StateVector GetCartesianStateVector() const;
+   CartesianStateVector GetCartesianStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbital elements of the orbital body
@@ -304,7 +304,7 @@ protected:
    /// \param stateVector StateVector of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   void SetStateVector(const test::StateVector& stateVector);
+   void SetStateVector(const StateVector& stateVector);
 
 private:
     std::string m_name;                       ///< Name of the orbital body

@@ -28,139 +28,139 @@
 namespace otl
 {
 
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector() :
-      position({ 0.0, 0.0, 0.0 }), velocity({ 0.0, 0.0, 0.0 })
-   {
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector() :
+position({0.0, 0.0, 0.0}), velocity({0.0, 0.0, 0.0})
+{
 
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector(const CartesianStateVector& other) :
+position(other.position),
+velocity(other.velocity)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector(const CartesianStateVector&& other) :
+position(std::move(other.position)),
+velocity(std::move(other.velocity))
+{
+
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector(const Vector3d& position, const Vector3d& velocity) :
+position(position),
+velocity(velocity)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector(double x, double y, double z, double vx, double vy, double vz) :
+position({x, y, z}),
+velocity({vx, vy, vz})
+{
+
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector::CartesianStateVector(std::initializer_list<double> list)
+{
+   auto it = list.begin();
+   int index = 0;
+   for (; it != list.end() && index < 3; ++it, ++index)
+   {
+      position[index] = static_cast<double>(*it);
+   }
+   for (; index < 3; ++index)
+   {
+      position[index] = 0.0;
    }
 
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector(const StateVector& other) :
-      position(other.position),
-      velocity(other.velocity)
+   index = 0;
+   for (; it != list.end() && index < 3; ++it, ++index)
    {
-
+      velocity[index] = static_cast<double>(*it);
    }
-
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector(const StateVector&& other) :
-      position(std::move(other.position)),
-      velocity(std::move(other.velocity))
+   for (; index < 3; ++index)
    {
-
+      velocity[index] = 0.0;
    }
+}
 
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector(const Vector3d& _position, const Vector3d& _velocity) :
-      position(_position),
-      velocity(_velocity)
+////////////////////////////////////////////////////////////
+CartesianStateVector& CartesianStateVector::operator =(const CartesianStateVector& other)
+{
+   if (this != &other)
    {
-
+      position = other.position;
+      velocity = other.velocity;
    }
+   return *this;
+}
 
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector(double x, double y, double z, double vx, double vy, double vz) :
-      position({ x, y, z }),
-      velocity({ vx, vy, vz })
+////////////////////////////////////////////////////////////
+CartesianStateVector& CartesianStateVector::operator =(const CartesianStateVector&& other)
+{
+   if (this != &other)
    {
-
+      position = std::move(other.position);
+      velocity = std::move(other.velocity);
    }
+   return *this;
+}
 
-   ////////////////////////////////////////////////////////////
-   StateVector::StateVector(std::initializer_list<double> list)
-   {
-      auto it = list.begin();
-      int index = 0;
-      for (; it != list.end() && index < 3; ++it, ++index)
-      {
-         position[index] = static_cast<double>(*it);
-      }
-      for (; index < 3; ++index)
-      {
-         position[index] = 0.0;
-      }
+////////////////////////////////////////////////////////////
+bool CartesianStateVector::IsZero() const
+{
+   return (position.isZero() && velocity.isZero());
+}
 
-      index = 0;
-      for (; it != list.end() && index < 3; ++it, ++index)
-      {
-         velocity[index] = static_cast<double>(*it);
-      }
-      for (; index < 3; ++index)
-      {
-         velocity[index] = 0.0;
-      }
-   }
+////////////////////////////////////////////////////////////
+std::string CartesianStateVector::ToString() const
+{
+   std::ostringstream os;
+   os << "x=" << position.x() << " "
+      << "y=" << position.y() << " "
+      << "z=" << position.z() << " "
+      << "vx=" << velocity.x() << " "
+      << "vy=" << velocity.y() << " "
+      << "vz=" << velocity.z();
 
-   ////////////////////////////////////////////////////////////
-   StateVector& StateVector::operator =(const StateVector& other)
-   {
-      if (this != &other)
-      {
-         position = other.position;
-         velocity = other.velocity;
-      }
-      return *this;
-   }
+   return os.str();
+}
 
-   ////////////////////////////////////////////////////////////
-   StateVector& StateVector::operator =(const StateVector&& other)
-   {
-      if (this != &other)
-      {
-         position = std::move(other.position);
-         velocity = std::move(other.velocity);
-      }
-      return *this;
-   }
+////////////////////////////////////////////////////////////
+std::string CartesianStateVector::ToDetailedString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Position:" << std::endl;
+   os << prefix << "   X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
+   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
+   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
+   os << prefix << "Velocity:" << std::endl;
+   os << prefix << "   X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
+   os << prefix << "   Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
+   os << prefix << "   Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
 
-   ////////////////////////////////////////////////////////////
-   bool StateVector::IsZero() const
-   {
-      return (position.isZero() && velocity.isZero());
-   }
+   return os.str();
+}
 
-   ////////////////////////////////////////////////////////////
-   std::string StateVector::ToString() const
-   {
-      std::ostringstream os;
-      os << "x=" << position.x() << " "
-         << "y=" << position.y() << " "
-         << "z=" << position.z() << " "
-         << "vx=" << velocity.x() << " "
-         << "vy=" << velocity.y() << " "
-         << "vz=" << velocity.z();
+////////////////////////////////////////////////////////////
+bool operator==(const CartesianStateVector& lhs, const CartesianStateVector& rhs)
+{
+   return (lhs.position.isApprox(rhs.position, 2.0 * MATH_EPSILON) &&
+           lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
+}
 
-      return os.str();
-   }
-
-   ////////////////////////////////////////////////////////////
-   std::string StateVector::ToDetailedString(std::string prefix) const
-   {
-      std::ostringstream os;
-      os << prefix << "Position:" << std::endl;
-      os << prefix << "   X: " << std::setprecision(6) << std::fixed << position.x() << std::endl;
-      os << prefix << "   Y: " << std::setprecision(6) << std::fixed << position.y() << std::endl;
-      os << prefix << "   Z: " << std::setprecision(6) << std::fixed << position.z() << std::endl;
-      os << prefix << "Velocity:" << std::endl;
-      os << prefix << "   X: " << std::setprecision(6) << std::fixed << velocity.x() << std::endl;
-      os << prefix << "   Y: " << std::setprecision(6) << std::fixed << velocity.y() << std::endl;
-      os << prefix << "   Z: " << std::setprecision(6) << std::fixed << velocity.z() << std::endl;
-
-      return os.str();
-   }
-
-   ////////////////////////////////////////////////////////////
-   bool operator==(const StateVector& lhs, const StateVector& rhs)
-   {
-      return (lhs.position.isApprox(rhs.position, 2.0 * MATH_EPSILON) &&
-              lhs.velocity.isApprox(rhs.velocity, 2.0 * MATH_EPSILON));
-   }
-
-   ////////////////////////////////////////////////////////////
-   bool operator!=(const StateVector& lhs, const StateVector& rhs)
-   {
-      return !(lhs == rhs);
-   }
+////////////////////////////////////////////////////////////
+bool operator!=(const CartesianStateVector& lhs, const CartesianStateVector& rhs)
+{
+   return !(lhs == rhs);
+}
 
 } // namespace otl

@@ -21,7 +21,7 @@ public:
 
 private:
 	double m_Mass;
-	StateVector m_StateVector;
+	CartesianStateVector m_StateVector;
 
 	double m_RadiationPressureArea;
     double m_RadiationPressureCoefficient;

@@ -57,9 +57,9 @@ m_numStates(0),
 m_legsInitialized(false),
 m_initialEpoch(Epoch()),
 m_finalEpoch(Epoch()),
-m_initialStateVector(StateVector()),
-m_finalStateVector(StateVector()),
-m_planetStateVector(StateVector())
+m_initialStateVector(),
+m_finalStateVector(),
+m_planetStateVector()
 {
    Init();
 }
@@ -71,9 +71,9 @@ m_numStates(0),
 m_legsInitialized(false),
 m_initialEpoch(Epoch()),
 m_finalEpoch(Epoch()),
-m_initialStateVector(StateVector()),
-m_finalStateVector(StateVector()),
-m_planetStateVector(StateVector())
+m_initialStateVector(),
+m_finalStateVector(),
+m_planetStateVector()
 {
    Init();
    SetNodes(0, nodes);
@@ -628,7 +628,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoch& initialEpoch, const StateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, StateVector& finalStateVector, std::vector<double>& deltaVs)
+void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const CartesianStateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, CartesianStateVector& finalStateVector, std::vector<double>& deltaVs)
 {
    if (!m_legsInitialized)
    {
@@ -695,7 +695,8 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState,  const Epoc
             deltaVs.push_back(deltaV.norm());
          }
 
-         m_initialStateVector = m_propagator->Propagate(m_initialStateVector, Time::Seconds(timeOfFlight), ASTRO_MU_SUN);
+         auto tempSV = m_propagator->Propagate(StateVector(m_initialStateVector), Time::Seconds(timeOfFlight), ASTRO_MU_SUN); // [TODO] clean up
+         m_initialStateVector = tempSV.ToCartesianStateVector(ASTRO_MU_SUN);
       }      
    }
 

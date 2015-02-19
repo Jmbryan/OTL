@@ -25,9 +25,15 @@
 #ifdef OTL_SPICE
 #pragma once
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/Matrix.h>
+#include <vector>
 
 namespace otl
 {
+
+// Forward declarations
+struct OrbitalElements;
+struct CartesianStateVector;
 
 class OTL_CORE_API SpiceEphemeris : public IEphemeris
 {
@@ -38,32 +44,15 @@ public:
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   explicit SpiceEphemeris(const std::string& dataFileName = "",
+   explicit SpiceEphemeris(const std::string& dataFilename = "",
                            const std::string& observerBodyName = "SUN",
                            const std::string& referenceFrameName = "J2000");
 
-   ////////////////////////////////////////////////////////////
-   /// \brief Disable copy constructor
-   ////////////////////////////////////////////////////////////
-   SpiceEphemeris(const SpiceEphemeris&) = delete;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Disable assignment operator
-   ////////////////////////////////////////////////////////////
-   SpiceEphemeris& operator=(const SpiceEphemeris&) = delete;
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
    virtual ~SpiceEphemeris();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the ephemeris data file
-   ///
-   /// \param dataFilename Full path to ephemeris data file
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetDataFile(const std::string& dataFileName);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the reference frame
@@ -94,122 +83,101 @@ public:
                                          const std::string& propertyName,
                                          const int maxDimension = 10);
 
-   OrbitalElements ConvertCartesianStateVectorToOrbitalElements(const StateVector& cartesianStateVector,
+   OrbitalElements ConvertCartesianStateVectorToOrbitalElements(const CartesianStateVector& cartesianStateVector,
                                                                 double gravitationalParameterCentralBody,
                                                                 const Epoch& epoch);
 
-   StateVector ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
+   CartesianStateVector ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
                                                             double gravitationalParameterCentralBody,
                                                             const Epoch& epoch);
 
    int GetNumKernalsLoaded() const;
 
-   ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
-   ///
-   /// \param dataFilename Full path to ephemeris data file
-   ///
-   ////////////////////////////////////////////////////////////
-   void LoadDataFile(const std::string& dataFileName);
+   Vector3d GetPosition(const std::string& name, const Epoch& epoch) const;
 
 protected:
    ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
+   /// \brief Load the ephemeris database
    ///
-   /// Performs database file IO. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// before VInitialize().
+   /// This function will attempt to load the SPICE
+   /// ephemeris data from file if a valid filename is provided.
+   /// Otherwise, OTL_ERROR will be called.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VLoad() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Initialize the ephemeris
+   /// \brief Initialize the ephemeris database
    ///
-   /// Performs post-initialization. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// after VLoad().
+   /// This function does not have any affect for this ephemeris
+   /// type.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the entity name valid
+   /// \brief Returns true if the entity name is found in the ephemeris database
    ///
-   /// \param name Name of the entity in question
-   /// \return True if the entity valid
+   /// The supported entities depend on the SPICE kernal(s) loaded.
+   ///
+   /// \param name Name of the entity
+   /// \return True if the entity is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidName(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the epoch valid
+   /// \brief Returns true if the epoch is within the acceptable range for the ephemeris database
    ///
-   /// \param epoch Epoch in question
-   /// \return True if the epoch valid
+   /// The supported epochs depend on the SPICE kernal(s) loaded.
+   ///
+   /// \param epoch Epoch
+   /// \return True if the Epoch is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidEpoch(const Epoch& epoch) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the position vector of an entity at a given epoch
+   /// \brief Query the the physical properties of an entity
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the position vector is desired
-   /// \param [out] position Resulting position vector
+   /// \param name Name of entity
+   /// \return PhysicalProperties of entity
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+   virtual PhysicalProperties VGetPhysicalProperties(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the velocity vector of an entity at a given epoch
+   /// \brief Query the the gravitational parameter of an entity's central body
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the velocity vector is desired
-   /// \param [out] velocity Resulting velocity vector
+   /// \param name Name of entity
+   /// \return Gravitational parameter of the entity's central body
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
+   virtual double VGetGravitationalParameterCentralBody(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the state vector of an entity at a given epoch
+   /// \brief Query the state vector of an entity at a given epoch
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the state vector is desired
-   /// \param [out] state Resulting state vector
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the orbital elements of an entity at a given epoch
-   ///
-   /// \param name Entity name
-   /// \param epoch Time at which the orbital elements is desired
-   /// \param [out] orbitalElements Resulting orbital elements
+   /// \param name Name of entity
+   /// \param epoch Epoch at which the state vector is desired
+   /// \return Resulting StateVector
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
-
-   virtual void VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties) override;
-   virtual void VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody) override;
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
+   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
 
 private:
    ////////////////////////////////////////////////////////////
    /// \brief Calculate SPICE ephemeris time from epoch
    ///
-   /// \param epoch Date to convert to ephemeris time
+   /// \param epoch Epoch to convert to ephemeris time
    ///
    ////////////////////////////////////////////////////////////
    double CalculateEphemerisTime(const Epoch& epoch) const;
 
 private:
-   std::string m_dataFilename;            ///< Full path to the ephemeris data file
    std::string m_observerBodyName;        ///< Name of observer body
    std::string m_referenceFrameName;      ///< Name of reference frame
    std::string m_abberationCorrections;   ///< Name of aberration corrections
-   
 };
 
 } // namespace otl

@@ -53,7 +53,7 @@ public:
    IEphemerisBody(const std::string& name,
                   const PhysicalProperties& physicalProperties,
                   double gravitationalParameterCentralBody,
-                  const test::StateVector& stateVector,
+                  const StateVector& stateVector,
                   const Epoch& epoch = Epoch::MJD2000(0.0));
 
    ////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ public:
    /// \returns StateVector of the body
    ///
    ////////////////////////////////////////////////////////////
-   test::StateVector QueryStateVector(const Epoch& epoch);
+   StateVector QueryStateVector(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Force initialization of ephemeris body
@@ -229,7 +229,7 @@ protected:
    /// \return StateVector of the body at the given Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual test::StateVector VQueryStateVector(const Epoch& epoch) = 0;
+   virtual StateVector VQueryStateVector(const Epoch& epoch) = 0;
    
 private:
    ////////////////////////////////////////////////////////////

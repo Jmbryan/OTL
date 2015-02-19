@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Propagator.h>
+#include <OTL/Core/Time.h>
+#include <OTL/Core/StateVector.h>
 
 namespace otl
 {
@@ -37,33 +39,10 @@ IPropagator::~IPropagator()
 
 }
 
-test::StateVector IPropagator::Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu)
-{
-   test::StateVector finalStateVector;
-   Propagate(initialStateVector, timeDelta, mu, finalStateVector);
-   return finalStateVector;
-}
-
-void IPropagator::Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector)
-{
-   OTL_ASSERT(!timeDelta.IsInfinity(), "Failed to propagate state vector. Propagation time must be less than infinity");
-   //OTL_ASSERT(!initialStateVector.IsZero(), "Failed to propagate state vector. State vector unintialized");
-
-   VPropagate(initialStateVector, timeDelta, mu, finalStateVector);
-}
-
-OrbitalElements IPropagator::Propagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu)
-{
-   OTL_ASSERT(!timeDelta.IsInfinity(), "Failed to propagate orbital elements. Propagation time must be less than infinity");
-   OTL_ASSERT(!initialOrbitalElements.IsZero(), "Failed to propagate orbital elements. Orbital elements unitialized");
-   return (timeDelta.IsZero() ? initialOrbitalElements : VPropagate(initialOrbitalElements, timeDelta, mu));
-}
-
 StateVector IPropagator::Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
 {
    OTL_ASSERT(!timeDelta.IsInfinity(), "Failed to propagate state vector. Propagation time must be less than infinity");
-   OTL_ASSERT(!initialStateVector.IsZero(), "Failed to propagate state vector. State vector unintialized");
-   return (timeDelta.IsZero() ? initialStateVector : VPropagate(initialStateVector, timeDelta, mu));
+   return VPropagate(initialStateVector, timeDelta, mu);
 }
 
 } // namespace otl

@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Ephemeris.h>
+#include <OTL/Core/StateVector.h>
 #include <OTL/Core/Epoch.h>
 
 namespace otl
@@ -45,27 +46,9 @@ public:
    explicit MpcorbEphemeris(const std::string& dataFilename = "");
 
    ////////////////////////////////////////////////////////////
-   /// \brief Disable copy constructor
-   ////////////////////////////////////////////////////////////
-   MpcorbEphemeris(const MpcorbEphemeris&) = delete;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Disable assignment operator
-   ////////////////////////////////////////////////////////////
-   MpcorbEphemeris& operator=(const MpcorbEphemeris&) = delete;
-
-   ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
    virtual ~MpcorbEphemeris();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the ephemeris data file
-   ///
-   /// \param dataFilename Full path to ephemeris data file
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetDataFile(const std::string& dataFilename);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the propagator algorithm
@@ -76,106 +59,95 @@ public:
    void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
+   /// \brief Get the reference state vector for a given entity
    ///
-   /// \param dataFilename Full path to ephemeris data file
+   /// \param name Name of entity
+   /// \return Reference StateVector of entity
    ///
    ////////////////////////////////////////////////////////////
-   void LoadDataFile(const std::string& dataFilename);
+   StateVector GetReferenceStateVector(const std::string& name);
 
-   test::StateVector GetReferenceStateVector(const std::string& name);
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the reference epoch for a given entity
+   ///
+   /// \param name Name of entity
+   /// \return Reference Epoch of entity
+   ///
+   ////////////////////////////////////////////////////////////
    Epoch GetReferenceEpoch(const std::string& name);
    
 protected:
    ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
+   /// \brief Load the ephemeris database
    ///
-   /// Performs database file IO. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// before VInitialize().
+   /// This function will attempt to load the MPCORB
+   /// ephemeris data from file if a valid filename is provided.
+   /// Otherwise, OTL_ERROR will be called.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VLoad() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Initialize the ephemeris
+   /// \brief Initialize the ephemeris database
    ///
-   /// Performs post-initialization. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// after VLoad().
+   /// This function does not have any affect for this ephemeris
+   /// type.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the entity name valid
+   /// \brief Returns true if the entity name is found in the ephemeris database
    ///
-   /// \param name Name of the entity in question
-   /// \return True if the entity valid
+   /// \param name Name of the entity
+   /// \return True if the entity is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidName(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the epoch valid
+   /// \brief Returns true if the epoch is within the acceptable range for the ephemeris database
    ///
-   /// \param epoch Epoch in question
-   /// \return True if the epoch valid
+   /// This function always returns true for this ephemeris type.
+   ///
+   /// \param epoch Epoch
+   /// \return True if the Epoch is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidEpoch(const Epoch& epoch) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the position vector of an entity at a given epoch
+   /// \brief Query the the physical properties of an entity
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the position vector is desired
-   /// \param [out] position Resulting position vector
+   /// \param name Name of entity
+   /// \return PhysicalProperties of entity
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+   virtual PhysicalProperties VGetPhysicalProperties(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the velocity vector of an entity at a given epoch
+   /// \brief Query the the gravitational parameter of an entity's central body
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the velocity vector is desired
-   /// \param [out] velocity Resulting velocity vector
+   /// \param name Name of entity
+   /// \return Gravitational parameter of the entity's central body
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
+   virtual double VGetGravitationalParameterCentralBody(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the state vector of an entity at a given epoch
+   /// \brief Query the state vector of an entity at a given epoch
    ///
-   /// \param name Entity name
-   /// \param epoch Time at which the state vector is desired
-   /// \param [out] state Resulting state vector
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the orbital elements of an entity at a given epoch
-   ///
-   /// \param name Entity name
-   /// \param epoch Time at which the orbital elements is desired
-   /// \param [out] orbitalElements Resulting orbital elements
+   /// \param name Name of entity
+   /// \param epoch Epoch at which the state vector is desired
+   /// \return Resulting StateVector
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
-
-   virtual void VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties) override;
-   virtual void VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody) override;
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
+   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
 
 private:
-   std::string m_dataFilename;                  ///< Full path to the ephemeris data file
-   PropagatorPointer m_propagator;              ///< Smart pointer to propagator algorithm for propagating the reference orbits
-   Epoch m_referenceEpoch;                      ///< Temporary variable for retrieving reference epoch
-   //StateVector m_referenceStateVector;          ///< Temporary variable for retrieving reference state vector
-   //OrbitalElements m_referenceOrbitalElements;  ///< Temporary variable for retrieving reference orbital elements
-   test::StateVector m_referenceStateVector;
+   StateVector m_referenceStateVector; ///< Temporary variable for retrieving reference state vector
+   Epoch m_referenceEpoch;                   ///< Temporary variable for retrieving reference epoch
+   PropagatorPointer m_propagator;           ///< Smart pointer to propagator algorithm for propagating the reference state vector 
 };
 
 } // namespace otl

@@ -44,12 +44,9 @@ namespace otl
 
 using Quaterniond = Eigen::Quaterniond;         ///< Alias for quaternion vector of type double
 
-//using Vector3d = otl::test2::Vector3<double>;
-//using Vector6d = otl::test2::Vector6<double>;
-
-using Vector3d = otl::test3::Matrix<double, 3, 1>;
-using Vector6d = otl::test3::Matrix<double, 6, 1>;
-using Matrix3d = otl::test3::Matrix<double, 3, 3>;
-using Matrix6d = otl::test3::Matrix<double, 6, 6>;
+using Vector3d = otl::test::Matrix<double, 3, 1>;
+using Vector6d = otl::test::Matrix<double, 6, 1>;
+using Matrix3d = otl::test::Matrix<double, 3, 3>;
+using Matrix6d = otl::test::Matrix<double, 6, 6>;
 
 }

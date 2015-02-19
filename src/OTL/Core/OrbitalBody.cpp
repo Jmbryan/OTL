@@ -41,7 +41,7 @@ m_orbit()
 OrbitalBody::OrbitalBody(const std::string& name,
                          const PhysicalProperties& physicalProperties,
                          double gravitationalParameterCentralBody,
-                         const test::StateVector& stateVector,
+                         const StateVector& stateVector,
                          const Epoch& epoch) :
 m_name(name),
 m_physicalProperties(physicalProperties),
@@ -82,7 +82,7 @@ Epoch OrbitalBody::GetEpoch() const
 }
 
 ////////////////////////////////////////////////////////////
-StateVector OrbitalBody::GetCartesianStateVector() const
+CartesianStateVector OrbitalBody::GetCartesianStateVector() const
 {
    return GetOrbit().GetCartesianStateVector();
 }
@@ -94,7 +94,7 @@ OrbitalElements OrbitalBody::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector OrbitalBody::GetStateVector() const
+StateVector OrbitalBody::GetStateVector() const
 {
    return GetOrbit().GetStateVector();
 }
@@ -184,7 +184,7 @@ void OrbitalBody::SetGravitationalParameterCentralBody(double gravitationalParam
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::SetStateVector(const test::StateVector& stateVector)
+void OrbitalBody::SetStateVector(const StateVector& stateVector)
 {
    m_orbit.SetStateVector(stateVector);
 }

@@ -30,9 +30,6 @@
 namespace otl
 {
 
-namespace test
-{
-
 StateVector::StateVector() :
 m_type(StateVectorType::Invalid),
 m_state()
@@ -172,7 +169,7 @@ StateVectorType StateVector::GetType() const
 //   return m_state;
 //}
 
-Vector6d StateVector::GetState() const
+const Vector6d& StateVector::GetState() const
 {
    return m_state;
 }
@@ -229,12 +226,47 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
    }
 }
 
+double StateVector::GetX() const
+{
+   OTL_ASSERT(m_type == StateVectorType::Cartesian);
+   return m_state[0];
+}
+
+double StateVector::GetSemimajorAxis() const
+{
+   OTL_ASSERT(m_type == StateVectorType::Orbital);
+   return m_state[0];
+}
+
 //void StateVector::Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType)
 //{
 //   m_state = genericStateVector;
 //   m_type = stateVectorType;
 //}
 
-} // namespace test
+//namespace test
+// {
+//
+//StateVector2::StateVector2(const CartesianStateVector& cartesianStateVector) :
+//m_type(StateVectorType::Cartesian),
+//m_state(cartesianStateVector)
+//{
+//
+//}
+//
+//StateVector2::StateVector2(const OrbitalElements& orbitalElements) :
+//m_type(StateVectorType::Orbital),
+//m_state(orbitalElements)
+//{
+//
+//}
+//
+//const CartesianStateVector& StateVector2::GetCartesianStateVector() const
+//{
+//   OTL_ASSERT(m_type == StateVectorType::Cartesian);
+//   return boost::get<CartesianStateVector>(m_state);
+//}
+//
+//} // namespace test
 
 } // namespace otl

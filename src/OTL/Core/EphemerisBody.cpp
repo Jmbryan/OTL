@@ -40,7 +40,7 @@ m_maxPropagationTime(Time::Infinity())
 IEphemerisBody::IEphemerisBody(const std::string& name,
                                const PhysicalProperties& physicalProperties,
                                double gravitationalParameterCentralBody,
-                               const test::StateVector& stateVector,
+                               const StateVector& stateVector,
                                const Epoch& epoch) :
 OrbitalBody(name, physicalProperties, gravitationalParameterCentralBody, stateVector, epoch),
 m_initialized(false),
@@ -126,7 +126,7 @@ std::string IEphemerisBody::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector IEphemerisBody::QueryStateVector(const Epoch& epoch)
+StateVector IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
    if (!m_initialized)
    {

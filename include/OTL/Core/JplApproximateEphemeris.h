@@ -32,142 +32,89 @@ class OTL_CORE_API JplApproximateEphemeris : public IEphemeris
 {
 public:
    ////////////////////////////////////////////////////////////
-   /// \brief Default constructor
-   ////////////////////////////////////////////////////////////
-   JplApproximateEphemeris();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Constructor using data file
+   /// \brief Constructor using data filename
    ///
    /// \param dataFilename Full path to ephemeris data file
    ///
    ////////////////////////////////////////////////////////////
-   explicit JplApproximateEphemeris(const std::string& dataFilename);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Disable copy constructor
-   ////////////////////////////////////////////////////////////
-   JplApproximateEphemeris(const JplApproximateEphemeris&) = delete;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Disable assignment operator
-   ////////////////////////////////////////////////////////////
-   JplApproximateEphemeris& operator=(const JplApproximateEphemeris&) = delete;
+   explicit JplApproximateEphemeris(const std::string& dataFilename = "");
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
    virtual ~JplApproximateEphemeris();
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Set the ephemeris data file
-   ///
-   /// \param dataFilename Full path to ephemeris data file
-   ///
-   ////////////////////////////////////////////////////////////
-   void SetDataFile(const std::string& dataFilename);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
-   ///
-   /// \param dataFilename Full path to ephemeris data file
-   ///
-   ////////////////////////////////////////////////////////////
-   void LoadDataFile(const std::string& dataFilename);
-   
+ 
 protected:
    ////////////////////////////////////////////////////////////
-   /// \brief Load the ephemeris data file into memory
+   /// \brief Load the ephemeris database
    ///
-   /// Performs database file IO. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// before VInitialize().
+   /// This function will attempt to load the JPL approximate
+   /// ephemeris data from file if a valid filename is provided.
+   /// Otherwise, the default hardcoded data will be used.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VLoad() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Initialize the ephemeris
+   /// \brief Initialize the ephemeris database
    ///
-   /// Performs post-initialization. This function lazily
-   /// evalulated when the first ephemeris query is made and
-   /// after VLoad().
+   /// This function does not have any affect for this ephemeris
+   /// type.
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the planet name valid
+   /// \brief Returns true if the entity name is found in the ephemeris database
    ///
-   /// \param name Name of the planet in question
-   /// \return True if the planet valid
+   /// This function returns true only for the major planets
+   /// and Pluto.
+   ///
+   /// \param name Name of the entity
+   /// \return True if the entity is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidName(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Is the epoch valid
+   /// \brief Returns true if the epoch is within the acceptable range for the ephemeris database
    ///
-   /// \param epoch Epoch in question
-   /// \return True if the epoch valid
+   /// If the default hardcoded data is used, this function
+   /// will return true for epochs between 3000 BC and 3000 AD.
+   ///
+   /// \param epoch Epoch
+   /// \return True if the Epoch is supported by the ephemeris
    ///
    ////////////////////////////////////////////////////////////
    virtual bool VIsValidEpoch(const Epoch& epoch) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the position vector of a planet at a given epoch
+   /// \brief Query the the physical properties of an entity
    ///
-   /// This function is only applicable to the major planets and Pluto.
-   ///
-   /// \param name Planet name
-   /// \param epoch Time at which the position vector is desired
-   /// \param [out] position Resulting position vector
+   /// \param name Name of entity
+   /// \return PhysicalProperties of entity
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position) override;
+   virtual PhysicalProperties VGetPhysicalProperties(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the velocity vector of a planet at a given epoch
+   /// \brief Query the the gravitational parameter of an entity's central body
    ///
-   /// This function is only applicable to the major planets and Pluto.
-   ///
-   /// \param name Planet name
-   /// \param epoch Time at which the velocity vector is desired
-   /// \param [out] velocity Resulting velocity vector
+   /// \param name Name of entity
+   /// \return Gravitational parameter of the entity's central body
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity) override;
+   virtual double VGetGravitationalParameterCentralBody(const std::string& name) override;
 
    ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the state vector of a planet at a given epoch
+   /// \brief Query the state vector of an entity at a given epoch
    ///
-   /// This function is only applicable to the major planets and Pluto.
-   ///
-   /// \param name Planet name
-   /// \param epoch Time at which the state vector is desired
-   /// \param [out] stateVector Resulting state vector
+   /// \param name Name of entity
+   /// \param epoch Epoch at which the state vector is desired
+   /// \return Resulting StateVector
    ///
    ////////////////////////////////////////////////////////////
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector) override;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Query the database for the orbital elements of a planet at a given epoch
-   ///
-   /// This function is only applicable to the major planets and Pluto.
-   ///
-   /// \param name Planet name
-   /// \param epoch Time at which the state vector is desired
-   /// \param [out] orbitalElements Resulting orbital elements
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual void VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements) override;
-    
-   virtual void VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties) override;
-   virtual void VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody) override;
-   virtual void VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector) override;
-
-private:
-   std::string m_dataFilename; ///< Full path to the ephemeris data file
+   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
 };
 
 } // namespace otl
@@ -189,21 +136,12 @@ private:
 /// The exception is for the computation of the mean anomaly for
 /// Jupiter through Pluto which require four additional coefficients.
 ///
-/// The benefit of using an analytical ephemeris versus querying a
-/// traditional high precision ephemeris database such as SPICE is
-/// that it is typically much faster (approximatly an order of magnitude),
-/// but at the cost of precision. However, applications such as trajectory
-/// design and optimization do not require high precision ephemeris and
-/// can greatly benefity from the speedup offered by an analytical ephemeris
-/// alternative.
-///
-/// The position, velocity, state vector, and orbital elements
-/// of a planet at a desired Epoch can be obtained by calling
-/// the inherited member functions:
-/// \li GetPosition()
-/// \li GetVelocity()
+/// The physical properties, gravitational parameter of central body,
+/// and state vector of a planet at a given Epoch can be obtained by
+/// calling the inherited member functions:
+/// \li GetPhysicalProperties()
+/// \li GetGravitationalParameterCentralBody()
 /// \li GetStateVector()
-/// \li GetOrbitalElements()
 ///
 /// This routine is only valid for the major planets and Pluto. Querying
 /// the database with any name other than those listed below will result
@@ -218,7 +156,7 @@ private:
 /// \li Neptune
 /// \li Pluto
 ///
-/// \note This routine is only valid for the time
+/// \note By default, this ephemeris is only valid for the time
 /// period between 3000 BC to 3000 AD.
 ///
 /// \note This routine is considered an approximate
@@ -227,6 +165,6 @@ private:
 ///
 /// \reference http://ssd.jpl.nasa.gov/?planet_pos
 ///
-/// \see IEphemeris, Epoch, StateVector, OrbitalElements
+/// \see IEphemeris, PhysicalProperties, Epoch, StateVector, SpiceEphemeris
 ///
 ////////////////////////////////////////////////////////////

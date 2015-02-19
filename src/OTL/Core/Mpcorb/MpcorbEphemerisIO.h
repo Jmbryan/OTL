@@ -30,6 +30,7 @@ namespace otl
 
 // Forward declarations
 class Epoch;
+class PhysicalProperties;
 
 class MpcorbEphemerisIO
 {
@@ -37,10 +38,10 @@ public:
    explicit MpcorbEphemerisIO(const std::string& dataFilename);
    MpcorbEphemerisIO(const MpcorbEphemerisIO& other) = delete;
    MpcorbEphemerisIO& operator=(const MpcorbEphemerisIO&) = delete;
-
-   void GetEpoch(const std::string& name, Epoch& epoch);
-   void GetStateVector(const std::string& name, StateVector& stateVector);
-   void GetOrbitalElements(const std::string& name, OrbitalElements& orbitalElements);
+  
+   const Epoch& GetEpoch(const std::string& name) const;
+   const PhysicalProperties& GetPhysicalProperties(const std::string& name) const;
+   const StateVector& GetStateVector(const std::string& name) const;
 
    bool IsValidName(const std::string& name) const;
    bool IsValidEpoch(const Epoch& epoch) const;
@@ -52,6 +53,7 @@ private:
    
 private:
    std::string m_dataFilename;
+   std::map<std::string, PhysicalProperties> m_physicalProperties;
    std::map<std::string, StateVector> m_stateVectors;
 };
 

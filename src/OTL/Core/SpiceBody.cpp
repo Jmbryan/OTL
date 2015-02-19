@@ -41,7 +41,7 @@ SpiceBody::SpiceBody(const std::string& observerBodyName,
                      const Epoch& epoch,
                      const std::string& targetBodyName,
                      const std::string& referenceFrameName) :
-IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(nullptr)
 {
 
@@ -53,7 +53,7 @@ SpiceBody::SpiceBody(const std::string& observerBodyName,
                      const Epoch& epoch,
                      const std::string& targetBodyName,
                      const std::string& referenceFrameName) :
-IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(ephemeris)
 {
 
@@ -73,7 +73,6 @@ void SpiceBody::VInitialize()
    {
       m_ephemeris = std::make_shared<SpiceEphemeris>();
    }
-   m_ephemeris->Initialize();
    
    // Init the physical properties
    SetPhysicalProperties(
@@ -95,7 +94,7 @@ EphemerisPointer SpiceBody::VGetEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
+StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
 {
    if (m_ephemeris)
    {
@@ -105,7 +104,7 @@ test::StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
    {
       OTL_ERROR() << "Failed to query state vector for spice body " << Bracket(GetName())
          << ": Invalid ephemeris pointer.";
-      return test::StateVector();
+      return StateVector();
    }
 }
 

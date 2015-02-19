@@ -23,17 +23,14 @@
 ////////////////////////////////////////////////////////////
 
 #ifdef OTL_SPICE
-#define OTL_SPICE_EPHEMERIS
-#ifdef OTL_SPICE_EPHEMERIS
 
 #include <OTL/Core/SpiceEphemeris.h>
+#include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/Epoch.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
-
-#include <OTL/Core/OrbitalBody.h> // for PhysicalProperties
 
 extern "C"
 {
@@ -46,11 +43,10 @@ namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-SpiceEphemeris::SpiceEphemeris(const std::string& dataFileName,
+SpiceEphemeris::SpiceEphemeris(const std::string& dataFilename,
                                const std::string& observerBodyName,
                                const std::string& referenceFrameName) :
-IEphemeris(),
-m_dataFilename(dataFileName),
+IEphemeris(dataFilename),
 m_observerBodyName(observerBodyName),
 m_referenceFrameName(referenceFrameName)
 {
@@ -61,12 +57,6 @@ m_referenceFrameName(referenceFrameName)
 SpiceEphemeris::~SpiceEphemeris()
 {
 
-}
-
-////////////////////////////////////////////////////////////
-void SpiceEphemeris::SetDataFile(const std::string& dataFileName)
-{
-   m_dataFilename = dataFileName;
 }
 
 ////////////////////////////////////////////////////////////
@@ -114,7 +104,7 @@ std::vector<double> SpiceEphemeris::GetBodyProperties(const std::string& targetB
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalElements SpiceEphemeris::ConvertCartesianStateVectorToOrbitalElements(const StateVector& cartesianStateVector,
+OrbitalElements SpiceEphemeris::ConvertCartesianStateVectorToOrbitalElements(const CartesianStateVector& cartesianStateVector,
                                                                              double gravitationalParameterCentralBody,
                                                                              const Epoch& epoch)
 {
@@ -152,9 +142,9 @@ OrbitalElements SpiceEphemeris::ConvertCartesianStateVectorToOrbitalElements(con
    return OrbitalElements(a, e, TA, i, w, l);
 }
 
-StateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
-                                                                         double gravitationalParameterCentralBody,
-                                                                         const Epoch& epoch)
+CartesianStateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
+                                                                                  double gravitationalParameterCentralBody,
+                                                                                  const Epoch& epoch)
 {
    // Compuate ephemeris time of epoch
    double et = CalculateEphemerisTime(epoch);
@@ -185,15 +175,10 @@ StateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVector(const O
    SpiceDouble state[6];
    conics_c(elts, et, state);
  
-   StateVector cartesianStateVector;
-   for (int i = 0; i < 3; ++i)
-   {
-      cartesianStateVector.position[i] = state[i];
-      cartesianStateVector.velocity[i] = state[i + 3];
-   }
-
    // Return the results
-   return cartesianStateVector;
+   return CartesianStateVector(
+      state[0], state[1], state[2],
+      state[3], state[4], state[5]);
 }
 
 ////////////////////////////////////////////////////////////
@@ -205,16 +190,11 @@ int SpiceEphemeris::GetNumKernalsLoaded() const
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::LoadDataFile(const std::string& dataFileName)
-{
-   SetDataFile(dataFileName);
-   VLoad();
-}
-
-////////////////////////////////////////////////////////////
 void SpiceEphemeris::VLoad()
 {
-   if (m_dataFilename.empty())
+   const auto& dataFilename = GetDataFilename();
+
+   if (dataFilename.empty())
    {
       OTL_ERROR() << "Failed to load ephemeris datafile. No file specified";
       return;
@@ -223,12 +203,12 @@ void SpiceEphemeris::VLoad()
    // SPICE doesn't throw exceptions...
    try
    {
-      furnsh_c(m_dataFilename.c_str());
+      furnsh_c(dataFilename.c_str());
    }
    catch (std::exception ex)
    {
       OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
-         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
+         Bracket(dataFilename) << ": " << Bracket(ex.what());
    }  
 }
 
@@ -276,7 +256,7 @@ bool SpiceEphemeris::VIsValidEpoch(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
+Vector3d SpiceEphemeris::GetPosition(const std::string& name, const Epoch& epoch) const
 {
    double ephemerisTime = CalculateEphemerisTime(epoch);
    double pos[3];
@@ -290,58 +270,11 @@ void SpiceEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, V
             pos,
             &lightTime);
 
-   for (int i = 0; i < 3; ++i)
-   {
-      position[i] = pos[i];
-   }
+   return Vector3d(pos[0], pos[1], pos[2]);
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
-{
-   // Query the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Return the velocity vector
-   velocity = stateVector.velocity;
-}
-
-////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
-{
-   double ephemerisTime = CalculateEphemerisTime(epoch);
-   double state[6];
-   double lightTime;
-
-   spkezr_c(name.c_str(),
-            ephemerisTime,
-            m_referenceFrameName.c_str(),
-            m_abberationCorrections.c_str(),
-            m_observerBodyName.c_str(),
-            state,
-            &lightTime);
-
-   for (int i = 0; i < 3; ++i)
-   {
-      stateVector.position[i] = state[i];
-      stateVector.velocity[i] = state[i + 3];
-   }
-}
-
-////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
-{
-   // Query the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Convert state vector to orbital elements
-   orbitalElements = ConvertCartesianStateVector2OrbitalElements(stateVector, ASTRO_MU_SUN);
-}
-
-////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+PhysicalProperties SpiceEphemeris::VGetPhysicalProperties(const std::string& name)
 {
    try
    {
@@ -353,31 +286,35 @@ void SpiceEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalPro
       auto radius = GetBodyProperties(name, "RADII", 3);
       double meanRadius = (radius[0] + radius[1] + radius[2]) / 3.0;
 
-      physicalProperties = PhysicalProperties(mass, meanRadius);
+      return PhysicalProperties(mass, meanRadius);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while trying to retrieve physical properties for "
          << Bracket(name) << ": " << Bracket(ex.what());
    }
+
+   return PhysicalProperties();
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+double SpiceEphemeris::VGetGravitationalParameterCentralBody(const std::string& name)
 {
    try
    {
-      gravitationalParameterCentralBody = GetBodyProperty(m_observerBodyName, "GM");
+      return GetBodyProperty(m_observerBodyName, "GM");
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while trying to retrieve gravitational parameter for "
          << Bracket(m_observerBodyName) << ": " << Bracket(ex.what());
    }
+
+   return 0.0;
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+StateVector SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
 {
    SpiceDouble ephemerisTime = CalculateEphemerisTime(epoch);
    SpiceDouble state[6];
@@ -391,14 +328,9 @@ void SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch
             state,
             &lightTime);
 
-   StateVector cartesianStateVector;
-   for (int i = 0; i < 3; ++i)
-   {
-      cartesianStateVector.position[i] = state[i];
-      cartesianStateVector.velocity[i] = state[i + 3];
-   }
-
-   stateVector = cartesianStateVector;
+   return StateVector(CartesianStateVector(
+      state[0], state[1], state[2],
+      state[3], state[4], state[5]));
 }
 
 ////////////////////////////////////////////////////////////
@@ -409,5 +341,4 @@ double SpiceEphemeris::CalculateEphemerisTime(const Epoch& epoch) const
 
 } // namespace otl
 
-#endif
 #endif

@@ -25,6 +25,7 @@
 #include <OTL/Core/Propagator.h>
 #include <OTL/Core/Lambert.h>
 #include <OTL/Core/Flyby.h>
+#include <OTL/Core/StateVector.h>
 
 namespace otl
 {
@@ -637,7 +638,7 @@ private:
    /// \param [out] deltaVs Vector of computed deltaVs required throughout the trajectory
    ///
    ////////////////////////////////////////////////////////////
-   void CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const StateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, StateVector& finalStateVector, std::vector<double>& deltaVs);
+   void CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const CartesianStateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, CartesianStateVector& finalStateVector, std::vector<double>& deltaVs);
 
    ////////////////////////////////////////////////////////////
    /// \brief Add a state to the internal state vector
@@ -700,9 +701,9 @@ private:
    // Temporary variables used in CalculateTrajectory()
    Epoch m_initialEpoch;                              ///< Initial epoch of the active TrajectoryLeg. Used in CalculateTrajectory()
    Epoch m_finalEpoch;                                ///< Final epoch of the active TrajectoryLeg. Used in CalculateTrajectory()
-   StateVector m_initialStateVector;                  ///< Initial state vector of spacecraft during active TrajectoryLeg. Used in CalculateTrajectory()
-   StateVector m_finalStateVector;                    ///< Final state vector of spacecraft during active TrajectoryLeg. Used in CalculateTrajectory()
-   StateVector m_planetStateVector;                   ///< State vector of the next orbital body of the active Trajectory Leg. Used in CalculateTrajectory()
+   CartesianStateVector m_initialStateVector;                  ///< Initial state vector of spacecraft during active TrajectoryLeg. Used in CalculateTrajectory()
+   CartesianStateVector m_finalStateVector;                    ///< Final state vector of spacecraft during active TrajectoryLeg. Used in CalculateTrajectory()
+   CartesianStateVector m_planetStateVector;                   ///< State vector of the next orbital body of the active Trajectory Leg. Used in CalculateTrajectory()
 };
 
 ////////////////////////////////////////////////////////////

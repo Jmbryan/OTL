@@ -44,9 +44,7 @@ public:
    JplApproximateEphemerisIO(const JplApproximateEphemerisIO& other) = delete;
    JplApproximateEphemerisIO& operator=(const JplApproximateEphemerisIO&) = delete;
 
-   void GetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements);
-   //PhysicalProperties GetPhysicalProperties(const std::string& name);
-   void GetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector);
+   StateVector GetStateVector(const std::string& name, const Epoch& epoch);
 
    bool IsValidName(const std::string& name) const;
    bool IsValidEpoch(const Epoch& epoch) const;
@@ -58,7 +56,6 @@ private:
 
 private:
    std::string m_dataFilename;
-   //bool m_initialized;
    int m_startYear;
    int m_endYear;
    keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly 

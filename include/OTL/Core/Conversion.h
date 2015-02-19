@@ -79,7 +79,7 @@ OTL_CORE_API void CalculateCanonicalUnits(double radius, double mu,
 /// \returns OrbitalElements after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const StateVector& cartesianStateVector, double mu);
+OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const CartesianStateVector& cartesianStateVector, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Convert orbital elements to cartesian state vectors
@@ -95,7 +95,7 @@ OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const S
 /// \param [out] CartesianStateVector after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API StateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu);
+OTL_CORE_API CartesianStateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts normalized spherical coordinates into a Cartesian vector

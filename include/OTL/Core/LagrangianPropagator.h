@@ -62,19 +62,142 @@ public:
       double gDot;   ///< Derivative of Lagrange coefficient G
    };
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Default Constructor
+   ////////////////////////////////////////////////////////////
    LagrangianPropagator();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Destructor
+   ////////////////////////////////////////////////////////////
    virtual ~LagrangianPropagator();
 
 protected:
-   virtual void VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector) override;
-   virtual OrbitalElements VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu) override { return OrbitalElements(); }
-   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override { return StateVector(); }
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients
+   ///
+   /// Calculates the final state vector after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// \param initialStateVector StateVector before propagation
+   /// \param timeDelta Propgation time (may be negative)
+   /// \param mu Gravitational parameter of the central body
+   /// \returns StateVector after propagation
+   ///
+   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
 
 private:
+   ////////////////////////////////////////////////////////////
+   /// \brief Calculate the universal variable
+   ///
+   /// Calculates the universal variable after
+   /// propagating forwards or backwards in time.
+   ///
+   /// \reference Vallado [TODO]
+   ///
+   /// \param r0 Magnitude of position vector
+   /// \param v0 Magnitude of velocity vector
+   /// \param rdotv Dot product of position and velocity vectors
+   /// \param seconds Propagation time in seconds
+   /// \param mu Gravitational parameter of the central body
+   /// \returns UniversalVariableResult object containing the final universal variable and other auxillory parameters
+   ///
+   ////////////////////////////////////////////////////////////
    UniversalVariableResult CalculateUniversalVariable(double r0, double v0, double rdotv, double seconds, double mu);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Calculate an initial guess for the universal varable
+   ///
+   /// Calculates an initial guess for universal variable based on
+   /// orbit type and shape.
+   ///
+   /// \reference Vallado [TODO]
+   ///
+   /// \param r0 Magnitude of position vector
+   /// \param v0 Magnitude of velocity vector
+   /// \param rdotv Dot product of position and velocity vectors
+   /// \param alpha Reciprocal of semimajor axis
+   /// \param seconds Propagation time in seconds
+   /// \param mu Gravitational parameter of the central body
+   /// \returns Universal variable initial guess
+   ///
+   ////////////////////////////////////////////////////////////
    double CalculateUniversableVariableInitialGuess(double r0, double v0, double rdotv, double alpha, double seconds, double mu);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Calculate Stumpff Functions C2(psi) and C3(psi)
+   ///
+   /// Calculates the Stumpff Functions defined as (elliptical orbits):
+   ///
+   /// \f$ c_2(psi) = \frac{(1 - \cos{\sqrt{\psi}})}{\psi} \f$\n
+   /// \f$ c_3(psi) = \frac{(\sqrt{\psi} - \sin{\sqrt{\psi}})}{\sqrt{\psi^3}} \f$
+   ///
+   /// The equations for hyperbolic orbits are similar, but
+   /// they use hyperbolic sine and cosine functions instead.
+   ///
+   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 1, section 2.2, page 71
+   ///
+   /// \param psi Ratio of the unverisal variable squared and the semimajor axis
+   /// \returns StumpffParameters object containing the results to the Stumpff functions, c2 & c3
+   ///
+   ////////////////////////////////////////////////////////////
    StumpffParameters CalculateStumpffParameters(double psi);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Calculate the Lagrange Coefficients
+   ///
+   /// Calculates the Lagrange Coefficients using the
+   /// Universal Variable.
+   ///
+   /// \reference Vallado [TODO]
+   ///
+   /// \param r0 Magnitude of position vector
+   /// \param seconds Propagation time in seconds
+   /// \param sqrtMu Square root of the gravitational parameter of the central body
+   /// \param results UniversalVariableResult containing the final Univeral Variable and other auxillary parameters
+   /// \returns LagrangeCoefficients object containing the coefficients F, G, F', and G'
+   ///
+   ////////////////////////////////////////////////////////////
    LagrangeCoefficients CalculateLagrangeCoefficients(double r0, double seconds, double sqrtMu, const UniversalVariableResult& results);
 };
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::LagrangianPropagator
+/// \ingroup otl
+///
+/// Propagates a state vector forward or backwards in
+/// time using the Universal Variable and Lagrange Coeficients.
+/// All orbit types are inheritely supported. The Universal Variable
+/// is computed using a Newton-Raphson iteration.
+///
+/// Usage example:
+/// \code
+/// auto propagator = std::make_shared<otl::LagrangianPropagator>();
+///
+/// // Setup inputs
+/// CartesianStateVector cartesianStateVector;
+/// cartesianStateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
+/// cartesianStateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
+/// double mu = ASTRO_MU_SUN;                                          // Gravitational parameter of the Sun
+/// Time timeDelta = Time::Days(150.0);                                // Propagate forward 150 days
+///
+/// StateVector initialStateVector = cartesianStateVector;
+///
+/// // Propagate the state vector forwards in time
+/// auto finalStateVector = propagator->Propagate(initialStateVector, mu, timeDelta);
+///
+/// // Now propagate backwards in time to verify we end up where we started
+/// auto initialStateVector2 = propagator->Propagate(finalStateVector, mu, -timeDelta);
+///
+/// OTL_ASSERT(initialStateVector == initialStateVector2);
+/// \endcode
+///
+/// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, pages 101-102
+/// 
+////////////////////////////////////////////////////////////

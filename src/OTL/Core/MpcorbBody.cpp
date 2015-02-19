@@ -39,7 +39,7 @@ m_ephemeris()
 ////////////////////////////////////////////////////////////
 MpcorbBody::MpcorbBody(const std::string& name,
                        const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector()),
+IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector()),
 m_ephemeris(nullptr)
 {
 
@@ -49,7 +49,7 @@ m_ephemeris(nullptr)
 MpcorbBody::MpcorbBody(const std::string& name,
                        const MpcorbEphemerisPointer& ephemeris,
                        const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector()),
+IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector()),
 m_ephemeris(ephemeris)
 {
 
@@ -69,7 +69,6 @@ void MpcorbBody::VInitialize()
    {
       m_ephemeris = std::make_shared<MpcorbEphemeris>();
    }
-   m_ephemeris->Initialize();
 
    // Init the physical properties
    SetPhysicalProperties(
@@ -94,7 +93,7 @@ EphemerisPointer MpcorbBody::VGetEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector MpcorbBody::VQueryStateVector(const Epoch& epoch)
+StateVector MpcorbBody::VQueryStateVector(const Epoch& epoch)
 {
    OrbitalBody::PropagateTo(epoch);
    return GetStateVector();

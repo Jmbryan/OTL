@@ -23,14 +23,19 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+//#include <OTL/Core/CartesianStateVector.h>
+//#include <OTL/Core/OrbitalElements.h>
+
 #include <OTL/Core/Matrix.h>
 #include <vector>
+
+//#include <boost/variant.hpp>
 
 namespace otl
 {
 
 // Forward declarations
-struct StateVector;
+struct CartesianStateVector;
 struct OrbitalElements;
 
 enum class StateVectorType
@@ -41,11 +46,6 @@ enum class StateVectorType
    Orbital,       ///< The state vector is represented as a OrbitalElements consisting of the 6 classic orbital elements
    Count          ///< Number of state vector types
 };
-
-namespace test
-{
-
-typedef otl::StateVector CartesianStateVector;
 
 class StateVector
 {
@@ -69,12 +69,15 @@ public:
    //Vector6d GetGenericStateVector() const;
    //const double* GetState() const;
    //std::vector<double> GetState() const;
-   Vector6d GetState() const;
+   const Vector6d& GetState() const;
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 
    CartesianStateVector ToCartesianStateVector(double mu) const;
    OrbitalElements ToOrbitalElements(double mu) const;
+
+   double GetX() const;
+   double GetSemimajorAxis() const;
 
    //void Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType);
 
@@ -86,6 +89,22 @@ private:
    Vector6d m_state;
 };
 
-}
+//namespace test
+//{
+//
+//class StateVector2
+//{
+//public:
+//   StateVector2(const CartesianStateVector& cartesianStateVector);
+//   StateVector2(const OrbitalElements& orbitalElements);
+//
+//   const CartesianStateVector& GetCartesianStateVector() const;
+//
+//private:
+//   StateVectorType m_type;
+//   boost::variant<Vector6d, CartesianStateVector, OrbitalElements> m_state;
+//};
+//
+//}
 
 } // namespace otl

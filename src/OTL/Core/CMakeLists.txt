@@ -5,9 +5,9 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 # all source files
 set(SRC
 	${INCROOT}/Base.h
-	${INCROOT}/Config.h
 	${SRCROOT}/CartesianStateVector.cpp
-	${INCROOT}/CartesianStateVector.h	
+	${INCROOT}/CartesianStateVector.h
+	${INCROOT}/Config.h	
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
@@ -22,14 +22,14 @@ set(SRC
 	${INCROOT}/Flyby.h
 	${SRCROOT}/FlybyUnpowered.cpp
 	${INCROOT}/FlybyUnpowered.h
-	${SRCROOT}/ForceModel.cpp
-	${INCROOT}/ForceModel.h
+	#${SRCROOT}/ForceModel.cpp
+	#${INCROOT}/ForceModel.h
 	${SRCROOT}/JplApproximateBody.cpp
 	${INCROOT}/JplApproximateBody.h	
 	${SRCROOT}/JplApproximateEphemeris.cpp
 	${INCROOT}/JplApproximateEphemeris.h
-	${SRCROOT}/JplEphemeris.cpp
-	${INCROOT}/JplEphemeris.h
+	#${SRCROOT}/JplEphemeris.cpp
+	#${INCROOT}/JplEphemeris.h
 	${SRCROOT}/KeplerianPropagator.cpp
 	${INCROOT}/KeplerianPropagator.h
 	${SRCROOT}/KeplersEquations.cpp
@@ -42,8 +42,8 @@ set(SRC
 	${INCROOT}/LambertExponentialSinusoid.h
 	${SRCROOT}/Logger.cpp
 	${INCROOT}/Logger.h
-	#${INCROOT}/Matrix.h>
-	#${INCROOT}/MatrixPlugin.h>	
+	${INCROOT}/Matrix.h>
+	${INCROOT}/MatrixPlugin.h>	
 	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp
@@ -58,14 +58,14 @@ set(SRC
 	${INCROOT}/OrbitalBody.h
 	${SRCROOT}/OrbitalElements.cpp
 	${INCROOT}/OrbitalElements.h
+	${SRCROOT}/PhysicalProperties.cpp
+	${INCROOT}/PhysicalProperties.h		
 	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.h	
 	${SRCROOT}/Propagator.cpp
 	${INCROOT}/Propagator.h
-	${SRCROOT}/PhysicalProperties.cpp
-	${INCROOT}/PhysicalProperties.h	
-	${SRCROOT}/Rotation.cpp
-	${INCROOT}/Rotation.h	
+	#${SRCROOT}/Rotation.cpp
+	#${INCROOT}/Rotation.h	
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp
@@ -74,6 +74,7 @@ set(SRC
 	${INCROOT}/Time.h
 	${SRCROOT}/Transformation.cpp
 	${INCROOT}/Transformation.h
+	${INCROOT}/Vector.h
 )
 source_group("" FILES ${SRC})
 

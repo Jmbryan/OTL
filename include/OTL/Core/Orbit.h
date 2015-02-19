@@ -82,7 +82,7 @@ public:
    /// \param stateVector StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   Orbit(double mu, const test::StateVector& stateVector);
+   Orbit(double mu, const StateVector& stateVector);
    
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
@@ -103,7 +103,7 @@ public:
    /// \param stateVector StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   void SetStateVector(const test::StateVector& stateVector);
+   void SetStateVector(const StateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the propagation algorithm
@@ -143,7 +143,7 @@ public:
    /// \return Current CartesianStateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   StateVector GetCartesianStateVector() const;
+   CartesianStateVector GetCartesianStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbital elements of the orbit
@@ -179,7 +179,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   test::StateVector GetStateVector() const;
+   StateVector GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the radius of the orbit
@@ -320,9 +320,9 @@ private:
    mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
    mutable double m_orbitRadius;                         ///< Radius of the orbit
    double m_mu;                                          ///< Gravitational parameter of the central body
-   otl::test::StateVector m_stateVector;                 ///< Current state vector
-   otl::test::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
-   mutable otl::test::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
+   otl::StateVector m_stateVector;                 ///< Current state vector
+   otl::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
+   mutable otl::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
    PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
    Time m_elapsedPropagationTime;                        ///< Elapsed propagation time between the state vector and reference state vector
    mutable bool m_orbitPropertiesDirty;
@@ -346,8 +346,8 @@ T& operator<<(T& stream, const Orbit& orbit)
    return stream;
 }
 
-double ComputeOrbitRadius(const test::StateVector& stateVector);
-Orbit::Type ComputeOrbitType(const test::StateVector& stateVector, double mu);
+double ComputeOrbitRadius(const StateVector& stateVector);
+Orbit::Type ComputeOrbitType(const StateVector& stateVector, double mu);
 
 } // namespace keplerian
 

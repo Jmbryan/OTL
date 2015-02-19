@@ -134,7 +134,7 @@ protected:
    /// \return StateVector of the body at the given Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual test::StateVector VQueryStateVector(const Epoch& epoch) override; 
+   virtual StateVector VQueryStateVector(const Epoch& epoch) override; 
 
 private:
    JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to JPL approximate ephemeris database

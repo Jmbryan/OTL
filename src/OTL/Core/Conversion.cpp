@@ -43,7 +43,7 @@ void CalculateCanonicalUnits(double radius, double mu,
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalElements ConvertCartesianStateVector2OrbitalElements(const StateVector& stateVector, double mu)
+OrbitalElements ConvertCartesianStateVector2OrbitalElements(const CartesianStateVector& stateVector, double mu)
 {
    // Position and velocity
    const Vector3d& R = stateVector.position;
@@ -154,7 +154,7 @@ OrbitalElements ConvertCartesianStateVector2OrbitalElements(const StateVector& s
 }
 
 ////////////////////////////////////////////////////////////
-StateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu)
+CartesianStateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu)
 {
    double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;
@@ -180,7 +180,7 @@ StateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& o
    Vp.z() = 0.0;
 
    // Transform the state vectors into inertial coordinates.
-   StateVector stateVector;
+   CartesianStateVector stateVector;
    TransformPerifocal2Inertial(Rp, incl, aop, lan, stateVector.position);
    TransformPerifocal2Inertial(Vp, incl, aop, lan, stateVector.velocity);
 

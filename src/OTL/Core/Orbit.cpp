@@ -55,7 +55,7 @@ Orbit()
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Orbit(double mu, const test::StateVector& stateVector) :
+Orbit::Orbit(double mu, const StateVector& stateVector) :
 Orbit(mu)
 {
    SetStateVector(stateVector);
@@ -73,7 +73,7 @@ void Orbit::SetMu(double mu)
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::SetStateVector(const test::StateVector& stateVector)
+void Orbit::SetStateVector(const StateVector& stateVector)
 {
    m_stateVector = m_referenceStateVector = m_cachedStateVector = stateVector;
 
@@ -97,7 +97,7 @@ double Orbit::GetMu() const
 }
 
 ////////////////////////////////////////////////////////////
-StateVector Orbit::GetCartesianStateVector() const
+CartesianStateVector Orbit::GetCartesianStateVector() const
 {
    if (m_stateVector.GetType() == StateVectorType::Cartesian)
    {
@@ -127,7 +127,7 @@ OrbitalElements Orbit::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector Orbit::GetStateVector() const
+StateVector Orbit::GetStateVector() const
 {
    return m_stateVector;
 }
@@ -171,7 +171,7 @@ void Orbit::Propagate(const Time& timeDelta)
    m_elapsedPropagationTime += timeDelta;
 
    // Propagate from the reference orbital elements and update orbit type
-   m_propagator->Propagate(m_referenceStateVector, m_elapsedPropagationTime, m_mu, m_stateVector);
+   m_stateVector = m_propagator->Propagate(m_referenceStateVector, m_elapsedPropagationTime, m_mu);
 
    // Reset the cached state vector
    m_cachedStateVector = m_stateVector;
@@ -188,7 +188,7 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
    orbitalElements.trueAnomaly = trueAnomaly;
 
    // Set the new state vector from the orbital elements
-   SetStateVector(test::StateVector(orbitalElements));
+   SetStateVector(StateVector(orbitalElements));
 
    // Invalidate orbit properties
    m_orbitPropertiesDirty = true;
@@ -298,7 +298,7 @@ void Orbit::UpdateOrbitProperties() const
 }
 
 ////////////////////////////////////////////////////////////
-double ComputeOrbitRadius(const test::StateVector& stateVector)
+double ComputeOrbitRadius(const StateVector& stateVector)
 {
    double orbitRadius = 0.0;
 
@@ -325,7 +325,7 @@ double ComputeOrbitRadius(const test::StateVector& stateVector)
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Type ComputeOrbitType(const test::StateVector& stateVector, double mu)
+Orbit::Type ComputeOrbitType(const StateVector& stateVector, double mu)
 {
    Orbit::Type orbitType = Orbit::Type::Invalid;
 

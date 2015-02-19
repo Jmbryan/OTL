@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/LagrangianPropagator.h>
+#include <OTL/Core/Time.h>
+#include <OTL/Core/StateVector.h>
 
 namespace otl
 {
@@ -41,10 +43,10 @@ LagrangianPropagator::~LagrangianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-void LagrangianPropagator::VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector)
+StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
 {
    // Convert the state vector to cartesian state vector
-   const StateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
+   const CartesianStateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
 
    // Unpack the initial cartesian vectors and time duration in seconds
    const Vector3d& R1 = cartesianStateVector.position;
@@ -67,7 +69,7 @@ void LagrangianPropagator::VPropagate(const test::StateVector& initialStateVecto
    auto R2 = coeff.f    * R1 + coeff.g    * V1;
    auto V2 = coeff.fDot * R1 + coeff.gDot * V1;
 
-   finalStateVector = StateVector(R2, V2);
+   return StateVector(CartesianStateVector(R2, V2));
 }
 
 ////////////////////////////////////////////////////////////

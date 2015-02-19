@@ -81,12 +81,12 @@ public:
 protected:
    virtual void VInitialize() override;
    virtual EphemerisPointer VGetEphemeris() override;
-   virtual test::StateVector VQueryStateVector(const Epoch& epoch) override;
+   virtual StateVector VQueryStateVector(const Epoch& epoch) override;
    
 private:
    MpcorbEphemerisPointer m_ephemeris;
    Epoch m_referenceEpoch;
-   test::StateVector m_referenceStateVector;
+   StateVector m_referenceStateVector;
 };
 
 /// Convenience alias

@@ -23,10 +23,15 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.h>
+#include <OTL/Core/Export.h>
+#include <memory>
 
 namespace otl
 {
+
+// Forward declarations
+class Time;
+class StateVector;
 
 class OTL_CORE_API IPropagator
 {
@@ -41,24 +46,6 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~IPropagator();
 
-   test::StateVector Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu);
-   void Propagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector);
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Propagate the orbital elements in time
-   ///
-   /// Calculates the final orbital elements after propagating
-   /// forwards or backwards in time. Backwards propgation is
-   /// achieved by setting a negative timeDelta.
-   ///
-   /// \param initialOrbitalElements OrbitalElements before propagation
-   /// \param timeDelta Propgation time (may be negative)
-   /// \param mu Gravitational parameter of the central body
-   /// \returns OrbitalElements after propagation
-   ///
-   ////////////////////////////////////////////////////////////
-   OrbitalElements Propagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu);
-     
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
    ///
@@ -69,33 +56,12 @@ public:
    /// \param initialStateVector StateVector before propagation
    /// \param timeDelta Propgation time (may be negative)
    /// \param mu Gravitational parameter of the central body
-   /// \returns StateVector after propagation
+   /// \return StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
    StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
 
 protected:
-
-   virtual void VPropagate(const test::StateVector& initialStateVector, const Time& timeDelta, double mu, test::StateVector& finalStateVector) = 0;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Propagate the orbital elements in time
-   ///
-   /// Calculates the final orbital elements after propagating
-   /// forwards or backwards in time. Backwards propgation is
-   /// achieved by setting a negative timeDelta.
-   ///
-   /// This is a pure virtual function that must be re-implemented
-   /// by the derived class.
-   ///
-   /// \param initialOrbitalElements OrbitalElements before propagation
-   /// \param timeDelta Propgation time (may be negative)
-   /// \param mu Gravitational parameter of the central body
-   /// \returns OrbitalElements after propagation
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual OrbitalElements VPropagate(const OrbitalElements& initialOrbitalElements, const Time& timeDelta, double mu) = 0;
-
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
    ///
@@ -109,7 +75,7 @@ protected:
    /// \param initialStateVector StateVector before propagation
    /// \param timeDelta Propgation time (may be negative)
    /// \param mu Gravitational parameter of the central body
-   /// \returns StateVector after propagation
+   /// \return StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
    virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;

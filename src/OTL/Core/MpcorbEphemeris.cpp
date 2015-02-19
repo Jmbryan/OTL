@@ -24,11 +24,10 @@
 
 #include <OTL/Core/MpcorbEphemeris.h>
 #include <OTL/Core/Mpcorb/MpcorbEphemerisIO.h>
-#include <OTL/Core/Epoch.h>
+#include <OTL/Core/PhysicalProperties.h>
+#include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
-
-#include <OTL/Core/KeplerianPropagator.h>
 
 namespace otl
 {
@@ -39,8 +38,7 @@ static EphemerisDatabasePointer g_ephemerisDatabase;
 
 ////////////////////////////////////////////////////////////
 MpcorbEphemeris::MpcorbEphemeris(const std::string& dataFilename) :
-IEphemeris(),
-m_dataFilename(dataFilename),
+IEphemeris(dataFilename),
 m_propagator(new keplerian::KeplerianPropagator())
 {
 
@@ -53,60 +51,44 @@ MpcorbEphemeris::~MpcorbEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::SetDataFile(const std::string& dataFilename)
-{
-   m_dataFilename = dataFilename;
-}
-
-////////////////////////////////////////////////////////////
 void MpcorbEphemeris::SetPropagator(const PropagatorPointer& propagator)
 {
    m_propagator = propagator;
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::LoadDataFile(const std::string& dataFilename)
+StateVector MpcorbEphemeris::GetReferenceStateVector(const std::string& name)
 {
-   SetDataFile(dataFilename);
-   VLoad();
-}
-
-////////////////////////////////////////////////////////////
-test::StateVector MpcorbEphemeris::GetReferenceStateVector(const std::string& name)
-{
-   // TODO MpcorbEphemerisIO should return test::StateVector 
-   StateVector referenceStateVector;
    try
    {    
-      g_ephemerisDatabase->GetStateVector(name, referenceStateVector);
+      return g_ephemerisDatabase->GetStateVector(name);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while retrieving reference state vector for " << Bracket(name);
+      return StateVector();
    }
-   return test::StateVector(referenceStateVector);
 }
 
 ////////////////////////////////////////////////////////////
 Epoch MpcorbEphemeris::GetReferenceEpoch(const std::string& name)
 {
-   Epoch referenceEpoch;
    try
    {
-      g_ephemerisDatabase->GetEpoch(name, referenceEpoch);
+      return g_ephemerisDatabase->GetEpoch(name);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while retrieving reference epoch for " << Bracket(name);
+      return Epoch();
    }
-   return referenceEpoch;
 }
 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
 {
    // make_unique not supported in c++11
-   g_ephemerisDatabase = std::unique_ptr<MpcorbEphemerisIO>(new MpcorbEphemerisIO(m_dataFilename));
+   g_ephemerisDatabase = std::unique_ptr<MpcorbEphemerisIO>(new MpcorbEphemerisIO(GetDataFilename()));
    try
    {
       g_ephemerisDatabase->Initialize();
@@ -114,7 +96,7 @@ void MpcorbEphemeris::VLoad()
    catch (std::exception ex)
    {
       OTL_FATAL() << "Exception caught while trying to load ephemeris datafile " <<
-         Bracket(m_dataFilename) << ": " << Bracket(ex.what());
+         Bracket(GetDataFilename()) << ": " << Bracket(ex.what());
    }
 }
 
@@ -137,107 +119,28 @@ bool MpcorbEphemeris::VIsValidEpoch(const Epoch& epoch)
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetPosition(const std::string& name, const Epoch& epoch, Vector3d& position)
-{
-   // Get the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Return the position vector
-   position = stateVector.position;
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetVelocity(const std::string& name, const Epoch& epoch, Vector3d& velocity)
-{
-   // Get the state vector at the given epoch
-   StateVector stateVector;
-   VGetStateVector(name, epoch, stateVector);
-
-   // Return the velocity vector
-   velocity = stateVector.velocity;
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, StateVector& stateVector)
-{
-   //// Get the reference epoch and state vector
-   //try
-   //{
-   //   g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
-   //   g_ephemerisDatabase->GetStateVector(name, m_referenceStateVector);
-   //}
-   //catch (std::exception ex)
-   //{
-   //   OTL_ERROR() << "Exception caught while retrieving reference epoch and state vector for " << Bracket(name);
-   //   return;
-   //}
-
-   //// Time since the reference epoch
-   //auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
-   //
-   //// Propagate the state vector to the desired epoch
-   //if (m_propagator)
-   //{
-   //   stateVector = m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
-   //}
-   //else
-   //{
-   //   OTL_ERROR() << "Invalid propagator pointer";
-   //}
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch, OrbitalElements& orbitalElements)
-{
-   //// Get the reference epoch and orbital elements
-   //try
-   //{
-   //   g_ephemerisDatabase->GetEpoch(name, m_referenceEpoch);
-   //   g_ephemerisDatabase->GetOrbitalElements(name, m_referenceOrbitalElements);
-   //}
-   //catch (std::exception ex)
-   //{
-   //   OTL_ERROR() << "Exception caught while retrieving reference epoch and orbital elements for " << Bracket(name);
-   //   return;
-   //}
-
-   //// Time since the reference epoch
-   //auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
-
-   //// Propagate the state vector to the desired epoch
-   //if (m_propagator)
-   //{
-   //   orbitalElements = m_propagator->Propagate(m_referenceOrbitalElements, timeDelta, ASTRO_MU_SUN);
-   //}
-   //else
-   //{
-   //   OTL_ERROR() << "Invalid propagator pointer";
-   //}
-}
-
-////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetPhysicalProperties(const std::string& name, PhysicalProperties& physicalProperties)
+PhysicalProperties MpcorbEphemeris::VGetPhysicalProperties(const std::string& name)
 {
    try
    {
-      //g_ephemerisDatabase->GetPhysicalProperties(name, phyiscalProperties);
+      return g_ephemerisDatabase->GetPhysicalProperties(name);
    }
    catch (std::exception ex)
    {
       OTL_ERROR() << "Exception caught while retrieving physical properties for " << Bracket(name);
-      return;
-   }  
+   }
+
+   return PhysicalProperties();
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetGravitationalParameterCentralBody(const std::string& name, double& gravitationalParameterCentralBody)
+double MpcorbEphemeris::VGetGravitationalParameterCentralBody(const std::string& name)
 {
-   gravitationalParameterCentralBody = ASTRO_MU_SUN;
+   return ASTRO_MU_SUN;
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch, test::StateVector& stateVector)
+StateVector MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
 {
    // Get the reference epoch and state vector
    m_referenceEpoch = GetReferenceEpoch(name);
@@ -249,12 +152,14 @@ void MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoc
    // Propagate the state vector to the desired epoch
    if (m_propagator)
    {
-      m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN, stateVector);
+      return m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
    }
    else
    {
       OTL_ERROR() << "Invalid propagator pointer";
    }
+
+   return StateVector();
 }
 
 } // namespace otl

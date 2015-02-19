@@ -39,7 +39,7 @@ IEphemerisBody()
 ////////////////////////////////////////////////////////////
 JplApproximateBody::JplApproximateBody(const std::string& name,
                const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector(), epoch),
+IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(nullptr)
 {
 
@@ -49,7 +49,7 @@ m_ephemeris(nullptr)
 JplApproximateBody::JplApproximateBody(const std::string& name,
                const JplApproximateEphemerisPointer& ephemeris,
                const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, test::StateVector(OrbitalElements()), epoch),
+IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(OrbitalElements()), epoch),
 m_ephemeris(ephemeris)
 {
 
@@ -88,7 +88,6 @@ void JplApproximateBody::VInitialize()
    {
       m_ephemeris = std::make_shared<JplApproximateEphemeris>();
    }
-   m_ephemeris->Initialize();
 
    const auto& name = GetName();
    const auto& epoch = GetEpoch();
@@ -113,7 +112,7 @@ EphemerisPointer JplApproximateBody::VGetEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-test::StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
+StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
 {
    if (m_ephemeris)
    {
@@ -123,7 +122,7 @@ test::StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
    {
       OTL_ERROR() << "Failed to query state vector for planet " << Bracket(GetName())
          << ": Invalid ephemeris pointer.";
-      return test::StateVector();
+      return StateVector();
    }
 }
 

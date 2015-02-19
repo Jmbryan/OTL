@@ -6,7 +6,7 @@ const double TOL_PCT = 0.0001;
 
 TEST_CASE("StateVector2OrbitalElements, Conversion")
 {
-    otl::StateVector stateVector;
+    otl::CartesianStateVector stateVector;
     otl::OrbitalElements orbitalElements;
     double mu;
 
@@ -64,7 +64,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
 
 TEST_CASE("OrbitalElements2StateVector, Conversion")
 {
-    otl::StateVector stateVector;
+    otl::CartesianStateVector stateVector;
     otl::OrbitalElements orbitalElements;
     double mu;
 

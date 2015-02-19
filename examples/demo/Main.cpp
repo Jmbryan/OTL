@@ -15,7 +15,7 @@
 
 #include <OTL/Core/LambertExponentialSinusoid.h>
 #include <OTL/Core/JplApproximateEphemeris.h>
-#include <OTL/Core/JplEphemeris.h>
+//#include <OTL/Core/JplEphemeris.h>
 #include <OTL/Core/MpcorbEphemeris.h>
 #include <OTL/Core/SpiceEphemeris.h>
 
@@ -42,7 +42,7 @@ int main()
     gLogger.SetLogLevel(LogLevel::Info);
 
     // Sizes
-    if (false)
+    if (true)
     {
        // Base
        auto sizeofbool = sizeof(bool);
@@ -52,11 +52,12 @@ int main()
        auto sizeofdouble = sizeof(double);
 
        auto sizeofcoes = sizeof(OrbitalElements);
-       auto sizeofsv = sizeof(StateVector);
+       auto sizeofsv = sizeof(CartesianStateVector);
 
        // StateVector       
        auto sizeofvector6d = sizeof(Vector6d);
-       auto sizeofos = sizeof(test::StateVector);
+       auto sizeofos = sizeof(StateVector);
+       //auto sizeofos2 = sizeof(StateVector2);
 
        // Orbit
        auto sizeofprop = sizeof(PropagatorPointer);
@@ -78,131 +79,123 @@ int main()
     }
 
     // OTL Vector3, Matrix
-    if (false)
-    {
-       if (true)
+    if (true)
+    {      
+       int numIter = 100000;
+
+       std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+       double otlResult;
+       for (int iter = 0; iter < numIter; ++iter)
        {
-          test2::Vector3<double> v1(1.0, 2.0, 3.0);
-          test2::Vector3<double> v2(-2.0, 14.0, 60.0);
-          test2::Vector6<double> vv1(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+          test::Matrix<double, 2, 2> m22;
+          test::Matrix<double, 3, 3> m33;
+          test::Matrix<double, 4, 3> m43;
+          test::Matrix<double, 1, 3> rv1;
+          test::Matrix<double, 3, 1> v1;
+          test::Matrix<double, 3, 1> v2;
 
-          auto v1norm = v1.norm();
-          auto vv1norm = vv1.norm();
+          m22.fill(5.0);
+          m33.fill(33.0);
+          m43.fill(43.0);
+          rv1.fill(2.0);
+          v1.fill(1.0);
+          v2.fill(2.0);
 
+          m43(0, 0) = -10.0;
+          m43(1, 2) = 6.7;
+          m43(2, 0) = 12.6;
+          m43(3, 2) = 20.0;
+
+          v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
+          v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+
+          auto size = m22.GetSize();
+          auto squaredNorm = v2.squaredNorm();
+          auto norm = v2.norm();
           auto dot = v1.dot(v2);
           auto cross = v1.cross(v2);
-
-          auto v3 = v1 + v2;
-          v3 *= 1.0;
-          auto v4 = 0.5 * v3;
-
-          double d = 1.0;
+          auto v3 = v2.normalized();
+          bool isapprox = v1.isApprox(v2);
+          auto v4 = v1;
+          bool isapprox2 = v1.isApprox(v4);
+          v4 += v2;
+          auto v5 = v4 + v3;
+          auto v6 = m43 * v1;
+          auto m332 = v1 * rv1;
+          otlResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
        }
-       
-       if (true)
+       std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+       std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+       double eigenResult;
+       for (int iter = 0; iter < numIter; ++iter)
        {
-          int numIter = 10000;
+          Eigen::Matrix<double, 2, 2> m22;
+          Eigen::Matrix<double, 3, 3> m33;
+          Eigen::Matrix<double, 4, 3> m43;
+          Eigen::Matrix<double, 1, 3> rv1;
+          Eigen::Matrix<double, 3, 1> v1;
+          Eigen::Matrix<double, 3, 1> v2;
 
-          std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
-          double otlResult;
-          for (int iter = 0; iter < numIter; ++iter)
-          {
-             test3::Matrix<double, 2, 2> m22;
-             test3::Matrix<double, 3, 3> m33;
-             test3::Matrix<double, 4, 3> m43;
-             test3::Matrix<double, 1, 3> rv1;
-             test3::Matrix<double, 3, 1> v1;
-             test3::Matrix<double, 3, 1> v2;
+          m22.fill(5.0);
+          m33.fill(33.0);
+          m43.fill(43.0);
+          rv1.fill(2.0);
+          v1.fill(1.0);
+          v2.fill(2.0);
 
-             m22.fill(5.0);
-             m33.fill(33.0);
-             m43.fill(43.0);
-             rv1.fill(2.0);
-             v1.fill(1.0);
-             v2.fill(2.0);
+          m43(0, 0) = -10.0;
+          m43(1, 2) = 6.7;
+          m43(2, 0) = 12.6;
+          m43(3, 2) = 20.0;
 
-             m43(0, 0) = -10.0;
-             m43(1, 2) = 6.7;
-             m43(2, 0) = 12.6;
-             m43(3, 2) = 20.0;
+          v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
+          v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
 
-             v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
-             v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+          auto size = m22.size();// m22.GetSize();
+          auto squaredNorm = v2.squaredNorm();
+          auto norm = v2.norm();
+          auto dot = v1.dot(v2);
+          auto cross = v1.cross(v2);
+          auto v3 = v2.normalized();
+          bool isapprox = v1.isApprox(v2);
+          auto v4 = v1;
+          bool isapprox2 = v1.isApprox(v4);
+          v4 += v2;
+          auto v5 = v4 + v3;
+          auto v6 = m43 * v1;
+          auto m332 = v1 * rv1;
+          eigenResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
+       }
+       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
-             auto size = m22.GetSize();
-             auto squaredNorm = v2.squaredNorm();
-             auto norm = v2.norm();
-             auto dot = v1.dot(v2);
-             auto cross = v1.cross(v2);
-             auto v3 = v2.normalized();
-             bool isapprox = v1.isApprox(v2);
-             auto v4 = v1;
-             bool isapprox2 = v1.isApprox(v4);
-             v4 += v2;
-             auto v5 = v4 + v3;
-             auto v6 = m43 * v1;
-             auto m332 = v1 * rv1;
-             otlResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
-          }
-          std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+       auto duration1 = t2 - t1;
+       auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
 
-          std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
-          double eigenResult;
-          for (int iter = 0; iter < numIter; ++iter)
-          {
-             Eigen::Matrix<double, 2, 2> m22;
-             Eigen::Matrix<double, 3, 3> m33;
-             Eigen::Matrix<double, 4, 3> m43;
-             Eigen::Matrix<double, 1, 3> rv1;
-             Eigen::Matrix<double, 3, 1> v1;
-             Eigen::Matrix<double, 3, 1> v2;
+       auto duration2 = t4 - t3;
+       auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
 
-             m22.fill(5.0);
-             m33.fill(33.0);
-             m43.fill(43.0);
-             rv1.fill(2.0);
-             v1.fill(1.0);
-             v2.fill(2.0);
+       double d = 1.0;
+       std::cout << "OTL matrix: " << milli1.count() << " ms. Eigen matrix: " << milli2.count() << " ms." << std::endl;
+       std::cin.get();
+       return 0;
+    }
 
-             m43(0, 0) = -10.0;
-             m43(1, 2) = 6.7;
-             m43(2, 0) = 12.6;
-             m43(3, 2) = 20.0;
+    // StateVector2
+    if (false)
+    {
+       //test::CartesianStateVector cartesianStateVector(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+       //StateVector2 stateVector(cartesianStateVector);
 
-             v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
-             v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+       //const auto& state = stateVector.GetCartesianStateVector();
 
-             auto size = m22.size();// m22.GetSize();
-             auto squaredNorm = v2.squaredNorm();
-             auto norm = v2.norm();
-             auto dot = v1.dot(v2);
-             auto cross = v1.cross(v2);
-             auto v3 = v2.normalized();
-             bool isapprox = v1.isApprox(v2);
-             auto v4 = v1;
-             bool isapprox2 = v1.isApprox(v4);
-             v4 += v2;
-             auto v5 = v4 + v3;
-             auto v6 = m43 * v1;
-             auto m332 = v1 * rv1;
-             eigenResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
-          }
-          std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
-
-          auto duration1 = t2 - t1;
-          auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
-
-          auto duration2 = t4 - t3;
-          auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
-
-          double d = 1.0;
-       }     
+       //double d = 1.0;
     }
 
     if (false)
     {
-       test::StateVector stateVector;
-       stateVector = StateVector(
+       StateVector stateVector;
+       stateVector = CartesianStateVector(
           Vector3d(6524.834, 6862.875, 6448.296),
           Vector3d(4.901327, 5.533756, -1.976341));
        double mu = otl::ASTRO_MU_EARTH;
@@ -228,8 +221,8 @@ int main()
     // Eccentricity test
     if (false)
     {
-       test::StateVector stateVector;
-       stateVector = StateVector(
+       StateVector stateVector;
+       stateVector = CartesianStateVector(
           Vector3d(6524.834, 6862.875, 6448.296),
           Vector3d(4.901327, 5.533756, -1.976341));
        double mu = otl::ASTRO_MU_EARTH;
@@ -276,27 +269,26 @@ int main()
     {
        static int counter = 0;
        counter++;
-       test::StateVector* psv = new test::StateVector();
+       StateVector* psv = new StateVector();
 
        auto currentDirectory = gSystem.GetCurrentDirectory();
-       auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
-       auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
+       //auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
+       //auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
-       auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
-       auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
-       spiceEphemeris->Initialize();
+       auto spiceEphemeris = std::make_shared<SpiceEphemeris>();
+       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp");
        spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\gm_de431.tpc");
        spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\pck00010.tpc");
 
        auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
 
-       MpcorbBody p("Ceres", mpcorbEphemeris);
+       //MpcorbBody p("Ceres", mpcorbEphemeris);
 
        //SpiceBody p("Earth", spiceEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
 
-       //Planet p("Earth");
+       Planet p("Earth");
        //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
@@ -343,7 +335,7 @@ int main()
 
        //OrbitalElements coes0(1000, 0.1, 3.14, 0, 0, 0), coesf;
        //StateVector sv0(1, 2, 3, 4, 5, 6), svf;
-       //otl::test::StateVector stateVector;
+       //otl::StateVector stateVector;
 
        //stateVector = coes0;
        //auto type1 = stateVector.GetType();
@@ -430,11 +422,11 @@ int main()
     std::cout << coes << std::endl;
     std::cout << coes.ToDetailedString() << std::endl;
 
-    StateVector sv{ -6045, -3490, 2500, -3.457, 6.618, 2.533};
+    CartesianStateVector sv{ -6045, -3490, 2500, -3.457, 6.618, 2.533};
     std::cout << sv << std::endl;
     std::cout << sv.ToDetailedString() << std::endl;
 
-    keplerian::Orbit orbit(ASTRO_MU_EARTH, test::StateVector(sv));
+    keplerian::Orbit orbit(ASTRO_MU_EARTH, StateVector(sv));
     //orbit.UseStateVectorForStringOutput(true);
     std::cout << orbit << std::endl;
     std::cout << orbit.ToDetailedString() << std::endl;
@@ -490,16 +482,15 @@ int main()
        auto dataDirectory = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405";
        auto outputFilename = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405_test.data";
 
-       JplEphemeris jplEphemeris("");
-       jplEphemeris.SetDataDirectory(dataDirectory);
-       jplEphemeris.CreateEphemerisFile(Epoch::Gregorian(startDate), Epoch::Gregorian(endDate), outputFilename);
-       jplEphemeris.SetDataFile(outputFilename);
-
+       //JplEphemeris jplEphemeris("");
+       //jplEphemeris.SetDataDirectory(dataDirectory);
+       //jplEphemeris.CreateEphemerisFile(Epoch::Gregorian(startDate), Epoch::Gregorian(endDate), outputFilename);
+       //jplEphemeris.SetDataFile(outputFilename);
 
        GregorianDateTime testDate = startDate;
        testDate.year = static_cast<int>(0.5 * (startDate.year + endDate.year));
-       StateVector stateVector;
-       jplEphemeris.GetStateVector("Earth", Epoch::Gregorian(testDate), stateVector);
+       CartesianStateVector stateVector;
+       //jplEphemeris.GetStateVector("Earth", Epoch::Gregorian(testDate), stateVector);
 
        double d = 1.0;
     }
@@ -510,7 +501,7 @@ int main()
 
        auto propagator = std::make_shared<keplerian::KeplerianPropagator>();
 
-       StateVector stateVector, finalStateVector1, finalStateVector2, finalStateVector3, finalStateVector4;
+       CartesianStateVector stateVector, finalStateVector1, finalStateVector2, finalStateVector3, finalStateVector4;
        stateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423);            // [km]
        stateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);               // [km/s]
        double mu = otl::ASTRO_MU_EARTH;                                                // [km^3/s^2]
@@ -533,7 +524,7 @@ int main()
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          propagator->PropagateK(orbitalElements, mu, timeDelta, finalOrbitalElements1);
+          //propagator->PropagateK(orbitalElements, mu, timeDelta, finalOrbitalElements1);
           finalStateVector1 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements1, mu);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
@@ -542,7 +533,7 @@ int main()
        std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          propagator->PropagateK(stateVector, mu, timeDelta, finalStateVector2);
+          //propagator->PropagateK(stateVector, mu, timeDelta, finalStateVector2);
        }
        std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
@@ -550,7 +541,7 @@ int main()
        std::chrono::system_clock::time_point t5 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          finalOrbitalElements2 = propagator->Propagate(orbitalElements, timeDelta, mu);
+          //finalOrbitalElements2 = propagator->Propagate(orbitalElements, timeDelta, mu);
           finalStateVector3 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements2, mu);
        }
        std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
@@ -559,7 +550,7 @@ int main()
        std::chrono::system_clock::time_point t7 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          finalStateVector4 = propagator->Propagate(stateVector, timeDelta, mu);
+          //finalStateVector4 = propagator->Propagate(stateVector, timeDelta, mu);
        }
        std::chrono::system_clock::time_point t8 = std::chrono::system_clock::now();
 
@@ -819,7 +810,7 @@ int main()
 
        Vector3d position;
        Vector3d velocity;
-       StateVector stateVector1, stateVector2, stateVector3, stateVector4;
+       CartesianStateVector stateVector1, stateVector2, stateVector3, stateVector4;
        OrbitalElements orbitalElements1, orbitalElements2, orbitalElements3, orbitalElements4;
 
        auto planetName = "Earth";
@@ -828,19 +819,19 @@ int main()
 
        auto approxDataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\approx\\approx3000_3000.data";
        auto jplApproxEphemeris = std::make_shared<JplApproximateEphemeris>(approxDataFile);
-       jplApproxEphemeris->GetStateVector(planetName, epoch, stateVector1);
-       jplApproxEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements1);
+       //jplApproxEphemeris->GetStateVector(planetName, epoch, stateVector1);
+       //jplApproxEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements1);
 
-       auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
-       auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
-       jplEphemeris->GetStateVector(planetName, epoch, stateVector2);
-       jplEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements2);
+       //auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
+       //auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
+       //jplEphemeris->GetStateVector(planetName, epoch, stateVector2);
+       //jplEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements2);
 
 #if defined(OTL_SPICE)
        auto kernalFile = currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp";
        auto spiceEphemeris = std::make_shared<SpiceEphemeris>(kernalFile);
-       spiceEphemeris->GetStateVector(planetName, epoch, stateVector3);
-       spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
+       //spiceEphemeris->GetStateVector(planetName, epoch, stateVector3);
+       //spiceEphemeris->GetOrbitalElements(planetName, epoch, orbitalElements3);
 #endif
 
        //auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
