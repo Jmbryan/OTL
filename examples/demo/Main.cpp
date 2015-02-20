@@ -79,9 +79,9 @@ int main()
     }
 
     // OTL Vector3, Matrix
-    if (true)
+    if (false)
     {      
-       int numIter = 100000;
+       int numIter = 1000000;
 
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        double otlResult;
@@ -109,20 +109,22 @@ int main()
           v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
           v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
 
-          auto size = m22.GetSize();
-          auto squaredNorm = v2.squaredNorm();
-          auto norm = v2.norm();
-          auto dot = v1.dot(v2);
-          auto cross = v1.cross(v2);
-          auto v3 = v2.normalized();
-          bool isapprox = v1.isApprox(v2);
-          auto v4 = v1;
-          bool isapprox2 = v1.isApprox(v4);
-          v4 += v2;
-          auto v5 = v4 + v3;
-          auto v6 = m43 * v1;
-          auto m332 = v1 * rv1;
-          otlResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
+          //int size = m22.GetSize();
+          //double squaredNorm = v2.squaredNorm();
+          //double norm = v2.norm();
+          //double dot = v1.dot(v2);
+          //auto cross = v1.cross(v2);
+          //auto v3 = v2.normalized();
+          //bool isapprox = v1.isApprox(v2);
+          //auto v4 = v1;
+          //bool isapprox2 = v1.isApprox(v4);
+          //v4 += v2;
+          //auto v5 = v4 + v3;
+          //auto v6 = m43 * v1;
+          //auto m332 = v1 * rv1;
+          //otlResult = ((m33 * v1 * rv1) * v5).cross(v1 * rv1 * v2).cross(m33 * v1).dot(v1 * rv1 * v3);
+
+          otlResult = (m33 * (m33 * v1).cross(m33 * v2).cross(v1 * rv1 * v2) * v1.dot(v2)).norm();
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
@@ -152,20 +154,22 @@ int main()
           v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
           v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
 
-          auto size = m22.size();// m22.GetSize();
-          auto squaredNorm = v2.squaredNorm();
-          auto norm = v2.norm();
-          auto dot = v1.dot(v2);
-          auto cross = v1.cross(v2);
-          auto v3 = v2.normalized();
-          bool isapprox = v1.isApprox(v2);
-          auto v4 = v1;
-          bool isapprox2 = v1.isApprox(v4);
-          v4 += v2;
-          auto v5 = v4 + v3;
-          auto v6 = m43 * v1;
-          auto m332 = v1 * rv1;
-          eigenResult = ((m33 * m332) * v5).cross(m332 * v2).cross(m33 * v1).dot(m332 * v3);
+          //int size = m22.size();// m22.GetSize();
+          //double squaredNorm = v2.squaredNorm();
+          //double norm = v2.norm();
+          //double dot = v1.dot(v2);
+          //Eigen::Matrix<double, 3, 1> cross = v1.cross(v2);
+          //Eigen::Matrix<double, 3, 1> v3 = v2.normalized();
+          //bool isapprox = v1.isApprox(v2);
+          //Eigen::Matrix<double, 3, 1> v4 = v1;
+          //bool isapprox2 = v1.isApprox(v4);
+          //v4 += v2;
+          //Eigen::Matrix<double, 3, 1> v5 = v4 + v3;
+          //Eigen::Matrix<double, 4, 1> v6 = m43 * v1;
+          //Eigen::Matrix<double, 3, 3> m332 = v1 * rv1;
+          //eigenResult = ((m33 * v1 * rv1) * v5).cross(v1 * rv1 * v2).cross(m33 * v1).dot(v1 * rv1 * v3);
+
+          eigenResult = (m33 * (m33 * v1).cross(m33 * v2).cross(v1 * rv1 * v2) * v1.dot(v2)).norm();
        }
        std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
@@ -176,9 +180,9 @@ int main()
        auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
 
        double d = 1.0;
-       std::cout << "OTL matrix: " << milli1.count() << " ms. Eigen matrix: " << milli2.count() << " ms." << std::endl;
+       std::cout << "OTL result: " << otlResult << ", Eigen result: " << eigenResult <<  std::endl;
+       std::cout << "OTL time: " << milli1.count() << " ms, Eigen time: " << milli2.count() << std::endl;
        std::cin.get();
-       return 0;
     }
 
     // StateVector2
@@ -297,7 +301,7 @@ int main()
        auto mu00 = p.GetGravitationalParameterCentralBody();
        auto sv00 = p.GetStateVector();
 
-       int numIter = 10000;
+       int numIter = 100000;
        auto epoch = Epoch::MJD2000(10.0);
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
@@ -328,6 +332,8 @@ int main()
        auto csv = p.GetCartesianStateVector();
 
        double dd = 1.0;
+       std::cout << "Propagate time: " << milli1.count() << " ms, Query time: " << milli2.count() << " ms." << std::endl;
+       std::cin.get();
 
        //int numKernals = spiceEphemeris->GetNumKernalsLoaded();
        //double muc = spiceEphemeris->GetBodyProperty("Sun", "GM");
