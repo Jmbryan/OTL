@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-//#include <OTL/Core/CartesianStateVector.h>
-//#include <OTL/Core/OrbitalElements.h>
-
 #include <OTL/Core/Matrix.h>
 #include <vector>
 
@@ -50,17 +47,21 @@ enum class StateVectorType
 class StateVector
 {
 public:
+   //typedef boost::variant<Vector6d, CartesianStateVector, OrbitalElements> State;
+   //typedef std::shared_ptr<Vector6d> StatePtr;
+
    StateVector();
    StateVector(const StateVector& other);
    StateVector(const StateVector&& other);
-   //explicit StateVector(const Vector6d& genericStateVector);
+   StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
+   StateVector(const Vector6d& genericStateVector);
    explicit StateVector(const OrbitalElements& orbitalElements);
    explicit StateVector(const CartesianStateVector& cartesianStateVector);
    ~StateVector();
 
    StateVector& operator =(const StateVector& other);
    StateVector& operator =(const StateVector&& other);
-   //StateVector& operator =(const Vector6d& genericStateVector);
+   StateVector& operator =(const Vector6d& genericStateVector);
    StateVector& operator =(const CartesianStateVector& cartesianStateVector);
    StateVector& operator =(const OrbitalElements& orbitalElements);
 
@@ -70,14 +71,16 @@ public:
    //const double* GetState() const;
    //std::vector<double> GetState() const;
    const Vector6d& GetState() const;
+   //const State& GetState() const;
+   //const StatePtr& GetState() const;
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 
    CartesianStateVector ToCartesianStateVector(double mu) const;
    OrbitalElements ToOrbitalElements(double mu) const;
 
-   double GetX() const;
-   double GetSemimajorAxis() const;
+   //double GetX() const;
+   //double GetSemimajorAxis() const;
 
    //void Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType);
 
@@ -87,6 +90,8 @@ private:
    //double m_state[6];
    //std::vector<double> m_state;
    Vector6d m_state;
+   //State m_state;
+   //StatePtr m_state;
 };
 
 //namespace test

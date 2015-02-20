@@ -70,7 +70,7 @@ public:
    /// \return PhysicalProperties of the body
    ///
    ////////////////////////////////////////////////////////////
-   virtual PhysicalProperties GetPhysicalProperties() const override;
+   virtual const PhysicalProperties& GetPhysicalProperties() const override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbit of the body
@@ -81,7 +81,7 @@ public:
    /// \return Current Orbit of the body
    ///
    ////////////////////////////////////////////////////////////
-   virtual keplerian::Orbit GetOrbit() const override;
+   virtual const keplerian::Orbit& GetOrbit() const override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the body in time using ephemeris and propagation
@@ -142,7 +142,7 @@ public:
    /// \returns StateVector of the body
    ///
    ////////////////////////////////////////////////////////////
-   StateVector QueryStateVector(const Epoch& epoch);
+   const StateVector& QueryStateVector(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Force initialization of ephemeris body

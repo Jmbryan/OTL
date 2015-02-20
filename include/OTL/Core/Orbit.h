@@ -179,7 +179,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   StateVector GetStateVector() const;
+   const StateVector& GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the radius of the orbit
@@ -211,7 +211,7 @@ public:
    /// \return Elapsed propagation Time
    ///
    ////////////////////////////////////////////////////////////
-   Time GetElapsedPropagationTime() const;
+   const Time& GetElapsedPropagationTime() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Is the orbit of this type

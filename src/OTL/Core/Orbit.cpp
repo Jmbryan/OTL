@@ -127,7 +127,7 @@ OrbitalElements Orbit::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
-StateVector Orbit::GetStateVector() const
+const StateVector& Orbit::GetStateVector() const
 {
    return m_stateVector;
 }
@@ -153,7 +153,7 @@ Orbit::Type Orbit::GetOrbitType() const
 }
 
 ////////////////////////////////////////////////////////////
-Time Orbit::GetElapsedPropagationTime() const
+const Time& Orbit::GetElapsedPropagationTime() const
 {
    return m_elapsedPropagationTime;
 }

@@ -55,10 +55,16 @@ StateVector::StateVector(const StateVector&& other)
    *this = std::move(other);
 }
 
-//StateVector::StateVector(const Vector6d& genericStateVector)
-//{
-//   *this = genericStateVector;
-//}
+StateVector::StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type) :
+m_type(type)
+{
+   m_state << x1, x2, x3, x4, x5, x6;
+}
+
+StateVector::StateVector(const Vector6d& genericStateVector)
+{
+   *this = genericStateVector;
+}
 
 StateVector::StateVector(const OrbitalElements& orbitalElements)
 {
@@ -116,36 +122,50 @@ StateVector& StateVector::operator =(const StateVector&& other)
    return *this;
 }
 
-//StateVector& StateVector::operator =(const Vector6d& genericStateVector)
-//{
-//   m_type = StateVectorType::Generic;
-//   m_state = genericStateVector;
-//   return *this;
-//}
+StateVector& StateVector::operator =(const Vector6d& genericStateVector)
+{
+   m_type = StateVectorType::Generic;
+   m_state = genericStateVector;
+   return *this;
+}
 
 StateVector& StateVector::operator =(const CartesianStateVector& cartesianStateVector)
 {
    m_type = StateVectorType::Cartesian;
-   //m_state.segment(0, 3) = cartesianStateVector.position;
-   //m_state.segment(3, 3) = cartesianStateVector.velocity;
-   m_state[0] = cartesianStateVector.position.x();
-   m_state[1] = cartesianStateVector.position.y();
-   m_state[2] = cartesianStateVector.position.z();
-   m_state[3] = cartesianStateVector.velocity.x();
-   m_state[4] = cartesianStateVector.velocity.y();
-   m_state[5] = cartesianStateVector.velocity.z();
+   //if (!m_state)
+   //   m_state = std::make_shared<Vector6d>();
+      //m_state = std::make_shared<Vector6d>(cartesianStateVector.position, cartesianStateVector.velocity);
+   m_state.segment(0, 3) = cartesianStateVector.position;
+   m_state.segment(3, 3) = cartesianStateVector.velocity;
+   
+   //m_state[0] = cartesianStateVector.position.x();
+   //m_state[1] = cartesianStateVector.position.y();
+   //m_state[2] = cartesianStateVector.position.z();
+   //m_state[3] = cartesianStateVector.velocity.x();
+   //m_state[4] = cartesianStateVector.velocity.y();
+   //m_state[5] = cartesianStateVector.velocity.z();
+   //m_state = cartesianStateVector;
    return *this;
 }
 
 StateVector& StateVector::operator =(const OrbitalElements& orbitalElements)
 {
    m_type = StateVectorType::Orbital;
+   //if (!m_state)
+   //   m_state = std::make_shared<Vector6d>();
+      //orbitalElements.semiMajorAxis,
+      //orbitalElements.eccentricity,
+      //orbitalElements.trueAnomaly,
+      //orbitalElements.inclination,
+      //orbitalElements.argOfPericenter,
+      //orbitalElements.lonOfAscendingNode);
    m_state[0] = orbitalElements.semiMajorAxis;
    m_state[1] = orbitalElements.eccentricity;
    m_state[2] = orbitalElements.trueAnomaly;
    m_state[3] = orbitalElements.inclination;
    m_state[4] = orbitalElements.argOfPericenter;
    m_state[5] = orbitalElements.lonOfAscendingNode;
+   //m_state = orbitalElements;
    return *this;
 }
 
@@ -174,17 +194,29 @@ const Vector6d& StateVector::GetState() const
    return m_state;
 }
 
+//const StateVector::State& StateVector::GetState() const
+//{
+//   return m_state;
+//}
+
+//const StateVector::StatePtr& StateVector::GetState() const
+//{
+//   return m_state;
+//}
+
 CartesianStateVector StateVector::GetCartesianStateVector() const
 {
    OTL_ASSERT(m_type == StateVectorType::Cartesian, "Invalid state vector type");
-   //return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
-   return CartesianStateVector(Vector3d(m_state[0], m_state[1], m_state[2]), Vector3d(m_state[3], m_state[4], m_state[5]));
+   return CartesianStateVector(m_state.segment(0, 3), m_state.segment(3, 3));
+   //return CartesianStateVector(Vector3d(m_state[0], m_state[1], m_state[2]), Vector3d(m_state[3], m_state[4], m_state[5]));
+   //return boost::get<CartesianStateVector>(m_state);
 }
 
 OrbitalElements StateVector::GetOrbitalElements() const
 {
    OTL_ASSERT(m_type == StateVectorType::Orbital, "Invalid state vector type");
    return OrbitalElements(m_state[0], m_state[1], m_state[2], m_state[3], m_state[4], m_state[5]);
+   //return boost::get<OrbitalElements>(m_state);
 }
 
 CartesianStateVector StateVector::ToCartesianStateVector(double mu) const
@@ -226,17 +258,17 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
    }
 }
 
-double StateVector::GetX() const
-{
-   OTL_ASSERT(m_type == StateVectorType::Cartesian);
-   return m_state[0];
-}
-
-double StateVector::GetSemimajorAxis() const
-{
-   OTL_ASSERT(m_type == StateVectorType::Orbital);
-   return m_state[0];
-}
+//double StateVector::GetX() const
+//{
+//   OTL_ASSERT(m_type == StateVectorType::Cartesian);
+//   return m_state[0];
+//}
+//
+//double StateVector::GetSemimajorAxis() const
+//{
+//   OTL_ASSERT(m_type == StateVectorType::Orbital);
+//   return m_state[0];
+//}
 
 //void StateVector::Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType)
 //{

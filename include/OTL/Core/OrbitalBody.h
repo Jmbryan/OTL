@@ -79,7 +79,7 @@ public:
    /// \return Name of the orbital body 
    ///
    ////////////////////////////////////////////////////////////
-   std::string GetName() const;
+   const std::string& GetName() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the physical properties of the orbital body
@@ -87,7 +87,7 @@ public:
    /// \return PhysicalProperties of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual PhysicalProperties GetPhysicalProperties() const;
+   virtual const PhysicalProperties& GetPhysicalProperties() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbit of the orbital body
@@ -95,7 +95,7 @@ public:
    /// \return Current Orbit of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual keplerian::Orbit GetOrbit() const;
+   virtual const keplerian::Orbit& GetOrbit() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current epoch of the orbital body
@@ -103,7 +103,7 @@ public:
    /// \return Current Epoch of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual Epoch GetEpoch() const;
+   virtual const Epoch& GetEpoch() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current state vector of the orbital body
@@ -114,7 +114,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   StateVector GetStateVector() const;
+   const StateVector& GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current cartesian state vector of the orbital body

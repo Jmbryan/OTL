@@ -37,6 +37,17 @@
 
 using namespace otl;
 
+template <typename VectorType>
+struct VectorAddition
+{
+   typedef VectorType ReturnType;
+   EIGEN_DONT_INLINE static VectorType run()
+   {
+      VectorType a, b, c, d;
+      return a + b + c + d;
+   }
+};
+
 int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);
@@ -153,6 +164,8 @@ int main()
 
           v1.x() = 1.0; v1.y() = 2.0; v1.z() = 3.0;
           v2.x() = -2.0; v2.y() = 14.0; v2.z() = 60.0;
+
+          Eigen::Vector4f res = VectorAddition<Eigen::Vector4f>::run();
 
           //int size = m22.size();// m22.GetSize();
           //double squaredNorm = v2.squaredNorm();
@@ -333,7 +346,7 @@ int main()
 
        double dd = 1.0;
        std::cout << "Propagate time: " << milli1.count() << " ms, Query time: " << milli2.count() << " ms." << std::endl;
-       std::cin.get();
+       //std::cin.get();
 
        //int numKernals = spiceEphemeris->GetNumKernalsLoaded();
        //double muc = spiceEphemeris->GetBodyProperty("Sun", "GM");

@@ -56,7 +56,7 @@ IEphemerisBody::~IEphemerisBody()
 }
 
 ////////////////////////////////////////////////////////////
-PhysicalProperties IEphemerisBody::GetPhysicalProperties() const
+const PhysicalProperties& IEphemerisBody::GetPhysicalProperties() const
 {
    if (!m_initialized)
    {
@@ -66,7 +66,7 @@ PhysicalProperties IEphemerisBody::GetPhysicalProperties() const
 }
 
 ////////////////////////////////////////////////////////////
-keplerian::Orbit IEphemerisBody::GetOrbit() const
+const keplerian::Orbit& IEphemerisBody::GetOrbit() const
 {
    if (!m_initialized)
    {
@@ -126,7 +126,7 @@ std::string IEphemerisBody::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
-StateVector IEphemerisBody::QueryStateVector(const Epoch& epoch)
+const StateVector& IEphemerisBody::QueryStateVector(const Epoch& epoch)
 {
    if (!m_initialized)
    {

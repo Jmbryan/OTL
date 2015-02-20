@@ -64,19 +64,19 @@ void OrbitalBody::SetPropagator(const PropagatorPointer& propagator)
 }
 
 ////////////////////////////////////////////////////////////
-std::string OrbitalBody::GetName() const
+const std::string& OrbitalBody::GetName() const
 {
    return m_name;
 }
 
 ////////////////////////////////////////////////////////////
-PhysicalProperties OrbitalBody::GetPhysicalProperties() const
+const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
 {
    return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
-Epoch OrbitalBody::GetEpoch() const
+const Epoch& OrbitalBody::GetEpoch() const
 {
    return m_epoch;
 }
@@ -94,13 +94,13 @@ OrbitalElements OrbitalBody::GetOrbitalElements() const
 }
 
 ////////////////////////////////////////////////////////////
-StateVector OrbitalBody::GetStateVector() const
+const StateVector& OrbitalBody::GetStateVector() const
 {
    return GetOrbit().GetStateVector();
 }
 
 ////////////////////////////////////////////////////////////
-keplerian::Orbit OrbitalBody::GetOrbit() const
+const keplerian::Orbit& OrbitalBody::GetOrbit() const
 {
    return m_orbit;
 }
