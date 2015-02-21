@@ -105,16 +105,15 @@ StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, c
    // Convert eccentric anomaly to true anomaly (radians)
    double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
 
-   // Package the orbital elements after converting to standard units (km, rad)
-   OrbitalElements orbitalElements;
-   orbitalElements.semiMajorAxis       = a         * ASTRO_AU_TO_KM;
-   orbitalElements.eccentricity        = e;
-   orbitalElements.trueAnomaly         = ta;
-   orbitalElements.inclination         = I         * MATH_DEG_TO_RAD;
-   orbitalElements.lonOfAscendingNode  = longNode  * MATH_DEG_TO_RAD;
-   orbitalElements.argOfPericenter     = w         * MATH_DEG_TO_RAD;
-
-   return StateVector(orbitalElements);
+   // Return the state vector in Orbital format after converting to standard units (km, rad)
+   return StateVector(
+      a         * ASTRO_AU_TO_KM,
+      e,
+      ta,
+      I         * MATH_DEG_TO_RAD,
+      longNode  * MATH_DEG_TO_RAD,
+      w         * MATH_DEG_TO_RAD,
+      StateVectorType::Orbital);
 }
 
 ////////////////////////////////////////////////////////////

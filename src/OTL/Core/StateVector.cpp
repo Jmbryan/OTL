@@ -31,8 +31,8 @@ namespace otl
 {
 
 StateVector::StateVector() :
-m_type(StateVectorType::Invalid),
-m_state()
+m_state(),
+m_type(StateVectorType::Invalid)
 //m_state(6, 0.0)
 {
    //m_state = new double[6];
@@ -45,25 +45,45 @@ m_state()
    //std::fill(m_state, m_state + 6, 0.0);
 }
 
-StateVector::StateVector(const StateVector& other)
+StateVector::StateVector(const StateVector& other) :
+m_state(other.GetState()),
+m_type(other.GetType())
 {
-   *this = other;
+   //*this = other;
 }
 
-StateVector::StateVector(const StateVector&& other)
+StateVector::StateVector(const StateVector&& other) :
+m_state(std::move(other.GetState())),
+m_type(std::move(other.GetType()))
 {
-   *this = std::move(other);
+   //*this = std::move(other);
 }
 
 StateVector::StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type) :
+m_state(x1, x2, x3, x4, x5, x6),
 m_type(type)
 {
-   m_state << x1, x2, x3, x4, x5, x6;
+   //Set(x1, x2, x3, x4, x5, x6, type);
 }
 
-StateVector::StateVector(const Vector6d& genericStateVector)
+StateVector::StateVector(const Vector3d& state1, const Vector3d& state2, const StateVectorType& type) :
+m_state()
 {
-   *this = genericStateVector;
+
+}
+
+StateVector::StateVector(const Vector6d& state, const StateVectorType& type) :
+m_state(state),
+m_type(type)
+{
+   //Set(state, type);
+}
+
+StateVector::StateVector(double* state, const StateVectorType& type) :
+m_state(state),
+m_type(type)
+{
+
 }
 
 StateVector::StateVector(const OrbitalElements& orbitalElements)
@@ -122,12 +142,12 @@ StateVector& StateVector::operator =(const StateVector&& other)
    return *this;
 }
 
-StateVector& StateVector::operator =(const Vector6d& genericStateVector)
-{
-   m_type = StateVectorType::Generic;
-   m_state = genericStateVector;
-   return *this;
-}
+//StateVector& StateVector::operator =(const Vector6d& state)
+//{
+//   m_type = StateVectorType::Generic;
+//   m_state = genericStateVector;
+//   return *this;
+//}
 
 StateVector& StateVector::operator =(const CartesianStateVector& cartesianStateVector)
 {
@@ -270,11 +290,28 @@ OrbitalElements StateVector::ToOrbitalElements(double mu) const
 //   return m_state[0];
 //}
 
-//void StateVector::Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType)
-//{
-//   m_state = genericStateVector;
-//   m_type = stateVectorType;
-//}
+void StateVector::Set(double state[], int size, const StateVectorType& type)
+{
+   OTL_ASSERT(size == 6, "State vector must be 6 dimensional");
+   m_state << state[0], state[1], state[2], state[3], state[4], state[5], state[6];
+   //for (int i = 0; i < size; ++i)
+   //{ 
+   //   m_state[i] = state[i];
+   //}
+   m_type = type;
+}
+
+void StateVector::Set(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type)
+{
+   m_state << x1, x2, x3, x4, x5, x6;
+   m_type = type;
+}
+
+void StateVector::Set(const Vector6d& state, const StateVectorType& type)
+{
+   m_state = state;
+   m_type = type;
+}
 
 //namespace test
 // {

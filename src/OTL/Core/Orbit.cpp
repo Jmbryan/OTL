@@ -183,6 +183,17 @@ void Orbit::Propagate(const Time& timeDelta)
 ////////////////////////////////////////////////////////////
 void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 {
+   //if (m_stateVector.GetType() == StateVectorType::Orbital)
+   //{
+   //   m_stateVector.Set(2, trueAnomaly);
+   //}
+   //else
+   //{
+   //   auto orbitalElements = GetOrbitalElements();
+   //   orbitalElements.trueAnomaly = trueAnomaly;
+   //   m_stateVector = orbitalElements;
+   //}
+
    // Retrieve the current orbital elements and update the true anomaly
    auto orbitalElements = GetOrbitalElements();
    orbitalElements.trueAnomaly = trueAnomaly;

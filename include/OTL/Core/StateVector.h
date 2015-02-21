@@ -24,6 +24,7 @@
 
 #pragma once
 #include <OTL/Core/Matrix.h>
+#include <OTL/Core/Logger.h>
 #include <vector>
 
 //#include <boost/variant.hpp>
@@ -54,14 +55,23 @@ public:
    StateVector(const StateVector& other);
    StateVector(const StateVector&& other);
    StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
-   StateVector(const Vector6d& genericStateVector);
+   StateVector(const Vector3d& , const Vector3d& b, const StateVectorType& type);
+   StateVector(const Vector6d& state, const StateVectorType& type);
+   StateVector(double* state, const StateVectorType& type);
    explicit StateVector(const OrbitalElements& orbitalElements);
    explicit StateVector(const CartesianStateVector& cartesianStateVector);
+   template<typename T>
+   StateVector(const T& container, const StateVectorType& type) :
+   m_state(container.data()),
+   m_type(type)
+   {
+
+   }
    ~StateVector();
 
    StateVector& operator =(const StateVector& other);
    StateVector& operator =(const StateVector&& other);
-   StateVector& operator =(const Vector6d& genericStateVector);
+   //StateVector& operator =(const Vector6d& genericStateVector);
    StateVector& operator =(const CartesianStateVector& cartesianStateVector);
    StateVector& operator =(const OrbitalElements& orbitalElements);
 
@@ -79,19 +89,34 @@ public:
    CartesianStateVector ToCartesianStateVector(double mu) const;
    OrbitalElements ToOrbitalElements(double mu) const;
 
-   //double GetX() const;
-   //double GetSemimajorAxis() const;
 
-   //void Set(const Vector6d& genericStateVector, const StateVectorType& stateVectorType);
+   template<typename IterType>
+   void Set(const IterType& iterFirst, const IterType& iterLast, const StateVectorType& type)
+   {
+      OTL_ASSERT(iterLast - iterFirst == 6, "State vector must be 6 dimensional");
+      for (IterType iter = iterFirst, int index = 0; iter != iterLast; ++iter, ++index)
+      {
+         m_state[index] = *iter;
+      }
+      m_type = type;
+   }
+
+   void Set(double state[], int size, const StateVectorType& type);
+   void Set(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
+   void Set(const Vector6d& state, const StateVectorType& type);
+
+   double& Get(int index);
+   double Get(int index) const;
+   void Set(int index, double value);
 
 private:
-   StateVectorType m_type;
    //Vector6d m_state;
    //double m_state[6];
    //std::vector<double> m_state;
    Vector6d m_state;
    //State m_state;
    //StatePtr m_state;
+   StateVectorType m_type;
 };
 
 //namespace test

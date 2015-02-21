@@ -49,7 +49,7 @@ m_ephemeris(nullptr)
 JplApproximateBody::JplApproximateBody(const std::string& name,
                const JplApproximateEphemerisPointer& ephemeris,
                const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(OrbitalElements()), epoch),
+IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(ephemeris)
 {
 

@@ -24,38 +24,15 @@
 
 #pragma once
 
-inline Scalar& x()
+/** \brief Constructs an initialized 6D vector with given coefficients */
+EIGEN_STRONG_INLINE Matrix(const Scalar& x1, const Scalar& x2, const Scalar& x3, const Scalar& x4, const Scalar& x5, const Scalar& x6)
 {
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](0);
-}
-
-inline const Scalar& x() const
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](0);
-}
-
-inline Scalar& y()
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](1);
-}
-
-inline const Scalar& y() const
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](1);
-}
-
-inline Scalar& z()
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](2);
-}
-
-inline const Scalar& z() const
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
-   return this->operator[](2);
+   Base::_check_template_params();
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Matrix, 6)
+   m_storage.data()[0] = x1;
+   m_storage.data()[1] = x2;
+   m_storage.data()[2] = x3;
+   m_storage.data()[3] = x4;
+   m_storage.data()[4] = x5;
+   m_storage.data()[5] = x6;
 }

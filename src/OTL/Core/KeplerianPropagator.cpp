@@ -85,13 +85,14 @@ StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVecto
       //TA2 = ConvertParabolicAnomaly2TrueAnomaly(B);
    }
 
-   return StateVector(OrbitalElements(
+   return StateVector(
       a,
       e,
       TA2,
       initialOrbitalElements.inclination,
       initialOrbitalElements.argOfPericenter,
-      initialOrbitalElements.lonOfAscendingNode));
+      initialOrbitalElements.lonOfAscendingNode,
+      StateVectorType::Orbital);
 }
 
 ////////////////////////////////////////////////////////////

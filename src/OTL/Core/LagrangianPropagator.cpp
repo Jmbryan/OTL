@@ -69,7 +69,7 @@ StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVect
    auto R2 = coeff.f    * R1 + coeff.g    * V1;
    auto V2 = coeff.fDot * R1 + coeff.gDot * V1;
 
-   return StateVector(CartesianStateVector(R2, V2));
+   return StateVector(R2, V2, StateVectorType::Cartesian);
 }
 
 ////////////////////////////////////////////////////////////

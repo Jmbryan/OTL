@@ -23,25 +23,40 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-//#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#define EIGEN_DONT_ALIGN
-#define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/MatrixBasePlugin.h>
-#define EIGEN_MATRIX_PLUGIN <OTL/Core/MatrixPlugin.h>
-#include <Eigen/Dense>
-//#include <OTL/Core/Vector.h>
 
-namespace otl
+inline Scalar& x()
 {
-using Vector3d = Eigen::Matrix<double, 3, 1>;   ///< Alias for static 3 dimensional column vector of type double
-using Vector6d = Eigen::Matrix<double, 6, 1>;   ///< Alias for static 6 dimensional column vector of type double
-using Matrix3d = Eigen::Matrix<double, 3, 3>;   ///< Alias for static 3 dimensional square matrix of type double
-using Matrix6d = Eigen::Matrix<double, 6, 6>;   ///< Alias for static 6 dimensional square matrix of type double
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   //return m_storage.data()[0];
+   return this->operator[](0);
+}
 
-using Quaterniond = Eigen::Quaterniond;         ///< Alias for quaternion vector of type double
+inline const Scalar& x() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   return this->operator[](0);
+}
 
-//using Vector3d = otl::test::Matrix<double, 3, 1>;
-//using Vector6d = otl::test::Matrix<double, 6, 1>;
-//using Matrix3d = otl::test::Matrix<double, 3, 3>;
-//using Matrix6d = otl::test::Matrix<double, 6, 6>;
+inline Scalar& y()
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   return this->operator[](1);
+}
 
+inline const Scalar& y() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   return this->operator[](1);
+}
+
+inline Scalar& z()
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   return this->operator[](2);
+}
+
+inline const Scalar& z() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
+   return this->operator[](2);
 }

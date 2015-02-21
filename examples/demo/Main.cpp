@@ -209,13 +209,26 @@ int main()
        //double d = 1.0;
     }
 
-    if (false)
+    if (true)
     {
        StateVector stateVector;
        stateVector = CartesianStateVector(
           Vector3d(6524.834, 6862.875, 6448.296),
           Vector3d(4.901327, 5.533756, -1.976341));
        double mu = otl::ASTRO_MU_EARTH;
+
+       StateVector stateVector2(
+          6524.834, 6862.875, 6448.296,
+          4.901327, 5.533756, -1.976341,
+          StateVectorType::Cartesian);
+
+       std::vector<double> container{ 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
+       StateVector stateVector3(container, StateVectorType::Cartesian);
+       //stateVector3.Set(container.begin(), container.end(), StateVectorType::Cartesian);
+
+       double carray[6] = { 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
+       StateVector stateVector4(carray, StateVectorType::Cartesian);
+       //stateVector4.Set(carray, 6, StateVectorType::Cartesian);
 
        //OrbitalBody o("Satellite", PhysicalProperties(1000, 10), mu, stateVector);
        Planet o("Earth");

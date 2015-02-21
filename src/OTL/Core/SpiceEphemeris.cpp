@@ -328,9 +328,7 @@ StateVector SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch
             state,
             &lightTime);
 
-   return StateVector(CartesianStateVector(
-      state[0], state[1], state[2],
-      state[3], state[4], state[5]));
+   return StateVector(state, StateVectorType::Cartesian);
 }
 
 ////////////////////////////////////////////////////////////
