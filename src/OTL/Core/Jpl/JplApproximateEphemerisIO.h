@@ -23,18 +23,17 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Base.h>
+#include <OTL/Core/Epoch.h>
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace otl
 {
 
 // Forward declarations
-class Epoch;
-namespace keplerian {
-   class IKeplersEquation;
-   typedef std::shared_ptr<IKeplersEquation> KeplersEquationPointer;
-}
 class PhysicalProperties;
+class StateVector;
 
 class JplApproximateEphemerisIO
 {
@@ -56,9 +55,9 @@ private:
 
 private:
    std::string m_dataFilename;
-   int m_startYear;
-   int m_endYear;
-   keplerian::KeplersEquationPointer m_keplersEquation; ///< Keplers equation used to convert mean anomaly to eccentric anomaly 
+   Epoch m_startEpoch;
+   Epoch m_endEpoch;
+   std::pair<std::string, std::vector<double>> m_cache;
 };
 
 } // namespace otl

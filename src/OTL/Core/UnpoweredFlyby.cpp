@@ -22,7 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include <OTL/Core/FlybyUnpowered.h>
+#include <OTL/Core/UnpoweredFlyby.h>
 #include <OTL/Core/OrbitalBody.h>
 
 namespace otl
@@ -32,13 +32,15 @@ namespace keplerian
 {
 
 ////////////////////////////////////////////////////////////
-void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
+void UnpoweredFlyby::Evaluate(const Vector3d& approachVelocity,
                               const OrbitalBody& orbitalBody,
                               double altitude,
                               double BPlaneAngle,
                               Vector3d& departureVelocity)
 {
    const Vector3d& planetVelocity = orbitalBody.GetCartesianStateVector().velocity;
+   double planetRadius = orbitalBody.GetPhysicalProperties().GetRadius();
+   double planetMu = orbitalBody.GetPhysicalProperties().GetGravitationalParameter();
 
    // VInfinityIn is the relative velocity of the object
    // as it approaches the planet.
@@ -47,18 +49,13 @@ void FlybyUnpowered::Evaluate(const Vector3d& approachVelocity,
    // The magnitude of this velocity vector remains constant throughout the flyby.
    double vInfinity = m_VInfinityIn.norm();
 
-   m_B1 = m_VInfinityIn;
-   m_B1.normalize();
-
-   m_B2 = m_B1.cross(planetVelocity / planetVelocity.norm());
-   m_B2.normalize();
-
-   m_B3 = m_B1.cross(m_B2);
-   m_B3.normalize();
+   m_B1 = m_VInfinityIn.normalized();
+   m_B2 = m_B1.cross(planetVelocity.normalized()).normalized();
+   m_B3 = m_B1.cross(m_B2).normalized();
 
    // Flyby hyperbola
-   double radiusOfPeriapsis = orbitalBody.GetPhysicalProperties().GetRadius() + altitude;
-   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / orbitalBody.GetPhysicalProperties().GetGravitationalParameter();
+   double radiusOfPeriapsis = planetRadius + altitude;
+   double eccentricity = 1.0 + radiusOfPeriapsis * SQR(vInfinity) / planetMu;
 
    double turnAngle = 2.0 * asin(1.0 / eccentricity);
 

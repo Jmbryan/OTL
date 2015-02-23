@@ -164,9 +164,6 @@ std::string OrbitalBody::ToDetailedString(std::string prefix) const
    os << prefix << "Orbit:" << std::endl;
    os << GetOrbit().ToDetailedString(prefix + "   ");
    os << prefix << "Ephemeris:" << std::endl;
-   //os << m_ephemeris->ToDetailedString(prefix + "   "); [TODO]
-   //os << prefix << "Max propagation time:" << std::endl;
-   //os << m_maxPropagationTime.ToDetailedString(prefix + "   ");
 
    return os.str();
 }

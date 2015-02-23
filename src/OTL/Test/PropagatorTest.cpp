@@ -1,5 +1,6 @@
 #include <OTL/Test/BaseTest.h>
 #include <OTL/Core/KeplerianPropagator.h>
+#include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Conversion.h>
 
 const double TOL_PCT = 0.001;
@@ -7,7 +8,8 @@ const double TOL_PCT = 0.001;
 
 TEST_CASE("KeplerianPropagator", "")
 {
-   auto propagator = otl::keplerian::KeplerianPropagator();
+   auto keplerianPropagator = otl::keplerian::KeplerianPropagator();
+   auto lagrangianPropagator = otl::LagrangianPropagator();
 
     otl::OrbitalElements initialOrbitalElements;
     otl::OrbitalElements finalOrbitalElements;
@@ -35,7 +37,7 @@ TEST_CASE("KeplerianPropagator", "")
 
             SECTION("OrbitalElements")
             {
-               auto tempSV = propagator.Propagate(otl::StateVector(initialOrbitalElements), timeOfFlight, mu);
+               auto tempSV = keplerianPropagator.Propagate(otl::StateVector(initialOrbitalElements), timeOfFlight, mu);
                finalOrbitalElements = tempSV.ToOrbitalElements(mu);
 
                 CHECK(finalOrbitalElements.semiMajorAxis      == OTL_APPROX(finalExpectedOrbitalElements.semiMajorAxis));

@@ -24,13 +24,15 @@
 
 #pragma once
 #include <OTL/Core/Base.h>
+#include <OTL/Core/Epoch.h>
+#include <OTL/Core/KeplerianPropagator.h>
 
 namespace otl
 {
 
 // Forward declarations
-class IPropagator;
-typedef std::shared_ptr<IPropagator> PropagatorPointer;
+//class IPropagator;
+//typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
 namespace keplerian
 {
@@ -63,6 +65,22 @@ public:
    };
 
    ////////////////////////////////////////////////////////////
+   /// \brief Orbit properties
+   ////////////////////////////////////////////////////////////
+   struct OrbitProperties
+   {
+      Type type;
+      double anomaly;
+      double trueAnomaly;
+      double radius;
+      double meanMotion;
+      double period;
+      double timeSincePerapsis;
+      double specificAngularMomentum;
+      double semiperimeter;
+   };
+
+   ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
    Orbit();
@@ -73,7 +91,7 @@ public:
    /// \param mu Gravitational parameter of the central body of the orbit
    ///
    ////////////////////////////////////////////////////////////
-	explicit Orbit(double mu);
+	//explicit Orbit(double mu);
    
    ////////////////////////////////////////////////////////////
    /// \brief Create the orbit from gravitational parameter and state vector
@@ -82,7 +100,9 @@ public:
    /// \param stateVector StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   Orbit(double mu, const StateVector& stateVector);
+   //Orbit(double mu, const StateVector& stateVector);
+   Orbit(const OrbitalElements& orbitalElements, double mu, Epoch epoch = Epoch(), Direction orbitDirection = Direction::Prograde);
+   Orbit(const CartesianStateVector& cartesianStateVector, double mu, Epoch epoch = Epoch(), Direction orbitDirection = Direction::Prograde);
    
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
@@ -103,7 +123,8 @@ public:
    /// \param stateVector StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   void SetStateVector(const StateVector& stateVector);
+   void SetOrbitalElements(const OrbitalElements& orbitalElements);
+   void SetCartesianStateVector(const CartesianStateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the propagation algorithm
@@ -114,7 +135,7 @@ public:
    /// \param propagator Smart pointer to the propagation algorithm
    ///
    ////////////////////////////////////////////////////////////
-   void SetPropagator(const PropagatorPointer& propagator);
+   //void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of the central body
@@ -143,7 +164,7 @@ public:
    /// \return Current CartesianStateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   CartesianStateVector GetCartesianStateVector() const;
+   const CartesianStateVector& GetCartesianStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbital elements of the orbit
@@ -164,7 +185,7 @@ public:
    /// \return Current OrbitalElements of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   OrbitalElements GetOrbitalElements() const;
+   const OrbitalElements& GetOrbitalElements() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current state vector of the orbit
@@ -179,7 +200,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   const StateVector& GetStateVector() const;
+   //const StateVector& GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the radius of the orbit
@@ -187,7 +208,9 @@ public:
    /// \return Radius of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   double GetOrbitRadius() const;
+   //double GetOrbitRadius() const;
+
+   Direction GetOrbitDirection() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
@@ -200,6 +223,9 @@ public:
    ////////////////////////////////////////////////////////////
    Type GetOrbitType() const;
 
+   const Epoch& GetEpoch() const;
+   const OrbitProperties& GetOrbitProperties() const;
+
    ////////////////////////////////////////////////////////////
    /// \brief Get the elapsed propagation time of the orbit
    ///
@@ -211,7 +237,9 @@ public:
    /// \return Elapsed propagation Time
    ///
    ////////////////////////////////////////////////////////////
-   const Time& GetElapsedPropagationTime() const;
+   //const Time& GetElapsedPropagationTime() const;
+
+   bool IsDirection(Direction orbitDirection) const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Is the orbit of this type
@@ -235,6 +263,7 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void Propagate(const Time& timeDelta);
+   void PropagateTo(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit to the true anomaly
@@ -249,6 +278,7 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void PropagateToTrueAnomaly(double trueAnomaly);
+   void PropagateToMeanAnomaly(double meanAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbit to a single-line formatted string
@@ -270,7 +300,7 @@ public:
    /// \returns std::string Stringified orbit
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToString() const;
+   //std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbit to a detailed multi-line formatted string
@@ -304,7 +334,8 @@ public:
    /// \returns std::string Stringified orbit
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString(std::string prefix = "") const;
+   //std::string ToDetailedString(std::string prefix = "") const;
+   std::string ToString(std::string prefix = "") const;
 
 private:
    ////////////////////////////////////////////////////////////
@@ -315,17 +346,43 @@ private:
    ///
    ////////////////////////////////////////////////////////////
    void UpdateOrbitProperties() const;
+   void UpdateOrbitalElements() const;
+   void UpdateCartesianStateVector() const;
+   void UpdateReference() const;
 
 private:
-   mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
-   mutable double m_orbitRadius;                         ///< Radius of the orbit
-   double m_mu;                                          ///< Gravitational parameter of the central body
-   otl::StateVector m_stateVector;                 ///< Current state vector
-   otl::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
-   mutable otl::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
-   PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
-   Time m_elapsedPropagationTime;                        ///< Elapsed propagation time between the state vector and reference state vector
+   //mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+   //mutable double m_orbitRadius;                         ///< Radius of the orbit
+   //double m_mu;                                          ///< Gravitational parameter of the central body
+   //otl::StateVector m_stateVector;                 ///< Current state vector
+   //otl::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
+   //mutable otl::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
+   //PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
+   //Time m_elapsedPropagationTime;                        ///< Elapsed propagation time between the state vector and reference state vector
+   //mutable bool m_orbitPropertiesDirty;
+   //mutable bool m_referenceStateVectorDirty;
+   //mutable bool m_cachedStateVectorDirty;
+
+   // State  
+   mutable OrbitProperties m_properties;
+   mutable OrbitalElements m_orbitalElements;
+   mutable CartesianStateVector m_cartesianStateVector;
+   mutable Epoch m_epoch;
+   double m_gravitationalParameterCentralBody;
+   Direction m_direction;
+
+   // Reference state
+   mutable OrbitalElements m_referenceOrbitalElements;
+   mutable Epoch m_referenceEpoch;
+
+   // Propagator
+   KeplerianPropagator m_propagator;
+
+   // Flags for lazy evaluation
    mutable bool m_orbitPropertiesDirty;
+   mutable bool m_orbitalElementsDirty;
+   mutable bool m_cartesianStateVectorDirty;
+   mutable bool m_referenceDirty;
 };
 
 ////////////////////////////////////////////////////////////

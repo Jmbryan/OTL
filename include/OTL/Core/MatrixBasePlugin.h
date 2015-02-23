@@ -60,3 +60,39 @@ inline const Scalar& z() const
    EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 3)
    return this->operator[](2);
 }
+
+inline typename FixedSegmentReturnType<3>::Type position()
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
+   return typename FixedSegmentReturnType<3>::Type(derived(), 0, 3);
+}
+
+inline typename ConstFixedSegmentReturnType<3>::Type position() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived)
+   return typename ConstFixedSegmentReturnType<3>::Type(derived(), 0, 3);
+}
+
+inline typename FixedSegmentReturnType<3>::Type velocity()
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
+   return typename FixedSegmentReturnType<3>::Type(derived(), 3, 3);
+}
+
+inline typename ConstFixedSegmentReturnType<3>::Type velocity() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived)
+   return typename ConstFixedSegmentReturnType<3>::Type(derived(), 3, 3);
+}
+
+inline Scalar& semimajorAxis()
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
+   return this->operator[](0);
+}
+
+inline const Scalar& semimajorAxis() const
+{
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
+      return this->operator[](0);
+}

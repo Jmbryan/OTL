@@ -26,7 +26,6 @@
 #include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/KeplersEquations.h>
 #include <OTL/Core/Conversion.h>
-#include <OTL/Core/Epoch.h>
 #include <OTL/Core/Logger.h>
 #include <fstream>
 #include <vector>
@@ -38,21 +37,14 @@ typedef std::map<std::string, std::vector<double>> JplApproxDatabase;
 static JplApproxDatabase g_database;
 
 ////////////////////////////////////////////////////////////
-JplApproximateEphemerisIO::JplApproximateEphemerisIO() :
-m_startYear(0),
-m_endYear(0),
-m_keplersEquation(new keplerian::KeplersEquationElliptical())
+JplApproximateEphemerisIO::JplApproximateEphemerisIO()
 {
 
 }
 
 ////////////////////////////////////////////////////////////
 JplApproximateEphemerisIO::JplApproximateEphemerisIO(const std::string& dataFilename) :
-m_dataFilename(dataFilename),
-m_startYear(0),
-m_endYear(0),
-m_keplersEquation(new keplerian::KeplersEquationElliptical())
-
+m_dataFilename(dataFilename)
 {
 
 }
@@ -60,6 +52,12 @@ m_keplersEquation(new keplerian::KeplersEquationElliptical())
 ////////////////////////////////////////////////////////////
 StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, const Epoch& epoch)
 {
+   // Check if the data is already cached, if not then cache it
+   if (name != m_cache.first)
+   {
+      m_cache = std::make_pair(name, g_database[name]);
+   }
+
    // Number of centuries since J2000
    double T = (epoch.GetJD() - 2451545.0) / 36525.0;
 
@@ -68,7 +66,7 @@ StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, c
    // a has units AU
    // e has no units
    // all other elemnets have units of degrees
-   const auto& data = g_database[name];
+   const auto& data = m_cache.second;
    double a        = data[0] + data[6]  * T;
    double e        = data[1] + data[7]  * T;
    double I        = data[2] + data[8]  * T;
@@ -100,7 +98,8 @@ StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, c
    }
 
    // Convert mean anomaly to eccentric anomaly (radians)
-   double E = m_keplersEquation->Evaluate(e, M * MATH_DEG_TO_RAD);
+   keplerian::KeplersEquationElliptical kepler;
+   double E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
 
    // Convert eccentric anomaly to true anomaly (radians)
    double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
@@ -126,8 +125,7 @@ bool JplApproximateEphemerisIO::IsValidName(const std::string& name) const
 ////////////////////////////////////////////////////////////
 bool JplApproximateEphemerisIO::IsValidEpoch(const Epoch& epoch) const
 {
-   auto year = epoch.GetGregorian().year;
-   return (year >= m_startYear && year <= m_endYear);
+   return (epoch >= m_startEpoch && epoch <= m_endEpoch);
 }
 
 ////////////////////////////////////////////////////////////
@@ -142,8 +140,8 @@ void JplApproximateEphemerisIO::Initialize()
    OTL_DEBUG() << "No JPL approximate ephemeris data file was specified: Using default values";
 
    // Default ephemeris is valid between 3000 BC and 3000 AD
-   m_startYear = -3000;
-   m_endYear = 3000;
+   m_startEpoch = Epoch::Gregorian(GregorianDateTime(-3000, 1, 1));
+   m_endEpoch = Epoch::Gregorian(GregorianDateTime(3000, 1, 1));
 
    // Keplerian elements and rates provided by JPL.
    // The first six entries are the keplerian elements
@@ -206,7 +204,10 @@ void JplApproximateEphemerisIO::Load()
    }
 
    // Start and end year
-   ifs >> m_startYear >> m_endYear;
+   int startYear, endYear;
+   ifs >> startYear >> endYear;
+   m_startEpoch = Epoch::Gregorian(GregorianDateTime(startYear, 1, 1));
+   m_endEpoch = Epoch::Gregorian(GregorianDateTime(endYear, 1, 1));
 
    unsigned int numPlanets;
    ifs >> numPlanets;

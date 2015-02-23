@@ -222,7 +222,7 @@ std::string Epoch::ToDetailedString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 bool operator==(const Epoch& left, const Epoch& right)
 {
-   return IsApprox(left.GetMJD2000(), right.GetMJD2000(), 2.0 * MATH_EPSILON);
+   return (fabs(right.GetMJD2000() - left.GetMJD2000()) < MATH_SEC_TO_DAY);
 }
 
 ////////////////////////////////////////////////////////////

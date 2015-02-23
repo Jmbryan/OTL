@@ -25,7 +25,7 @@
 #include <OTL/Core/MGADSMTrajectory.h>
 #include <OTL/Core/KeplerianPropagator.h>
 #include <OTL/Core/LambertExponentialSinusoid.h>
-#include <OTL/Core/FlybyUnpowered.h>
+#include <OTL/Core/UnpoweredFlyby.h>
 #include <OTL/Core/Conversion.h>
 //#include <OTL/Core/KeplersEquations.hpp>
 
@@ -427,7 +427,7 @@ void MGADSMTrajectory::SetFlybyType(FlybyType type)
    switch (type)
    {
       case FlybyType::Unpowered:
-         m_flyby = std::unique_ptr<IFlybyAlgorithm>(new FlybyUnpowered());
+         m_flyby = std::unique_ptr<IFlybyAlgorithm>(new UnpoweredFlyby());
          break;
 
       case FlybyType::Invalid:
@@ -472,7 +472,7 @@ void MGADSMTrajectory::Init()
    // Default algorithms
    m_propagator = std::make_shared<KeplerianPropagator>();
    m_lambert = std::make_shared<LambertExponentialSinusoid>();
-   m_flyby = std::make_shared<FlybyUnpowered>();
+   m_flyby = std::make_shared<UnpoweredFlyby>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

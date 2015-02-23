@@ -20,8 +20,8 @@ set(SRC
 	${INCROOT}/Exceptions.h
 	${INCROOT}/Export.h
 	${INCROOT}/Flyby.h
-	${SRCROOT}/FlybyUnpowered.cpp
-	${INCROOT}/FlybyUnpowered.h
+	${SRCROOT}/UnpoweredFlyby.cpp
+	${INCROOT}/UnpoweredFlyby.h
 	#${SRCROOT}/ForceModel.cpp
 	#${INCROOT}/ForceModel.h
 	${SRCROOT}/JplApproximateBody.cpp
@@ -34,7 +34,6 @@ set(SRC
 	${INCROOT}/KeplerianPropagator.h
 	${SRCROOT}/KeplersEquations.cpp
 	${INCROOT}/KeplersEquations.h
-	${INCROOT}/KeplersEquations.inl
 	${SRCROOT}/LagrangianPropagator.cpp
 	${INCROOT}/LagrangianPropagator.h	
 	${INCROOT}/Lambert.h

@@ -94,6 +94,16 @@ public:
       return m_data;
    }
 
+   T* data()
+   {
+      return m_data;
+   }
+
+   const T* data() const
+   {
+      return m_data;
+   }
+
    int GetNumRows() const
    {
       return Rows;

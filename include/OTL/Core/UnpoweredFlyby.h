@@ -31,7 +31,7 @@ namespace otl
 namespace keplerian
 {
 
-class OTL_CORE_API FlybyUnpowered : public IFlybyAlgorithm
+class OTL_CORE_API UnpoweredFlyby : public IFlybyAlgorithm
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ protected:
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::FlybyUnpowered
+/// \class otl::keplerian::UnpoweredFlyby
 /// \ingroup keplerian
 ///
 /// Models the keplerian dynamics of an unpowered flyby.
@@ -106,7 +106,7 @@ protected:
 /// using otl;
 /// using otl::keplerian;
 ///
-/// IFlybyAlgorithm* flyby = new FlybyUnpowered();
+/// IFlybyAlgorithm* flyby = new UnpoweredFlyby();
 ///
 /// // Setup inputs
 /// Vector3d approachVelocity = Vector3d(-1.0, 2.0, 3.0); // Absolute velocity before flyby (km/s)

@@ -33,7 +33,7 @@ struct OTL_CORE_API OrbitalElements
 {
    double semiMajorAxis;      ///< SemiMajor axis (a)
    double eccentricity;       ///< Eccentricity (e)
-   double trueAnomaly;        ///< True Anomaly (ta)
+   double trueAnomaly;        ///< True Anomaly (TA)
    double inclination;        ///< Inclination (i)
    double argOfPericenter;    ///< Argument of pericenter (w)
    double lonOfAscendingNode; ///< Longitude of the ascending node (l)
@@ -105,11 +105,11 @@ struct OTL_CORE_API OrbitalElements
    /// The orbital elements are converted to a single-line string
    /// with the following format:
    ///
-   /// "a=[semimajorAxis] e=[eccentricity] ta=[trueAnomaly]deg i=[inclination]deg w=[argOfPericenter]deg l=[lonOfAscendingNode]deg"
+   /// "a=[semimajorAxis] e=[eccentricity] TA=[trueAnomaly]deg i=[inclination]deg w=[argOfPericenter]deg l=[lonOfAscendingNode]deg"
    ///
    /// e.g.
    ///
-   /// "a=10000 e=0.8 ta=45deg i=5deg w=15deg l=30deg"
+   /// "a=10000 e=0.8 TA=45deg i=5deg w=15deg l=30deg"
    ///
    /// \note Semimajor axis units are not shown because that information is stored in the OrbitalElements
    ///
@@ -231,7 +231,7 @@ OTL_CORE_API bool operator!=(const OrbitalElements& lhs, const OrbitalElements& 
 /// orbit in 3D space. These parameters are unecessary for 2D orbits.</li>
 /// </ul>
 ///
-/// \Note Neglecting external disturbances, the true anomaly is the only parameter that varies in time
+/// \Note Neglecting external disturbances, the True Anomaly is the only parameter that varies in time
 ///
 /// \Note The Longitude of Ascending Node is also referred to as the Right Ascension of the Ascending Node (RAAN)
 ///

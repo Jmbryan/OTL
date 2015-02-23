@@ -261,4 +261,10 @@ OTL_CORE_API double ConvertHyperbolicAnomaly2TrueAnomaly(double eccentricity, do
 ////////////////////////////////////////////////////////////
 OTL_CORE_API double ConvertParabolicAnomaly2TrueAnomaly(double parabolicAnomaly);
 
+OTL_CORE_API double ConvertEccentricAnomaly2MeanAnomaly(double eccentricity, double eccentricAnomaly);
+OTL_CORE_API double ConvertHyperbolicAnomaly2MeanAnomaly(double eccentricity, double hyperbolicAnomaly);
+
+OTL_CORE_API double ConvertTrueAnomaly2MeanAnomaly(double eccentricity, double trueAnomaly);
+OTL_CORE_API double ConvertMeanAnomaly2TrueAnomaly(double eccentricity, double meanAnomaly);
+
 } // namespace otl

@@ -76,14 +76,12 @@ const std::string& IEphemeris::GetDataFilename() const
 ////////////////////////////////////////////////////////////
 PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
    if (!m_initialized)
    {
       Initialize();
    }
 
-   if (VIsValidName(name))
+   if (IsValidName(name))
    {
       return VGetPhysicalProperties(name);
    }
@@ -98,14 +96,12 @@ PhysicalProperties IEphemeris::GetPhysicalProperties(const std::string& name)
 ////////////////////////////////////////////////////////////
 double IEphemeris::GetGravitationalParameterCentralBody(const std::string& name)
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
    if (!m_initialized)
    {
       Initialize();
    }
 
-   if (VIsValidName(name))
+   if (IsValidName(name))
    {
       return VGetGravitationalParameterCentralBody(name);
    }
@@ -120,16 +116,14 @@ double IEphemeris::GetGravitationalParameterCentralBody(const std::string& name)
 ////////////////////////////////////////////////////////////
 StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)
 {
-   std::lock_guard<std::mutex> lock(m_mutex);
-
    if (!m_initialized)
    {
       Initialize();
    }
 
-   if (VIsValidName(name))
+   if (IsValidName(name))
    {
-      if (VIsValidEpoch(epoch))
+      if (IsValidEpoch(epoch))
       {
          return VGetStateVector(name, epoch);
       }
@@ -143,6 +137,36 @@ StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epo
       OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
    return StateVector();
+}
+
+////////////////////////////////////////////////////////////
+bool IEphemeris::IsValidName(const std::string& name)
+{
+   if (name == m_cachedName)
+   {
+      return true;
+   }
+   else if (VIsValidName(name))
+   {
+      m_cachedName = name;
+      return true;
+   }
+   return false;
+}
+
+////////////////////////////////////////////////////////////
+bool IEphemeris::IsValidEpoch(const Epoch& epoch)
+{
+   if (epoch == m_cachedEpoch)
+   {
+      return true;
+   }
+   else if (VIsValidEpoch(epoch))
+   {
+      m_cachedEpoch = epoch;
+      return true;
+   }
+   return false;
 }
 
 ////////////////////////////////////////////////////////////

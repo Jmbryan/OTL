@@ -31,20 +31,15 @@ namespace otl
 namespace keplerian
 {
 
-//double SolveKeplersEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
-//double SolveKeplersEllipticalEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
-//double SolveKeplersHyperbolicEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
-
-//class OTL_CORE_API KeplersEquation
-//{
-//public:
-//   KeplersEquation(int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
-//   double Solve(double eccentricity, double meanAnomaly);
-//   double CalculateEccentricAnomaly(double eccentricity, double meanAnomaly);
-//   double CalculateHyperbolicAnomaly(double eccentricity, double meanAnomaly);
-//private:
-//};
-
+////////////////////////////////////////////////////////////
+/// \class otl::keplerian::IKeplersEquation
+/// \ingroup keplerian
+///
+/// Interface class for all Kepler's Equations.  
+///
+/// This class is an abstract base class and cannot be instantiated.
+/// 
+////////////////////////////////////////////////////////////
 class OTL_CORE_API IKeplersEquation
 {
 public:
@@ -63,7 +58,7 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
-   virtual ~IKeplersEquation() {}
+   virtual ~IKeplersEquation();
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the max allowable iterations.
@@ -103,8 +98,7 @@ public:
    /// \returns The anomaly depending on the orbit type
    ///
    ////////////////////////////////////////////////////////////
-   virtual double Evaluate(double eccentricity,
-                           double meanAnomaly);
+   virtual double Evaluate(double eccentricity, double meanAnomaly);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -161,15 +155,12 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::IKeplersEquation
+/// \class otl::keplerian::KeplersEquationElliptical
 /// \ingroup keplerian
 ///
-/// Interface class for all Kepler's Equations.  
-///
-/// This class is an abstract base class and cannot be instantiated.
+/// Implements Kepler's Equation for elliptical orbits.  
 /// 
 ////////////////////////////////////////////////////////////
-
 class OTL_CORE_API KeplersEquationElliptical : public IKeplersEquation
 {
 public:
@@ -205,8 +196,7 @@ public:
    /// \returns The eccentric anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double Evaluate(double eccentricity,
-                                  double meanAnomaly);
+   virtual double Evaluate(double eccentricity, double meanAnomaly);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -220,7 +210,7 @@ protected:
    /// \returns The initial guess for the eccentric anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double CalculateInitialGuess(double eccentricity, double meanAnomaly);
+   virtual double CalculateInitialGuess(double eccentricity, double meanAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Solves the inverse Kepler's Equation for elliptical orbits.
@@ -241,7 +231,7 @@ protected:
    /// \returns The mean anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double SolveInverseEquation(double eccentricity, double eccentricAnomaly);
+   virtual double SolveInverseEquation(double eccentricity, double eccentricAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Solves the derivative of the inverse Kepler's Equation for elliptical orbits.
@@ -264,17 +254,16 @@ protected:
    /// \returns The derivative of the mean anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double SolveInverseDerivative(double eccentricity, double eccentricAnomaly);
+   virtual double SolveInverseDerivative(double eccentricity, double eccentricAnomaly);
 };
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::KeplersEquationElliptical
+/// \class otl::keplerian::KeplersEquationHyperbolic
 /// \ingroup keplerian
 ///
-/// Implements Kepler's Equation for elliptical orbits.  
+/// Implements Kepler's Equation for hyperbolic orbits.  
 /// 
 ////////////////////////////////////////////////////////////
-
 class OTL_CORE_API KeplersEquationHyperbolic : public IKeplersEquation
 {
 public:
@@ -310,8 +299,7 @@ public:
    /// \returns The eccentric anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double Evaluate(double eccentricity,
-                                  double meanAnomaly);
+   virtual double Evaluate(double eccentricity, double meanAnomaly);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -325,7 +313,7 @@ protected:
    /// \returns The initial guess for the hyperbolic anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double CalculateInitialGuess(double eccentricity, double meanAnomaly);
+   virtual double CalculateInitialGuess(double eccentricity, double meanAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Solves the inverse Kepler's Equation for hyperbolic orbits.
@@ -346,7 +334,7 @@ protected:
    /// \returns The mean anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double SolveInverseEquation(double eccentricity, double hyperbolicAnomaly);
+   virtual double SolveInverseEquation(double eccentricity, double hyperbolicAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Solves the derivative of the inverse Kepler's Equation for hyperbolic orbits.
@@ -362,25 +350,33 @@ protected:
    /// \f$ dM = e\cosh(H) - 1 \f$
    ///
    /// where dM is the derivative of the mean anomaly,
-   /// E is the hyperbolic anomaly, and e is the eccentricity.
+   /// H is the hyperbolic anomaly, and e is the eccentricity.
    ///
    /// \param eccentricity The eccentricity of the orbit
    /// \param hyperbolicAnomaly The hyperbolic anomaly of the orbit
    /// \returns The derivative of the mean anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   inline virtual double SolveInverseDerivative(double eccentricity, double hyperbolicAnomaly);
+   virtual double SolveInverseDerivative(double eccentricity, double hyperbolicAnomaly);
 };
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::KeplersEquationHyperbolic
-/// \ingroup keplerian
+/// \brief Helper function for solving Kepler's Equation for any orbit type
 ///
-/// Implements Kepler's Equation for hyperbolic orbits.  
-/// 
+/// This function uses KeplersEquationElliptical and
+/// KeplersEquationHyperbolic to compute the elliptical
+/// and hyperbolic anomalies respectively. Parabolic
+/// and circular orbits simply return the mean anomaly
+/// as the result.
+///
+/// \param eccentricity The eccentricity of the orbit
+/// \param meanAnomaly The mean anomaly of the orbit
+/// \param maxIterations Maximum number of iteration attempts
+/// \param tolerance Tolerance for convergence
+/// \returns The elliptical, hyperbolic, parabolic, or circular anomaly of the orbit
+///
 ////////////////////////////////////////////////////////////
-
-#include <OTL/Core/KeplersEquations.inl>
+double SolveKeplersEquation(double eccentricity, double meanAnomaly, int maxIterations = 1000, double tolerance = MATH_TOLERANCE);
 
 } // namespace keplerian
 

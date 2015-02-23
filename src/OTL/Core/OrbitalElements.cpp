@@ -139,7 +139,7 @@ std::string OrbitalElements::ToString() const
    std::ostringstream os;
    os << "a=" << semiMajorAxis << " "
       << "e=" << eccentricity << " "
-      << "ta=" << trueAnomaly * rad2deg << "deg" << " "
+      << "TA=" << trueAnomaly * rad2deg << "deg" << " "
       << "i=" << inclination * rad2deg << "deg" << " "
       << "w=" << argOfPericenter * rad2deg << "deg" << " "
       << "l=" << lonOfAscendingNode * rad2deg << "deg";

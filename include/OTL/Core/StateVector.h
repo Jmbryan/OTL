@@ -23,101 +23,136 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/CartesianStateVector.h>
+#include <OTL/Core/OrbitalElements.h>
 #include <OTL/Core/Matrix.h>
 #include <OTL/Core/Logger.h>
 #include <vector>
-
-//#include <boost/variant.hpp>
+#include <array>
 
 namespace otl
 {
 
 // Forward declarations
-struct CartesianStateVector;
-struct OrbitalElements;
+//struct CartesianStateVector;
+//struct OrbitalElements;
 
 enum class StateVectorType
 {
-   Invalid = -1,  ///< Invalid state vector type
-   Generic,       ///< The state vector is represented as a Vector6d which is generic 6-dimensional vector
-   Cartesian,     ///< The state vector is represented as a CartesianStateVector consisting of 3-dimensional position and velocity vectors
-   Orbital,       ///< The state vector is represented as a OrbitalElements consisting of the 6 classic orbital elements
-   Count          ///< Number of state vector types
+   Invalid = -1,        ///< Invalid state vector type
+   //Generic,       ///< The state vector is represented as a Vector6d which is generic 6-dimensional vector
+   Cartesian,           ///< The state vector is represented as a CartesianStateVector consisting of 3-dimensional position and velocity vectors
+   Orbital,             ///< The state vector is represented as a OrbitalElements consisting of the 6 classic orbital elements
+   CartesianAndOrbital, ///< The state vector is represented as both a CartesianStateVector and OrbitalElements
+   Count                ///< Number of state vector types
 };
 
+//namespace test
+//{
 class StateVector
 {
 public:
-   //typedef boost::variant<Vector6d, CartesianStateVector, OrbitalElements> State;
-   //typedef std::shared_ptr<Vector6d> StatePtr;
+   typedef std::array<double, 6> StateVectorData;
 
    StateVector();
    StateVector(const StateVector& other);
-   StateVector(const StateVector&& other);
-   StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
-   StateVector(const Vector3d& , const Vector3d& b, const StateVectorType& type);
-   StateVector(const Vector6d& state, const StateVectorType& type);
-   StateVector(double* state, const StateVectorType& type);
+   StateVector(const StateVector&& other);  
    explicit StateVector(const OrbitalElements& orbitalElements);
    explicit StateVector(const CartesianStateVector& cartesianStateVector);
-   template<typename T>
-   StateVector(const T& container, const StateVectorType& type) :
-   m_state(container.data()),
-   m_type(type)
-   {
-
-   }
+   StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
+   StateVector(const Vector3d& a, const Vector3d& b, const StateVectorType& type);
+   StateVector(const Vector6d& state, const StateVectorType& type);
+   StateVector(const std::vector<double>& state, const StateVectorType& type);
+   StateVector(double* state, const StateVectorType& type);   
    ~StateVector();
 
    StateVector& operator =(const StateVector& other);
    StateVector& operator =(const StateVector&& other);
-   //StateVector& operator =(const Vector6d& genericStateVector);
    StateVector& operator =(const CartesianStateVector& cartesianStateVector);
    StateVector& operator =(const OrbitalElements& orbitalElements);
 
+   bool IsCartesian() const;
+   bool IsOrbital() const;
+   bool IsType(const StateVectorType& type) const;
    StateVectorType GetType() const;
 
+   const StateVectorData& GetState() const;
    //Vector6d GetGenericStateVector() const;
    //const double* GetState() const;
    //std::vector<double> GetState() const;
-   const Vector6d& GetState() const;
+   //const Vector6d& GetState() const;
    //const State& GetState() const;
    //const StatePtr& GetState() const;
+   //const CartesianStateVector& GetCartesianStateVector() const;
+   //const OrbitalElements& GetOrbitalElements() const;
    CartesianStateVector GetCartesianStateVector() const;
    OrbitalElements GetOrbitalElements() const;
 
    CartesianStateVector ToCartesianStateVector(double mu) const;
    OrbitalElements ToOrbitalElements(double mu) const;
 
-
-   template<typename IterType>
-   void Set(const IterType& iterFirst, const IterType& iterLast, const StateVectorType& type)
-   {
-      OTL_ASSERT(iterLast - iterFirst == 6, "State vector must be 6 dimensional");
-      for (IterType iter = iterFirst, int index = 0; iter != iterLast; ++iter, ++index)
-      {
-         m_state[index] = *iter;
-      }
-      m_type = type;
-   }
-
-   void Set(double state[], int size, const StateVectorType& type);
    void Set(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
+   void Set(const Vector3d& a, const Vector3d& b, const StateVectorType& type);
    void Set(const Vector6d& state, const StateVectorType& type);
+   void Set(const std::vector<double>& state, const StateVectorType& type);
+   void Set(double* state, const StateVectorType& type);
+   
+   void ConvertTo(const StateVectorType& type, double mu);
 
-   double& Get(int index);
-   double Get(int index) const;
-   void Set(int index, double value);
+   //double& Get(int index);
+   //double Get(int index) const;
+   //void Set(int index, double value);
 
 private:
+   StateVectorType m_type;
+   StateVectorData m_state;
    //Vector6d m_state;
    //double m_state[6];
    //std::vector<double> m_state;
-   Vector6d m_state;
+   //Vector6d m_state;
    //State m_state;
-   //StatePtr m_state;
-   StateVectorType m_type;
+   //StatePtr m_state;  
 };
+//}
+
+namespace test
+{
+class StateVector
+{
+public:
+   StateVector();
+   StateVector(const StateVector& other);
+   //StateVector(const StateVector&& other);
+   explicit StateVector(const OrbitalElements& orbitalElements, double mu);
+   explicit StateVector(const CartesianStateVector& cartesianStateVector, double mu);
+   StateVector(double* state, double mu, const StateVectorType& type);
+
+   StateVector& operator =(const StateVector& other);
+   //StateVector& operator =(const StateVector&& other);
+
+   void Set(const CartesianStateVector& cartesianStateVector, double mu);
+   void Set(const OrbitalElements& orbitalElements, double mu);
+   void Set(double* state, double mu, const StateVectorType& type);
+
+   void ConvertTo(const StateVectorType& type) const;
+
+   bool IsCartesian() const;
+   bool IsOrbital() const;
+   bool IsType(const StateVectorType& type) const;
+   StateVectorType GetType() const;
+
+   double GetMu() const;
+
+   const CartesianStateVector& GetCartesianStateVector() const;
+   const OrbitalElements& GetOrbitalElements() const;
+
+private:
+   mutable StateVectorType m_type;
+   mutable CartesianStateVector m_cartesian;
+   mutable OrbitalElements m_orbital;
+   double m_mu;
+};
+}
 
 //namespace test
 //{

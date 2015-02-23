@@ -1,6 +1,4 @@
 #include <iostream>
-#include <assert.h>
-#include <chrono>
 
 #include <OTL/Core/MGADSMTrajectory.h>
 #include <OTL/Core/Planet.h>
@@ -28,6 +26,8 @@
 #include <spdlog\spdlog.h>
 
 #include <numeric>
+#include <assert.h>
+#include <chrono>
 
 #ifdef GetCurrentDirectory
 #undef GetCurrentDirectory
@@ -68,7 +68,7 @@ int main()
        // StateVector       
        auto sizeofvector6d = sizeof(Vector6d);
        auto sizeofos = sizeof(StateVector);
-       //auto sizeofos2 = sizeof(StateVector2);
+       auto sizeofos2 = sizeof(test::StateVector);
 
        // Orbit
        auto sizeofprop = sizeof(PropagatorPointer);
@@ -88,6 +88,19 @@ int main()
 
        double d = 1.0;
     }
+
+    //if (true)
+    //{
+    //   auto cartesian = CartesianStateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
+    //   double mu = otl::ASTRO_MU_EARTH;
+
+    //   test::StateVector sv(cartesian, mu);
+    //   
+    //   const auto& svout = sv.GetCartesianStateVector();
+    //   const auto& orbout = sv.GetOrbitalElements();
+
+    //   double d = 1.0;
+    //}
 
     // OTL Vector3, Matrix
     if (false)
@@ -198,63 +211,150 @@ int main()
        std::cin.get();
     }
 
-    // StateVector2
+    // Anomaly
     if (false)
     {
-       //test::CartesianStateVector cartesianStateVector(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
-       //StateVector2 stateVector(cartesianStateVector);
+       int eSize = 10000;
+       int taSize = 10000;
+       double tol = 0.1;
+       Eigen::VectorXd vEcc = Eigen::VectorXd::LinSpaced(eSize, 0.0, 10.0);
+       //Eigen::VectorXd vTA = Eigen::VectorXd::LinSpaced(size, -MATH_PI, MATH_PI);
+       Eigen::VectorXd vTA = Eigen::VectorXd::LinSpaced(taSize, 0.0, 10.0);
 
-       //const auto& state = stateVector.GetCartesianStateVector();
+       int n1 = 0;
+       int n2 = 0;
+       int n3 = 0;
+       int n4 = 0;
 
-       //double d = 1.0;
+       for (int i = 0; i < eSize; ++i)
+       {
+          for (int j = 0; j < taSize; ++j)
+          {
+             double eccentricity = vEcc[i];
+             double trueAnomaly = vTA[j];
+             double eccentricAnomaly = vTA[j];
+             double hyperbolicAnomaly = vTA[j];
+
+             // ConvertTrueAnomaly2EccentricAnomaly
+             if (true)
+             {
+                double sinE = (sin(trueAnomaly) * sqrt(1.0 - SQR(eccentricity))) /
+                   (1.0 + eccentricity * cos(trueAnomaly));
+                double cosE = (eccentricity + cos(trueAnomaly)) /
+                   (1.0 + eccentricity * cos(trueAnomaly));
+                double E1 = atan2(sinE, cosE);
+                double E2 = 2.0 * atan(sqrt((1.0 - eccentricity) / (1.0 + eccentricity)) * tan(0.5 * trueAnomaly));
+                if (fabs(E2 - E1) > tol)
+                {
+                   double d = 1.0;
+                   n1++;
+                }
+             }
+
+             // ConvertEccentricAnomaly2TrueAnomaly
+             if (true)
+             {
+                double sinTA = (sin(eccentricAnomaly) * sqrt(1.0 - SQR(eccentricity))) /
+                   (1.0 - eccentricity * cos(eccentricAnomaly));
+                double cosTA = (cos(eccentricAnomaly) - eccentricity) /
+                   (1.0 - eccentricity * cos(eccentricAnomaly));
+                double TA1 = atan2(sinTA, cosTA);
+                double TA2 = 2.0 * atan(sqrt((1.0 + eccentricity) / (1.0 - eccentricity)) * tan(0.5 * eccentricAnomaly));
+                if (fabs(TA2 - TA1) > tol)
+                {
+                   double d = 1.0;
+                   n2++;
+                }
+             }
+
+             // ConvertTrueAnomaly2HyperbolicAnomaly
+             if (true)
+             {
+                double sinH = (sin(trueAnomaly) * sqrt(SQR(eccentricity) - 1.0)) /
+                   (1.0 + eccentricity * cos(trueAnomaly));
+                double cosH = (eccentricity + cos(trueAnomaly)) /
+                   (1.0 + eccentricity * cos(trueAnomaly));
+                double F1 = atanh(sinH / cosH);
+                double F2 =  2.0 * atanh(sqrt((eccentricity - 1.0) / (eccentricity + 1.0)) * tan(0.5 * trueAnomaly));
+                if (fabs(F2 - F1) > tol)
+                {
+                   double d = 1.0;
+                   n3++;
+                }
+             }
+
+             // ConvertHyperbolicAnomaly2TrueAnomaly
+             if (true)
+             {
+                double sinTA = (-sinh(hyperbolicAnomaly) * sqrt(SQR(eccentricity) - 1.0)) /
+                   (1.0 - eccentricity * cosh(hyperbolicAnomaly));
+                double cosTA = (cosh(hyperbolicAnomaly) - eccentricity) /
+                   (1.0 - eccentricity * cosh(hyperbolicAnomaly));
+
+                double TA1= atan2(sinTA, cosTA);
+                double TA2 = 2.0 * atan(sqrt((eccentricity + 1.0) / (eccentricity - 1.0)) * tanh(0.5 * hyperbolicAnomaly)); // requires quadrant check?
+                if (fabs(TA2 - TA1) > tol)
+                {
+                   double d = 1.0;
+                   n4++;
+                }
+             }           
+          }
+       }
+
+       std::cout << "n1=" << n1 << ", n2=" << n2 << ", n3=" << n3 << ", n4=" << n4 << std::endl;
+       std::cin.get();
     }
 
-    if (true)
-    {
-       StateVector stateVector;
-       stateVector = CartesianStateVector(
-          Vector3d(6524.834, 6862.875, 6448.296),
-          Vector3d(4.901327, 5.533756, -1.976341));
-       double mu = otl::ASTRO_MU_EARTH;
+    //if (false)
+    //{
+    //   StateVector stateVector;
+    //   stateVector = CartesianStateVector(
+    //      Vector3d(6524.834, 6862.875, 6448.296),
+    //      Vector3d(4.901327, 5.533756, -1.976341));
+    //   double mu = otl::ASTRO_MU_EARTH;
 
-       StateVector stateVector2(
-          6524.834, 6862.875, 6448.296,
-          4.901327, 5.533756, -1.976341,
-          StateVectorType::Cartesian);
+    //   StateVector stateVector2(
+    //      6524.834, 6862.875, 6448.296,
+    //      4.901327, 5.533756, -1.976341,
+    //      StateVectorType::Cartesian);
 
-       std::vector<double> container{ 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
-       StateVector stateVector3(container, StateVectorType::Cartesian);
-       //stateVector3.Set(container.begin(), container.end(), StateVectorType::Cartesian);
+    //   std::vector<double> container{ 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
+    //   StateVector stateVector3(container, StateVectorType::Cartesian);
+    //   //stateVector3.Set(container.begin(), container.end(), StateVectorType::Cartesian);
 
-       double carray[6] = { 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
-       StateVector stateVector4(carray, StateVectorType::Cartesian);
-       //stateVector4.Set(carray, 6, StateVectorType::Cartesian);
+    //   double carray[6] = { 6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341 };
+    //   StateVector stateVector4(carray, StateVectorType::Cartesian);
+    //   //stateVector4.Set(carray, 6, StateVectorType::Cartesian);
 
-       //OrbitalBody o("Satellite", PhysicalProperties(1000, 10), mu, stateVector);
-       Planet o("Earth");
+    //   Vector3d pos{ 6524.834, 6862.875, 6448.296 };
+    //   Vector3d vel{ 4.901327, 5.533756, -1.976341 };
+    //   auto temp1 = pos + vel;
+    //   auto temp2 = pos.cross(vel);
+    //   StateVector stateVector5(temp1, temp2, StateVectorType::Cartesian);
 
-       //o.SetPropagator(std::make_shared<LagrangianPropagator>());
+    //   //OrbitalBody o("Satellite", PhysicalProperties(1000, 10), mu, stateVector);
+    //   Planet o("Earth");
 
-       auto sv1 = o.GetCartesianStateVector();
-       auto coes1 = o.GetOrbitalElements();
-       auto sv2 = o.GetCartesianStateVector();
-       auto coes2 = o.GetOrbitalElements();
-       o.Propagate(Time::Days(10));
-       auto sv3 = o.GetCartesianStateVector();
-       auto coes3 = o.GetOrbitalElements();
-       auto sv4 = o.GetCartesianStateVector();
-       auto coes4 = o.GetOrbitalElements();
+    //   //o.SetPropagator(std::make_shared<LagrangianPropagator>());
 
-       double d = 1.0;
-    }
+    //   auto sv1 = o.GetCartesianStateVector();
+    //   auto coes1 = o.GetOrbitalElements();
+    //   auto sv2 = o.GetCartesianStateVector();
+    //   auto coes2 = o.GetOrbitalElements();
+    //   o.Propagate(Time::Days(10));
+    //   auto sv3 = o.GetCartesianStateVector();
+    //   auto coes3 = o.GetOrbitalElements();
+    //   auto sv4 = o.GetCartesianStateVector();
+    //   auto coes4 = o.GetOrbitalElements();
+
+    //   double d = 1.0;
+    //}
 
     // Eccentricity test
     if (false)
     {
-       StateVector stateVector;
-       stateVector = CartesianStateVector(
-          Vector3d(6524.834, 6862.875, 6448.296),
-          Vector3d(4.901327, 5.533756, -1.976341));
+       StateVector stateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341, StateVectorType::Cartesian);
        double mu = otl::ASTRO_MU_EARTH;
 
        int numIter = 100000;
@@ -314,11 +414,9 @@ int main()
        auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
 
        //MpcorbBody p("Ceres", mpcorbEphemeris);
-
        //SpiceBody p("Earth", spiceEphemeris);
-       //p.SetPropagator(std::make_shared<LagrangianPropagator>());
-
        Planet p("Earth");
+
        //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
        //p.SetPropagator(std::make_shared<LagrangianPropagator>());
@@ -332,7 +430,7 @@ int main()
        std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          auto sv = p.QueryStateVector(epoch);
+          const auto& sv = p.QueryStateVector(epoch);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
@@ -341,7 +439,7 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           p.PropagateTo(epoch);
-          auto sv = p.GetStateVector();
+          const auto& sv = p.GetStateVector();
        }
        std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
@@ -353,9 +451,10 @@ int main()
        auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
        elapsedTime2 += milli2.count();
 
-       auto state = p.GetStateVector().GetState();
+       //auto state = p.GetStateVector().GetState();
        auto sv = p.GetStateVector();
        auto csv = p.GetCartesianStateVector();
+       auto orb = p.GetOrbitalElements();
 
        double dd = 1.0;
        std::cout << "Propagate time: " << milli1.count() << " ms, Query time: " << milli2.count() << " ms." << std::endl;

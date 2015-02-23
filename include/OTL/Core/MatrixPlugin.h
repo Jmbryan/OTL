@@ -36,3 +36,16 @@ EIGEN_STRONG_INLINE Matrix(const Scalar& x1, const Scalar& x2, const Scalar& x3,
    m_storage.data()[4] = x5;
    m_storage.data()[5] = x6;
 }
+
+/** \brief Constructs an initialized 6D vector from two 3D vectors */
+EIGEN_STRONG_INLINE Matrix(const Matrix<Scalar, 3, 1>& vector1, const Matrix<Scalar, 3, 1>& vector2)
+{
+   Base::_check_template_params();
+   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Matrix, 6)
+   m_storage.data()[0] = vector1[0];
+   m_storage.data()[1] = vector1[1];
+   m_storage.data()[2] = vector1[2];
+   m_storage.data()[3] = vector2[0];
+   m_storage.data()[4] = vector2[1];
+   m_storage.data()[5] = vector2[2];
+}

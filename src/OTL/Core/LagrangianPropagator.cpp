@@ -43,10 +43,17 @@ LagrangianPropagator::~LagrangianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
+StateVectorType LagrangianPropagator::GetType() const
+{
+   return StateVectorType::Cartesian;
+}
+
+////////////////////////////////////////////////////////////
 StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
 {
    // Convert the state vector to cartesian state vector
-   const CartesianStateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
+   //const CartesianStateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
+   const auto& cartesianStateVector = initialStateVector.GetCartesianStateVector();
 
    // Unpack the initial cartesian vectors and time duration in seconds
    const Vector3d& R1 = cartesianStateVector.position;
@@ -66,8 +73,8 @@ StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVect
    auto coeff = CalculateLagrangeCoefficients(r0, seconds, sqrtMu, results);
 
    // Compute the final cartesian vectors
-   auto R2 = coeff.f    * R1 + coeff.g    * V1;
-   auto V2 = coeff.fDot * R1 + coeff.gDot * V1;
+   Vector3d R2 = coeff.f    * R1 + coeff.g    * V1;
+   Vector3d V2 = coeff.fDot * R1 + coeff.gDot * V1;
 
    return StateVector(R2, V2, StateVectorType::Cartesian);
 }

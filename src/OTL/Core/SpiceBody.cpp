@@ -24,6 +24,7 @@
 
 #include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/SpiceEphemeris.h>
+#include <OTL/Core/LagrangianPropagator.h>
 
 namespace otl
 {
@@ -44,7 +45,7 @@ SpiceBody::SpiceBody(const std::string& observerBodyName,
 IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(nullptr)
 {
-
+   SetPropagator(std::make_shared<LagrangianPropagator>());
 }
 
 ////////////////////////////////////////////////////////////
@@ -56,7 +57,7 @@ SpiceBody::SpiceBody(const std::string& observerBodyName,
 IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
 m_ephemeris(ephemeris)
 {
-
+   SetPropagator(std::make_shared<LagrangianPropagator>());
 }
 
 ////////////////////////////////////////////////////////////

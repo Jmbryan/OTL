@@ -152,8 +152,8 @@ inline double acosh(double x)
 { return log(x + sqrt(x * x - 1.0)); }
 
 /// Returns the inverse hyperbolic tangent of x
-inline double atanh(double x)
-{ return 0.5 * log((1.0 + x) / (1.0 - x)); }
+//inline double atanh(double x)
+//{ return 0.5 * log((1.0 + x) / (1.0 - x)); }
 
 /// Returns the cotangent of x
 inline double cot(double x)
@@ -172,5 +172,25 @@ inline double Modulo(double dividend, double divisor)
 /// very small and very large numbers.
 inline bool IsApprox(double lhs, double rhs, double epsilon = 2.0 * MATH_EPSILON)
 { return std::abs(lhs - rhs) <= std::max({1.0, std::abs(lhs), std::abs(rhs)}) * epsilon; }
+
+/// Returns true if the eccentricity is for a circular orbit
+inline bool IsCircular(double eccentricity)
+{ return fabs(eccentricity - ASTRO_ECC_CIRCULAR) < MATH_TOLERANCE; }
+
+/// Returns true if the eccentricity is for a elliptical orbit
+inline bool IsElliptical(double eccentricity)
+{ return eccentricity > (ASTRO_ECC_CIRCULAR + MATH_TOLERANCE) && eccentricity < (ASTRO_ECC_PARABOLIC - MATH_TOLERANCE); }
+
+/// Returns true if the eccentricity is for a hyperbolic orbit
+inline bool IsHyperbolic(double eccentricity)
+{ return eccentricity > (ASTRO_ECC_PARABOLIC + MATH_TOLERANCE); }
+
+/// Returns true if the eccentricity is for a parabolic orbit
+inline bool IsParabolic(double eccentricity)
+{ return fabs(eccentricity - ASTRO_ECC_PARABOLIC) < MATH_TOLERANCE; }
+
+/// Returns true if the eccentricity is for a circular or elliptical orbit
+inline bool IsCircularOrElliptical(double eccentricity)
+{ return eccentricity > (ASTRO_ECC_CIRCULAR - MATH_TOLERANCE) && eccentricity < (ASTRO_ECC_PARABOLIC - MATH_TOLERANCE); }
 
 } // namespace otl

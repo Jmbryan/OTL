@@ -30,7 +30,7 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 CartesianStateVector::CartesianStateVector() :
-position({0.0, 0.0, 0.0}), velocity({0.0, 0.0, 0.0})
+position(0.0, 0.0, 0.0), velocity(0.0, 0.0, 0.0)
 {
 
 }
@@ -61,8 +61,8 @@ velocity(velocity)
 
 ////////////////////////////////////////////////////////////
 CartesianStateVector::CartesianStateVector(double x, double y, double z, double vx, double vy, double vz) :
-position({x, y, z}),
-velocity({vx, vy, vz})
+position(x, y, z),
+velocity(vx, vy, vz)
 {
 
 }

@@ -283,8 +283,8 @@ T& operator<<(T& stream, const Epoch& epoch)
 /// \brief Overload of binary operator==
 ///
 /// This operator compares approximate equality between two epochs.
-///
-/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+/// Two epochs are considered equal if they are within
+/// one second of eachother.
 ///
 /// \param left Left operand (an Epoch)
 /// \param right right operand (an Epoch)
@@ -297,8 +297,8 @@ OTL_CORE_API bool operator==(const Epoch& left, const Epoch& right);
 /// \brief Overload of binary operator!=
 ///
 /// This operator compares approximate inequality between two epochs.
-///
-/// \note Internally, the IsApprox() function is used with epsilon = 2 * MATH_EPSILON
+/// Two epochs are considered not equal if they are more than
+/// one second different of eachother.
 ///
 /// \param left Left operand (an Epoch)
 /// \param right right operand (an Epoch)

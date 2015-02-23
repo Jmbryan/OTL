@@ -150,17 +150,7 @@ void MpcorbEphemerisIO::Load()
       ifs >> lastObsDate;
 
       // Convert mean anomaly to eccentric anomaly (radians)
-      double E;
-      if (e < 1.0)
-      {
-         keplerian::KeplersEquationElliptical kepler;
-         E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
-      }
-      else
-      {
-         keplerian::KeplersEquationHyperbolic kepler;
-         E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
-      }
+      double E = keplerian::SolveKeplersEquation(e, M * MATH_DEG_TO_RAD);
 
       // Convert eccentric anomaly to true anomaly (radians)
       double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);

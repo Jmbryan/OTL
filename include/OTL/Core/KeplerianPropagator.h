@@ -42,6 +42,8 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~KeplerianPropagator();
 
+   virtual StateVectorType GetType() const override;
+
 protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using Kepler's equations
@@ -59,11 +61,6 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
-
-private:
-   keplerian::KeplersEquationElliptical m_keplerElliptical; ///< Functor  for solving Kepler's Equation for elliptical orbits
-   keplerian::KeplersEquationHyperbolic m_keplerHyperbolic; ///< Functor  for solving Kepler's Equation for hyperbolic orbits
-   //keplerian::KeplersequationsParabolic m_keplerParabolic; ///< Functor  for solving Kepler's Equation for parabolic orbits
 };
 
 } // namespace keplerian

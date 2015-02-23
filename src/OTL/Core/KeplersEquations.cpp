@@ -39,11 +39,17 @@ IKeplersEquation::IKeplersEquation(int maxIterations, double tolerance)
 }
 
 ////////////////////////////////////////////////////////////
+IKeplersEquation::~IKeplersEquation()
+{
+
+}
+
+////////////////////////////////////////////////////////////
 void IKeplersEquation::SetMaxIterations(int maxIterations)
 {
     if (maxIterations <= 0)
     {
-        OTL_ERROR() << "Max iterations [" << maxIterations << "] must be greater than zero. Setting to 1000.";
+        OTL_ERROR() << "Max iterations " << Bracket(maxIterations) << " must be greater than zero. Setting to 1000.";
         maxIterations = 0;
     }
     m_maxIterations = maxIterations;
@@ -54,15 +60,14 @@ void IKeplersEquation::SetTolerance(double tolerance)
 {
     if (tolerance <= 0.0)
     {
-        OTL_ERROR() << "Tolerance [" << tolerance << "] must be greater than zero. Setting to 1e-8";
+        OTL_ERROR() << "Tolerance " << Bracket(tolerance) << " must be greater than zero. Setting to 1e-8";
         tolerance = 1e-8;
     }
     m_tolerance = tolerance;
 }
 
 ////////////////////////////////////////////////////////////
-double IKeplersEquation::Evaluate(double eccentricity,
-                                  double meanAnomaly)
+double IKeplersEquation::Evaluate(double eccentricity, double meanAnomaly)
 {
    // Determine the initial guess
    double anomaly = CalculateInitialGuess(eccentricity, meanAnomaly);
@@ -80,29 +85,105 @@ double IKeplersEquation::Evaluate(double eccentricity,
       }
       else
       {
-          OTL_WARN() << "IKeplersEquation::Evaluate: SolveInverseDerivative() must return greater than or equal to zero, but returned [" << denominator << "].";
+          OTL_WARN() << "IKeplersEquation::Evaluate: SolveInverseDerivative() must return greater than or equal to zero, but returned " << Bracket(denominator);
           break;
       }
       anomaly -= ratio;
    }
    if (iteration >= m_maxIterations)
    {
-       OTL_WARN() << "IKeplersEquation::Evaluate: Max iterations [" << m_maxIterations << "] exceeded!";
+       OTL_WARN() << "IKeplersEquation::Evaluate: Max iterations " << Bracket(m_maxIterations) << " exceeded!";
    }
 
    return anomaly;
 }
 
 ////////////////////////////////////////////////////////////
-KeplersEquationElliptical::KeplersEquationElliptical(int maxIterations, double tolerance)
-: IKeplersEquation(maxIterations, tolerance)
+KeplersEquationElliptical::KeplersEquationElliptical(int maxIterations, double tolerance) :
+IKeplersEquation(maxIterations, tolerance)
 {
 }
 
 ////////////////////////////////////////////////////////////
-KeplersEquationHyperbolic::KeplersEquationHyperbolic(int maxIterations, double tolerance)
-: IKeplersEquation(maxIterations, tolerance)
+double KeplersEquationElliptical::Evaluate(double eccentricity, double meanAnomaly)
 {
+   return IKeplersEquation::Evaluate(eccentricity, meanAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationElliptical::CalculateInitialGuess(double eccentricity, double meanAnomaly)
+{
+   double eccentricAnomaly;
+   if (meanAnomaly < MATH_PI)
+      eccentricAnomaly = meanAnomaly + eccentricity / 2.0;
+   else
+      eccentricAnomaly = meanAnomaly - eccentricity / 2.0;
+   return eccentricAnomaly;
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationElliptical::SolveInverseEquation(double eccentricity, double eccentricAnomaly)
+{
+   return (eccentricAnomaly - eccentricity * sin(eccentricAnomaly));
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationElliptical::SolveInverseDerivative(double eccentricity, double eccentricAnomaly)
+{
+   return (1.0 - eccentricity * cos(eccentricAnomaly));
+}
+
+////////////////////////////////////////////////////////////
+KeplersEquationHyperbolic::KeplersEquationHyperbolic(int maxIterations, double tolerance) :
+IKeplersEquation(maxIterations, tolerance)
+{
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::Evaluate(double eccentricity, double meanAnomaly)
+{
+   return IKeplersEquation::Evaluate(eccentricity, meanAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::CalculateInitialGuess(double eccentricity, double meanAnomaly)
+{
+   double hyperbolicAnomaly = meanAnomaly;
+   return hyperbolicAnomaly;
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::SolveInverseEquation(double eccentricity, double hyperbolicAnomaly)
+{
+   return (eccentricity * sinh(hyperbolicAnomaly) - hyperbolicAnomaly);
+}
+
+////////////////////////////////////////////////////////////
+double KeplersEquationHyperbolic::SolveInverseDerivative(double eccentricity, double hyperbolicAnomaly)
+{
+   return (eccentricity * cosh(hyperbolicAnomaly) - 1.0);
+}
+
+////////////////////////////////////////////////////////////
+double SolveKeplersEquation(double eccentricity, double meanAnomaly, int maxIterations, double tolerance)
+{
+   if (IsCircularOrElliptical(eccentricity))
+   {
+      KeplersEquationElliptical kepler(maxIterations, tolerance);
+      return kepler.Evaluate(eccentricity, meanAnomaly);
+   }
+   else if (IsHyperbolic(eccentricity))
+   {
+      KeplersEquationHyperbolic kepler(maxIterations, tolerance);
+      return kepler.Evaluate(eccentricity, meanAnomaly);
+   }
+   else if (IsParabolic(eccentricity))
+   {
+      return meanAnomaly;
+   }
+
+   OTL_ERROR() << "Invalid orbit type";
+   return 0.0;
 }
 
 } // namespace keplerian

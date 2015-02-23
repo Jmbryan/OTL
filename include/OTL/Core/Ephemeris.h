@@ -24,9 +24,9 @@
 
 #pragma once
 #include <OTL/Core/Export.h>
+#include <OTL/Core/Epoch.h>
 #include <string>
 #include <memory>
-#include <mutex>
 
 namespace otl
 {
@@ -116,6 +116,34 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     StateVector GetStateVector(const std::string& name, const Epoch& epoch);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Returns true if the entity name is found in the ephemeris database
+    ///
+    /// This method calls the virtual VIsValidName() function.
+    /// If the derived function returns true, then the name
+    /// is cached so that subsequent queries for the same entity
+    /// are optimized.
+    ///
+    /// \param name Name of the entity
+    /// \return True if the entity is supported by the ephemeris
+    ///
+    ////////////////////////////////////////////////////////////
+    bool IsValidName(const std::string& name);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Returns true if the epoch is within the acceptable range for the ephemeris database
+    ///
+    /// This method calls the virtual VIsValidEpoch() function.
+    /// If the derived function returns true, then the epoch
+    /// is cached so that subsequent queries at the same epoch
+    /// are optimized.
+    ///
+    /// \param epoch Epoch
+    /// \return True if the Epoch is supported by the ephemeris
+    ///
+    ////////////////////////////////////////////////////////////
+    bool IsValidEpoch(const Epoch& epoch);
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -216,8 +244,9 @@ private:
 
 private:
     bool m_initialized;          ///< TRUE if the ephemeris database has been fully initialized
-    std::mutex m_mutex;          ///< Mutex for thread safety
     std::string m_dataFilename;  ///< Full path to the ephemeris data file
+    std::string m_cachedName;    ///< Cache for storing last valid name
+    Epoch m_cachedEpoch;         ///< Cache for storing last valid epoch
 };
 
 } // namespace otl

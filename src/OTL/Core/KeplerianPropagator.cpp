@@ -43,10 +43,16 @@ KeplerianPropagator::~KeplerianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+StateVectorType KeplerianPropagator::GetType() const
 {
+   return StateVectorType::Orbital;
+}
+
+////////////////////////////////////////////////////////////
+StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+{  
    // Convert the state vector to orbital elements
-   const OrbitalElements& initialOrbitalElements = initialStateVector.ToOrbitalElements(mu);
+   const auto& initialOrbitalElements = initialStateVector.GetOrbitalElements();
 
    // Unpack relevent orbital elements
    const double a = initialOrbitalElements.semiMajorAxis;
@@ -55,34 +61,45 @@ StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVecto
 
    // Solve Kepler's Equation depending on orbit type
    double TA2 = 0.0;
-   if (e < (1.0 - MATH_TOLERANCE)) // Circular or elliptical
+   if (IsCircularOrElliptical(e))
    {
+      // Compute mean motion
       double n = sqrt(mu / pow(a, 3.0));
-      double E0 = ConvertTrueAnomaly2EccentricAnomaly(e, TA1);
-      double M0 = E0 - e*sin(E0);
-      double M = M0 + n * timeDelta.Seconds();
-      double E = m_keplerElliptical.Evaluate(e, M);
-      TA2 = ConvertEccentricAnomaly2TrueAnomaly(e, E);
+
+      // Convert true anomaly to mean anomaly
+      double E1 = ConvertTrueAnomaly2EccentricAnomaly(e, TA1);
+      double M1 = ConvertEccentricAnomaly2MeanAnomaly(e, E1);
+
+      // Propagate the mean anomaly using the mean motion
+      double M2 = M1 + n * timeDelta.Seconds();
+      M2 = Modulo(M2, MATH_2_PI);
+
+      // Convert back to true anomaly
+      keplerian::KeplersEquationElliptical kepler;
+      double E2 = kepler.Evaluate(e, M2);
+      TA2 = ConvertEccentricAnomaly2TrueAnomaly(e, E2);
    }
-   else if (e > (1.0 + MATH_TOLERANCE)) // Hyperbolic
+   else if (IsHyperbolic(e))
    {
+      // Compute mean motion
       double n = sqrt(mu / pow(-a, 3.0));
-      double H0 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA1);
-      double M0 = e * sinh(H0) - H0;
-      double M = M0 + n * timeDelta.Seconds();
-      double H = m_keplerHyperbolic.Evaluate(e, M);
-      TA2 = ConvertHyperbolicAnomaly2TrueAnomaly(e, H);
+
+      // Convert true anomaly to mean anomaly
+      double H1 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA1);
+      double M1 = ConvertHyperbolicAnomaly2MeanAnomaly(e, H1);
+
+      // Propagate the mean anomaly using the mean motion
+      double M2 = M1 + n * timeDelta.Seconds();
+      M2 = Modulo(M2, MATH_2_PI);
+
+      // Convert back to true anomaly
+      keplerian::KeplersEquationHyperbolic kepler;
+      double H2 = kepler.Evaluate(e, M2);
+      TA2 = ConvertHyperbolicAnomaly2TrueAnomaly(e, H2);
    }
    else // Parabolic
    {
-      OTL_ERROR() << "Parabolic orbits are not implemented yet";
-      //auto stateVector = ConvertOrbitalElements2CartesianStateVector(initialOrbitalElements, mu); // this cannot be necessary
-      //double h = stateVector.position.cross(stateVector.velocity).norm();
-      //double p = SQR(h) / mu;
-      //double B0 = ConvertTrueAnomaly2ParabolicAnomaly(TA1);
-      //double M0 = B0 + pow(B0, 3.0) / 3.0;
-      //double B = m_keplerParabolic.Evaluate(p, timeDelta);
-      //TA2 = ConvertParabolicAnomaly2TrueAnomaly(B);
+      OTL_ERROR() << "Parabolic orbits are not supported";
    }
 
    return StateVector(

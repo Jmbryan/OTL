@@ -72,6 +72,8 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~LagrangianPropagator();
 
+   virtual StateVectorType GetType() const override;
+
 protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients

@@ -41,7 +41,7 @@ void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
                                           Vector3d& finalVelocity)
 {
     double seconds = timeDelta.Seconds();
-    assert(seconds >= 0.0);
+    OTL_ASSERT(seconds >= 0.0);
     
     // Non-dimensional units
     double DU, VU, TU;
