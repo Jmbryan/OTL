@@ -35,11 +35,11 @@ namespace keplerian
 
 ////////////////////////////////////////////////////////////
 Orbit::Orbit() :
+m_gravitationalParameterCentralBody(1.0),
 m_direction(Direction::Invalid),
-m_orbitPropertiesDirty(false),
+m_propertiesDirty(false),
 m_orbitalElementsDirty(false),
-m_cartesianStateVectorDirty(false),
-m_referenceDirty(false)
+m_cartesianStateVectorDirty(false)
 //m_orbitType(Type::Invalid),
 //m_orbitRadius(0.0),
 //m_mu(0.0),
@@ -65,28 +65,24 @@ m_referenceDirty(false)
 //   SetStateVector(stateVector);
 //}
 
-Orbit::Orbit(const OrbitalElements& orbitalElements, double mu, Epoch epoch, Direction orbitDirection) :
-m_direction(orbitDirection),
-m_epoch(epoch),
-m_orbitalElements(orbitalElements),
+Orbit::Orbit(double mu, const OrbitalElements& orbitalElements, Direction orbitDirection) :
 m_gravitationalParameterCentralBody(mu),
-m_orbitPropertiesDirty(true),
+m_orbitalElements(orbitalElements),
+m_direction(orbitDirection),
+m_propertiesDirty(true),
 m_orbitalElementsDirty(false),
-m_cartesianStateVectorDirty(true),
-m_referenceDirty(true)
+m_cartesianStateVectorDirty(true)
 {
 
 }
 
-Orbit::Orbit(const CartesianStateVector& cartesianStateVector, double mu, Epoch epoch, Direction orbitDirection) :
-m_direction(orbitDirection),
-m_epoch(epoch),
-m_cartesianStateVector(cartesianStateVector),
+Orbit::Orbit(double mu, const CartesianStateVector& cartesianStateVector) :
 m_gravitationalParameterCentralBody(mu),
-m_orbitPropertiesDirty(true),
+m_cartesianStateVector(cartesianStateVector),
+m_direction(Direction::Invalid),
+m_propertiesDirty(true),
 m_orbitalElementsDirty(true),
-m_cartesianStateVectorDirty(false),
-m_referenceDirty(true)
+m_cartesianStateVectorDirty(false)
 {
 
 }
@@ -97,19 +93,19 @@ Orbit::~Orbit()
 }
 
 ////////////////////////////////////////////////////////////
-void Orbit::SetMu(double mu)
+void Orbit::SetGravitationalParameterCentralBody(double mu)
 {
    m_gravitationalParameterCentralBody = mu;
 }
 
-void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements)
+void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements, Direction orbitDirection)
 {
    m_orbitalElements = orbitalElements;
+   m_direction = orbitDirection;
    m_orbitalElementsDirty = false;
 
-   m_orbitPropertiesDirty = true;  
+   m_propertiesDirty = true;  
    m_cartesianStateVectorDirty = true;
-   m_referenceDirty = true;
 }
 
 void Orbit::SetCartesianStateVector(const CartesianStateVector& cartesianStateVector)
@@ -117,9 +113,8 @@ void Orbit::SetCartesianStateVector(const CartesianStateVector& cartesianStateVe
    m_cartesianStateVector = cartesianStateVector;
    m_cartesianStateVectorDirty = true;
 
-   m_orbitPropertiesDirty = true;
+   m_propertiesDirty = true;
    m_orbitalElementsDirty = false;
-   m_referenceDirty = true;
 }
 
 ////////////////////////////////////////////////////////////
@@ -143,7 +138,7 @@ void Orbit::SetCartesianStateVector(const CartesianStateVector& cartesianStateVe
 //}
 
 ////////////////////////////////////////////////////////////
-double Orbit::GetMu() const
+double Orbit::GetGravitationalParameterCentralBody() const
 {
    return m_gravitationalParameterCentralBody;
 }
@@ -214,12 +209,8 @@ Orbit::Type Orbit::GetOrbitType() const
 
 Orbit::Direction Orbit::GetOrbitDirection() const
 {
+   UpdateOrbitProperties();
    return m_direction;
-}
-
-const Epoch& Orbit::GetEpoch() const
-{
-   return m_epoch;
 }
 
 const Orbit::OrbitProperties& Orbit::GetOrbitProperties() const
@@ -248,17 +239,14 @@ bool Orbit::IsDirection(Direction orbitDirection) const
 ////////////////////////////////////////////////////////////
 void Orbit::Propagate(const Time& timeDelta)
 {
-   UpdateReference();
-   //m_orbitalElements = m_propagator.Propagate(m_referenceOrbitalElements, timeDelta, m_gravitationalParameterCentralBody);
+   keplerian::KeplerianPropagator propagator;
+   //const auto& oldOrbitalElements = GetOrbitalElements();
+   //m_orbitalElements.meanAnomaly = propagator.Propagate(oldOrbitalElements.meanAnomaly, timeDelta, mu);
+   //m_orbitalElements = propagator.Propagate(GetOrbitalElements(), timeDelta, m_mu);
 
    m_orbitalElementsDirty = false;
-   m_orbitPropertiesDirty = true;
+   m_propertiesDirty = true;
    m_cartesianStateVectorDirty = true;
-}
-void Orbit::PropagateTo(const Epoch& epoch)
-{
-   UpdateReference();
-   return Propagate(epoch - m_referenceEpoch);
 }
 //void Orbit::Propagate(const Time& timeDelta)
 //{
@@ -285,22 +273,20 @@ void Orbit::PropagateTo(const Epoch& epoch)
 ////////////////////////////////////////////////////////////
 void Orbit::PropagateToMeanAnomaly(double meanAnomaly)
 {
-   UpdateReference();
-   m_orbitalElements = m_referenceOrbitalElements;
-   //m_orbitalElements.meanAnomaly = meanAnomaly;
+   UpdateOrbitalElements();
+   m_orbitalElements.meanAnomaly = meanAnomaly;
 
    m_orbitalElementsDirty = false;
-   m_orbitPropertiesDirty = true;
+   m_propertiesDirty = true;
    m_cartesianStateVectorDirty = true;
 }
 void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 {
-   UpdateReference();
-   m_orbitalElements = m_referenceOrbitalElements;  
-   //m_orbitalElements.meanAnomaly = ConvertTrueAnomaly2MeanAnomaly(m_orbitalElements.eccentricity, trueAnomaly);
+   UpdateOrbitalElements();
+   m_orbitalElements.meanAnomaly = ConvertTrueAnomaly2MeanAnomaly(m_orbitalElements.eccentricity, trueAnomaly);
 
    m_orbitalElementsDirty = false;
-   m_orbitPropertiesDirty = true;
+   m_propertiesDirty = true;
    m_cartesianStateVectorDirty = true;
 }
 
@@ -367,9 +353,13 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 ////////////////////////////////////////////////////////////
 std::string Orbit::ToString(std::string prefix) const
 {
+   UpdateCartesianStateVector();
+   UpdateOrbitalElements();
+   UpdateOrbitProperties();
+
    std::ostringstream os;
    os << prefix << "Orbit Type:                           ";
-   switch (m_type)
+   switch (m_properties.type)
    {
    case Orbit::Type::Elliptical:
       os << "Elliptical";
@@ -414,39 +404,10 @@ std::string Orbit::ToString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 void Orbit::UpdateOrbitProperties() const
 {
-   //m_orbitRadius = ComputeOrbitRadius(m_stateVector);
-   //m_orbitType = ComputeOrbitType(m_stateVector, m_mu);
-
    UpdateOrbitalElements();
-   const double a = m_orbitalElements.semiMajorAxis;
-   const double e = m_orbitalElements.eccentricity;
-   const double M = 0.0;// m_orbitalElements.meanAnomaly;
-   const double mu = m_gravitationalParameterCentralBody;
+   m_properties = ComputeOrbitProperties(m_gravitationalParameterCentralBody, m_orbitalElements);
 
-   // Compute anomaly (eccentric, hyperbolic, parabolic)
-   //m_properties.anomaly = ConvertMeanAnomaly2Anomaly(e, M);
-
-   // Compute true anomaly
-   m_properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, m_properties.anomaly);
-
-   // Compute radius
-   m_properties.radius = a * (1.0 - SQR(e)) / (1.0 + e * cos(m_properties.trueAnomaly));
-
-   // Compute mean motion
-   m_properties.meanMotion = sqrt(mu / pow(a, 3.0));
-
-   // Compute period
-
-   // Compute specific angular momentum (h)
-   //m_properties.specificAngularMomentum = m_cartesianStateVector.position.cross(m_cartesianStateVector.velocity).norm(); // use COES
-
-   // Compute semiperimeter
-
-   // Compute time since periapsis
-
-   
-
-   m_orbitPropertiesDirty = false;
+   m_propertiesDirty = false;
 }
 
 void Orbit::UpdateOrbitalElements() const
@@ -467,68 +428,93 @@ void Orbit::UpdateCartesianStateVector() const
    }
 }
 
-void Orbit::UpdateReference() const
+////////////////////////////////////////////////////////////
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& orbitalElements)
 {
-   if (m_referenceDirty)
-   {
-      m_referenceEpoch = m_epoch;
-      m_referenceOrbitalElements = GetOrbitalElements();
-      m_referenceDirty = false;
-   }
+   Orbit::OrbitProperties properties;
+
+   // Unpack the orbital elements
+   const double a = orbitalElements.semiMajorAxis;
+   const double e = orbitalElements.eccentricity;
+   const double M = orbitalElements.meanAnomaly;
+
+   // Compute orbit type
+   properties.type = ComputeOrbitType(mu, orbitalElements);
+
+   // Compute anomaly (eccentric, hyperbolic, parabolic)
+   properties.anomaly = 1.0;// ConvertMeanAnomaly2Anomaly(e, M);
+
+   // Compute true anomaly
+   properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, properties.anomaly);
+
+   // Compute radius
+   properties.radius = ComputeOrbitRadius(orbitalElements, properties.trueAnomaly);
+
+   // Compute mean motion
+   properties.meanMotion = sqrt(mu / pow(a, 3.0));
+
+   // Compute period
+   properties.period = 1.0 / properties.meanMotion;
+
+   // Compute specific angular momentum (h)
+   properties.specificAngularMomentum = 1.0;
+
+   // Compute semiparameter
+   properties.semiparameter = 1.0;
+
+   // Compute time since periapsis
+   properties.timeSincePerapsis = 1.0;
+
+   return properties;
 }
 
 ////////////////////////////////////////////////////////////
-double ComputeOrbitRadius(const StateVector& stateVector)
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVector& cartesianStateVector)
 {
-   double orbitRadius = 0.0;
+   //OrbitalElements orbitalElements = ConvertCartesianStateVector2OrbitalElements(cartesianStateVector, mu);
+   //return ComputeOrbitProperties(mu, orbitalElements);
 
-   const auto& stateVectorType = stateVector.GetType();
-   if (stateVectorType == StateVectorType::Cartesian)
-   {
-      orbitRadius = stateVector.GetCartesianStateVector().position.norm();
-   }
-   else if (stateVectorType == StateVectorType::Orbital)
-   {
-      const auto& orbitalElements = stateVector.GetOrbitalElements();
-      double a = orbitalElements.semiMajorAxis;
-      double e = orbitalElements.eccentricity;
-      double ta = orbitalElements.trueAnomaly;
+   Orbit::OrbitProperties properties;
 
-      orbitRadius = a * (1.0 - SQR(e)) / (1.0 + e * cos(ta));
-   }
-   else
-   {
-      OTL_ERROR() << "Invalid state vector type " << Bracket(static_cast<int>(stateVectorType));
-   }
+   // Unpack the cartesian state vector
+   const Vector3d& R = cartesianStateVector.position;
+   const Vector3d& V = cartesianStateVector.velocity;
+   const double e = ((SQR(V.norm()) / mu - 1.0 / R.norm()) * R - (R.dot(V) / mu) * V).norm();
 
-   return orbitRadius;
+   // Compute orbit type
+   properties.type = ComputeOrbitType(mu, cartesianStateVector);
+
+   // Compute anomaly (eccentric, hyperbolic, parabolic)
+   properties.anomaly = 1.0;// ConvertMeanAnomaly2Anomaly(e, M);
+
+   // Compute true anomaly
+   properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, properties.anomaly);
+
+   // Compute radius
+   properties.radius = ComputeOrbitRadius(cartesianStateVector);
+
+   // Compute mean motion
+   properties.meanMotion = 1.0;
+
+   // Compute period
+   properties.period = 1.0 / properties.meanMotion;
+
+   // Compute specific angular momentum (h)
+   properties.specificAngularMomentum = R.cross(V).norm();
+
+   // Compute semiperimeter
+   properties.semiparameter = 1.0;
+
+   // Compute time since periapsis
+   properties.timeSincePerapsis = 1.0;
+
+   return properties;
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::Type ComputeOrbitType(const StateVector& stateVector, double mu)
+Orbit::Type ComputeOrbitType(double eccentricity)
 {
    Orbit::Type orbitType = Orbit::Type::Invalid;
-
-   const auto& stateVectorType = stateVector.GetType();
-   double eccentricity = 0.0;
-   if (stateVectorType == StateVectorType::Orbital)
-   {
-      const auto& orbitalElements = stateVector.GetOrbitalElements();
-      eccentricity = orbitalElements.eccentricity;
-   }
-   else if (stateVectorType == StateVectorType::Cartesian)
-   {
-      const auto& cartesianStateVector = stateVector.GetCartesianStateVector();
-      const auto& R = cartesianStateVector.position;
-      const auto& V = cartesianStateVector.velocity;
-      eccentricity = ((SQR(V.norm()) / mu - 1.0 / R.norm()) * R - (R.dot(V) / mu) * V).norm();
-   }
-   else
-   {
-      OTL_ERROR() << "Invalid state vector type " << Bracket(static_cast<int>(stateVectorType));
-      return orbitType;
-   }
-
    if (IsElliptical(eccentricity))
    {
       orbitType = Orbit::Type::Elliptical;
@@ -549,7 +535,6 @@ Orbit::Type ComputeOrbitType(const StateVector& stateVector, double mu)
    {
       OTL_ERROR() << "Invalid eccentricity " << Bracket(eccentricity);
    }
-
    return orbitType;
 }
 

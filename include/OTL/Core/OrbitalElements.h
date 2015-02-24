@@ -33,7 +33,8 @@ struct OTL_CORE_API OrbitalElements
 {
    double semiMajorAxis;      ///< SemiMajor axis (a)
    double eccentricity;       ///< Eccentricity (e)
-   double trueAnomaly;        ///< True Anomaly (TA)
+   //double trueAnomaly;        ///< True Anomaly (ta)
+   double meanAnomaly;        ///< Mean anomaly (m)
    double inclination;        ///< Inclination (i)
    double argOfPericenter;    ///< Argument of pericenter (w)
    double lonOfAscendingNode; ///< Longitude of the ascending node (l)
@@ -58,13 +59,13 @@ struct OTL_CORE_API OrbitalElements
    ///
    /// \param _semiMajorAxis Semimajor Axis
    /// \param _eccentricity Eccentricity
-   /// \param _trueAnomaly True Anomaly in radians
+   /// \param _meanAnomaly Mean Anomaly in radians
    /// \param _inclination Inclination in radians
    /// \param _argOfPericenter Arguement of Pericenter in radians
    /// \param _lonOfAscendingNode Longitude of Ascending Node in radians
    ///
    ////////////////////////////////////////////////////////////
-   OrbitalElements(double _semiMajorAxis, double _eccentricity, double _trueAnomaly,
+   OrbitalElements(double _semiMajorAxis, double _eccentricity, double _meanAnomaly,
                    double _inclination, double _argOfPericenter, double _lonOfAscendingNode);
 
    ////////////////////////////////////////////////////////////
@@ -105,11 +106,11 @@ struct OTL_CORE_API OrbitalElements
    /// The orbital elements are converted to a single-line string
    /// with the following format:
    ///
-   /// "a=[semimajorAxis] e=[eccentricity] TA=[trueAnomaly]deg i=[inclination]deg w=[argOfPericenter]deg l=[lonOfAscendingNode]deg"
+   /// "a=[semimajorAxis] e=[eccentricity] M=[meanAnomaly]deg i=[inclination]deg w=[argOfPericenter]deg l=[lonOfAscendingNode]deg"
    ///
    /// e.g.
    ///
-   /// "a=10000 e=0.8 TA=45deg i=5deg w=15deg l=30deg"
+   /// "a=10000 e=0.8 M=45deg i=5deg w=15deg l=30deg"
    ///
    /// \note Semimajor axis units are not shown because that information is stored in the OrbitalElements
    ///
@@ -127,7 +128,7 @@ struct OTL_CORE_API OrbitalElements
    /// "Orbital Elements:
    ///     Semimajor Axis:              [semiMajorAxis]
    ///     Eccentricity:                [eccentricity]
-   ///     True Anomaly:                [trueAnomaly] deg
+   ///     Mean Anomaly:                [meanAnomaly] deg
    ///     Inclination:                 [inclination] deg
    ///     Argument of Pericenter:      [argOfPericenter] deg
    ///     Longitude of Ascending Node: [lonOfAscendingNode] deg
@@ -138,7 +139,7 @@ struct OTL_CORE_API OrbitalElements
    /// "Orbital Elements:
    ///     Semimajor Axis:              10000.000000
    ///     Eccentricity:                0.800000
-   ///     True Anomaly:                45.000000 deg
+   ///     Mean Anomaly:                45.000000 deg
    ///     Inclination:                 5.000000 deg
    ///     Argument of Pericenter:      15.000000 deg
    ///     Longitude of Ascending Node: 30.000000 deg
@@ -223,15 +224,15 @@ OTL_CORE_API bool operator!=(const OrbitalElements& lhs, const OrbitalElements& 
 /// <li>1 for parabolic orbits</li>
 /// <li>(1, infinity) for hyperbolic orbits</li>
 /// </ul>
-/// <li>The True Anomaly defines the current point along the orbit. A true
-/// anomaly of zero occurs at the periapsis of the orbit and a true
+/// <li>The Mean Anomaly defines the current point along the orbit. A mean
+/// anomaly of zero occurs at the periapsis of the orbit and a mean
 /// anomaly of 180 degrees occurs at the apoapsis of the orbit.</li>
 /// <li>The Inclination, Argument of Pericenter, and Longitude
 /// of Ascending Node all define the orientation of the
 /// orbit in 3D space. These parameters are unecessary for 2D orbits.</li>
 /// </ul>
 ///
-/// \Note Neglecting external disturbances, the True Anomaly is the only parameter that varies in time
+/// \Note Neglecting external disturbances, the mean anomaly is the only parameter that varies in time
 ///
 /// \Note The Longitude of Ascending Node is also referred to as the Right Ascension of the Ascending Node (RAAN)
 ///

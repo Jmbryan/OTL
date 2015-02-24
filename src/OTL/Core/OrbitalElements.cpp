@@ -33,7 +33,7 @@ namespace otl
 OrbitalElements::OrbitalElements() :
 semiMajorAxis(0.0),
 eccentricity(0.0),
-trueAnomaly(0.0),
+meanAnomaly(0.0),
 inclination(0.0),
 argOfPericenter(0.0),
 lonOfAscendingNode(0.0)
@@ -44,7 +44,7 @@ lonOfAscendingNode(0.0)
 OrbitalElements::OrbitalElements(const OrbitalElements& other) :
 semiMajorAxis(other.semiMajorAxis),
 eccentricity(other.eccentricity),
-trueAnomaly(other.trueAnomaly),
+meanAnomaly(other.meanAnomaly),
 inclination(other.inclination),
 argOfPericenter(other.argOfPericenter),
 lonOfAscendingNode(other.lonOfAscendingNode)
@@ -56,7 +56,7 @@ lonOfAscendingNode(other.lonOfAscendingNode)
 OrbitalElements::OrbitalElements(const OrbitalElements&& other) :
 semiMajorAxis(std::move(other.semiMajorAxis)),
 eccentricity(std::move(other.eccentricity)),
-trueAnomaly(std::move(other.trueAnomaly)),
+meanAnomaly(std::move(other.meanAnomaly)),
 inclination(std::move(other.inclination)),
 argOfPericenter(std::move(other.argOfPericenter)),
 lonOfAscendingNode(std::move(other.lonOfAscendingNode))
@@ -65,11 +65,11 @@ lonOfAscendingNode(std::move(other.lonOfAscendingNode))
 }
 
 ////////////////////////////////////////////////////////////
-OrbitalElements::OrbitalElements(double _semiMajorAxis, double _eccentricity, double _trueAnomaly,
+OrbitalElements::OrbitalElements(double _semiMajorAxis, double _eccentricity, double _meanAnomaly,
                                  double _inclination, double _argOfPericenter, double _lonOfAscendingNode) :
 semiMajorAxis(_semiMajorAxis),
 eccentricity(_eccentricity),
-trueAnomaly(_trueAnomaly),
+meanAnomaly(_meanAnomaly),
 inclination(_inclination),
 argOfPericenter(_argOfPericenter),
 lonOfAscendingNode(_lonOfAscendingNode)
@@ -84,7 +84,7 @@ OrbitalElements::OrbitalElements(std::initializer_list<double> list)
    auto it = list.begin();
    semiMajorAxis      = (size > 0) ? *(it++) : 0.0;
    eccentricity       = (size > 1) ? *(it++) : 0.0;
-   trueAnomaly        = (size > 2) ? *(it++) : 0.0;
+   meanAnomaly        = (size > 2) ? *(it++) : 0.0;
    inclination        = (size > 3) ? *(it++) : 0.0;
    argOfPericenter    = (size > 4) ? *(it++) : 0.0;
    lonOfAscendingNode = (size > 5) ? *(it++) : 0.0;
@@ -97,7 +97,7 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements& other)
    {
       semiMajorAxis = other.semiMajorAxis;
       eccentricity = other.eccentricity;
-      trueAnomaly = other.trueAnomaly;
+      meanAnomaly = other.meanAnomaly;
       inclination = other.inclination;
       argOfPericenter = other.argOfPericenter;
       lonOfAscendingNode = other.lonOfAscendingNode;
@@ -112,7 +112,7 @@ OrbitalElements& OrbitalElements::operator =(const OrbitalElements&& other)
    {
       semiMajorAxis = std::move(other.semiMajorAxis);
       eccentricity = std::move(other.eccentricity);
-      trueAnomaly = std::move(other.trueAnomaly);
+      meanAnomaly = std::move(other.meanAnomaly);
       inclination = std::move(other.inclination);
       argOfPericenter = std::move(other.argOfPericenter);
       lonOfAscendingNode = std::move(other.lonOfAscendingNode);
@@ -125,7 +125,7 @@ bool OrbitalElements::IsZero() const
 {
    return (IsApprox(semiMajorAxis, 0.0) &&
            IsApprox(eccentricity, 0.0) &&
-           IsApprox(trueAnomaly, 0.0) &&
+           IsApprox(meanAnomaly, 0.0) &&
            IsApprox(inclination, 0.0) &&
            IsApprox(argOfPericenter, 0.0) &&
            IsApprox(lonOfAscendingNode, 0.0));
@@ -139,7 +139,7 @@ std::string OrbitalElements::ToString() const
    std::ostringstream os;
    os << "a=" << semiMajorAxis << " "
       << "e=" << eccentricity << " "
-      << "TA=" << trueAnomaly * rad2deg << "deg" << " "
+      << "M=" << meanAnomaly * rad2deg << "deg" << " "
       << "i=" << inclination * rad2deg << "deg" << " "
       << "w=" << argOfPericenter * rad2deg << "deg" << " "
       << "l=" << lonOfAscendingNode * rad2deg << "deg";
@@ -155,7 +155,7 @@ std::string OrbitalElements::ToDetailedString(std::string prefix) const
    std::ostringstream os;
    os << prefix << "Semimajor Axis:              " << std::setprecision(6) << std::fixed << semiMajorAxis << std::endl;
    os << prefix << "Eccentricity:                " << std::setprecision(6) << std::fixed << eccentricity << std::endl;
-   os << prefix << "True Anomaly:                " << std::setprecision(6) << std::fixed << trueAnomaly * rad2deg << " deg" << std::endl;
+   os << prefix << "Mean Anomaly:                " << std::setprecision(6) << std::fixed << meanAnomaly * rad2deg << " deg" << std::endl;
    os << prefix << "Inclination:                 " << std::setprecision(6) << std::fixed << inclination * rad2deg << " deg" << std::endl;
    os << prefix << "Arguement of Pericenter:     " << std::setprecision(6) << std::fixed << argOfPericenter * rad2deg << " deg" << std::endl;
    os << prefix << "Longitude of Ascending Node: " << std::setprecision(6) << std::fixed << lonOfAscendingNode * rad2deg << " deg" << std::endl;
@@ -168,7 +168,7 @@ bool operator==(const OrbitalElements& lhs, const OrbitalElements& rhs)
 {
    return (IsApprox(lhs.semiMajorAxis, rhs.semiMajorAxis) &&
            IsApprox(lhs.eccentricity, rhs.eccentricity) &&
-           IsApprox(lhs.trueAnomaly, rhs.trueAnomaly) &&
+           IsApprox(lhs.meanAnomaly, rhs.meanAnomaly) &&
            IsApprox(lhs.inclination, rhs.inclination) &&
            IsApprox(lhs.argOfPericenter, rhs.argOfPericenter) &&
            IsApprox(lhs.lonOfAscendingNode, rhs.lonOfAscendingNode));

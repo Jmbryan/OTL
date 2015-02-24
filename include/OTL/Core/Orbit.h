@@ -69,15 +69,15 @@ public:
    ////////////////////////////////////////////////////////////
    struct OrbitProperties
    {
-      Type type;
-      double anomaly;
-      double trueAnomaly;
-      double radius;
-      double meanMotion;
-      double period;
-      double timeSincePerapsis;
-      double specificAngularMomentum;
-      double semiperimeter;
+      Type type;                       ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
+      double radius;                   ///< Radius of the orbit (km)
+      double anomaly;                  ///< Eccentric, hyperbolic, or parabolic anomaly (radians)
+      double trueAnomaly;              ///< True anomaly (radians)
+      double meanMotion;               ///< Mean motion (radians / sec)
+      double period;                   ///< Orbit period (seconds)
+      double timeSincePerapsis;        ///< Time since periapsis (seconds)
+      double specificAngularMomentum;  ///< Specific angular momentum ()
+      double semiparameter;            ///< Semiparameter (km)
    };
 
    ////////////////////////////////////////////////////////////
@@ -101,9 +101,9 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    //Orbit(double mu, const StateVector& stateVector);
-   Orbit(const OrbitalElements& orbitalElements, double mu, Epoch epoch = Epoch(), Direction orbitDirection = Direction::Prograde);
-   Orbit(const CartesianStateVector& cartesianStateVector, double mu, Epoch epoch = Epoch(), Direction orbitDirection = Direction::Prograde);
-   
+   Orbit(double mu, const OrbitalElements& orbitalElements, Direction orbitDirection = Direction::Prograde);
+   Orbit(double mu, const CartesianStateVector& cartesianStateVector);
+
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ public:
    /// \param mu Gravitational parameter of the central body of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   void SetMu(double mu);
+   void SetGravitationalParameterCentralBody(double mu);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the state vector of the orbit
@@ -123,7 +123,7 @@ public:
    /// \param stateVector StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   void SetOrbitalElements(const OrbitalElements& orbitalElements);
+   void SetOrbitalElements(const OrbitalElements& orbitalElements, Direction orbitDirection = Direction::Prograde);
    void SetCartesianStateVector(const CartesianStateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ public:
    /// \return Gravitational parameter of the central body of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   double GetMu() const;
+   double GetGravitationalParameterCentralBody() const;
  
    ////////////////////////////////////////////////////////////
    /// \brief Get the current cartesian state vector of the orbit
@@ -223,7 +223,6 @@ public:
    ////////////////////////////////////////////////////////////
    Type GetOrbitType() const;
 
-   const Epoch& GetEpoch() const;
    const OrbitProperties& GetOrbitProperties() const;
 
    ////////////////////////////////////////////////////////////
@@ -263,7 +262,6 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void Propagate(const Time& timeDelta);
-   void PropagateTo(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbit to the true anomaly
@@ -277,8 +275,8 @@ public:
    /// \param trueAnomaly Desired true anomaly of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   void PropagateToTrueAnomaly(double trueAnomaly);
    void PropagateToMeanAnomaly(double meanAnomaly);
+   void PropagateToTrueAnomaly(double trueAnomaly);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbit to a single-line formatted string
@@ -348,41 +346,16 @@ private:
    void UpdateOrbitProperties() const;
    void UpdateOrbitalElements() const;
    void UpdateCartesianStateVector() const;
-   void UpdateReference() const;
 
 private:
-   //mutable Type m_orbitType;                             ///< Type of orbit (circular, elliptical, hyperbolic, etc.)
-   //mutable double m_orbitRadius;                         ///< Radius of the orbit
-   //double m_mu;                                          ///< Gravitational parameter of the central body
-   //otl::StateVector m_stateVector;                 ///< Current state vector
-   //otl::StateVector m_referenceStateVector;        ///< Reference state vector used during propagation
-   //mutable otl::StateVector m_cachedStateVector;   ///< Cached state vector for efficiently returning state vectors of different types
-   //PropagatorPointer m_propagator;                       ///< Pointer to the propagation algorithm
-   //Time m_elapsedPropagationTime;                        ///< Elapsed propagation time between the state vector and reference state vector
-   //mutable bool m_orbitPropertiesDirty;
-   //mutable bool m_referenceStateVectorDirty;
-   //mutable bool m_cachedStateVectorDirty;
-
-   // State  
-   mutable OrbitProperties m_properties;
-   mutable OrbitalElements m_orbitalElements;
-   mutable CartesianStateVector m_cartesianStateVector;
-   mutable Epoch m_epoch;
-   double m_gravitationalParameterCentralBody;
-   Direction m_direction;
-
-   // Reference state
-   mutable OrbitalElements m_referenceOrbitalElements;
-   mutable Epoch m_referenceEpoch;
-
-   // Propagator
-   KeplerianPropagator m_propagator;
-
-   // Flags for lazy evaluation
-   mutable bool m_orbitPropertiesDirty;
-   mutable bool m_orbitalElementsDirty;
-   mutable bool m_cartesianStateVectorDirty;
-   mutable bool m_referenceDirty;
+   double m_gravitationalParameterCentralBody;           ///< Gravitational parameter of the central body
+   mutable OrbitProperties m_properties;                 ///< Additional properties of the orbit
+   mutable OrbitalElements m_orbitalElements;            ///< Orbital elements
+   mutable CartesianStateVector m_cartesianStateVector;  ///< Cartesian state vector
+   mutable Direction m_direction;                        ///< Orbit direction (e.g. Prograde or Retrograde)
+   mutable bool m_propertiesDirty;                       ///< True if the orbit properties are not up-to-date
+   mutable bool m_orbitalElementsDirty;                  ///< True if the orbital elements are not up-to-date
+   mutable bool m_cartesianStateVectorDirty;             ///< True if the cartesian state vector is not up-to-date
 };
 
 ////////////////////////////////////////////////////////////
@@ -403,8 +376,32 @@ T& operator<<(T& stream, const Orbit& orbit)
    return stream;
 }
 
-double ComputeOrbitRadius(const StateVector& stateVector);
-Orbit::Type ComputeOrbitType(const StateVector& stateVector, double mu);
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& orbitalElements);
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVector& cartesianStateVector);
+
+inline double ComputeOrbitRadius(const OrbitalElements& orbitalElements, double trueAnomaly)
+{
+   return orbitalElements.semiMajorAxis * (1.0 - SQR(orbitalElements.eccentricity)) / (1.0 + orbitalElements.eccentricity * cos(trueAnomaly));
+}
+
+inline double ComputeOrbitRadius(const CartesianStateVector& cartesianStateVector)
+{
+   return cartesianStateVector.position.norm();
+}
+
+Orbit::Type ComputeOrbitType(double eccentricity);
+
+inline Orbit::Type ComputeOrbitType(double mu, const OrbitalElements& orbitalElements)
+{
+   return ComputeOrbitType(orbitalElements.eccentricity);
+}
+
+inline Orbit::Type ComputeOrbitType(double mu, const CartesianStateVector& cartesianStateVector)
+{
+   const auto& R = cartesianStateVector.position;
+   const auto& V = cartesianStateVector.velocity;
+   return ComputeOrbitType(((SQR(V.norm()) / mu - 1.0 / R.norm()) * R - (R.dot(V) / mu) * V).norm());
+}
 
 } // namespace keplerian
 
