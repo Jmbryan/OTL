@@ -240,9 +240,17 @@ bool Orbit::IsDirection(Direction orbitDirection) const
 void Orbit::Propagate(const Time& timeDelta)
 {
    keplerian::KeplerianPropagator propagator;
-   //const auto& oldOrbitalElements = GetOrbitalElements();
-   //m_orbitalElements.meanAnomaly = propagator.Propagate(oldOrbitalElements.meanAnomaly, timeDelta, mu);
-   //m_orbitalElements = propagator.Propagate(GetOrbitalElements(), timeDelta, m_mu);
+   if (m_propertiesDirty || m_orbitalElementsDirty)
+   {
+      m_orbitalElements.meanAnomaly = propagator.PropagateMeanAnomaly(
+         GetOrbitalElements(), m_gravitationalParameterCentralBody, timeDelta);
+   }
+   else
+   {
+      m_orbitalElements.meanAnomaly = propagator.PropagateMeanAnomaly(
+         m_orbitalElements.meanAnomaly, m_properties.meanMotion, timeDelta);
+   }
+   
 
    m_orbitalElementsDirty = false;
    m_propertiesDirty = true;

@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/JplApproximateBody.h>
-#include <OTL/Core/JplApproximateEphemeris.h>
 #include <OTL/Core/Logger.h>
 
 namespace otl
@@ -31,51 +30,53 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 JplApproximateBody::JplApproximateBody() :
-IEphemerisBody()
+OrbitalBody()
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-JplApproximateBody::JplApproximateBody(const std::string& name,
-               const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
-m_ephemeris(nullptr)
+JplApproximateBody::JplApproximateBody(const std::string& name, const Epoch& epoch) :
+OrbitalBody(name, epoch)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-JplApproximateBody::JplApproximateBody(const std::string& name,
-               const JplApproximateEphemerisPointer& ephemeris,
-               const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector(), epoch),
+JplApproximateBody::JplApproximateBody(const std::string& name, const JplApproximateEphemeris& ephemeris, const Epoch& epoch) :
+OrbitalBody(name, epoch),
 m_ephemeris(ephemeris)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateBody::SetEphemeris(const JplApproximateEphemerisPointer& ephemeris)
+void JplApproximateBody::SetEphemeris(const JplApproximateEphemeris& ephemeris)
 {
    m_ephemeris = ephemeris;
 }
 
 ////////////////////////////////////////////////////////////
-std::string JplApproximateBody::ToString() const
+void JplApproximateBody::LoadEphemerisDataFile(const std::string& filename)
 {
-   std::ostringstream os;
-   os << "name=" << GetName() << " epoch=" << GetEpoch();
-
-   return os.str();
+   m_ephemeris.LoadDataFile(filename);
 }
 
 ////////////////////////////////////////////////////////////
-std::string JplApproximateBody::ToDetailedString(std::string prefix) const
+//std::string JplApproximateBody::ToString() const
+//{
+//   std::ostringstream os;
+//   os << "name=" << GetName() << " epoch=" << GetEpoch();
+//
+//   return os.str();
+//}
+
+////////////////////////////////////////////////////////////
+std::string JplApproximateBody::ToString(const std::string& prefix) const
 {
    std::ostringstream os;
    os << prefix << "Orbital Body:" << std::endl;
-   os << OrbitalBody::ToDetailedString(prefix + "   ");
+   os << OrbitalBody::ToString(prefix + "   ");
 
    return os.str();
 }
@@ -83,47 +84,66 @@ std::string JplApproximateBody::ToDetailedString(std::string prefix) const
 ////////////////////////////////////////////////////////////
 void JplApproximateBody::VInitialize()
 {
-   // Init the ephemeris
-   if (!m_ephemeris)
-   {
-      m_ephemeris = std::make_shared<JplApproximateEphemeris>();
-   }
-
    const auto& name = GetName();
    const auto& epoch = GetEpoch();
 
    // Init the physical properties
-   SetPhysicalProperties(
-      m_ephemeris->GetPhysicalProperties(name));
+   m_physicalProperties = m_ephemeris.GetPhysicalProperties(name);
+   //SetPhysicalProperties(
+   //   m_ephemeris.GetPhysicalProperties(name));
+
+   // Init the orbit
+   double mu = m_ephemeris.GetGravitationalParameterCentralBody(name);
+   auto orbitalElements = QueryOrbitalElementsAt(epoch);
+   m_orbit = keplerian::Orbit(mu, orbitalElements, keplerian::Orbit::Direction::Prograde);
 
    // Init the gravitational parameter of the central body
-   SetGravitationalParameterCentralBody(
-      m_ephemeris->GetGravitationalParameterCentralBody(name));
+   //m_orbit.SetGravitationalParameterCentralBody(
+   //   m_ephemeris.GetGravitationalParameterCentralBody(name));
+   //SetGravitationalParameterCentralBody(
+   //   m_ephemeris.GetGravitationalParameterCentralBody(name));
 
-   // Init the state vector
-   SetStateVector(
-      m_ephemeris->GetStateVector(name, epoch));
+   // Init the orbital elements
+   //QueryOrbitalElements();
+   //m_orbit.SetOrbitalElements(QueryOrbitalElements(epoch));
+   //SetOrbitalElements(
+   //   m_ephemeris.GetOrbitalElements(name, epoch), keplerian::Orbit::Direction::Prograde);
 }
 
 ////////////////////////////////////////////////////////////
-EphemerisPointer JplApproximateBody::VGetEphemeris()
+void JplApproximateBody::VPropagate(const Time& timeDelta)
 {
-   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+   Epoch newEpoch = GetEpoch() + timeDelta;
+   SetEpoch(newEpoch);
+   //m_orbit.SetOrbitalElements(QueryOrbitalElements(newEpoch));
 }
 
 ////////////////////////////////////////////////////////////
-StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
+OrbitalElements JplApproximateBody::QueryOrbitalElementsAt(const Epoch& epoch)
 {
-   if (m_ephemeris)
-   {
-      return m_ephemeris->GetStateVector(GetName(), epoch);
-   }
-   else
-   {
-      OTL_ERROR() << "Failed to query state vector for planet " << Bracket(GetName())
-         << ": Invalid ephemeris pointer.";
-      return StateVector();
-   }
+   //return m_ephemeris.GetOrbitalElements(GetName(), GetEpoch());
+   return OrbitalElements();
 }
+
+////////////////////////////////////////////////////////////
+//EphemerisPointer JplApproximateBody::VGetEphemeris()
+//{
+//   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+//}
+
+////////////////////////////////////////////////////////////
+//StateVector JplApproximateBody::VQueryStateVector(const Epoch& epoch)
+//{
+//   if (m_ephemeris)
+//   {
+//      return m_ephemeris->GetStateVector(GetName(), epoch);
+//   }
+//   else
+//   {
+//      OTL_ERROR() << "Failed to query state vector for planet " << Bracket(GetName())
+//         << ": Invalid ephemeris pointer.";
+//      return StateVector();
+//   }
+//}
 
 } // namespace otl

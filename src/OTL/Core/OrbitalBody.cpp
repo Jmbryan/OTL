@@ -30,9 +30,16 @@ namespace otl
 ////////////////////////////////////////////////////////////
 OrbitalBody::OrbitalBody() :
 m_name("Unknown"),
-m_physicalProperties(),
-m_epoch(),
-m_orbit()
+m_initialized(false)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+OrbitalBody::OrbitalBody(const std::string& name, const Epoch& epoch) :
+m_name(name),
+m_epoch(epoch),
+m_initialized(false)
 {
 
 }
@@ -41,15 +48,41 @@ m_orbit()
 OrbitalBody::OrbitalBody(const std::string& name,
                          const PhysicalProperties& physicalProperties,
                          double gravitationalParameterCentralBody,
-                         const StateVector& stateVector,
+                         const OrbitalElements& orbitalElements,
                          const Epoch& epoch) :
 m_name(name),
 m_physicalProperties(physicalProperties),
 m_epoch(epoch),
-m_orbit(gravitationalParameterCentralBody, stateVector)
+m_orbit(gravitationalParameterCentralBody, orbitalElements),
+m_initialized(false)
 {
 
 }
+OrbitalBody::OrbitalBody(const std::string& name,
+                         const PhysicalProperties& physicalProperties,
+                         double gravitationalParameterCentralBody,
+                         const CartesianStateVector& cartesianStateVector,
+                         const Epoch& epoch) :
+m_name(name),
+m_physicalProperties(physicalProperties),
+m_epoch(epoch),
+m_orbit(gravitationalParameterCentralBody, cartesianStateVector),
+m_initialized(false)
+{
+
+}
+//OrbitalBody::OrbitalBody(const std::string& name,
+//                         const PhysicalProperties& physicalProperties,
+//                         double gravitationalParameterCentralBody,
+//                         const StateVector& stateVector,
+//                         const Epoch& epoch) :
+//m_name(name),
+//m_physicalProperties(physicalProperties),
+//m_epoch(epoch),
+//m_orbit(gravitationalParameterCentralBody, stateVector)
+//{
+//
+//}
 
 ////////////////////////////////////////////////////////////
 OrbitalBody::~OrbitalBody()
@@ -58,21 +91,15 @@ OrbitalBody::~OrbitalBody()
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::SetPropagator(const PropagatorPointer& propagator)
-{
-   m_orbit.SetPropagator(propagator);
-}
+//void OrbitalBody::SetPropagator(const PropagatorPointer& propagator)
+//{
+//   m_orbit.SetPropagator(propagator);
+//}
 
 ////////////////////////////////////////////////////////////
 const std::string& OrbitalBody::GetName() const
 {
    return m_name;
-}
-
-////////////////////////////////////////////////////////////
-const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
-{
-   return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
@@ -82,28 +109,49 @@ const Epoch& OrbitalBody::GetEpoch() const
 }
 
 ////////////////////////////////////////////////////////////
-CartesianStateVector OrbitalBody::GetCartesianStateVector() const
+const PhysicalProperties& OrbitalBody::GetPhysicalProperties() const
 {
-   return GetOrbit().GetCartesianStateVector();
-}
-
-//////////////////////////////////////////////////////////////
-OrbitalElements OrbitalBody::GetOrbitalElements() const
-{
-   return GetOrbit().GetOrbitalElements();
-}
-
-////////////////////////////////////////////////////////////
-const StateVector& OrbitalBody::GetStateVector() const
-{
-   return GetOrbit().GetStateVector();
+   Initialize();
+   return m_physicalProperties;
 }
 
 ////////////////////////////////////////////////////////////
 const keplerian::Orbit& OrbitalBody::GetOrbit() const
 {
+   Initialize();
    return m_orbit;
 }
+
+//////////////////////////////////////////////////////////////
+const OrbitalElements& OrbitalBody::GetOrbitalElements() const
+{
+   return GetOrbit().GetOrbitalElements();
+}
+
+const OrbitalElements& OrbitalBody::GetOrbitalElementsAt(const Epoch& epoch)
+{
+   PropagateTo(epoch);
+   return GetOrbit().GetOrbitalElements();
+}
+
+////////////////////////////////////////////////////////////
+const CartesianStateVector& OrbitalBody::GetCartesianStateVector() const
+{
+   return GetOrbit().GetCartesianStateVector();
+}
+
+////////////////////////////////////////////////////////////
+const CartesianStateVector& OrbitalBody::GetCartesianStateVectorAt(const Epoch& epoch)
+{
+   PropagateTo(epoch);
+   return GetOrbit().GetCartesianStateVector();
+}
+
+////////////////////////////////////////////////////////////
+//const StateVector& OrbitalBody::GetStateVector() const
+//{
+//   return GetOrbit().GetStateVector();
+//}
 
 ////////////////////////////////////////////////////////////
 keplerian::Orbit::Type OrbitalBody::GetOrbitType() const
@@ -112,15 +160,15 @@ keplerian::Orbit::Type OrbitalBody::GetOrbitType() const
 }
 
 ////////////////////////////////////////////////////////////
-double OrbitalBody::GetOrbitRadius() const
+const keplerian::Orbit::OrbitProperties& OrbitalBody::GetOrbitProperties() const
 {
-   return GetOrbit().GetOrbitRadius();
+   return GetOrbit().GetOrbitProperties();
 }
 
 ////////////////////////////////////////////////////////////
 double OrbitalBody::GetGravitationalParameterCentralBody() const
 {
-   return GetOrbit().GetMu();
+   return GetOrbit().GetGravitationalParameterCentralBody();
 }
 
 ////////////////////////////////////////////////////////////
@@ -132,9 +180,8 @@ bool OrbitalBody::IsOrbitType(keplerian::Orbit::Type orbitType) const
 ////////////////////////////////////////////////////////////
 void OrbitalBody::Propagate(const Time& timeDelta)
 {
-   m_epoch += timeDelta;
-   GetOrbit();
-   m_orbit.Propagate(timeDelta);
+   Initialize();
+   VPropagate(timeDelta);  
 }
 
 ////////////////////////////////////////////////////////////
@@ -143,17 +190,26 @@ void OrbitalBody::PropagateTo(const Epoch& epoch)
    Propagate(epoch - m_epoch);
 }
 
-////////////////////////////////////////////////////////////
-std::string OrbitalBody::ToString() const
+void OrbitalBody::Initialize() const
 {
-   std::ostringstream os;
-   os << "name=" << GetName() << " prop=" << GetPhysicalProperties() << " epoch=" << GetEpoch();
-
-   return os.str();
+   if (!m_initialized)
+   {
+      const_cast<OrbitalBody*>(this)->VInitialize();
+      m_initialized = true;
+   }
 }
 
 ////////////////////////////////////////////////////////////
-std::string OrbitalBody::ToDetailedString(std::string prefix) const
+//std::string OrbitalBody::ToString() const
+//{
+//   std::ostringstream os;
+//   os << "name=" << GetName() << " prop=" << GetPhysicalProperties() << " epoch=" << GetEpoch();
+//
+//   return os.str();
+//}
+
+////////////////////////////////////////////////////////////
+std::string OrbitalBody::ToString(const std::string& prefix) const
 {
    std::ostringstream os;
    os << prefix << "Name: " << GetName() << std::endl;
@@ -162,10 +218,16 @@ std::string OrbitalBody::ToDetailedString(std::string prefix) const
    os << prefix << "Epoch:" << std::endl;
    os << GetEpoch().ToDetailedString(prefix + "   ");
    os << prefix << "Orbit:" << std::endl;
-   os << GetOrbit().ToDetailedString(prefix + "   ");
+   os << GetOrbit().ToString(prefix + "   ");
    os << prefix << "Ephemeris:" << std::endl;
 
    return os.str();
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetEpoch(const Epoch& epoch)
+{
+   m_epoch = epoch;
 }
 
 ////////////////////////////////////////////////////////////
@@ -177,13 +239,25 @@ void OrbitalBody::SetPhysicalProperties(const PhysicalProperties& physicalProper
 ////////////////////////////////////////////////////////////
 void OrbitalBody::SetGravitationalParameterCentralBody(double gravitationalParameterCentralBody)
 {
-   m_orbit.SetMu(gravitationalParameterCentralBody);
+   m_orbit.SetGravitationalParameterCentralBody(gravitationalParameterCentralBody);
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitalBody::SetStateVector(const StateVector& stateVector)
+void OrbitalBody::SetOrbitalElements(const OrbitalElements& orbitalElements, keplerian::Orbit::Direction direction)
 {
-   m_orbit.SetStateVector(stateVector);
+   m_orbit.SetOrbitalElements(orbitalElements, direction);
 }
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetCartesianStateVector(const CartesianStateVector& cartesianStateVector)
+{
+   m_orbit.SetCartesianStateVector(cartesianStateVector);
+}
+
+////////////////////////////////////////////////////////////
+//void OrbitalBody::SetStateVector(const StateVector& stateVector)
+//{
+//   m_orbit.SetStateVector(stateVector);
+//}
 
 } // namespace otl

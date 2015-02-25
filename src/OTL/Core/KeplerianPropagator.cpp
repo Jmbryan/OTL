@@ -20,8 +20,8 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/KeplerianPropagator.h>
-#include <OTL/Core/Conversion.h>
-#include <OTL/Core/Logger.h>
+#include <OTL/Core/OrbitalElements.h>
+#include <OTL/Core/Time.h>
 
 namespace otl
 {
@@ -30,8 +30,7 @@ namespace keplerian
 {
 
 ////////////////////////////////////////////////////////////
-KeplerianPropagator::KeplerianPropagator() :
-IPropagator()
+KeplerianPropagator::KeplerianPropagator()
 {
 
 }
@@ -43,74 +42,92 @@ KeplerianPropagator::~KeplerianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-StateVectorType KeplerianPropagator::GetType() const
-{
-   return StateVectorType::Orbital;
-}
+//StateVectorType KeplerianPropagator::GetType() const
+//{
+//   return StateVectorType::Orbital;
+//}
 
 ////////////////////////////////////////////////////////////
-StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
-{  
-   // Convert the state vector to orbital elements
-   const auto& initialOrbitalElements = initialStateVector.GetOrbitalElements();
-
-   // Unpack relevent orbital elements
-   const double a = initialOrbitalElements.semiMajorAxis;
-   const double e = initialOrbitalElements.eccentricity;
-   const double TA1 = initialOrbitalElements.trueAnomaly;
-
-   // Solve Kepler's Equation depending on orbit type
-   double TA2 = 0.0;
-   if (IsCircularOrElliptical(e))
-   {
-      // Compute mean motion
-      double n = sqrt(mu / pow(a, 3.0));
-
-      // Convert true anomaly to mean anomaly
-      double E1 = ConvertTrueAnomaly2EccentricAnomaly(e, TA1);
-      double M1 = ConvertEccentricAnomaly2MeanAnomaly(e, E1);
-
-      // Propagate the mean anomaly using the mean motion
-      double M2 = M1 + n * timeDelta.Seconds();
-      M2 = Modulo(M2, MATH_2_PI);
-
-      // Convert back to true anomaly
-      keplerian::KeplersEquationElliptical kepler;
-      double E2 = kepler.Evaluate(e, M2);
-      TA2 = ConvertEccentricAnomaly2TrueAnomaly(e, E2);
-   }
-   else if (IsHyperbolic(e))
-   {
-      // Compute mean motion
-      double n = sqrt(mu / pow(-a, 3.0));
-
-      // Convert true anomaly to mean anomaly
-      double H1 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA1);
-      double M1 = ConvertHyperbolicAnomaly2MeanAnomaly(e, H1);
-
-      // Propagate the mean anomaly using the mean motion
-      double M2 = M1 + n * timeDelta.Seconds();
-      M2 = Modulo(M2, MATH_2_PI);
-
-      // Convert back to true anomaly
-      keplerian::KeplersEquationHyperbolic kepler;
-      double H2 = kepler.Evaluate(e, M2);
-      TA2 = ConvertHyperbolicAnomaly2TrueAnomaly(e, H2);
-   }
-   else // Parabolic
-   {
-      OTL_ERROR() << "Parabolic orbits are not supported";
-   }
-
-   return StateVector(
-      a,
-      e,
-      TA2,
-      initialOrbitalElements.inclination,
-      initialOrbitalElements.argOfPericenter,
-      initialOrbitalElements.lonOfAscendingNode,
-      StateVectorType::Orbital);
+double KeplerianPropagator::PropagateMeanAnomaly(double meanAnomaly, double meanMotion, const Time& timeDelta)
+{
+   return meanAnomaly + meanMotion * timeDelta.Seconds();
 }
+
+double KeplerianPropagator::PropagateMeanAnomaly(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta)
+{
+   double meanMotion = sqrt(mu / pow(orbitalElements.semiMajorAxis, 3.0));
+   return PropagateMeanAnomaly(orbitalElements.meanAnomaly, meanMotion, timeDelta);
+}
+
+OrbitalElements KeplerianPropagator::PropagateOrbitalElements(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta)
+{
+   OrbitalElements newOrbitalElements(orbitalElements);
+   newOrbitalElements.meanAnomaly = PropagateMeanAnomaly(orbitalElements, mu, timeDelta);
+   return newOrbitalElements;
+}
+
+//StateVector KeplerianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+//{  
+//   // Convert the state vector to orbital elements
+//   const auto& initialOrbitalElements = initialStateVector.GetOrbitalElements();
+//
+//   // Unpack relevent orbital elements
+//   const double a = initialOrbitalElements.semiMajorAxis;
+//   const double e = initialOrbitalElements.eccentricity;
+//   const double TA1 = initialOrbitalElements.trueAnomaly;
+//
+//   // Solve Kepler's Equation depending on orbit type
+//   double TA2 = 0.0;
+//   if (IsCircularOrElliptical(e))
+//   {
+//      // Compute mean motion
+//      double n = sqrt(mu / pow(a, 3.0));
+//
+//      // Convert true anomaly to mean anomaly
+//      double E1 = ConvertTrueAnomaly2EccentricAnomaly(e, TA1);
+//      double M1 = ConvertEccentricAnomaly2MeanAnomaly(e, E1);
+//
+//      // Propagate the mean anomaly using the mean motion
+//      double M2 = M1 + n * timeDelta.Seconds();
+//      M2 = Modulo(M2, MATH_2_PI);
+//
+//      // Convert back to true anomaly
+//      keplerian::KeplersEquationElliptical kepler;
+//      double E2 = kepler.Evaluate(e, M2);
+//      TA2 = ConvertEccentricAnomaly2TrueAnomaly(e, E2);
+//   }
+//   else if (IsHyperbolic(e))
+//   {
+//      // Compute mean motion
+//      double n = sqrt(mu / pow(-a, 3.0));
+//
+//      // Convert true anomaly to mean anomaly
+//      double H1 = ConvertTrueAnomaly2HyperbolicAnomaly(e, TA1);
+//      double M1 = ConvertHyperbolicAnomaly2MeanAnomaly(e, H1);
+//
+//      // Propagate the mean anomaly using the mean motion
+//      double M2 = M1 + n * timeDelta.Seconds();
+//      M2 = Modulo(M2, MATH_2_PI);
+//
+//      // Convert back to true anomaly
+//      keplerian::KeplersEquationHyperbolic kepler;
+//      double H2 = kepler.Evaluate(e, M2);
+//      TA2 = ConvertHyperbolicAnomaly2TrueAnomaly(e, H2);
+//   }
+//   else // Parabolic
+//   {
+//      OTL_ERROR() << "Parabolic orbits are not supported";
+//   }
+//
+//   return StateVector(
+//      a,
+//      e,
+//      TA2,
+//      initialOrbitalElements.inclination,
+//      initialOrbitalElements.argOfPericenter,
+//      initialOrbitalElements.lonOfAscendingNode,
+//      StateVectorType::Orbital);
+//}
 
 ////////////////////////////////////////////////////////////
 // Alternative implementations/approaches

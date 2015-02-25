@@ -53,11 +53,22 @@ public:
    /// \param epoch Current Epoch of the orbital body
    ///
    ////////////////////////////////////////////////////////////
+   explicit OrbitalBody(const std::string& name, const Epoch& epoch = Epoch());
    OrbitalBody(const std::string& name,
                const PhysicalProperties& physicalProperties,
                double gravitationalParameterCentralBody,
-               const StateVector& stateVector,
-               const Epoch& epoch = Epoch::MJD2000(0.0));
+               const OrbitalElements& orbitalElements,
+               const Epoch& epoch = Epoch());
+   OrbitalBody(const std::string& name,
+               const PhysicalProperties& physicalProperties,
+               double gravitationalParameterCentralBody,
+               const CartesianStateVector& cartesiantateVector,
+               const Epoch& epoch = Epoch());
+   //OrbitalBody(const std::string& name,
+   //            const PhysicalProperties& physicalProperties,
+   //            double gravitationalParameterCentralBody,
+   //            const StateVector& stateVector,
+   //            const Epoch& epoch = Epoch::MJD2000(0.0));
 
 
    ////////////////////////////////////////////////////////////
@@ -71,7 +82,7 @@ public:
    /// \param propagator Smart pointer to propagator
    ///
    ////////////////////////////////////////////////////////////
-   void SetPropagator(const PropagatorPointer& propagator);
+   //void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the name of the orbital body
@@ -82,12 +93,20 @@ public:
    const std::string& GetName() const;
 
    ////////////////////////////////////////////////////////////
+   /// \brief Get the current epoch of the orbital body
+   ///
+   /// \return Current Epoch of the orbital body
+   ///
+   ////////////////////////////////////////////////////////////
+   const Epoch& GetEpoch() const;
+
+   ////////////////////////////////////////////////////////////
    /// \brief Get the physical properties of the orbital body
    ///
    /// \return PhysicalProperties of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual const PhysicalProperties& GetPhysicalProperties() const;
+   const PhysicalProperties& GetPhysicalProperties() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbit of the orbital body
@@ -95,15 +114,7 @@ public:
    /// \return Current Orbit of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual const keplerian::Orbit& GetOrbit() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the current epoch of the orbital body
-   ///
-   /// \return Current Epoch of the orbital body
-   ///
-   ////////////////////////////////////////////////////////////
-   virtual const Epoch& GetEpoch() const;
+   const keplerian::Orbit& GetOrbit() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current state vector of the orbital body
@@ -114,23 +125,7 @@ public:
    /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   const StateVector& GetStateVector() const;
-
-   ////////////////////////////////////////////////////////////
-   /// \brief Get the current cartesian state vector of the orbital body
-   ///
-   /// If the state vector is stored in StateVectorType::Orbital
-   /// format, then this function will convert from
-   /// OrbitalElements to CartesianStateVector by calling the
-   /// ConvertOrbitalElements2CartesianStateVector() function.
-   /// The result is cached so subsequent calls will not suffer
-   /// this overhead again until the state vector is modified
-   /// by e.g. calling the Propagate() method.
-   ///
-   /// \return Current CartesianStateVector of the orbit
-   ///
-   ////////////////////////////////////////////////////////////
-   CartesianStateVector GetCartesianStateVector() const;
+   //const StateVector& GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbital elements of the orbital body
@@ -146,7 +141,27 @@ public:
    /// \return Current OrbitalElements of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   OrbitalElements GetOrbitalElements() const;
+   const OrbitalElements& GetOrbitalElements() const;
+   const OrbitalElements& GetOrbitalElementsAt(const Epoch& epoch);
+   //OrbitalElements GetOrbitalElements() const;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Get the current cartesian state vector of the orbital body
+   ///
+   /// If the state vector is stored in StateVectorType::Orbital
+   /// format, then this function will convert from
+   /// OrbitalElements to CartesianStateVector by calling the
+   /// ConvertOrbitalElements2CartesianStateVector() function.
+   /// The result is cached so subsequent calls will not suffer
+   /// this overhead again until the state vector is modified
+   /// by e.g. calling the Propagate() method.
+   ///
+   /// \return Current CartesianStateVector of the orbit
+   ///
+   ////////////////////////////////////////////////////////////
+   const CartesianStateVector& GetCartesianStateVector() const;
+   const CartesianStateVector& GetCartesianStateVectorAt(const Epoch& epoch);
+   //CartesianStateVector GetCartesianStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
@@ -165,7 +180,8 @@ public:
    /// \return Orbit radius of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   double GetOrbitRadius() const;
+   //double GetOrbitRadius() const;
+   const keplerian::Orbit::OrbitProperties& GetOrbitProperties() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the gravitational parameter of central body being orbited
@@ -196,7 +212,7 @@ public:
    /// \param timeDelta Propagation Time duration
    ///
    ////////////////////////////////////////////////////////////
-   void Propagate(const Time& timeDelta);
+   //void Propagate(const Time& timeDelta);
    
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the orbital body to a given epoch
@@ -209,7 +225,7 @@ public:
    /// \param epoch Desired Epoch
    ///
    ////////////////////////////////////////////////////////////
-   void PropagateTo(const Epoch& epoch);
+   //void PropagateTo(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbital body to a single-line formatted string
@@ -232,7 +248,7 @@ public:
    /// \returns std::string Stringified orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual std::string ToString() const;
+   //virtual std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the orbital body to a detailed multi-line formatted string
@@ -279,9 +295,12 @@ public:
    /// \returns std::string Stringified orbital body
    ///
    ////////////////////////////////////////////////////////////
-   virtual std::string ToDetailedString(std::string prefix = "") const;
+   virtual std::string ToString(const std::string& prefix = "") const;
+   //virtual std::string ToDetailedString(std::string prefix = "") const;
 
 protected:
+   void SetEpoch(const Epoch& epoch);
+
    ////////////////////////////////////////////////////////////
    /// \brief Set the physical properties of the orbital body
    ///
@@ -297,6 +316,7 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    void SetGravitationalParameterCentralBody(double gravitationalParameterCentralBody);
+   //void SetOrbit(const keplerian::Orbit& orbit);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the state vector of the orbital body
@@ -304,13 +324,25 @@ protected:
    /// \param stateVector StateVector of the orbital body
    ///
    ////////////////////////////////////////////////////////////
-   void SetStateVector(const StateVector& stateVector);
+   void SetOrbitalElements(const OrbitalElements& orbitalElements, keplerian::Orbit::Direction direction = keplerian::Orbit::Direction::Prograde);
+   void SetCartesianStateVector(const CartesianStateVector& cartesianStateVector);
+   //void SetStateVector(const StateVector& stateVector);
 
-private:
-    std::string m_name;                       ///< Name of the orbital body
-    PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
+   void PropagateTo(const Epoch& epoch);
+   void Propagate(const Time& timeDelta);
+   virtual void VPropagate(const Time& timeDelta) = 0;
+
+   void Initialize() const;
+   virtual void VInitialize() = 0;
+
+protected:
     Epoch m_epoch;                            ///< Current epoch of the orbital body
+    PhysicalProperties m_physicalProperties;  ///< Physical properties of the orbital body
     keplerian::Orbit m_orbit;                 ///< Keplerian orbit of the orbital body
+    
+private:
+   std::string m_name;                       ///< Name of the orbital body
+   mutable bool m_initialized;
 };
 
 ////////////////////////////////////////////////////////////

@@ -23,16 +23,17 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/EphemerisBody.h>
+#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/JplApproximateEphemeris.h>
 
 namespace otl
 {
 
 // Forward declarations
-class JplApproximateEphemeris;
-typedef std::shared_ptr<JplApproximateEphemeris> JplApproximateEphemerisPointer;
+//class JplApproximateEphemeris;
+//typedef std::shared_ptr<JplApproximateEphemeris> JplApproximateEphemerisPointer;
 
-class OTL_CORE_API JplApproximateBody : public IEphemerisBody
+class OTL_CORE_API JplApproximateBody : public OrbitalBody
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -51,7 +52,7 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    explicit JplApproximateBody(const std::string& name,
-                               const Epoch& epoch = Epoch::MJD2000(0.0));
+                               const Epoch& epoch = Epoch());
 
    ////////////////////////////////////////////////////////////
    /// \brief Create the body from name and JPL approximate ephemeris database
@@ -62,8 +63,8 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    JplApproximateBody(const std::string& name,
-                      const JplApproximateEphemerisPointer& ephemeris,
-                      const Epoch& epoch = Epoch::MJD2000(0.0));
+                      const JplApproximateEphemeris& ephemeris,
+                      const Epoch& epoch = Epoch());
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the JPL approximate ephemeris database
@@ -71,7 +72,9 @@ public:
    /// \param ephemeris Smart pointer to JPL approximate ephemeris database
    ///
    ////////////////////////////////////////////////////////////
-   void SetEphemeris(const JplApproximateEphemerisPointer& ephemeris);
+   void SetEphemeris(const JplApproximateEphemeris& ephemeris);
+
+   void LoadEphemerisDataFile(const std::string& filename);
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the body to a single-line formatted string
@@ -84,7 +87,7 @@ public:
    /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToString() const;
+   //std::string ToString() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Converts the body to a detailed multi-line formatted string
@@ -97,7 +100,7 @@ public:
    /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
-   std::string ToDetailedString(std::string prefix = "") const;
+   virtual std::string ToString(const std::string& prefix = "") const override;
 
 protected:
    ////////////////////////////////////////////////////////////
@@ -111,6 +114,7 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
+   virtual void VPropagate(const Time& timeDelta) override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get a smart pointer to the JPL approximate ephemeris database
@@ -121,7 +125,7 @@ protected:
    /// \return Smart pointer to IEphemeris database
    ///
    ////////////////////////////////////////////////////////////
-   virtual EphemerisPointer VGetEphemeris() override;
+   //virtual EphemerisPointer VGetEphemeris() override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Query the state vector of the body at a given epoch
@@ -134,10 +138,15 @@ protected:
    /// \return StateVector of the body at the given Epoch
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VQueryStateVector(const Epoch& epoch) override; 
+   //virtual StateVector VQueryStateVector(const Epoch& epoch) override;
 
 private:
-   JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to JPL approximate ephemeris database
+   OrbitalElements QueryOrbitalElementsAt(const Epoch& epoch);
+
+private:
+   JplApproximateEphemeris m_ephemeris;
+   bool m_initialized;
+   //JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to JPL approximate ephemeris database
 };
 
 ////////////////////////////////////////////////////////////

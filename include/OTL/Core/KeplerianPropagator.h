@@ -20,16 +20,19 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Propagator.h>
-#include <OTL/Core/KeplersEquations.h>
+#include <OTL/Core/Export.h>
 
 namespace otl
 {
 
+// Forward declarations
+struct OrbitalElements;
+class Time;
+
 namespace keplerian
 {
 
-class OTL_CORE_API KeplerianPropagator : public otl::IPropagator
+class OTL_CORE_API KeplerianPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -40,11 +43,11 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
-   virtual ~KeplerianPropagator();
+   ~KeplerianPropagator();
 
-   virtual StateVectorType GetType() const override;
+   //virtual StateVectorType GetType() const override;
 
-protected:
+//protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using Kepler's equations
    ///
@@ -60,7 +63,10 @@ protected:
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 7, section 2.3, page 89
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
+   double PropagateMeanAnomaly(double meanAnomaly, double meanMotion, const Time& timeDelta);
+   double PropagateMeanAnomaly(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
+   OrbitalElements PropagateOrbitalElements(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
+   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
 };
 
 } // namespace keplerian
