@@ -111,17 +111,15 @@ void JplApproximateBody::VInitialize()
 }
 
 ////////////////////////////////////////////////////////////
-void JplApproximateBody::VPropagate(const Time& timeDelta)
+void JplApproximateBody::VPropagateTo(const Epoch& epoch)
 {
-   Epoch newEpoch = GetEpoch() + timeDelta;
-   SetEpoch(newEpoch);
-   //m_orbit.SetOrbitalElements(QueryOrbitalElements(newEpoch));
+   m_orbit.SetOrbitalElements(QueryOrbitalElementsAt(epoch));
 }
 
 ////////////////////////////////////////////////////////////
 OrbitalElements JplApproximateBody::QueryOrbitalElementsAt(const Epoch& epoch)
 {
-   //return m_ephemeris.GetOrbitalElements(GetName(), GetEpoch());
+   //return m_ephemeris.GetOrbitalElements(GetName(), epoch);
    return OrbitalElements();
 }
 

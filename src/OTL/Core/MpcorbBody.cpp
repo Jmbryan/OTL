@@ -30,16 +30,14 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 MpcorbBody::MpcorbBody() :
-IEphemerisBody(),
-m_ephemeris()
+OrbitalBody()
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-MpcorbBody::MpcorbBody(const std::string& name,
-                       const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector()),
+MpcorbBody::MpcorbBody(const std::string& name, const Epoch& epoch) :
+OrbitalBody(name, epoch),
 m_ephemeris(nullptr)
 {
 
@@ -47,56 +45,73 @@ m_ephemeris(nullptr)
 
 ////////////////////////////////////////////////////////////
 MpcorbBody::MpcorbBody(const std::string& name,
-                       const MpcorbEphemerisPointer& ephemeris,
+                       const MpcorbEphemeris& ephemeris,
                        const Epoch& epoch) :
-IEphemerisBody(name, PhysicalProperties(), 1.0, StateVector()),
+OrbitalBody(name, epoch),
 m_ephemeris(ephemeris)
 {
 
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbBody::SetEphemeris(const MpcorbEphemerisPointer& ephemeris)
+void MpcorbBody::SetEphemeris(const MpcorbEphemeris& ephemeris)
 {
    m_ephemeris = ephemeris;
 }
 
 ////////////////////////////////////////////////////////////
+void MpcorbBody::LoadEphemerisDataFile(const std::string& filename)
+{
+   m_ephemeris.LoadDataFile(filename);
+}
+
+////////////////////////////////////////////////////////////
+std::string MpcorbBody::ToString(const std::string& prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Orbital Body:" << std::endl;
+   os << OrbitalBody::ToString(prefix + "   ");
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
 void MpcorbBody::VInitialize()
 {
-   // Init the ephemeris
-   if (!m_ephemeris)
-   {
-      m_ephemeris = std::make_shared<MpcorbEphemeris>();
-   }
+   const auto& name = GetName();
+   const auto& epoch = GetEpoch();
 
    // Init the physical properties
-   SetPhysicalProperties(
-      m_ephemeris->GetPhysicalProperties(GetName()));
+   m_physicalProperties = m_ephemeris.GetPhysicalProperties(name);
 
-   // Init the gravitational parameter of central body
-   SetGravitationalParameterCentralBody(
-      m_ephemeris->GetGravitationalParameterCentralBody(GetName()));
+   // Init the reference epoch and orbital elements
+   m_referenceEpoch = m_ephemeris.GetReferenceEpoch(name);
+   m_referenceOrbitalElements = m_ephemeris.GetReferenceOrbitalElements(name);
 
-   // Init the reference state vector
-   SetStateVector(
-      m_ephemeris->GetReferenceStateVector(GetName()));
-   
-   // Propagate to current epoch
-   PropagateTo(GetEpoch());
+   // Init the orbit
+   double mu = m_ephemeris.GetGravitationalParameterCentralBody(name);
+   m_orbit = keplerian::Orbit(mu, m_referenceOrbitalElements, keplerian::Orbit::Direction::Prograde);
+   m_orbit.Propagate(epoch - m_referenceEpoch);
 }
 
 ////////////////////////////////////////////////////////////
-EphemerisPointer MpcorbBody::VGetEphemeris()
+void MpcorbBody::VPropagateTo(const Epoch& epoch)
 {
-   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+   m_orbit.SetOrbitalElements(m_referenceOrbitalElements, keplerian::Orbit::Direction::Prograde);
+   m_orbit.Propagate(epoch - m_referenceEpoch);
 }
 
 ////////////////////////////////////////////////////////////
-StateVector MpcorbBody::VQueryStateVector(const Epoch& epoch)
-{
-   OrbitalBody::PropagateTo(epoch);
-   return GetStateVector();
-}
+//EphemerisPointer MpcorbBody::VGetEphemeris()
+//{
+//   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+//}
+
+////////////////////////////////////////////////////////////
+//StateVector MpcorbBody::VQueryStateVector(const Epoch& epoch)
+//{
+//   OrbitalBody::PropagateTo(epoch);
+//   return GetStateVector();
+//}
 
 } // namespace otl

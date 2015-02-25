@@ -38,8 +38,7 @@ static EphemerisDatabasePointer g_ephemerisDatabase;
 
 ////////////////////////////////////////////////////////////
 MpcorbEphemeris::MpcorbEphemeris(const std::string& dataFilename) :
-IEphemeris(dataFilename),
-m_propagator(new keplerian::KeplerianPropagator())
+IEphemeris(dataFilename)
 {
 
 }
@@ -51,10 +50,10 @@ MpcorbEphemeris::~MpcorbEphemeris()
 }
 
 ////////////////////////////////////////////////////////////
-void MpcorbEphemeris::SetPropagator(const PropagatorPointer& propagator)
-{
-   m_propagator = propagator;
-}
+//void MpcorbEphemeris::SetPropagator(const PropagatorPointer& propagator)
+//{
+//   m_propagator = propagator;
+//}
 
 ////////////////////////////////////////////////////////////
 StateVector MpcorbEphemeris::GetReferenceStateVector(const std::string& name)
@@ -71,18 +70,18 @@ StateVector MpcorbEphemeris::GetReferenceStateVector(const std::string& name)
 }
 
 ////////////////////////////////////////////////////////////
-Epoch MpcorbEphemeris::GetReferenceEpoch(const std::string& name)
-{
-   try
-   {
-      return g_ephemerisDatabase->GetEpoch(name);
-   }
-   catch (std::exception ex)
-   {
-      OTL_ERROR() << "Exception caught while retrieving reference epoch for " << Bracket(name);
-      return Epoch();
-   }
-}
+//Epoch MpcorbEphemeris::GetReferenceEpoch(const std::string& name)
+//{
+//   try
+//   {
+//      return g_ephemerisDatabase->GetEpoch(name);
+//   }
+//   catch (std::exception ex)
+//   {
+//      OTL_ERROR() << "Exception caught while retrieving reference epoch for " << Bracket(name);
+//      return Epoch();
+//   }
+//}
 
 ////////////////////////////////////////////////////////////
 void MpcorbEphemeris::VLoad()
@@ -108,8 +107,15 @@ void MpcorbEphemeris::VInitialize()
 
 ////////////////////////////////////////////////////////////
 bool MpcorbEphemeris::VIsValidName(const std::string& name)
-{
-   return g_ephemerisDatabase->IsValidName(name);
+{ 
+   if (g_ephemerisDatabase->IsValidName(name))
+   {
+      //m_referenceEpoch = g_ephemerisDatabase->GetEpoch(name);
+      //m_referenceOrbitalElements = g_ephemerisDatabase->GetStateVector(name).GetOrbitalElements();
+      m_referenceDirty = true;
+      return true;
+   }
+   return false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -150,16 +156,75 @@ StateVector MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoc
    auto timeDelta = Time::Days(epoch.GetJD() - m_referenceEpoch.GetJD());
 
    // Propagate the state vector to the desired epoch
-   if (m_propagator)
+   //if (m_propagator)
+   //{
+   //   //return m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
+   //}
+   //else
+   //{
+   //   OTL_ERROR() << "Invalid propagator pointer";
+   //}
+
+   return StateVector();
+}
+
+
+
+////////////////////////////////////////////////////////////
+Epoch MpcorbEphemeris::GetReferenceEpoch(const std::string& name)
+{
+   if (IsValidName(name))
    {
-      return m_propagator->Propagate(m_referenceStateVector, timeDelta, ASTRO_MU_SUN);
+      UpdateReference(name);
+      return m_referenceEpoch;
    }
    else
    {
-      OTL_ERROR() << "Invalid propagator pointer";
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
    }
+   return Epoch();
+}
 
-   return StateVector();
+////////////////////////////////////////////////////////////
+OrbitalElements MpcorbEphemeris::GetReferenceOrbitalElements(const std::string& name)
+{
+   if (IsValidName(name))
+   {
+      UpdateReference(name);
+      return m_referenceOrbitalElements;
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+   return OrbitalElements();
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch)
+{
+   UpdateReference(name);
+   keplerian::KeplerianPropagator propagator;
+   m_cachedOrbitalElements = propagator.PropagateOrbitalElements(m_referenceOrbitalElements, ASTRO_MU_SUN, epoch - m_referenceEpoch);
+   return m_cachedOrbitalElements;
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector MpcorbEphemeris::VGetCartesianStateVector(const std::string& name, const Epoch& epoch)
+{
+   return ConvertOrbitalElements2CartesianStateVector(
+      VGetOrbitalElements(name, epoch), ASTRO_MU_SUN);
+}
+
+////////////////////////////////////////////////////////////
+void MpcorbEphemeris::UpdateReference(const std::string& name)
+{
+   if (m_referenceDirty)
+   {
+      m_referenceEpoch = g_ephemerisDatabase->GetEpoch(name);
+      m_referenceOrbitalElements = g_ephemerisDatabase->GetStateVector(name).GetOrbitalElements();
+      m_referenceDirty = false;
+   }
 }
 
 } // namespace otl

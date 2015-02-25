@@ -31,8 +31,7 @@ namespace otl
 
 ////////////////////////////////////////////////////////////
 SpiceBody::SpiceBody() :
-IEphemerisBody(),
-m_ephemeris(nullptr)
+OrbitalBody()
 {
 
 }
@@ -42,71 +41,92 @@ SpiceBody::SpiceBody(const std::string& observerBodyName,
                      const Epoch& epoch,
                      const std::string& targetBodyName,
                      const std::string& referenceFrameName) :
-IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
-m_ephemeris(nullptr)
+OrbitalBody(observerBodyName, epoch)
 {
-   SetPropagator(std::make_shared<LagrangianPropagator>());
+
 }
 
 ////////////////////////////////////////////////////////////
 SpiceBody::SpiceBody(const std::string& observerBodyName,
-                     const SpiceEphemerisPointer& ephemeris,
+                     const SpiceEphemeris& ephemeris,
                      const Epoch& epoch,
                      const std::string& targetBodyName,
                      const std::string& referenceFrameName) :
-IEphemerisBody(observerBodyName, PhysicalProperties(), 1.0, StateVector(), epoch),
+OrbitalBody(observerBodyName, epoch),
 m_ephemeris(ephemeris)
 {
-   SetPropagator(std::make_shared<LagrangianPropagator>());
+
 }
 
 ////////////////////////////////////////////////////////////
-void SpiceBody::SetEphemeris(const SpiceEphemerisPointer& ephemeris)
+void SpiceBody::SetEphemeris(const SpiceEphemeris& ephemeris)
 {
    m_ephemeris = ephemeris;
 }
 
 ////////////////////////////////////////////////////////////
+void SpiceBody::LoadKernal(const std::string& filename)
+{
+   m_ephemeris.LoadDataFile(filename);
+}
+
+////////////////////////////////////////////////////////////
+std::string SpiceBody::ToString(const std::string& prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Orbital Body:" << std::endl;
+   os << OrbitalBody::ToString(prefix + "   ");
+
+   return os.str();
+}
+
+////////////////////////////////////////////////////////////
 void SpiceBody::VInitialize()
 {
-   // Init the ephemeris
-   if (!m_ephemeris)
-   {
-      m_ephemeris = std::make_shared<SpiceEphemeris>();
-   }
+   const auto& name = GetName();
+   const auto& epoch = GetEpoch();
    
    // Init the physical properties
-   SetPhysicalProperties(
-      m_ephemeris->GetPhysicalProperties(GetName()));
+   m_physicalProperties = m_ephemeris.GetPhysicalProperties(name);
 
-   // Init the gravitational parameter of central body
-   SetGravitationalParameterCentralBody(
-      m_ephemeris->GetGravitationalParameterCentralBody(GetName()));
-
-   // Init the state vector
-   SetStateVector(
-      m_ephemeris->GetStateVector(GetName(), GetEpoch()));
+   // Init the orbit
+   double mu = m_ephemeris.GetGravitationalParameterCentralBody(name);
+   auto cartesianStateVector = QueryCartesianStateVectorAt(epoch);
+   m_orbit = keplerian::Orbit(mu, cartesianStateVector);
 }
 
 ////////////////////////////////////////////////////////////
-EphemerisPointer SpiceBody::VGetEphemeris()
+void SpiceBody::VPropagateTo(const Epoch& epoch)
 {
-   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+   m_orbit.SetCartesianStateVector(QueryCartesianStateVectorAt(epoch));
 }
 
 ////////////////////////////////////////////////////////////
-StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
+CartesianStateVector SpiceBody::QueryCartesianStateVectorAt(const Epoch& epoch)
 {
-   if (m_ephemeris)
-   {
-      return m_ephemeris->GetStateVector(GetName(), epoch);
-   }
-   else
-   {
-      OTL_ERROR() << "Failed to query state vector for spice body " << Bracket(GetName())
-         << ": Invalid ephemeris pointer.";
-      return StateVector();
-   }
+   //return m_ephemeris.GetCartesianStateVector(GetName(), epoch);
+   return CartesianStateVector();
 }
+
+////////////////////////////////////////////////////////////
+//EphemerisPointer SpiceBody::VGetEphemeris()
+//{
+//   return std::dynamic_pointer_cast<IEphemeris>(m_ephemeris);
+//}
+
+////////////////////////////////////////////////////////////
+//StateVector SpiceBody::VQueryStateVector(const Epoch& epoch)
+//{
+//   if (m_ephemeris)
+//   {
+//      return m_ephemeris->GetStateVector(GetName(), epoch);
+//   }
+//   else
+//   {
+//      OTL_ERROR() << "Failed to query state vector for spice body " << Bracket(GetName())
+//         << ": Invalid ephemeris pointer.";
+//      return StateVector();
+//   }
+//}
 
 } // namespace otl

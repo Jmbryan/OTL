@@ -114,7 +114,7 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual void VInitialize() override;
-   virtual void VPropagate(const Time& timeDelta) override;
+   virtual void VPropagateTo(const Epoch& epoch) override;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get a smart pointer to the JPL approximate ephemeris database
@@ -144,8 +144,7 @@ private:
    OrbitalElements QueryOrbitalElementsAt(const Epoch& epoch);
 
 private:
-   JplApproximateEphemeris m_ephemeris;
-   bool m_initialized;
+   JplApproximateEphemeris m_ephemeris; ///< JPL approximate ephemeris database
    //JplApproximateEphemerisPointer m_ephemeris;  ///< Smart pointer to JPL approximate ephemeris database
 };
 

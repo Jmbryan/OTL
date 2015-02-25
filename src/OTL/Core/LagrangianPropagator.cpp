@@ -24,14 +24,12 @@
 
 #include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Time.h>
-#include <OTL/Core/StateVector.h>
 
 namespace otl
 {
 
 ////////////////////////////////////////////////////////////
-LagrangianPropagator::LagrangianPropagator() :
-   IPropagator()
+LagrangianPropagator::LagrangianPropagator()
 {
 
 }
@@ -43,28 +41,32 @@ LagrangianPropagator::~LagrangianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-StateVectorType LagrangianPropagator::GetType() const
-{
-   return StateVectorType::Cartesian;
-}
+//StateVectorType LagrangianPropagator::GetType() const
+//{
+//   return StateVectorType::Cartesian;
+//}
 
 ////////////////////////////////////////////////////////////
-StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+//StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+//{
+//   // Convert the state vector to cartesian state vector
+//   //const CartesianStateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
+//   const auto& cartesianStateVector = initialStateVector.GetCartesianStateVector();
+//
+//   // Unpack the initial cartesian vectors and time duration in seconds
+//   const Vector3d& R1 = cartesianStateVector.position;
+//   const Vector3d& V1 = cartesianStateVector.velocity;
+//   double seconds = timeDelta.Seconds();
+CartesianStateVector LagrangianPropagator::Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta)
 {
-   // Convert the state vector to cartesian state vector
-   //const CartesianStateVector& cartesianStateVector = initialStateVector.ToCartesianStateVector(mu);
-   const auto& cartesianStateVector = initialStateVector.GetCartesianStateVector();
-
-   // Unpack the initial cartesian vectors and time duration in seconds
-   const Vector3d& R1 = cartesianStateVector.position;
-   const Vector3d& V1 = cartesianStateVector.velocity;
-   double seconds = timeDelta.Seconds();
-
    // Compute frequently used variables
-   double sqrtMu = sqrt(mu);
-   double r0 = R1.norm();
-   double v0 = V1.norm();
-   double rdotv = R1.dot(V1);
+   const auto& R1 = position;
+   const auto& V1 = velocity;
+   const double seconds = timeDelta.Seconds();
+   const double sqrtMu = sqrt(mu);
+   const double r0 = R1.norm();
+   const double v0 = V1.norm();
+   const double rdotv = R1.dot(V1);
 
    // Compute the universal variable results
    auto results = CalculateUniversalVariable(r0, v0, rdotv, seconds, mu);
@@ -76,7 +78,12 @@ StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVect
    Vector3d R2 = coeff.f    * R1 + coeff.g    * V1;
    Vector3d V2 = coeff.fDot * R1 + coeff.gDot * V1;
 
-   return StateVector(R2, V2, StateVectorType::Cartesian);
+   return CartesianStateVector(R2, V2);
+}
+
+CartesianStateVector LagrangianPropagator::Propagate(const CartesianStateVector& cartesianStateVector, double mu, const Time& timeDelta)
+{
+   return Propagate(cartesianStateVector.position, cartesianStateVector.velocity, mu, timeDelta);
 }
 
 ////////////////////////////////////////////////////////////

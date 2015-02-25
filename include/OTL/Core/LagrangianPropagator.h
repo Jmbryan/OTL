@@ -23,12 +23,15 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Propagator.h>
+#include <OTL/Core/CartesianStateVector.h>
 
 namespace otl
 {
 
-class OTL_CORE_API LagrangianPropagator : public IPropagator
+// Forward declarations
+class Time;
+
+class OTL_CORE_API LagrangianPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -72,9 +75,9 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~LagrangianPropagator();
 
-   virtual StateVectorType GetType() const override;
+   //virtual StateVectorType GetType() const override;
 
-protected:
+//protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients
    ///
@@ -90,7 +93,9 @@ protected:
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
+   CartesianStateVector Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta);
+   CartesianStateVector Propagate(const CartesianStateVector& cartesianStateVector, double mu, const Time& timeDelta);
+   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
 
 private:
    ////////////////////////////////////////////////////////////

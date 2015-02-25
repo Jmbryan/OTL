@@ -140,6 +140,58 @@ StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epo
 }
 
 ////////////////////////////////////////////////////////////
+OrbitalElements IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch)
+{
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (IsValidName(name))
+   {
+      if (IsValidEpoch(epoch))
+      {
+         return VGetOrbitalElements(name, epoch);
+      }
+      else
+      {
+         OTL_ERROR() << "Epoch is outside the accepted range";
+      }
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+   return OrbitalElements();
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector IEphemeris::GetCartesianStateVector(const std::string& name, const Epoch& epoch)
+{
+   if (!m_initialized)
+   {
+      Initialize();
+   }
+
+   if (IsValidName(name))
+   {
+      if (IsValidEpoch(epoch))
+      {
+         return VGetCartesianStateVector(name, epoch);
+      }
+      else
+      {
+         OTL_ERROR() << "Epoch is outside the accepted range";
+      }
+   }
+   else
+   {
+      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+   }
+   return CartesianStateVector();
+}
+
+////////////////////////////////////////////////////////////
 bool IEphemeris::IsValidName(const std::string& name)
 {
    if (name == m_cachedName)

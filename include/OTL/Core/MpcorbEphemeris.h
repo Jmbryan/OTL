@@ -31,8 +31,8 @@ namespace otl
 {
 
 // Forward declarations
-class IPropagator;
-typedef std::shared_ptr<IPropagator> PropagatorPointer;
+//class IPropagator;
+//typedef std::shared_ptr<IPropagator> PropagatorPointer;
 
 class OTL_CORE_API MpcorbEphemeris : public IEphemeris
 {
@@ -56,7 +56,7 @@ public:
    /// \param propagator Smart pointer to the propagator
    ///
    ////////////////////////////////////////////////////////////
-   void SetPropagator(const PropagatorPointer& propagator);
+   //void SetPropagator(const PropagatorPointer& propagator);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the reference state vector for a given entity
@@ -74,7 +74,10 @@ public:
    /// \return Reference Epoch of entity
    ///
    ////////////////////////////////////////////////////////////
+   //Epoch GetReferenceEpoch(const std::string& name);
+
    Epoch GetReferenceEpoch(const std::string& name);
+   OrbitalElements GetReferenceOrbitalElements(const std::string& name);
    
 protected:
    ////////////////////////////////////////////////////////////
@@ -143,11 +146,18 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
+   virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) override;
+   virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) override;
+
+   void UpdateReference(const std::string& name);
 
 private:
    StateVector m_referenceStateVector; ///< Temporary variable for retrieving reference state vector
+   OrbitalElements m_referenceOrbitalElements;
    Epoch m_referenceEpoch;                   ///< Temporary variable for retrieving reference epoch
-   PropagatorPointer m_propagator;           ///< Smart pointer to propagator algorithm for propagating the reference state vector 
+   OrbitalElements m_cachedOrbitalElements;
+   bool m_referenceDirty;
+   //keplerian::KeplerianPropagator m_propagator;           ///< Smart pointer to propagator algorithm for propagating the reference state vector 
 };
 
 } // namespace otl

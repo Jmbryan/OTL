@@ -330,7 +330,7 @@ protected:
 
    void PropagateTo(const Epoch& epoch);
    void Propagate(const Time& timeDelta);
-   virtual void VPropagate(const Time& timeDelta) = 0;
+   virtual void VPropagateTo(const Epoch& epoch) = 0;
 
    void Initialize() const;
    virtual void VInitialize() = 0;

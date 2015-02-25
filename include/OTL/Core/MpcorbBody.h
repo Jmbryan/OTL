@@ -23,24 +23,25 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/EphemerisBody.h>
+#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/MpcorbEphemeris.h>
 
 namespace otl
 {
 
-// Forward declarations
-class MpcorbEphemeris;
-typedef std::shared_ptr<MpcorbEphemeris> MpcorbEphemerisPointer;
+//// Forward declarations
+//class MpcorbEphemeris;
+//typedef std::shared_ptr<MpcorbEphemeris> MpcorbEphemerisPointer;
 
-class OTL_CORE_API MpcorbBody : public IEphemerisBody
+class OTL_CORE_API MpcorbBody : public OrbitalBody
 {
 public:
    MpcorbBody();
    explicit MpcorbBody(const std::string& name,
-                       const Epoch& epoch = Epoch::MJD2000(0.0));
+                       const Epoch& epoch = Epoch());
    MpcorbBody(const std::string& name,
-              const MpcorbEphemerisPointer& ephemeris,
-              const Epoch& epoch = Epoch::MJD2000(0.0));
+              const MpcorbEphemeris& ephemeris,
+              const Epoch& epoch = Epoch());
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the MPCORB ephemeris database
@@ -48,7 +49,9 @@ public:
    /// \param ephemeris Smart pointer to MPCORB ephemeris database
    ///
    ////////////////////////////////////////////////////////////
-   void SetEphemeris(const MpcorbEphemerisPointer& ephemeris);
+   void SetEphemeris(const MpcorbEphemeris& ephemeris);
+
+   void LoadEphemerisDataFile(const std::string& filename);
 
    //virtual std::string ToString() const override;
 
@@ -76,21 +79,19 @@ public:
    /// \returns std::string Stringified body
    ///
    ////////////////////////////////////////////////////////////
-   //virtual std::string ToDetailedString(std::string prefix = "") const override;  
+   virtual std::string ToString(const std::string& prefix = "") const override;  
 
-protected:
+//protected:
    virtual void VInitialize() override;
-   virtual EphemerisPointer VGetEphemeris() override;
-   virtual StateVector VQueryStateVector(const Epoch& epoch) override;
+   virtual void VPropagateTo(const Epoch& epoch) override;
+   //virtual EphemerisPointer VGetEphemeris() override;
+   //virtual StateVector VQueryStateVector(const Epoch& epoch) override;
    
 private:
-   MpcorbEphemerisPointer m_ephemeris;
+   MpcorbEphemeris m_ephemeris;
    Epoch m_referenceEpoch;
-   StateVector m_referenceStateVector;
+   OrbitalElements m_referenceOrbitalElements;
 };
-
-/// Convenience alias
-typedef MpcorbBody MinorPlanet;
 
 } // namespace otl
 

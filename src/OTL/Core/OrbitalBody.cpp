@@ -180,16 +180,18 @@ bool OrbitalBody::IsOrbitType(keplerian::Orbit::Type orbitType) const
 ////////////////////////////////////////////////////////////
 void OrbitalBody::Propagate(const Time& timeDelta)
 {
-   Initialize();
-   VPropagate(timeDelta);  
+   PropagateTo(m_epoch + timeDelta);
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitalBody::PropagateTo(const Epoch& epoch)
 {
-   Propagate(epoch - m_epoch);
+   Initialize();
+   m_epoch = epoch;
+   VPropagateTo(epoch);
 }
 
+////////////////////////////////////////////////////////////
 void OrbitalBody::Initialize() const
 {
    if (!m_initialized)

@@ -23,38 +23,47 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/EphemerisBody.h>
+#include <OTL/Core/OrbitalBody.h>
+#include <OTL/Core/SpiceEphemeris.h>
 
 namespace otl
 {
 
-// Foreward declarations
-class SpiceEphemeris;
-typedef std::shared_ptr<SpiceEphemeris> SpiceEphemerisPointer;
+//// Foreward declarations
+//class SpiceEphemeris;
+//typedef std::shared_ptr<SpiceEphemeris> SpiceEphemerisPointer;
 
-class OTL_CORE_API SpiceBody : public IEphemerisBody
+class OTL_CORE_API SpiceBody : public OrbitalBody
 {
 public:
    SpiceBody();
    explicit SpiceBody(const std::string& observerBodyName,
-                      const Epoch& epoch = Epoch::MJD2000(0.0),
+                      const Epoch& epoch = Epoch(),
                       const std::string& targetBodyName = "SUN",
                       const std::string& referenceFrameName = "J2000");
    SpiceBody(const std::string& observerBodyName,
-             const SpiceEphemerisPointer& ephemeris,
-             const Epoch& epoch = Epoch::MJD2000(0.0),
+             const SpiceEphemeris& ephemeris,
+             const Epoch& epoch = Epoch(),
              const std::string& targetBodyName = "SUN",
              const std::string& referenceFrameName = "J2000");
 
-   void SetEphemeris(const SpiceEphemerisPointer& ephemeris);
+   void SetEphemeris(const SpiceEphemeris& ephemeris);
+
+   void LoadKernal(const std::string& filename);
+
+   virtual std::string ToString(const std::string& prefix = "") const override;
 
 protected:
    virtual void VInitialize() override;
-   virtual EphemerisPointer VGetEphemeris() override;
-   virtual StateVector VQueryStateVector(const Epoch& epoch) override;
+   virtual void VPropagateTo(const Epoch& epoch) override;
+   //virtual EphemerisPointer VGetEphemeris() override;
+   //virtual StateVector VQueryStateVector(const Epoch& epoch) override;
 
 private:
-   SpiceEphemerisPointer m_ephemeris;
+   CartesianStateVector QueryCartesianStateVectorAt(const Epoch& epoch);
+
+private:
+   SpiceEphemeris m_ephemeris;
 };
 
 } // namespace otl
