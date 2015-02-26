@@ -134,12 +134,8 @@ OrbitalElements SpiceEphemeris::ConvertCartesianStateVectorToOrbitalElements(con
    // Compute semi-major axis
    double a = rp * (1 + e) / (1 - SQR(e));
 
-   // Compute true anomaly
-   keplerian::KeplersEquationElliptical kepler;
-   double TA = kepler.Evaluate(e, M);
-
    // Return the results
-   return OrbitalElements(a, e, TA, i, w, l);
+   return OrbitalElements(a, e, M, i, w, l);
 }
 
 CartesianStateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVector(const OrbitalElements& orbitalElements,
@@ -152,22 +148,18 @@ CartesianStateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVecto
    // Unpack orbital elements
    double a = orbitalElements.semiMajorAxis;
    double e = orbitalElements.eccentricity;
-   double TA = orbitalElements.trueAnomaly;
 
    // Compute radius of pericenter
    double rp = a * (1 - SQR(e)) / (1 + e);
 
-   // Compute mean anomaly
-   double M = ConvertTrueAnomaly2Anomaly(e, TA);
-
    // Build the spice orbital element array
    SpiceDouble elts[8];
    elts[0] = rp;
-   elts[1] = e;
+   elts[1] = orbitalElements.eccentricity;
    elts[2] = orbitalElements.inclination;
    elts[3] = orbitalElements.lonOfAscendingNode;
    elts[4] = orbitalElements.argOfPericenter;
-   elts[5] = M;
+   elts[5] = orbitalElements.meanAnomaly;
    elts[6] = et;
    elts[7] = gravitationalParameterCentralBody;
 
@@ -176,9 +168,7 @@ CartesianStateVector SpiceEphemeris::ConvertOrbitalElementsToCartesianStateVecto
    conics_c(elts, et, state);
  
    // Return the results
-   return CartesianStateVector(
-      state[0], state[1], state[2],
-      state[3], state[4], state[5]);
+   return CreateCartesianStateVector(state);
 }
 
 ////////////////////////////////////////////////////////////
@@ -314,21 +304,112 @@ double SpiceEphemeris::VGetGravitationalParameterCentralBody(const std::string& 
 }
 
 ////////////////////////////////////////////////////////////
-StateVector SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
+//StateVector SpiceEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
+//{
+//   SpiceDouble ephemerisTime = CalculateEphemerisTime(epoch);
+//   SpiceDouble state[6];
+//   SpiceDouble lightTime;
+//
+//   spkezr_c(name.c_str(),
+//            ephemerisTime,
+//            m_referenceFrameName.c_str(),
+//            m_abberationCorrections.c_str(),
+//            m_observerBodyName.c_str(),
+//            state,
+//            &lightTime);
+//
+//   return StateVector(state, StateVectorType::Cartesian);
+//}
+
+////////////////////////////////////////////////////////////
+OrbitalElements SpiceEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch)
 {
+   // Compute ephemeris time
    SpiceDouble ephemerisTime = CalculateEphemerisTime(epoch);
+
+   // Get State (position and velocity)
    SpiceDouble state[6];
    SpiceDouble lightTime;
+   GetState(name, ephemerisTime, m_referenceFrameName, m_abberationCorrections, m_observerBodyName, state, &lightTime);
 
-   spkezr_c(name.c_str(),
-            ephemerisTime,
-            m_referenceFrameName.c_str(),
-            m_abberationCorrections.c_str(),
-            m_observerBodyName.c_str(),
-            state,
-            &lightTime);
+   // Get gravitational parameter of central body
+   double mu = GetBodyProperty(m_observerBodyName, "GM");
 
-   return StateVector(state, StateVectorType::Cartesian);
+   // Convert to spice orbital elements
+   SpiceDouble elts[8];
+   ConvertState2OrbitalElements(state, mu, ephemerisTime, elts);
+
+   // Create orbital elements
+   return CreateOrbitalElements(elts, mu);
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector SpiceEphemeris::VGetCartesianStateVector(const std::string& name, const Epoch& epoch)
+{
+   // Compute ephemeris time
+   SpiceDouble ephemerisTime = CalculateEphemerisTime(epoch);
+   
+   // Get State (position and velocity)
+   SpiceDouble state[6];
+   SpiceDouble lightTime;
+   GetState(name, ephemerisTime, m_referenceFrameName, m_abberationCorrections, m_observerBodyName, state, &lightTime);
+
+   // Create cartesian state vector
+   return CreateCartesianStateVector(state);
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::GetState(const std::string& targetBodyName,
+                              double ephemerisTime,
+                              const std::string& referenceFrameName,
+                              const std::string& abberationCorrections,
+                              const std::string& observerBodyName,
+                              double* state,
+                              double* lightTime)
+{
+   spkezr_c(targetBodyName.c_str(), ephemerisTime, referenceFrameName.c_str(), abberationCorrections.c_str(), observerBodyName.c_str(), state, lightTime);
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::ConvertOrbitalElements2State(const double* elts, double et, double* state)
+{
+   conics_c(elts, et, state);
+}
+
+////////////////////////////////////////////////////////////
+void SpiceEphemeris::ConvertState2OrbitalElements(const double* state, double mu, double et, double* elts)
+{
+   oscelt_c(state, et, mu, elts);
+}
+
+////////////////////////////////////////////////////////////
+OrbitalElements SpiceEphemeris::CreateOrbitalElements(const double* elts, double mu)
+{
+   // Unpack the spice elements
+   double rp = elts[0];
+   double e = elts[1];
+   double i = elts[2];
+   double l = elts[3];
+   double w = elts[4];
+   double M = elts[5];
+
+   // Compute semi-major axis
+   double a = rp * (1 + e) / (1 - SQR(e));
+
+   // Return the orbital elements
+   return OrbitalElements(a, e, M, i, w, l);
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector SpiceEphemeris::CreateCartesianStateVector(const double* state)
+{
+   double x = state[0];
+   double y = state[1];
+   double z = state[2];
+   double vx = state[3];
+   double vy = state[4];
+   double vz = state[5];
+   return CartesianStateVector(x, y, z, vx, vy, vz);
 }
 
 ////////////////////////////////////////////////////////////

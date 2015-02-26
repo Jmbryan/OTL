@@ -111,10 +111,10 @@ void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements, Direction
 void Orbit::SetCartesianStateVector(const CartesianStateVector& cartesianStateVector)
 {
    m_cartesianStateVector = cartesianStateVector;
-   m_cartesianStateVectorDirty = true;
+   m_cartesianStateVectorDirty = false;
 
    m_propertiesDirty = true;
-   m_orbitalElementsDirty = false;
+   m_orbitalElementsDirty = true;
 }
 
 ////////////////////////////////////////////////////////////

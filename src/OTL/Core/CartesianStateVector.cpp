@@ -68,6 +68,14 @@ velocity(vx, vy, vz)
 }
 
 ////////////////////////////////////////////////////////////
+//CartesianStateVector::CartesianStateVector(const double* state) :
+//position(state),
+//velocity(state + 3)
+//{
+//
+//}
+
+////////////////////////////////////////////////////////////
 CartesianStateVector::CartesianStateVector(std::initializer_list<double> list)
 {
    auto it = list.begin();

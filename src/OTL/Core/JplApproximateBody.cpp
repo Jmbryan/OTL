@@ -119,8 +119,7 @@ void JplApproximateBody::VPropagateTo(const Epoch& epoch)
 ////////////////////////////////////////////////////////////
 OrbitalElements JplApproximateBody::QueryOrbitalElementsAt(const Epoch& epoch)
 {
-   //return m_ephemeris.GetOrbitalElements(GetName(), epoch);
-   return OrbitalElements();
+   return m_ephemeris.GetOrbitalElements(GetName(), epoch);
 }
 
 ////////////////////////////////////////////////////////////

@@ -30,7 +30,7 @@
 namespace otl
 {
 
-//namespace test {
+namespace test1 {
 
 StateVector::StateVector() :
 m_type(StateVectorType::Invalid)//,
@@ -200,7 +200,7 @@ StateVector& StateVector::operator =(const OrbitalElements& orbitalElements)
    //std::copy(&orbitalElements, &orbitalElements + 6, m_state.begin());
    m_state[0] = orbitalElements.semiMajorAxis;
    m_state[1] = orbitalElements.eccentricity;
-   m_state[2] = orbitalElements.trueAnomaly;
+   m_state[2] = orbitalElements.meanAnomaly;
    m_state[3] = orbitalElements.inclination;
    m_state[4] = orbitalElements.argOfPericenter;
    m_state[5] = orbitalElements.lonOfAscendingNode;
@@ -396,9 +396,9 @@ void StateVector::ConvertTo(const StateVectorType& type, double mu)
    }
 }
 
-//}
+}
 
-namespace test
+namespace test2
 {
 
 StateVector::StateVector() :

@@ -104,8 +104,7 @@ void SpiceBody::VPropagateTo(const Epoch& epoch)
 ////////////////////////////////////////////////////////////
 CartesianStateVector SpiceBody::QueryCartesianStateVectorAt(const Epoch& epoch)
 {
-   //return m_ephemeris.GetCartesianStateVector(GetName(), epoch);
-   return CartesianStateVector();
+   return m_ephemeris.GetCartesianStateVector(GetName(), epoch);
 }
 
 ////////////////////////////////////////////////////////////

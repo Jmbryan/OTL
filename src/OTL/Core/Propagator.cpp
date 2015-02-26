@@ -39,10 +39,10 @@ IPropagator::~IPropagator()
 
 }
 
-StateVector IPropagator::Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
-{
-   OTL_ASSERT(!timeDelta.IsInfinity(), "Failed to propagate state vector. Propagation time must be less than infinity");
-   return VPropagate(initialStateVector, timeDelta, mu);
-}
+//StateVector IPropagator::Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
+//{
+//   OTL_ASSERT(!timeDelta.IsInfinity(), "Failed to propagate state vector. Propagation time must be less than infinity");
+//   return VPropagate(initialStateVector, timeDelta, mu);
+//}
 
 } // namespace otl

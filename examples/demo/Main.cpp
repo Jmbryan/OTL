@@ -67,8 +67,8 @@ int main()
 
        // StateVector       
        auto sizeofvector6d = sizeof(Vector6d);
-       auto sizeofos = sizeof(StateVector);
-       auto sizeofos2 = sizeof(test::StateVector);
+       //auto sizeofos = sizeof(StateVector);
+       //auto sizeofos2 = sizeof(test::StateVector);
 
        // Orbit
        auto sizeofprop = sizeof(PropagatorPointer);
@@ -354,12 +354,12 @@ int main()
     // Eccentricity test
     if (false)
     {
-       StateVector stateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341, StateVectorType::Cartesian);
+       CartesianStateVector stateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
        double mu = otl::ASTRO_MU_EARTH;
 
        int numIter = 100000;
 
-       const auto& cartesianStateVector = stateVector.GetCartesianStateVector();
+       const auto& cartesianStateVector = stateVector;
        double alpha;
        double e;
 
@@ -395,141 +395,88 @@ int main()
 
     __int64 elapsedTime1 = 0;
     __int64 elapsedTime2 = 0;
-    while (true)
+    __int64 elapsedTime3 = 0;
+    if (true)
     {
-       static int counter = 0;
-       counter++;
-       StateVector* psv = new StateVector();
+       int counter = 0;
 
        auto currentDirectory = gSystem.GetCurrentDirectory();
        //auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        //auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
-       auto spiceEphemeris = std::make_shared<SpiceEphemeris>();
-       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp");
-       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\gm_de431.tpc");
-       spiceEphemeris->LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\pck00010.tpc");
+       SpiceEphemeris spiceEphemeris;
+       spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp");
+       spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\gm_de431.tpc");
+       spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\pck00010.tpc");
 
        auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
-       auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>(mpcorbDataFile);
+       MpcorbEphemeris mpcorbEphemeris(mpcorbDataFile);
 
+       //Planet p("Earth");
        //MpcorbBody p("Ceres", mpcorbEphemeris);
-       //SpiceBody p("Earth", spiceEphemeris);
-       Planet p("Earth");
+       SpiceBody p("Earth", spiceEphemeris);
 
        //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
-       //p.SetPropagator(std::make_shared<LagrangianPropagator>());
+
+       keplerian::Orbit orbit = p.GetOrbit();
 
        auto prop00 = p.GetPhysicalProperties();
        auto mu00 = p.GetGravitationalParameterCentralBody();
-       auto sv00 = p.GetStateVector();
+       auto coes00 = p.GetOrbitalElements();
+       auto csv00 = p.GetCartesianStateVector();
 
-       int numIter = 100000;
-       auto epoch = Epoch::MJD2000(10.0);
-       std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
-       for (int i = 0; i < numIter; ++i)
+       while (true)
        {
-          const auto& sv = p.QueryStateVector(epoch);
+          counter++;
+
+          int numIter = 100000;
+          auto epoch = Epoch::MJD2000(10.0);
+          std::chrono::system_clock::time_point t1 = std::chrono::system_clock::now();
+          for (int i = 0; i < numIter; ++i)
+          {
+             const auto& coes = p.GetOrbitalElementsAt(epoch);
+          }
+          std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
+
+          std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
+          for (int i = 0; i < numIter; ++i)
+          {
+             const auto& csv = p.GetCartesianStateVectorAt(epoch);
+          }
+          std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
+
+          std::chrono::system_clock::time_point t5 = std::chrono::system_clock::now();
+          for (int i = 0; i < numIter; ++i)
+          {
+             int days = (1 - 2 * (i % 2)) * 10;
+             orbit.Propagate(Time::Days(static_cast<double>(days)));
+          }
+          std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
+
+
+          auto duration1 = t2 - t1;
+          auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
+          elapsedTime1 += milli1.count();
+
+          auto duration2 = t4 - t3;
+          auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
+          elapsedTime2 += milli2.count();
+
+          auto duration3 = t6 - t5;
+          auto milli3 = std::chrono::duration_cast<std::chrono::milliseconds>(duration3);
+          elapsedTime3 += milli3.count();
+
+          //auto state = p.GetStateVector().GetState();
+          //auto sv = p.GetStateVector();
+          auto csv = p.GetCartesianStateVector();
+          auto orb = p.GetOrbitalElements();
+
+          double dd = 1.0;
+          std::cout << "Query coes: " << milli1.count() << " ms, Query sv: " << milli2.count() << " ms, Propagate: " << milli3.count() << " ms" << std::endl;
+          //std::cin.get();
        }
-       std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
-
-       p.QueryStateVector(Epoch::MJD2000(0.0));
-       std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
-       for (int i = 0; i < numIter; ++i)
-       {
-          p.PropagateTo(epoch);
-          const auto& sv = p.GetStateVector();
-       }
-       std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
-
-       auto duration1 = t2 - t1;
-       auto milli1 = std::chrono::duration_cast<std::chrono::milliseconds>(duration1);
-       elapsedTime1 += milli1.count();
-
-       auto duration2 = t4 - t3;
-       auto milli2 = std::chrono::duration_cast<std::chrono::milliseconds>(duration2);
-       elapsedTime2 += milli2.count();
-
-       //auto state = p.GetStateVector().GetState();
-       auto sv = p.GetStateVector();
-       auto csv = p.GetCartesianStateVector();
-       auto orb = p.GetOrbitalElements();
-
-       double dd = 1.0;
-       std::cout << "Propagate time: " << milli1.count() << " ms, Query time: " << milli2.count() << " ms." << std::endl;
-       //std::cin.get();
-
-       //int numKernals = spiceEphemeris->GetNumKernalsLoaded();
-       //double muc = spiceEphemeris->GetBodyProperty("Sun", "GM");
-       //auto props = spiceEphemeris->GetBodyProperties("Sun", "RADII");
-
-       //OrbitalElements coes0(1000, 0.1, 3.14, 0, 0, 0), coesf;
-       //StateVector sv0(1, 2, 3, 4, 5, 6), svf;
-       //otl::StateVector stateVector;
-
-       //stateVector = coes0;
-       //auto type1 = stateVector.GetType();
-       ////orbitState = sv0;
-       //auto type2 = stateVector.GetType();
-
-       //auto gen = stateVector.GetGenericStateVector();
-       //switch (stateVector.GetType())
-       //{
-       //case StateVectorType::Orbital:
-       //   coesf = stateVector.GetOrbitalElements();
-       //   break;
-
-       //case StateVectorType::Cartesian:
-       //   svf = stateVector.GetCartesianStateVector();
-       //   break;
-       //}
-     
-       //auto coesc = stateVector.ToOrbitalElements(ASTRO_MU_EARTH);
-       //auto svc = stateVector.ToCartesianStateVector(ASTRO_MU_EARTH);
-
-       //auto prop = p.GetPhysicalProperties();
-       //auto cbmu = p.GetGravitationalParameterCentralBody();
-       //auto coes = p.GetOrbit().GetOrbitalElements();
-       //auto sv = p.GetOrbit().GetStateVector();
-
-       //bool b = true;
-       //auto en = keplerian::Orbit::Type::Elliptical;
-       //std::function<void(const Epoch&)> myfun = nullptr;
-
-       //
-
-       //p.SetMaxPropagationTime(Time::Days(20));
-
-       //p.QueryStateVector(p.GetEpoch() + Time::Days(10));
-       //p.Propagate(Time::Days(10));
-       //p.Propagate(Time::Days(5));
-       //p.Propagate(Time::Days(10));
-       //auto coes2 = p.GetOrbit().GetOrbitalElements();
-       //auto sv2 = p.GetOrbit().GetStateVector();
-
-       //
-
-       //double d = 1.0;
-
-       //auto mpcorbEphemeris = std::make_shared<MpcorbEphemeris>();
-
-       //auto ceres = OrbitalBody2("Ceres", ASTRO_MU_SUN);
-
-       //MpcorbPlanet ceres2("Ceres");
-
-
-       //OrbitalBody2 ceres("Ceres", mpcorbEphemeris, Epoch::Today());
-       //ceres.QueryEphemeris(Time::Days(10));
-       //auto svPallas = ceres.GetStateVector();
-
-       //auto properties = ceres.GetPhysicalProperties();
-       //auto sv = ceres.GetStateVector();
-
-       //ceres.Propagate(Time::Days(10)); // calls IPropagator
-       //sv = ceres.GetStateVector();
-
-    }
+    }   
 
 #define IsNANorINF(x) ((x * 0) != 0)
     
@@ -557,10 +504,10 @@ int main()
     std::cout << sv << std::endl;
     std::cout << sv.ToDetailedString() << std::endl;
 
-    keplerian::Orbit orbit(ASTRO_MU_EARTH, StateVector(sv));
+    keplerian::Orbit orbit(ASTRO_MU_EARTH, sv);
     //orbit.UseStateVectorForStringOutput(true);
     std::cout << orbit << std::endl;
-    std::cout << orbit.ToDetailedString() << std::endl;
+    std::cout << orbit.ToString() << std::endl;
 
     //OrbitalBody orbitalBody("Ceres", 895.8e18);
     //std::cout << orbitalBody << std::endl;
@@ -572,7 +519,7 @@ int main()
 
     Planet planet("Earth", Epoch::Gregorian(GregorianDateTime(2015, 1, 28, 20, 58, 0.0)));
     std::cout << "Planet: " << Bracket(planet) << std::endl;
-    std::cout << "Planet:" << std::endl << planet.ToDetailedString("   ") << std::endl;
+    std::cout << "Planet:" << std::endl << planet.ToString("   ") << std::endl;
 
     auto dayOfWeek0 = CalculateDayOfWeek(GregorianDateTime(1582, 10, 4));  // Monday
     auto dayOfWeek1 = CalculateDayOfWeek(GregorianDateTime(1600, 1, 1));   // Saturday

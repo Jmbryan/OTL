@@ -34,6 +34,16 @@ namespace keplerian
 class OTL_CORE_API LambertExponentialSinusoid : public ILambertAlgorithm
 {
 public:
+
+   void Evaluate2(const Vector3d& initialPosition,
+      const Vector3d& finalPosition,
+      const Time& timeDelta,
+      const Orbit::Direction& orbitDirection,
+      int maxRevolutions,
+      double mu,
+      Vector3d& initialVelocity,
+      Vector3d& finalVelocity);
+
    ////////////////////////////////////////////////////////////
    /// \brief Evaluate Lambert's Problem
    ///

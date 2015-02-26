@@ -37,6 +37,39 @@ namespace otl
 //struct CartesianStateVector;
 //struct OrbitalElements;
 
+
+class StateVector
+{
+public:
+   explicit StateVector(double mu = 1.0);
+   StateVector(const StateVector& other);
+   StateVector(const StateVector&& other);
+   explicit StateVector(const OrbitalElements& orbitalElements, double mu);
+   explicit StateVector(const CartesianStateVector& cartesianStateVector, double mu);
+
+   StateVector& operator =(const StateVector& other);
+   StateVector& operator =(const StateVector&& other);
+
+   double GetGravitationalParameterCentralBody() const;
+   const OrbitalElements& GetOrbital() const;
+   const CartesianStateVector& GetCartesian() const;
+
+   std::string ToString(const std::string& prefix = "");
+
+private:
+   void UpdateOrbitalElements() const;
+   void UpdateCartesianStateVector() const;
+
+private:
+   double mu;
+   mutable OrbitalElements m_orbitalElements;
+   mutable CartesianStateVector m_cartesianStateVector;
+   mutable bool m_orbitalElementsDirty;
+   mutable bool m_cartesianStateVectorDirty;
+};
+
+
+
 enum class StateVectorType
 {
    Invalid = -1,        ///< Invalid state vector type
@@ -47,8 +80,8 @@ enum class StateVectorType
    Count                ///< Number of state vector types
 };
 
-//namespace test
-//{
+namespace test1
+{
 class StateVector
 {
 public:
@@ -113,9 +146,9 @@ private:
    //State m_state;
    //StatePtr m_state;  
 };
-//}
+}
 
-namespace test
+namespace test2
 {
 class StateVector
 {

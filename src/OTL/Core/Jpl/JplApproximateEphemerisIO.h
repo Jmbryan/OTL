@@ -33,7 +33,7 @@ namespace otl
 
 // Forward declarations
 class PhysicalProperties;
-class StateVector;
+struct OrbitalElements;
 
 class JplApproximateEphemerisIO
 {
@@ -43,7 +43,7 @@ public:
    JplApproximateEphemerisIO(const JplApproximateEphemerisIO& other) = delete;
    JplApproximateEphemerisIO& operator=(const JplApproximateEphemerisIO&) = delete;
 
-   StateVector GetStateVector(const std::string& name, const Epoch& epoch);
+   OrbitalElements GetOrbitalElements(const std::string& name, const Epoch& epoch);
 
    bool IsValidName(const std::string& name) const;
    bool IsValidEpoch(const Epoch& epoch) const;

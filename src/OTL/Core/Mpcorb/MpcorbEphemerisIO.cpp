@@ -34,7 +34,7 @@
 namespace otl
 {
 
-typedef std::map<std::string, std::tuple<Epoch, PhysicalProperties, StateVector>> MpcorbDatabase;
+typedef std::map<std::string, std::tuple<Epoch, PhysicalProperties, OrbitalElements>> MpcorbDatabase;
 MpcorbDatabase g_database;
 
 ////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ const PhysicalProperties& MpcorbEphemerisIO::GetPhysicalProperties(const std::st
 }
 
 ////////////////////////////////////////////////////////////
-const StateVector& MpcorbEphemerisIO::GetStateVector(const std::string& name) const
+const OrbitalElements& MpcorbEphemerisIO::GetOrbitalElements(const std::string& name) const
 {
    return std::get<2>(g_database[name]);
 }
@@ -149,12 +149,6 @@ void MpcorbEphemerisIO::Load()
       int lastObsDate;
       ifs >> lastObsDate;
 
-      // Convert mean anomaly to eccentric anomaly (radians)
-      double E = keplerian::SolveKeplersEquation(e, M * MATH_DEG_TO_RAD);
-
-      // Convert eccentric anomaly to true anomaly (radians)
-      double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
-
       // Compute the epoch [TODO]
       Epoch epoch;
 
@@ -165,13 +159,13 @@ void MpcorbEphemerisIO::Load()
       OrbitalElements orbitalElements;
       orbitalElements.semiMajorAxis       = a      * ASTRO_AU_TO_KM;
       orbitalElements.eccentricity        = e;
+      orbitalElements.meanAnomaly         = M      * MATH_DEG_TO_RAD;
       orbitalElements.inclination         = incl   * MATH_DEG_TO_RAD;
       orbitalElements.argOfPericenter     = peri   * MATH_DEG_TO_RAD;
       orbitalElements.lonOfAscendingNode  = node   * MATH_DEG_TO_RAD;
-      orbitalElements.trueAnomaly         = ta;
 
       // Add to the database
-      g_database[name] = std::make_tuple(epoch, physicalProperties, StateVector(orbitalElements));
+      g_database[name] = std::make_tuple(epoch, physicalProperties, orbitalElements);
 
       recordsWritten++;
    }

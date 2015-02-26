@@ -163,7 +163,9 @@ protected:
    /// \return Resulting StateVector
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
+   //virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
+   virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) override;
+   virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) override;
 
 private:
    ////////////////////////////////////////////////////////////
@@ -173,6 +175,21 @@ private:
    ///
    ////////////////////////////////////////////////////////////
    double CalculateEphemerisTime(const Epoch& epoch) const;
+
+   void GetState(
+      const std::string& targetBodyName,
+      double ephemerisTime,
+      const std::string& referenceFrameName,
+      const std::string& abberationCorrections,
+      const std::string& observerBodyName,
+      double* state,
+      double* lightTime
+      );
+   void ConvertOrbitalElements2State(const double* elts, double et, double* state);
+   void ConvertState2OrbitalElements(const double* state, double mu, double et, double* elts);
+
+   OrbitalElements CreateOrbitalElements(const double* elts, double mu);
+   CartesianStateVector CreateCartesianStateVector(const double* state);
 
 private:
    std::string m_observerBodyName;        ///< Name of observer body

@@ -41,7 +41,7 @@ public:
   
    const Epoch& GetEpoch(const std::string& name) const;
    const PhysicalProperties& GetPhysicalProperties(const std::string& name) const;
-   const StateVector& GetStateVector(const std::string& name) const;
+   const OrbitalElements& GetOrbitalElements(const std::string& name) const;
 
    bool IsValidName(const std::string& name) const;
    bool IsValidEpoch(const Epoch& epoch) const;
@@ -53,8 +53,6 @@ private:
    
 private:
    std::string m_dataFilename;
-   std::map<std::string, PhysicalProperties> m_physicalProperties;
-   std::map<std::string, StateVector> m_stateVectors;
 };
 
 } // namespace otl

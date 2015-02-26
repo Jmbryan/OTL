@@ -75,6 +75,8 @@ struct OTL_CORE_API CartesianStateVector
    ////////////////////////////////////////////////////////////
    CartesianStateVector(double x, double y, double z, double vx, double vy, double vz);
 
+   //CartesianStateVector(const double* state);
+
    ////////////////////////////////////////////////////////////
    /// \brief Construct state vector from an initializer list
    ///

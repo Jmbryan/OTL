@@ -24,7 +24,8 @@
 
 #pragma once
 #include <OTL/Core/Ephemeris.h>
-#include <OTL/Core/StateVector.h>
+//#include <OTL/Core/StateVector.h>
+#include <OTL/Core/OrbitalElements.h>
 #include <OTL/Core/Epoch.h>
 
 namespace otl
@@ -65,7 +66,7 @@ public:
    /// \return Reference StateVector of entity
    ///
    ////////////////////////////////////////////////////////////
-   StateVector GetReferenceStateVector(const std::string& name);
+   //StateVector GetReferenceStateVector(const std::string& name);
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the reference epoch for a given entity
@@ -145,14 +146,14 @@ protected:
    /// \return Resulting StateVector
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
+   //virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
    virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) override;
    virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) override;
 
    void UpdateReference(const std::string& name);
 
 private:
-   StateVector m_referenceStateVector; ///< Temporary variable for retrieving reference state vector
+   //StateVector m_referenceStateVector; ///< Temporary variable for retrieving reference state vector
    OrbitalElements m_referenceOrbitalElements;
    Epoch m_referenceEpoch;                   ///< Temporary variable for retrieving reference epoch
    OrbitalElements m_cachedOrbitalElements;

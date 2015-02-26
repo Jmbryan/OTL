@@ -107,11 +107,27 @@ double JplApproximateEphemeris::VGetGravitationalParameterCentralBody(const std:
 }
 
 ////////////////////////////////////////////////////////////
-StateVector JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
+//StateVector JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
+//{
+//   try
+//   {
+//      return g_ephemerisDatabase->GetStateVector(name, epoch);
+//   }
+//   catch (std::exception ex)
+//   {
+//      OTL_ERROR() << "Exception caught while trying to retrieve state vector for " << Bracket(name) <<
+//         " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
+//   }
+//
+//   return StateVector();
+//}
+
+////////////////////////////////////////////////////////////
+OrbitalElements JplApproximateEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch)
 {
    try
    {
-      return g_ephemerisDatabase->GetStateVector(name, epoch);
+      return g_ephemerisDatabase->GetOrbitalElements(name, epoch);
    }
    catch (std::exception ex)
    {
@@ -119,7 +135,14 @@ StateVector JplApproximateEphemeris::VGetStateVector(const std::string& name, co
          " at epoch " << Bracket(epoch) << ": " << Bracket(ex.what());
    }
 
-   return StateVector();
+   return OrbitalElements(); 
+}
+
+////////////////////////////////////////////////////////////
+CartesianStateVector JplApproximateEphemeris::VGetCartesianStateVector(const std::string& name, const Epoch& epoch)
+{
+   return ConvertOrbitalElements2CartesianStateVector(
+      VGetOrbitalElements(name, epoch), ASTRO_MU_SUN);
 }
 
 } // namespace otl

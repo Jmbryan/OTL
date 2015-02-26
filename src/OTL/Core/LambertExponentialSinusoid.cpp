@@ -23,12 +23,164 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/LambertExponentialSinusoid.h>
+#include <OTL/Core/Logger.h>
 
 namespace otl
 {
 
 namespace keplerian
 {
+
+////////////////////////////////////////////////////////////
+void LambertExponentialSinusoid::Evaluate2(const Vector3d& initialPosition,
+                                           const Vector3d& finalPosition,
+                                           const Time& timeDelta,
+                                           const Orbit::Direction& orbitDirection,
+                                           int maxRevolutions,
+                                           double mu,
+                                           Vector3d& initialVelocity,
+                                           Vector3d& finalVelocity)
+{
+   Vector3d R1 = initialPosition;
+   Vector3d R2 = finalPosition;
+
+   // 1 - Get lambda and T
+   double c = (R2 - R1).norm();
+   double r1 = R1.norm();
+   double r2 = R2.norm();
+   double s = 0.5 * (c + r1 + r2);
+
+   Vector3d ir1 = R1.normalized();
+   Vector3d ir2 = R2.normalized();
+   Vector3d ih = ir1.cross(ir2).normalized();
+   OTL_ERROR_IF(ih.z() == 0.0, "The angular momentum vector has no z component, impossible to automatically define direction");
+
+   double lambdaSquared = 1.0 - c / s;
+   double lambda = sqrt(lambdaSquared);
+
+   Vector3d it1, it2;
+   if (ih.z() < 0.0) // Transfer angle is larger than 180 degrees as seen from above the z axis
+   {
+      lambda *= -1.0;
+      it1 = ir1.cross(ih).normalized();
+      it2 = ir2.cross(ih).normalized();
+   }
+   else
+   {
+      it1 = ih.cross(ir1).normalized();
+      it2 = ih.cross(ir2).normalized();
+   }
+
+   if (orbitDirection == Orbit::Direction::Retrograde)
+   {
+      lambda *= -1.0;
+      it1 *= -1.0;
+      it2 *= -1.0;
+   }
+
+   double lambdaCubed = lambda * lambdaSquared;
+   double T = sqrt(2.0 * mu / pow(s, 3.0)) * timeDelta.Seconds();
+
+   // 2 - Find all x
+   int Nmax = static_cast<int>(T / MATH_PI);
+   double T00 = acos(lambda) + lambda * sqrt(1.0 - lambdaSquared);
+   double T0 = (T00 + Nmax * MATH_PI);
+   double T1 = 2.0 / 3.0 * (1.0 - lambdaCubed);
+   double DT = 0.0;
+   double DDT = 0.0;
+   double DDDT = 0.0;
+   if (Nmax > 0.0)
+   {
+      if (T < T0) // Use Halley iterations to find xM and TM
+      {
+         int iter = 0;
+         double error = 1.0;
+         double TMin = T0;
+         double xOld = 0.0;
+         double xNew = 0.0;
+         while (true)
+         {
+            //dTdx(DT, DDT, DDDT, xOld, TMin);
+            if (DT != 0.0)
+            {
+               xNew = xOld - DT * DDT / (SQR(DDT) - DT * DDDT / 2.0);
+            }
+            error = fabs(xNew - xOld);
+            if (error < 1e-13 || iter > 12)
+            {
+               break;
+            }
+            //x2tof(TMin, xNew, Nmax);
+            xOld = xNew;
+            iter++;
+         }
+         if (TMin > T)
+         {
+            Nmax *= -1;
+         }
+      }
+   }
+
+   // We exit this if clause with Mmax being the maximum number of revolutions
+   // for which there exists a solution. We crop it to maxRevolutions
+   Nmax = std::min(maxRevolutions, Nmax);
+
+   std::vector<Vector3d> m_v1(Nmax * 2 + 1);
+   std::vector<Vector3d> m_v2(Nmax * 2 + 1);
+   std::vector<int> m_iters(Nmax * 2 + 1);
+   std::vector<double> m_x(Nmax * 2 + 1);
+
+   // 3 - Find all solutions in x,y
+   if (T >= T00)
+   {
+      m_x[0] = -(T - T00) / (T - T00 + 4);
+   }
+   else if (T <= T1)
+   {
+      m_x[0] = T1 * (T1 - T) / (2.0 / 5.0 * (1.0 - lambdaSquared * lambdaCubed) * T) + 1;
+   }
+   else
+   {
+      m_x[0] = pow(T / T00, 0.69314718055994529 / log(T1 / T00)) - 1.0;
+   }
+
+   //m_iters[0] = householder(T, m_x[0], 0.0, 1e-5, 15);
+
+   // Find the x value for each multi rev solution
+   double temp;
+   for (int i = 1; i < Nmax + 1; ++i)
+   {
+      // left
+      temp = pow((i * MATH_PI + MATH_PI) / (8.0 * T), 2.0 / 3.0);
+      m_x[2 * i - 1] = (temp - 1.0) / (temp + 1.0);
+      //m_iters[2 * i - 1] = householder(T, m_x[2 * i - 1], i, 1e-8, 15);
+
+      // right
+      temp = pow((8.0 * T) / (i * MATH_PI), 2.0 / 3.0);
+      m_x[2 * i] = (temp - 1.0) / (temp + 1.0);
+      //m_iters[2 * i] = householder(T, m_x[2 * i], i, 1e-8, 15);
+   }
+
+   // For each found x value, reconstruct the terminal velocities
+   double gamma = sqrt(mu * s / 2.0);
+   double rho = (r1 - r2) / c;
+   double sigma = sqrt(1.0 - SQR(rho));
+   double vr1, vt1, vr2, vt2, y;
+   for (std::size_t i = 0; i < m_x.size(); ++i)
+   {
+      y = sqrt(1.0 - lambdaSquared + lambdaSquared * SQR(m_x[i]));
+      vr1 = gamma * ((lambda * y - m_x[i]) - rho * (lambda * y + m_x[i])) / r1;
+      vr2 = -gamma * ((lambda * y - m_x[i]) + rho * (lambda * y + m_x[i])) / r2;
+      double vt = gamma * sigma * (y + lambda * m_x[i]);
+      vt1 = vt / r1;
+      vt2 = vt / r2;
+      for (int j = 0; j < 3; ++j)
+      {
+         m_v1[i][j] = vr1 * ir1[j] + vt1 * it1[j];
+         m_v2[i][j] = vr2 * ir2[j] + vt2 * it2[j];
+      }
+   }
+}
 
 ////////////////////////////////////////////////////////////
 void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,

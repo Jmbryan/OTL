@@ -35,17 +35,51 @@ namespace otl
 /// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
 /// Algorthm ?? (X.X)XX, 2007
 ///
-/// \param perifocalVector Vector in perifocal coordinates
+/// \param perifocalVector Vector3d in perifocal coordinates
 /// \param inclinaiton Inclination (radians)
 /// \param argOfPericenter Arguement of Perigee (radians)
 /// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
-/// \param [out] inertialVector Transformed vector in inertial coordinates.
+/// \Returns Transformed Vector3d in inertial coordinates.
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
-                                              double inclination,
-                                              double argOfPericenter,
-                                              double lonOfAscendingNode,
-                                              Vector3d& inertialVector);
+OTL_CORE_API Vector3d TransformPerifocal2Inertial(const Vector3d& perifocalVector,
+                                                  double inclination,
+                                                  double argOfPericenter,
+                                                  double lonOfAscendingNode);
+
+////////////////////////////////////////////////////////////
+/// \brief Transform a cartesian state vector from perifocal to inertial reference frames
+/// \ingroup otl
+///
+/// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
+/// Algorthm ?? (X.X)XX, 2007
+///
+/// \param perifocalStateVector CartesianStateVector in perifocal coordinates
+/// \param inclinaiton Inclination (radians)
+/// \param argOfPericenter Arguement of Perigee (radians)
+/// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
+/// \Returns Transformed CartesianStateVector in inertial coordinates.
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API CartesianStateVector TransformPerifocal2Inertial(const CartesianStateVector& perifocalStateVector,
+                                                              double inclination,
+                                                              double argOfPericenter,
+                                                              double lonOfAscendingNode);
+
+////////////////////////////////////////////////////////////
+/// \brief Create the 3D transformation matrix from perifocal to inertial reference frames
+/// \ingroup otl
+///
+/// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
+/// Algorthm ?? (X.X)XX, 2007
+///
+/// \param inclinaiton Inclination (radians)
+/// \param argOfPericenter Arguement of Perigee (radians)
+/// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API Matrix3d CreatePerifocal2InertialMatrix(double inclination,
+                                                     double argOfPericenter,
+                                                     double lonOfAscendingNode);
 
 } // namespace otl

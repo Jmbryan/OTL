@@ -60,7 +60,7 @@ public:
    /// \return StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
+   //StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
 
    virtual StateVectorType GetType() const = 0;
 
@@ -81,7 +81,7 @@ protected:
    /// \return StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;
+   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;
 };
 
 typedef std::shared_ptr<IPropagator> PropagatorPointer;

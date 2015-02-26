@@ -25,7 +25,8 @@
 #include <OTL/Core/Propagator.h>
 #include <OTL/Core/Lambert.h>
 #include <OTL/Core/Flyby.h>
-#include <OTL/Core/StateVector.h>
+//#include <OTL/Core/StateVector.h>
+#include <OTL/Core/CartesianStateVector.h>
 
 namespace otl
 {

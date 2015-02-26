@@ -28,11 +28,32 @@
 namespace otl
 {
 
-void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
-                                 double inclination,
-                                 double argOfPericenter,
-                                 double lonOfAscendingNode,
-                                 Vector3d& inertialVector)
+Vector3d TransformPerifocal2Inertial(const Vector3d& perifocalVector,
+                                     double inclination,
+                                     double argOfPericenter,
+                                     double lonOfAscendingNode)
+{
+   // Build the rotation matrix.
+   Matrix3d matrix = CreatePerifocal2InertialMatrix(inclination, argOfPericenter, lonOfAscendingNode);
+
+   // Rotate the perifocal vector to inertial coordinates.
+   return matrix * perifocalVector;
+}
+
+CartesianStateVector TransformPerifocal2Inertial(const CartesianStateVector& perifocalStateVector,
+                                                 double inclination,
+                                                 double argOfPericenter,
+                                                 double lonOfAscendingNode)
+{
+   Matrix3d transformationMatrix = CreatePerifocal2InertialMatrix(inclination, argOfPericenter, lonOfAscendingNode);
+   return CartesianStateVector(
+      transformationMatrix * perifocalStateVector.position,
+      transformationMatrix * perifocalStateVector.velocity);
+}
+
+Matrix3d CreatePerifocal2InertialMatrix(double inclination,
+                                        double argOfPericenter,
+                                        double lonOfAscendingNode)
 {
    // Precalculate common trig functions.
    double cosIncl = cos(inclination);
@@ -41,21 +62,20 @@ void TransformPerifocal2Inertial(const Vector3d& perifocalVector,
    double sinAop = sin(argOfPericenter);
    double cosLan = cos(lonOfAscendingNode);
    double sinLan = sin(lonOfAscendingNode);
-   
+
    // Build the rotation matrix.
    Matrix3d matrix;
-   matrix(0,0) =  (cosLan  * cosAop) - (sinLan * sinAop  * cosIncl);
-   matrix(0,1) = -(cosLan  * sinAop) - (sinLan * cosIncl * cosAop);
-   matrix(0,2) =  (sinLan  * sinIncl);
-   matrix(1,0) =  (sinLan  * cosAop) + (cosLan * cosIncl * sinAop);
-   matrix(1,1) = -(sinLan  * sinAop) + (cosLan * cosIncl * cosAop);
-   matrix(1,2) = -(cosLan  * sinIncl);
-   matrix(2,0) =  (sinIncl * sinAop);
-   matrix(2,1) =  (sinIncl * cosAop);
-   matrix(2,2) =  (cosIncl);
+   matrix(0, 0) = (cosLan  * cosAop) - (sinLan * sinAop  * cosIncl);
+   matrix(0, 1) = -(cosLan  * sinAop) - (sinLan * cosIncl * cosAop);
+   matrix(0, 2) = (sinLan  * sinIncl);
+   matrix(1, 0) = (sinLan  * cosAop) + (cosLan * cosIncl * sinAop);
+   matrix(1, 1) = -(sinLan  * sinAop) + (cosLan * cosIncl * cosAop);
+   matrix(1, 2) = -(cosLan  * sinIncl);
+   matrix(2, 0) = (sinIncl * sinAop);
+   matrix(2, 1) = (sinIncl * cosAop);
+   matrix(2, 2) = (cosIncl);
 
-   // Rotate the perifocal vector to inertial coordinates.
-   inertialVector = matrix * perifocalVector;
+   return matrix;
 }
 
 } // namespace otl

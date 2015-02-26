@@ -50,7 +50,7 @@ m_dataFilename(dataFilename)
 }
 
 ////////////////////////////////////////////////////////////
-StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, const Epoch& epoch)
+OrbitalElements JplApproximateEphemerisIO::GetOrbitalElements(const std::string& name, const Epoch& epoch)
 {
    // Check if the data is already cached, if not then cache it
    if (name != m_cache.first)
@@ -97,22 +97,14 @@ StateVector JplApproximateEphemerisIO::GetStateVector(const std::string& name, c
       M -= 360.0;
    }
 
-   // Convert mean anomaly to eccentric anomaly (radians)
-   keplerian::KeplersEquationElliptical kepler;
-   double E = kepler.Evaluate(e, M * MATH_DEG_TO_RAD);
-
-   // Convert eccentric anomaly to true anomaly (radians)
-   double ta = ConvertEccentricAnomaly2TrueAnomaly(E, e);
-
    // Return the state vector in Orbital format after converting to standard units (km, rad)
-   return StateVector(
+   return OrbitalElements(
       a         * ASTRO_AU_TO_KM,
       e,
-      ta,
+      M         * MATH_DEG_TO_RAD,
       I         * MATH_DEG_TO_RAD,
       longNode  * MATH_DEG_TO_RAD,
-      w         * MATH_DEG_TO_RAD,
-      StateVectorType::Orbital);
+      w         * MATH_DEG_TO_RAD);
 }
 
 ////////////////////////////////////////////////////////////

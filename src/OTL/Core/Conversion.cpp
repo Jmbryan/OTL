@@ -144,15 +144,10 @@ OrbitalElements ConvertCartesianStateVector2OrbitalElements(const CartesianState
       }
    }
 
-   OrbitalElements orbitalElements;
-   orbitalElements.semiMajorAxis       = a;
-   orbitalElements.eccentricity        = ecc;
-   orbitalElements.trueAnomaly         = ta;
-   orbitalElements.inclination         = incl;
-   orbitalElements.argOfPericenter     = aop;
-   orbitalElements.lonOfAscendingNode  = lan;
+   // Convert true anomaly to mean anomaly
+   double M = ConvertTrueAnomaly2MeanAnomaly(ecc, ta);
 
-   return orbitalElements;
+   return OrbitalElements(a, ecc, M, incl, aop, lan);
 }
 
 ////////////////////////////////////////////////////////////
@@ -160,33 +155,32 @@ CartesianStateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalEl
 {
    double a    = orbitalElements.semiMajorAxis;
    double ecc  = orbitalElements.eccentricity;
-   double ta    = orbitalElements.trueAnomaly;
+   double M    = orbitalElements.meanAnomaly;
    double incl = orbitalElements.inclination;
    double aop  = orbitalElements.argOfPericenter;
    double lan  = orbitalElements.lonOfAscendingNode;
 
-   // Calculate the semiparameter.
+   // Compute the semiparameter.
    double p = a * (1.0 - SQR(ecc));
 
+   // Compute true anomaly
+   double TA = ConvertMeanAnomaly2TrueAnomaly(ecc, M);
+
    // Precompute common trig functions.
-   double cosTa = cos(ta);
-   double sinTa = sin(ta);
+   double cosTa = cos(TA);
+   double sinTa = sin(TA);
 
    // Build the state vectors in perifical coordinates.
-   Vector3d Rp, Vp;
-   Rp.x() = p * cosTa / (1.0 + ecc * cosTa);
-   Rp.y() = p * sinTa / (1.0 + ecc * cosTa);
-   Rp.z() = 0.0;
-   Vp.x() = -sqrt(mu / p) * sinTa;
-   Vp.y() =  sqrt(mu / p) * (ecc + cosTa);
-   Vp.z() = 0.0;
+   CartesianStateVector perifocalStateVector;
+   perifocalStateVector.position.x() = p * cosTa / (1.0 + ecc * cosTa);
+   perifocalStateVector.position.y() = p * sinTa / (1.0 + ecc * cosTa);
+   perifocalStateVector.position.z() = 0.0;
+   perifocalStateVector.velocity.x() = -sqrt(mu / p) * sinTa;
+   perifocalStateVector.velocity.y() = sqrt(mu / p) * (ecc + cosTa);
+   perifocalStateVector.velocity.z() = 0.0;
 
-   // Transform the state vectors into inertial coordinates.
-   CartesianStateVector stateVector;
-   TransformPerifocal2Inertial(Rp, incl, aop, lan, stateVector.position);
-   TransformPerifocal2Inertial(Vp, incl, aop, lan, stateVector.velocity);
-
-   return stateVector;
+   // Return the rotated state vector in inertial coordinates.
+   return TransformPerifocal2Inertial(perifocalStateVector, incl, aop, lan);
 }
 
 ////////////////////////////////////////////////////////////

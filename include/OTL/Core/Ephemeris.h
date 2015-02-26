@@ -117,7 +117,7 @@ public:
     /// \return Resulting StateVector
     ///
     ////////////////////////////////////////////////////////////
-    StateVector GetStateVector(const std::string& name, const Epoch& epoch);
+    //StateVector GetStateVector(const std::string& name, const Epoch& epoch);
     OrbitalElements GetOrbitalElements(const std::string& name, const Epoch& epoch);
     CartesianStateVector GetCartesianStateVector(const std::string& name, const Epoch& epoch);
 
@@ -233,7 +233,7 @@ protected:
     /// \return Resulting StateVector
     ///
     ////////////////////////////////////////////////////////////
-    virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) = 0;
+    //virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) = 0;
     virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) = 0;
     virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) = 0;
 

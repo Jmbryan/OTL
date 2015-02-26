@@ -25,7 +25,9 @@
 #include <OTL/Core/Ephemeris.h>
 #include <OTL/Core/PhysicalProperties.h>
 #include <OTL/Core/Epoch.h>
-#include <OTL/Core/StateVector.h>
+//#include <OTL/Core/StateVector.h>
+#include <OTL/Core/OrbitalElements.h>
+#include <OTL/Core/CartesianStateVector.h>
 #include <OTL/Core/Logger.h>
 
 namespace otl
@@ -114,30 +116,30 @@ double IEphemeris::GetGravitationalParameterCentralBody(const std::string& name)
 }
 
 ////////////////////////////////////////////////////////////
-StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)
-{
-   if (!m_initialized)
-   {
-      Initialize();
-   }
-
-   if (IsValidName(name))
-   {
-      if (IsValidEpoch(epoch))
-      {
-         return VGetStateVector(name, epoch);
-      }
-      else
-      {
-         OTL_ERROR() << "Epoch is outside the accepted range";
-      }
-   }
-   else
-   {
-      OTL_ERROR() << "Name " << Bracket(name) << " not found";
-   }
-   return StateVector();
-}
+//StateVector IEphemeris::GetStateVector(const std::string& name, const Epoch& epoch)
+//{
+//   if (!m_initialized)
+//   {
+//      Initialize();
+//   }
+//
+//   if (IsValidName(name))
+//   {
+//      if (IsValidEpoch(epoch))
+//      {
+//         return VGetStateVector(name, epoch);
+//      }
+//      else
+//      {
+//         OTL_ERROR() << "Epoch is outside the accepted range";
+//      }
+//   }
+//   else
+//   {
+//      OTL_ERROR() << "Name " << Bracket(name) << " not found";
+//   }
+//   return StateVector();
+//}
 
 ////////////////////////////////////////////////////////////
 OrbitalElements IEphemeris::GetOrbitalElements(const std::string& name, const Epoch& epoch)

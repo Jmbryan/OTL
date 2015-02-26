@@ -395,7 +395,7 @@ void MGADSMTrajectory::SetPropagateType(PropagatorType type)
    switch (type)
    {
    case PropagatorType::Keplerian:
-      m_propagator = std::unique_ptr<otl::IPropagator>(new KeplerianPropagator());
+      //m_propagator = std::unique_ptr<otl::IPropagator>(new KeplerianPropagator());
       break;
 
    case PropagatorType::Invalid:
@@ -470,7 +470,7 @@ void MGADSMTrajectory::Init()
    m_legsInitialized = false;
 
    // Default algorithms
-   m_propagator = std::make_shared<KeplerianPropagator>();
+   //m_propagator = std::make_shared<KeplerianPropagator>();
    m_lambert = std::make_shared<LambertExponentialSinusoid>();
    m_flyby = std::make_shared<UnpoweredFlyby>();
 }
@@ -617,8 +617,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
     // Trajectory initial conditions
     m_finalEpoch.SetMJD2000(states[iState++]);
-    m_legs.front().initialPlanet.QueryStateVector(m_finalEpoch);
-    m_finalStateVector = m_legs.front().initialPlanet.GetCartesianStateVector();
+    m_finalStateVector = m_legs.front().initialPlanet.GetCartesianStateVectorAt(m_finalEpoch);
 
    // Calculate the trajectory one leg at a time
    for (std::size_t iLeg = 0; iLeg < m_legs.size(); ++iLeg)
@@ -652,8 +651,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch
 
    // Leg final conditions
    m_finalEpoch = m_initialEpoch + Time::Seconds(timeOfFlightLeg);
-   planet.QueryStateVector(m_finalEpoch);
-   m_planetStateVector = planet.GetCartesianStateVector();
+   m_planetStateVector = planet.GetCartesianStateVectorAt(m_finalEpoch);
    m_finalStateVector = m_planetStateVector;
 
    // Handle departure event
@@ -695,8 +693,8 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch
             deltaVs.push_back(deltaV.norm());
          }
 
-         auto tempSV = m_propagator->Propagate(StateVector(m_initialStateVector), Time::Seconds(timeOfFlight), ASTRO_MU_SUN); // [TODO] clean up
-         m_initialStateVector = tempSV.ToCartesianStateVector(ASTRO_MU_SUN);
+         //auto tempSV = m_propagator->Propagate(StateVector(m_initialStateVector), Time::Seconds(timeOfFlight), ASTRO_MU_SUN); // [TODO] clean up
+         //m_initialStateVector = tempSV.ToCartesianStateVector(ASTRO_MU_SUN);
       }      
    }
 
