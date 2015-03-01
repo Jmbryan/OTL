@@ -55,6 +55,9 @@ otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation,
 # add an option for building the SPICE library
 otl_set_option(OTL_BUILD_SPICE TRUE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
 
+# add an option for building the SGP4 library
+otl_set_option(OTL_BUILD_SGP4 TRUE BOOL "TRUE to build sgp4, FALSE to ignore it or link externally")
+
 # set install directories
 set(CMAKE_INSTALL_PREFIX ./install)
 set(INSTALL_MISC_DIR ./)
@@ -171,6 +174,9 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 add_subdirectory(src/OTL)
 if(OTL_BUILD_SPICE)
 	add_subdirectory(spice)
+endif()
+if(OTL_BUILD_SGP4)
+	add_subdirectory(sgp4)
 endif()
 if(OTL_BUILD_EXAMPLES)
 	add_subdirectory(examples)

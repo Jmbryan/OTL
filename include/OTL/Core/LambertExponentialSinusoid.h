@@ -35,14 +35,15 @@ class OTL_CORE_API LambertExponentialSinusoid : public ILambertAlgorithm
 {
 public:
 
-   void Evaluate2(const Vector3d& initialPosition,
-      const Vector3d& finalPosition,
-      const Time& timeDelta,
-      const Orbit::Direction& orbitDirection,
-      int maxRevolutions,
-      double mu,
-      Vector3d& initialVelocity,
-      Vector3d& finalVelocity);
+   // Lambert Revisted http://arxiv.org/pdf/1403.2705.pdf
+   void Evaluate(const Vector3d& initialPosition,
+                 const Vector3d& finalPosition,
+                 const Time& timeDelta,
+                 const Orbit::Direction& orbitDirection,
+                 int maxRevolutions,
+                 double mu,
+                 std::vector<Vector3d>& initialVelocities,
+                 std::vector<Vector3d>& finalVelocities);
 
    ////////////////////////////////////////////////////////////
    /// \brief Evaluate Lambert's Problem
@@ -68,6 +69,12 @@ public:
                           double mu,
                           Vector3d& initialVelocity,
                           Vector3d& finalVelocity);
+
+    int HouseHolder(double T, double lambda, int N, double eps, int iter_max, double& x0);
+    void ComputeDerivatives(double x, double T, double lambda, double& DT, double& DDT, double& DDDT);
+    double ComputeTimeOfFlight(double x, double lambda, int N);
+    double EvaluateHyperGeometricFunction(double a, double b, double c, double d, double tol);
+    double EvaluateHyperGeometricFunction(double z, double tol);
 
 private:
    ////////////////////////////////////////////////////////////

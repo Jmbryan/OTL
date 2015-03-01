@@ -381,6 +381,7 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVec
 
 inline double ComputeOrbitRadius(const OrbitalElements& orbitalElements, double trueAnomaly)
 {
+   // r = a * (1.0 - ecosE) from Lambert Revisited
    return orbitalElements.semiMajorAxis * (1.0 - SQR(orbitalElements.eccentricity)) / (1.0 + orbitalElements.eccentricity * cos(trueAnomaly));
 }
 

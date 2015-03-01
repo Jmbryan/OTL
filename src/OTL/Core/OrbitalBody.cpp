@@ -196,8 +196,8 @@ void OrbitalBody::Initialize() const
 {
    if (!m_initialized)
    {
-      const_cast<OrbitalBody*>(this)->VInitialize();
       m_initialized = true;
+      const_cast<OrbitalBody*>(this)->VInitialize();
    }
 }
 
@@ -224,6 +224,12 @@ std::string OrbitalBody::ToString(const std::string& prefix) const
    os << prefix << "Ephemeris:" << std::endl;
 
    return os.str();
+}
+
+////////////////////////////////////////////////////////////
+void OrbitalBody::SetName(const std::string& name)
+{
+   m_name = name;
 }
 
 ////////////////////////////////////////////////////////////

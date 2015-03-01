@@ -299,6 +299,7 @@ public:
    //virtual std::string ToDetailedString(std::string prefix = "") const;
 
 protected:
+   void SetName(const std::string& name);
    void SetEpoch(const Epoch& epoch);
 
    ////////////////////////////////////////////////////////////

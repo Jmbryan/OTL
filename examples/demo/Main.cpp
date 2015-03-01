@@ -3,7 +3,6 @@
 #include <OTL/Core/MGADSMTrajectory.h>
 #include <OTL/Core/Planet.h>
 #include <OTL/Core/JplApproximateBody.h>
-#include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/MpcorbBody.h>
 #include <OTL/Core/Orbit.h>
 
@@ -15,7 +14,10 @@
 #include <OTL/Core/JplApproximateEphemeris.h>
 //#include <OTL/Core/JplEphemeris.h>
 #include <OTL/Core/MpcorbEphemeris.h>
+#if defined (OTL_SPICE)
+#include <OTL/Core/SpiceBody.h>
 #include <OTL/Core/SpiceEphemeris.h>
+#endif
 
 //#include <OTL/Core/Matrix.h>
 //#include <OTL/Core/Mat.h>
@@ -84,7 +86,51 @@ int main()
        // Planets
        auto sizeofplanet = sizeof(Planet);
        auto sizeofmpcorb = sizeof(MpcorbBody);
+#if defined(OTL_SPICE)
        auto sizeofspice = sizeof(SpiceBody);
+#endif
+
+       double d = 1.0;
+    }
+
+    // Lambert
+    if (true)
+    {
+       Epoch epoch1 = Epoch::MJD2000(0.0);
+       Epoch epoch2 = Epoch::MJD2000(640.0);
+       Time timeDelta = epoch2 - epoch1;
+
+       Planet p1 = Planet("Earth", epoch1);
+       Planet p2 = Planet("Mars", epoch2);
+
+       const auto& R1 = p1.GetCartesianStateVector().position;
+       const auto& R2 = p2.GetCartesianStateVector().position;
+
+       auto lambert = keplerian::LambertExponentialSinusoid();
+
+       std::vector<Vector3d> V1, V2;
+       lambert.Evaluate(
+          R1,
+          R2,
+          timeDelta,
+          keplerian::Orbit::Direction::Prograde,
+          1,
+          ASTRO_MU_SUN,
+          V1,
+          V2);
+
+       for (std::size_t i = 0; i < V1.size(); ++i)
+       {
+          CartesianStateVector sv1(R1, V1[i]);
+          CartesianStateVector sv2_lambert(R2, V2[i]);
+
+          LagrangianPropagator propagator;
+          auto sv2_propagated = propagator.Propagate(sv1, ASTRO_MU_SUN, timeDelta);
+
+          std::cout << "Solution #: " << i << std::endl;
+          std::cout << "   SV2 lambert: " << std::endl << sv2_lambert.ToDetailedString("      ");
+          std::cout << "   SV2 lagrange: " << std::endl << sv2_propagated.ToDetailedString("      ");
+       }
 
        double d = 1.0;
     }
@@ -404,17 +450,19 @@ int main()
        //auto dataFile = currentDirectory + "\\..\\..\\..\\data\\jpl\\de405\\de405.data";
        //auto jplEphemeris = std::make_shared<JplEphemeris>(dataFile);
 
+#if defined (OTL_SPICE)
        SpiceEphemeris spiceEphemeris;
        spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\de430.bsp");
        spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\gm_de431.tpc");
        spiceEphemeris.LoadDataFile(currentDirectory + "\\..\\..\\..\\data\\spice\\pck00010.tpc");
+#endif
 
        auto mpcorbDataFile = currentDirectory + "\\..\\..\\..\\data\\mpcorb\\mpcorb.data";
        MpcorbEphemeris mpcorbEphemeris(mpcorbDataFile);
 
-       //Planet p("Earth");
+       Planet p("Earth");
        //MpcorbBody p("Ceres", mpcorbEphemeris);
-       SpiceBody p("Earth", spiceEphemeris);
+       //SpiceBody p("Earth", spiceEphemeris);
 
        //Planet p(ConvertPlanetIdentifier2Name(PlanetId::Earth));
        //p.SetEphemeris(jplEphemeris);
