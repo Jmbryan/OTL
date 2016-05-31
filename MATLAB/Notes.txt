@@ -1,0 +1,12 @@
+OTL must be compiled in Release
+OTL must be set as Multi-threaded DLL (/MD)
+OTL must target x64 for 64bit Matlab
+
+Mex functions are compiled as a DLL with the .mexw64 extension.
+Link against the MATLAB OTL libs e.g. otl-core-s-m-x64.lib
+
+For downloading binaries, a batch file will be provided to compile the mex functions from the headers/lib.
+
+For downloading full source, there should be a project generated for each mex function e.g. OTL_Lambert.proj. Alteneratively, the batch file can be used after the OTL libs have been built.
+
+
