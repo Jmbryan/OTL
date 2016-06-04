@@ -19,12 +19,14 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         
         orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
+        double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
+
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(36127.343));                     // [km]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
         CHECK(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
         CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
         CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
-        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(trueAnomaly                        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 
     /// Test StateVector2OrbitalElements() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-5.
@@ -36,12 +38,14 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         
         orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
+        double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
+
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(5.664247));                      // [ER]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.832853));
         CHECK(orbitalElements.inclination        == OTL_APPROX(87.870 * otl::MATH_DEG_TO_RAD)); // [rad]
         CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(53.38 * otl::MATH_DEG_TO_RAD));  // [rad]
         CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(227.89 * otl::MATH_DEG_TO_RAD)); // [rad]
-        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(trueAnomaly                        == OTL_APPROX(92.335 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 
     /// Test StateVector2OrbitalElements() against Orbital Mechanics for Engineering Students 1st Edition, Howard Curtis, Example 4.3.
@@ -53,12 +57,14 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         
         orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
 
+        double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
+
         CHECK(orbitalElements.semiMajorAxis      == OTL_APPROX(8788.1));                         // [km]
         CHECK(orbitalElements.eccentricity       == OTL_APPROX(0.171212));
         CHECK(orbitalElements.inclination        == OTL_APPROX(153.249 * otl::MATH_DEG_TO_RAD)); // [rad]
         CHECK(orbitalElements.argOfPericenter    == OTL_APPROX(20.0683 * otl::MATH_DEG_TO_RAD)); // [rad]
         CHECK(orbitalElements.lonOfAscendingNode == OTL_APPROX(255.279 * otl::MATH_DEG_TO_RAD)); // [rad]
-        CHECK(orbitalElements.trueAnomaly        == OTL_APPROX(28.4456 * otl::MATH_DEG_TO_RAD)); // [rad]
+        CHECK(trueAnomaly                        == OTL_APPROX(28.4456 * otl::MATH_DEG_TO_RAD)); // [rad]
     }
 }
 
@@ -71,12 +77,14 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
     /// Test OrbitalElements2StateVector() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-6.
     SECTION("Truth Case: Vallado 2-6")
     {
+        double trueAnomaly = 92.335 * otl::MATH_DEG_TO_RAD;   // [rad]
+
         orbitalElements.semiMajorAxis      = 36127.343;                     // [km]
         orbitalElements.eccentricity       = 0.83285;
         orbitalElements.inclination        = 87.87 * otl::MATH_DEG_TO_RAD;  // [rad]
         orbitalElements.argOfPericenter    = 53.38 * otl::MATH_DEG_TO_RAD;  // [rad]
         orbitalElements.lonOfAscendingNode = 227.89 * otl::MATH_DEG_TO_RAD; // [rad]
-        orbitalElements.trueAnomaly        = 92.335 * otl::MATH_DEG_TO_RAD; // [rad]
+        orbitalElements.meanAnomaly        = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = otl::ASTRO_MU_EARTH;                                           // [km^3/s^2]
         
         stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
@@ -92,12 +100,14 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
     /// Test OrbitalElements2StateVector() against Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Example 2-6.
     SECTION("Truth Case: Vallado 2-6 (canonical)")
     {
+        double trueAnomaly = 92.335 * otl::MATH_DEG_TO_RAD;   // [rad]
+
         orbitalElements.semiMajorAxis      = 5.664247;                      // [ER]
         orbitalElements.eccentricity       = 0.83285;
         orbitalElements.inclination        = 87.87 * otl::MATH_DEG_TO_RAD;  // [rad]
         orbitalElements.argOfPericenter    = 53.38 * otl::MATH_DEG_TO_RAD;  // [rad]
         orbitalElements.lonOfAscendingNode = 227.89 * otl::MATH_DEG_TO_RAD; // [rad]
-        orbitalElements.trueAnomaly        = 92.335 * otl::MATH_DEG_TO_RAD; // [rad]
+        orbitalElements.meanAnomaly        = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = 1.0;                                                           // [ER^3/TU^2]
         
         stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
@@ -115,14 +125,16 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
     {
         double h = 80000.0;
         double e = 1.4;
-        double a = otl::SQR(h) / otl::ASTRO_MU_EARTH / (1.0 - otl::SQR(e)); 
+        double a = otl::SQR(h) / otl::ASTRO_MU_EARTH / (1.0 - otl::SQR(e));
+
+        double trueAnomaly = 30.0 * otl::MATH_DEG_TO_RAD;   // [rad]
 
         orbitalElements.semiMajorAxis      = a;                           // [km]
         orbitalElements.eccentricity       = e;
         orbitalElements.inclination        = 30.0 * otl::MATH_DEG_TO_RAD; // [rad]
         orbitalElements.argOfPericenter    = 60.0 * otl::MATH_DEG_TO_RAD; // [rad]
         orbitalElements.lonOfAscendingNode = 40.0 * otl::MATH_DEG_TO_RAD; // [rad]
-        orbitalElements.trueAnomaly        = 30.0 * otl::MATH_DEG_TO_RAD; // [rad]
+        orbitalElements.meanAnomaly = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = 398600.0;                                                    // [km^3/s^2]
         
         stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);

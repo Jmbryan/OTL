@@ -44,7 +44,7 @@ std::string System::GetCurrentDirectory()
 #if defined (OTL_USE_TR2_FILESYSTEM)
    try
    {
-      return std::tr2::sys::current_path<std::string>();
+      return std::tr2::sys::current_path().string();
    }
    catch (std::tr2::sys::filesystem_error er)
    {

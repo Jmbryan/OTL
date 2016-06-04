@@ -55,7 +55,7 @@ double KeplerianPropagator::PropagateMeanAnomaly(double meanAnomaly, double mean
 
 double KeplerianPropagator::PropagateMeanAnomaly(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta)
 {
-   double meanMotion = sqrt(mu / pow(orbitalElements.semiMajorAxis, 3.0));
+   double meanMotion = sqrt(mu / abs(pow(orbitalElements.semiMajorAxis, 3.0)));
    return PropagateMeanAnomaly(orbitalElements.meanAnomaly, meanMotion, timeDelta);
 }
 
