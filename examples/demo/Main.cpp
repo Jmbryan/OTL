@@ -50,6 +50,12 @@ struct VectorAddition
    }
 };
 
+/////////////////////////////////////////////////////////
+//
+// NOTE: This program is essentially just a scratchpad right now.
+//
+/////////////////////////
+
 int main()
 {
     gLogger.SetLogLevel(LogLevel::Info);

@@ -32,7 +32,7 @@ Build Instructions
 6. Set build directory created in step 4
 7. Click Configure
 8. Select compiler when prompted (last built using Visual Studio 14 2015)
-9. Uncheck the following. They require additional dependencies
+9. Uncheck the following unless you downloaded the external dependencies (see below)
       - OTL_BUILD_SGP4
       - OTL_BUILD_SPICE
 10. Click Generate
@@ -42,16 +42,17 @@ Build Instructions
 14. Run the unit tests by opening a command prompt at "C:/OTL/build/bin" and typing "otl-unit-test-d"
 
 3rd Party Libraries (included)
--------------------
+------------------------------
 Eigen - http://eigen.tuxfamily.org/
 Spdlog - https://github.com/gabime/spdlog
 niek-ephem - https://www.openhub.net/p/niek-ephem
 Catch - https://github.com/philsquared/Catch
 FakeIt - https://github.com/eranpeer/FakeIt
 
-3rd Party Libraries (not included)
-SPICE
-SGP4
+3rd Party Libraries (not included / experimental)
+----------------------------------
+CSPICE - https://naif.jpl.nasa.gov/naif/toolkit_C.html (last tested using "PC, Windows, MS Visual C, 32bit")
+SGP4 - https://www.danrw.com/sgp4/ (source is located at the bottom of the page)
 
 Authors
 -------

@@ -28,7 +28,7 @@ endif()
 # required to compile spdlog on mingw
 if (CMAKE_COMPILER_IS_GNUCXX)
 	add_definitions(-D_WIN32_WINNT=0x600)
-endif()	
+endif()
 
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
@@ -53,10 +53,10 @@ otl_set_option(OTL_BUILD_EXAMPLES TRUE BOOL "TRUE to build the OTL examples, FAL
 otl_set_option(OTL_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
 # add an option for building the SPICE library
-otl_set_option(OTL_BUILD_SPICE TRUE BOOL "TRUE to build spice, FALSE to ignore it or link externally")
+otl_set_option(OTL_BUILD_SPICE FALSE BOOL "TRUE to build spice (experimental), FALSE to ignore it or link externally")
 
 # add an option for building the SGP4 library
-otl_set_option(OTL_BUILD_SGP4 TRUE BOOL "TRUE to build sgp4, FALSE to ignore it or link externally")
+otl_set_option(OTL_BUILD_SGP4 FALSE BOOL "TRUE to build sgp4 (experimental), FALSE to ignore it or link externally")
 
 # set install directories
 set(CMAKE_INSTALL_PREFIX ./install)
@@ -66,7 +66,7 @@ set(INSTALL_MISC_DIR ./)
 if(MACOSX)
 	# add an option to build frameworks instead of dylybs (release only)
 	otl_set_option(OTL_BUILD_FRAMEWORKS FALSE BOOL "TRUE to build SFML as frameworks libraries (release only), FALSE to build according to BUILD_SHARED_LIBS")
-	
+
 	# add an option to let the user specify a custom directory for frameworks installation (OTL, SFML, ...)
 	otl_set_option(CMAKE_INSTALL_FRAMEWORK_PREFIX "/Library/Frameworks" STRING "Frameworks installation directory")
 endif()
@@ -86,8 +86,8 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
-# Create outputs in just bin instead of bin/Debug, bin/Release, etc. (Windows only)		
-if(WINDOWS)		
+# Create outputs in just bin instead of bin/Debug, bin/Release, etc. (Windows only)
+if(WINDOWS)
 	foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 			string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
 			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
@@ -99,12 +99,12 @@ endif()
 # define an option for choosing between static and dynamic C runtime (Windows only)
 if(WINDOWS)
 	otl_set_option(OTL_USE_STATIC_STD_LIBS TRUE BOOL "TRUE to statically link to the standard libraries, FALSE to use them as DLLs")
-	
+
 	# the following combination of flags is not valid
 	if(BUILD_SHARED_LIBS AND OTL_USE_STATIC_STD_LIBS)
 		message(FATAL_ERROR "BUILD_SHARED_LIBS and OTL_USE_STATIC_STD_LIBS cannot be used together")
 	endif()
-	
+
 	# for VC++, we can apply it globally by modifying the compiler flags
 	if(COMPILER_MSVC AND OTL_USE_STATIC_STD_LIBS)
 		foreach(flag
@@ -210,7 +210,7 @@ else()
     add_library(OTL ${OTL_SOURCES})
 
     # edit target properties
-    set_target_properties(OTL PROPERTIES 
+    set_target_properties(OTL PROPERTIES
                           FRAMEWORK TRUE
                           FRAMEWORK_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
                           MACOSX_FRAMEWORK_IDENTIFIER org.otl-dev.OTL
@@ -219,14 +219,14 @@ else()
                           PUBLIC_HEADER "${OTL_HEADERS}")
 
     # add the remaining headers
-    add_custom_command(TARGET OTL 
+    add_custom_command(TARGET OTL
                        POST_BUILD
                        COMMAND cp -r ${PROJECT_SOURCE_DIR}/include/OTL/* $<TARGET_FILE_DIR:OTL>/Headers)
 
-    # adapt install directory to allow distributing dylibs/frameworks in user’s frameworks/application bundle
+    # adapt install directory to allow distributing dylibs/frameworks in userï¿½s frameworks/application bundle
     # NOTE : it's not required to link against OTL.framework
-    set_target_properties(OTL PROPERTIES 
-                          BUILD_WITH_INSTALL_RPATH 1 
+    set_target_properties(OTL PROPERTIES
+                          BUILD_WITH_INSTALL_RPATH 1
                           INSTALL_NAME_DIR "@rpath")
 
     # install rule
@@ -261,7 +261,7 @@ if(WINDOWS)
     endif()
 
 elseif(MACOSX)
-	
+
 	# install the non-standard frameworks SFML depends on
     #install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX})
     #install(DIRECTORY extlibs/libs-osx/Frameworks/freetype.framework DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX})

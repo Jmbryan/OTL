@@ -1,0 +1,28 @@
+These data are to be used as described in the related document
+titled "Keplerian Elements for Approximate Positions of the
+Major Planets" by E.M. Standish (JPL/Caltech) available from
+the JPL Solar System Dynamics web site (http://ssd.jpl.nasa.gov/).
+
+Keplerian elements and their rates, with respect to the mean ecliptic and equinox of J2000.
+NOTE: the computation of M must be augmented by the additional terms given below.
+
+The planet ephemeris data is stored in the following order with units shown:
+a             e               I                L                long.peri.      long.node.
+AU, AU/Cy     rad, rad/Cy     deg, deg/Cy      deg, deg/Cy      deg, deg/Cy     deg, deg/Cy
+
+The additional terms for computing M are stored in the following order:
+b    c    s    f
+
+The JplApproximateData.dat file is organized in the following format (all values are space delimited):
+
+.......................................................
+
+Integer array        (start year and end year)
+Integer              (number of planets)
+String array         (planet names)
+Floating point table (planet ephemeris, one row/planet)
+Floating point table (additional terms, one row/planet)
+
+.......................................................
+
+
