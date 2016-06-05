@@ -3,7 +3,7 @@ OTL - Orbital Trajectory Library
 
 OTL is a simple, fast, cross-platform and object-oriented library for general orbital trajectory computation.
 
-This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal.
+This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. The CMake configuration is based off of SFML (http://www.sfml-dev.org/).
 
 Features
 --------
@@ -18,8 +18,8 @@ Features
    - JPL SPICE
    - SGP4
    - MPCORB
- - Flybys (unpowered)
- - MATLAB interface
+- Flybys (unpowered)
+- MATLAB interface
 
 Build Instructions (Windows)
 ----------------------------
