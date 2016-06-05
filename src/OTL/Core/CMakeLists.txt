@@ -7,23 +7,23 @@ set(SRC
 	${INCROOT}/Base.h
 	${SRCROOT}/CartesianStateVector.cpp
 	${INCROOT}/CartesianStateVector.h
-	${INCROOT}/Config.h	
+	${INCROOT}/Config.h
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
 	${INCROOT}/Ephemeris.h
 	#${SRCROOT}/EphemerisBody.cpp
-	#${INCROOT}/EphemerisBody.h	
+	#${INCROOT}/EphemerisBody.h
 	${SRCROOT}/Epoch.cpp
 	${INCROOT}/Epoch.h
-	${SRCROOT}/Exceptions.cpp	
+	${SRCROOT}/Exceptions.cpp
 	${INCROOT}/Exceptions.h
 	${INCROOT}/Export.h
 	${INCROOT}/Flyby.h
 	#${SRCROOT}/ForceModel.cpp
 	#${INCROOT}/ForceModel.h
 	${SRCROOT}/JplApproximateBody.cpp
-	${INCROOT}/JplApproximateBody.h	
+	${INCROOT}/JplApproximateBody.h
 	${SRCROOT}/JplApproximateEphemeris.cpp
 	${INCROOT}/JplApproximateEphemeris.h
 	#${SRCROOT}/JplEphemeris.cpp
@@ -33,49 +33,49 @@ set(SRC
 	${SRCROOT}/KeplersEquations.cpp
 	${INCROOT}/KeplersEquations.h
 	${SRCROOT}/LagrangianPropagator.cpp
-	${INCROOT}/LagrangianPropagator.h	
+	${INCROOT}/LagrangianPropagator.h
 	${INCROOT}/Lambert.h
 	${SRCROOT}/LambertExponentialSinusoid.cpp
 	${INCROOT}/LambertExponentialSinusoid.h
 	${SRCROOT}/Logger.cpp
 	${INCROOT}/Logger.h
-	${INCROOT}/Matrix.h>
-	${INCROOT}/MatrixBasePlugin.h>		
-	${INCROOT}/MatrixPlugin.h>	
+	${INCROOT}/Matrix.h
+	${INCROOT}/MatrixBasePlugin.h
+	${INCROOT}/MatrixPlugin.h	
 	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp
 	${INCROOT}/MGADSMTrajectory.h
 	${SRCROOT}/MpcorbBody.cpp
-	${INCROOT}/MpcorbBody.h	
+	${INCROOT}/MpcorbBody.h
 	${SRCROOT}/MpcorbEphemeris.cpp
 	${INCROOT}/MpcorbEphemeris.h
 	${SRCROOT}/Orbit.cpp
 	${INCROOT}/Orbit.h
-	${SRCROOT}/OrbitalBody.cpp	
+	${SRCROOT}/OrbitalBody.cpp
 	${INCROOT}/OrbitalBody.h
 	${SRCROOT}/OrbitalElements.cpp
 	${INCROOT}/OrbitalElements.h
 	${SRCROOT}/PhysicalProperties.cpp
-	${INCROOT}/PhysicalProperties.h		
+	${INCROOT}/PhysicalProperties.h
 	${SRCROOT}/Planet.cpp
-	${INCROOT}/Planet.h	
+	${INCROOT}/Planet.h
 	#${SRCROOT}/Propagator.cpp
 	#${INCROOT}/Propagator.h
 	#${SRCROOT}/Rotation.cpp
-	#${INCROOT}/Rotation.h	
+	#${INCROOT}/Rotation.h
 	${SRCROOT}/StateVector.cpp
 	${INCROOT}/StateVector.h
 	${SRCROOT}/System.cpp
 	${INCROOT}/System.h
 	${SRCROOT}/Time.cpp
-	${INCROOT}/Time.h		
+	${INCROOT}/Time.h
 	${SRCROOT}/Transformation.cpp
 	${INCROOT}/Transformation.h
 	${SRCROOT}/UnpoweredFlyby.cpp
-	${INCROOT}/UnpoweredFlyby.h	
+	${INCROOT}/UnpoweredFlyby.h
 	${SRCROOT}/UserDefinedBody.cpp
-	${INCROOT}/UserDefinedBody.h	
+	${INCROOT}/UserDefinedBody.h
 	${INCROOT}/Vector.h
 )
 source_group("" FILES ${SRC})
@@ -103,7 +103,7 @@ if(WINDOWS)
 	set (PLATFORM_SRC
 		${SRCROOT}/Win32/SystemImpl.cpp
 		${SRCROOT}/Win32/SystemImpl.h
-	)		
+	)
 	source_group("windows" FILES ${PLATFORM_SRC})
 else()
 	set (PLATFORM_SRC
@@ -117,9 +117,9 @@ endif()
 if(OTL_BUILD_SPICE)
 	set(SPICE_SRC
 		${SRCROOT}/SpiceBody.cpp
-		${INCROOT}/SpiceBody.h	
+		${INCROOT}/SpiceBody.h
 		${SRCROOT}/SpiceEphemeris.cpp
-		${INCROOT}/SpiceEphemeris.h	
+		${INCROOT}/SpiceEphemeris.h
 	)
 	source_group("spice" FILES ${SPICE_SRC})
 endif()

@@ -21,25 +21,47 @@ Features
  - Flybys (unpowered)
  - MATLAB interface
 
-Build Instructions
-------------------
+Build Instructions (Windows)
+----------------------------
 1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "C:/OTL"
-2. Download CMake (last built using version 3.5.2) - https://cmake.org/download/
-    - Note: Recommend adding CMake to system path (not done by default in Windows installer)
+2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-win32-x86.msi") - https://cmake.org/download/
+    - Note: Recommend adding CMake to system path (not done by default in installer)
 3. Launch CMake dialog
 4. Set source directory to root directory e.g. "C:/OTL"
 5. Create a build directory e.g. "C:/OTL/build"
-6. Set build directory created in step 4
+6. Set build directory created in step 5
 7. Click Configure
 8. Select compiler when prompted (last built using Visual Studio 14 2015)
 9. Uncheck the following unless you downloaded the external dependencies (see below)
       - OTL_BUILD_SGP4
       - OTL_BUILD_SPICE
 10. Click Generate
-11. Open the generated solution file "C:/OTL/build/OTL.sln"
+11. Open the generated Visual Studio solution file "C:/OTL/build/OTL.sln"
 12. Build solution in Debug
 13. The built static libraries can be found at "C:/OTL/build/lib".
 14. Run the unit tests by opening a command prompt at "C:/OTL/build/bin" and typing "otl-unit-test-d"
+
+Build Instructions (Mac OSX)
+----------------------------
+--
+NOTE: Build is currently broken on OSX due to complications with Eigen library
+--
+1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "/Users/username/OTL"
+2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-Darwin-x86_64.dmg") - https://cmake.org/download/
+3. Launch CMake dialog
+4. Set source directory to root directory e.g. "/Users/username/OTL"
+5. Create a build directory e.g. "/Users/username/OTL/build"
+6. Set build directory created in step 5
+7. Click Configure
+8. Select compiler when prompted (last built using XCode 7.3)
+9. Uncheck the following unless you downloaded the external dependencies (see below)
+      - OTL_BUILD_SGP4
+      - OTL_BUILD_SPICE
+10. Click Generate
+11. Open the generated XCode project "/Users/username/OTL/build/OTL.xcode"
+12. Build solution in Debug
+13. The built static libraries can be found at "/Users/username/OTL/build/lib".
+14. Run the unit tests by opening a command prompt at "/Users/username/OTL/build/bin" and typing "otl-unit-test-d"
 
 3rd Party Libraries (included)
 ------------------------------
@@ -50,7 +72,7 @@ Catch - https://github.com/philsquared/Catch
 FakeIt - https://github.com/eranpeer/FakeIt
 
 3rd Party Libraries (not included / experimental)
-----------------------------------
+-------------------------------------------------
 CSPICE - https://naif.jpl.nasa.gov/naif/toolkit_C.html (last tested using "PC, Windows, MS Visual C, 32bit")
 SGP4 - https://www.danrw.com/sgp4/ (source is located at the bottom of the page)
 
