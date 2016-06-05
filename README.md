@@ -43,9 +43,9 @@ Build Instructions (Windows)
 
 Build Instructions (Mac OSX)
 ----------------------------
---
+
 NOTE: Build is currently broken on OSX due to complications with Eigen library
---
+
 1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "/Users/username/OTL"
 2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-Darwin-x86_64.dmg") - https://cmake.org/download/
 3. Launch CMake dialog
@@ -65,17 +65,17 @@ NOTE: Build is currently broken on OSX due to complications with Eigen library
 
 3rd Party Libraries (included)
 ------------------------------
-Eigen - http://eigen.tuxfamily.org/
-Spdlog - https://github.com/gabime/spdlog
-niek-ephem - https://www.openhub.net/p/niek-ephem
-Catch - https://github.com/philsquared/Catch
-FakeIt - https://github.com/eranpeer/FakeIt
+- Eigen - http://eigen.tuxfamily.org/
+- Spdlog - https://github.com/gabime/spdlog
+- niek-ephem - https://www.openhub.net/p/niek-ephem
+- Catch - https://github.com/philsquared/Catch
+- FakeIt - https://github.com/eranpeer/FakeIt
 
 3rd Party Libraries (not included / experimental)
 -------------------------------------------------
-CSPICE - https://naif.jpl.nasa.gov/naif/toolkit_C.html (last tested using "PC, Windows, MS Visual C, 32bit")
-SGP4 - https://www.danrw.com/sgp4/ (source is located at the bottom of the page)
+- CSPICE - https://naif.jpl.nasa.gov/naif/toolkit_C.html (last tested using "PC, Windows, MS Visual C, 32bit")
+- SGP4 - https://www.danrw.com/sgp4/ (source is located at the bottom of the page)
 
 Authors
 -------
-Jason Bryan - main developer (Jmbryan10@gmail.com)
+- Jason Bryan - main developer (Jmbryan10@gmail.com)
