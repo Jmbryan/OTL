@@ -1,12 +1,12 @@
 language: cpp
 compiler:
-	- clang
-	- gcc
-			  
+    - clang
+    - gcc
+              
 script:
-	- mkdir build
-	- cd build
-	- cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
 
 after_success:
-	- bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash)
