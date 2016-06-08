@@ -4,6 +4,9 @@ compiler:
 	- gcc
 			  
 script:
-	- mkdri build
+	- mkdir build
 	- cd build
-	- cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make		  
+	- cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+
+after_success:
+	- bash <(curl -s https://codecov.io/bash)
