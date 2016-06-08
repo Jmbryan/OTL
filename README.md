@@ -1,5 +1,7 @@
 OTL - Orbital Trajectory Library
 ================================
+[![Build Status](https://travis-ci.org/Jmbryan/OTL.svg?branch=master)](https://travis-ci.org/Jmbryan/OTL)
+[![codecov](https://codecov.io/gh/Jmbryan/OTL/branch/master/graph/badge.svg)](https://codecov.io/gh/Jmbryan/OTL)
 
 OTL is a simple, fast, cross-platform and object-oriented library for general orbital trajectory computation.
 
