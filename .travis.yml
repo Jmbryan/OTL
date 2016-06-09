@@ -1,5 +1,9 @@
 language: cpp
 
+env:
+ global:
+  - COMPILER_FLAGS=-std=c++11
+
 matrix:
  include:
   - os: linux
@@ -15,7 +19,7 @@ matrix:
 script:
  - mkdir build
  - cd build
- - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+ - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=$COMPILER_FLAGS .. && make
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
