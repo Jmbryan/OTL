@@ -1,4 +1,6 @@
 language: cpp
+sudo: required
+dist: precise
 
 env:
  global:
@@ -15,6 +17,9 @@ matrix:
        - g++-5
       sources: &sources
        - ubuntu-toolchain-r-test       
+
+before_install:
+ - sudo apt-get update -qq	   
        
 script:
  - mkdir build
