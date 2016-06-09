@@ -1,19 +1,22 @@
 language: cpp
-sudo: required
-dist: precise
+sudo: false
 
-matrix:
- include:
-  - os: linux
-    compiler: gcc
-    env: COMPILER=g++-6
-    addons:
-     apt:
-      packages:
-       - g++-6
-      sources: &sources
-       - ubuntu-toolchain-r-test       
-  
+compiler:
+ - gcc
+  - clang
+
+install:
+ - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi 
+
+addons:
+ apt:
+  sources:
+   - ubuntu-toolchain-r-test
+  packages:
+   - gcc-4.8
+   - g++-4.8
+   - clang
+ 
 script:
  - mkdir build
  - cd build
@@ -21,3 +24,6 @@ script:
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
+ 
+ notifications:
+  email: false
