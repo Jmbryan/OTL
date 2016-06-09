@@ -1,6 +1,4 @@
 language: cpp
-sudo: required
-dist: trusty
 
 matrix:
  include:
@@ -12,7 +10,6 @@ matrix:
       packages:
        - g++-5
       sources: &sources
-       - llvm-toolchain-precise-3.8
        - ubuntu-toolchain-r-test       
        
 script:
