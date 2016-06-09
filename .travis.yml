@@ -2,29 +2,22 @@ language: cpp
 sudo: required
 dist: precise
 
-env:
- global:
-  - COMPILER_FLAGS=-std=c++11
-
 matrix:
  include:
   - os: linux
     compiler: gcc
-    env: COMPILER=g++-5
+    env: COMPILER=g++-6
     addons:
      apt:
       packages:
-       - g++-5
+       - g++-6
       sources: &sources
        - ubuntu-toolchain-r-test       
-
-before_install:
- - sudo apt-get update -qq	   
-       
+  
 script:
  - mkdir build
  - cd build
- - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=$COMPILER_FLAGS .. && make
+ - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
