@@ -65,7 +65,7 @@ int main()
     {
        // Base
        auto sizeofbool = sizeof(bool);
-       auto sizeofenum = sizeof(StateVectorType);
+       //auto sizeofenum = sizeof(StateVectorType);
        auto sizeofint = sizeof(int);
        auto sizeoffloat = sizeof(float);
        auto sizeofdouble = sizeof(double);
