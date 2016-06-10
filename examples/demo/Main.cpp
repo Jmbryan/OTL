@@ -451,9 +451,9 @@ int main()
        double d = 1.0;
     }
 
-    __int64 elapsedTime1 = 0;
-    __int64 elapsedTime2 = 0;
-    __int64 elapsedTime3 = 0;
+    long elapsedTime1 = 0;
+    long elapsedTime2 = 0;
+    long elapsedTime3 = 0;
     if (true)
     {
        int counter = 0;

@@ -199,7 +199,7 @@ public:
    {
       OTL_STATIC_ASSERT_VECTOR_ONLY(Matrix);
       return std::accumulate(m_data, m_data + Size, T(0),
-         [](const T& sum, const T& value){return sum + SQR(value);}
+         [](const T& sum, const T& value){return sum + value*value;} // TODO: replace value*value with SQR(value) but avoid circular dependency
       );
    }
 
