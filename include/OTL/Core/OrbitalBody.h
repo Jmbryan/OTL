@@ -62,7 +62,7 @@ public:
    OrbitalBody(const std::string& name,
                const PhysicalProperties& physicalProperties,
                double gravitationalParameterCentralBody,
-               const CartesianStateVector& cartesiantateVector,
+               const StateVector& cartesiantateVector,
                const Epoch& epoch = Epoch());
    //OrbitalBody(const std::string& name,
    //            const PhysicalProperties& physicalProperties,
@@ -132,8 +132,8 @@ public:
    ///
    /// If the state vector is stored in StateVectorType::Cartesian
    /// format, then this function will convert from
-   /// CartesianStateVector to OrbitalElements by calling the
-   /// ConvertCartesianStateVector2OrbitalElements() function.
+   /// StateVector to OrbitalElements by calling the
+   /// ConvertStateVector2OrbitalElements() function.
    /// The result is cached so subsequent calls will not suffer
    /// this overhead again until the state vector is modified
    /// by e.g. calling the Propagate() method.
@@ -150,18 +150,18 @@ public:
    ///
    /// If the state vector is stored in StateVectorType::Orbital
    /// format, then this function will convert from
-   /// OrbitalElements to CartesianStateVector by calling the
-   /// ConvertOrbitalElements2CartesianStateVector() function.
+   /// OrbitalElements to StateVector by calling the
+   /// ConvertOrbitalElements2StateVector() function.
    /// The result is cached so subsequent calls will not suffer
    /// this overhead again until the state vector is modified
    /// by e.g. calling the Propagate() method.
    ///
-   /// \return Current CartesianStateVector of the orbit
+   /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   const CartesianStateVector& GetCartesianStateVector() const;
-   const CartesianStateVector& GetCartesianStateVectorAt(const Epoch& epoch);
-   //CartesianStateVector GetCartesianStateVector() const;
+   const StateVector& GetStateVector() const;
+   const StateVector& GetStateVectorAt(const Epoch& epoch);
+   //StateVector GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the type of the orbit
@@ -326,7 +326,7 @@ protected:
    ///
    ////////////////////////////////////////////////////////////
    void SetOrbitalElements(const OrbitalElements& orbitalElements, keplerian::Orbit::Direction direction = keplerian::Orbit::Direction::Prograde);
-   void SetCartesianStateVector(const CartesianStateVector& cartesianStateVector);
+   void SetStateVector(const StateVector& StateVector);
    //void SetStateVector(const StateVector& stateVector);
 
    void PropagateTo(const Epoch& epoch);
@@ -393,7 +393,7 @@ typedef std::shared_ptr<OrbitalBody> OrbitalBodyPointer;
 /// For convenience, the following accessors are also exposed
 /// from the Orbit class:
 /// \li GetStateVector()
-/// \li GetCartesianStateVector()
+/// \li GetStateVector()
 /// \li GetOrbitalElements()
 /// \li GetOrbitRadius()
 /// \li GetOrbitType()

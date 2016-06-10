@@ -102,7 +102,7 @@ public:
    ////////////////////////////////////////////////////////////
    //Orbit(double mu, const StateVector& stateVector);
    Orbit(double mu, const OrbitalElements& orbitalElements, Direction orbitDirection = Direction::Prograde);
-   Orbit(double mu, const CartesianStateVector& cartesianStateVector);
+   Orbit(double mu, const StateVector& StateVector);
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
@@ -124,7 +124,7 @@ public:
    ///
    ////////////////////////////////////////////////////////////
    void SetOrbitalElements(const OrbitalElements& orbitalElements, Direction orbitDirection = Direction::Prograde);
-   void SetCartesianStateVector(const CartesianStateVector& stateVector);
+   void SetStateVector(const StateVector& stateVector);
 
    ////////////////////////////////////////////////////////////
    /// \brief Set the propagation algorithm
@@ -150,8 +150,8 @@ public:
    ///
    /// If the internal state vector is stored in StateVectorType::Orbital
    /// format, then this function will convert from OrbitalElements
-   /// to CartesianStateVector by calling the
-   /// ConvertOrbitalElements2CartesianStateVector() function.
+   /// to StateVector by calling the
+   /// ConvertOrbitalElements2StateVector() function.
    /// However, the result is cached so subsequent calls will
    /// not suffer this overhead until the state vector is modified
    /// by either calling the SetStateVector(), Propagate(), or
@@ -159,20 +159,20 @@ public:
    ///
    /// If the state vector has not been specified through the
    /// constructor or the SetStateVector() method, then this
-   /// function will return a CartesianStateVector of all zeros.
+   /// function will return a StateVector of all zeros.
    ///
-   /// \return Current CartesianStateVector of the orbit
+   /// \return Current StateVector of the orbit
    ///
    ////////////////////////////////////////////////////////////
-   const CartesianStateVector& GetCartesianStateVector() const;
+   const StateVector& GetStateVector() const;
 
    ////////////////////////////////////////////////////////////
    /// \brief Get the current orbital elements of the orbit
    ///
    /// If the internal state vector is stored in StateVectorType::Cartesian
    /// format, then this function will convert from
-   /// CartesianStateVector to OrbitalElements by calling the
-   /// ConvertCartesianStateVector2OrbitalElements() function.
+   /// StateVector to OrbitalElements by calling the
+   /// ConvertStateVector2OrbitalElements() function.
    /// However, the result is cached so subsequent calls will
    /// not suffer this overhead until the state vector is modified
    /// by either calling the SetStateVector(), Propagate(), or
@@ -345,17 +345,17 @@ private:
    ////////////////////////////////////////////////////////////
    void UpdateOrbitProperties() const;
    void UpdateOrbitalElements() const;
-   void UpdateCartesianStateVector() const;
+   void UpdateStateVector() const;
 
 private:
    double m_gravitationalParameterCentralBody;           ///< Gravitational parameter of the central body
    mutable OrbitProperties m_properties;                 ///< Additional properties of the orbit
    mutable OrbitalElements m_orbitalElements;            ///< Orbital elements
-   mutable CartesianStateVector m_cartesianStateVector;  ///< Cartesian state vector
+   mutable StateVector m_StateVector;  ///< Cartesian state vector
    mutable Direction m_direction;                        ///< Orbit direction (e.g. Prograde or Retrograde)
    mutable bool m_propertiesDirty;                       ///< True if the orbit properties are not up-to-date
    mutable bool m_orbitalElementsDirty;                  ///< True if the orbital elements are not up-to-date
-   mutable bool m_cartesianStateVectorDirty;             ///< True if the cartesian state vector is not up-to-date
+   mutable bool m_StateVectorDirty;             ///< True if the cartesian state vector is not up-to-date
 };
 
 ////////////////////////////////////////////////////////////
@@ -377,7 +377,7 @@ T& operator<<(T& stream, const Orbit& orbit)
 }
 
 Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& orbitalElements);
-Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVector& cartesianStateVector);
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const StateVector& StateVector);
 
 inline double ComputeOrbitRadius(const OrbitalElements& orbitalElements, double trueAnomaly)
 {
@@ -385,9 +385,9 @@ inline double ComputeOrbitRadius(const OrbitalElements& orbitalElements, double 
    return orbitalElements.semiMajorAxis * (1.0 - SQR(orbitalElements.eccentricity)) / (1.0 + orbitalElements.eccentricity * cos(trueAnomaly));
 }
 
-inline double ComputeOrbitRadius(const CartesianStateVector& cartesianStateVector)
+inline double ComputeOrbitRadius(const StateVector& StateVector)
 {
-   return cartesianStateVector.position.norm();
+   return StateVector.position.norm();
 }
 
 Orbit::Type ComputeOrbitType(double eccentricity);
@@ -397,10 +397,10 @@ inline Orbit::Type ComputeOrbitType(double mu, const OrbitalElements& orbitalEle
    return ComputeOrbitType(orbitalElements.eccentricity);
 }
 
-inline Orbit::Type ComputeOrbitType(double mu, const CartesianStateVector& cartesianStateVector)
+inline Orbit::Type ComputeOrbitType(double mu, const StateVector& StateVector)
 {
-   const auto& R = cartesianStateVector.position;
-   const auto& V = cartesianStateVector.velocity;
+   const auto& R = StateVector.position;
+   const auto& V = StateVector.velocity;
    return ComputeOrbitType(((SQR(V.norm()) / mu - 1.0 / R.norm()) * R - (R.dot(V) / mu) * V).norm());
 }
 
@@ -435,7 +435,7 @@ inline Orbit::Type ComputeOrbitType(double mu, const CartesianStateVector& carte
 /// orbit.PropagateToTrueAnomaly(60.0 * MATH_DEG_TO_RAD);
 ///
 /// // Get updated cartesian state vector and orbital elements
-/// auto cartesianStateVector2 = orbit.GetCartesianStateVector();
+/// auto StateVector2 = orbit.GetStateVector();
 /// auto orbitalElements2 = orbit.GetOrbitalElements();
 ///
 /// \endcode

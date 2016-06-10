@@ -38,7 +38,7 @@ void UnpoweredFlyby::Evaluate(const Vector3d& approachVelocity,
                               double BPlaneAngle,
                               Vector3d& departureVelocity)
 {
-   const Vector3d& planetVelocity = orbitalBody.GetCartesianStateVector().velocity;
+   const Vector3d& planetVelocity = orbitalBody.GetStateVector().velocity;
    double planetRadius = orbitalBody.GetPhysicalProperties().GetRadius();
    double planetMu = orbitalBody.GetPhysicalProperties().GetGravitationalParameter();
 

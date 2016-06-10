@@ -74,12 +74,12 @@ OTL_CORE_API void CalculateCanonicalUnits(double radius, double mu,
 ///
 /// \Reference Fundamentals of Astrodynamics and Applications 3rd Edition, David Vallado, Algorithm 9
 ///
-/// \param cartesianStateVector CartesianStateVector before conversion
+/// \param StateVector StateVector before conversion
 /// \param mu Gravitational parameter of the central body
 /// \returns OrbitalElements after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const CartesianStateVector& cartesianStateVector, double mu);
+OTL_CORE_API OrbitalElements ConvertStateVector2OrbitalElements(const StateVector& StateVector, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Convert orbital elements to cartesian state vectors
@@ -92,10 +92,10 @@ OTL_CORE_API OrbitalElements ConvertCartesianStateVector2OrbitalElements(const C
 ///
 /// \param orbitalElements OrbitalElements before conversion
 /// \param mu Gravitational parameter of the central body
-/// \param [out] CartesianStateVector after conversion
+/// \param [out] StateVector after conversion
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API CartesianStateVector ConvertOrbitalElements2CartesianStateVector(const OrbitalElements& orbitalElements, double mu);
+OTL_CORE_API StateVector ConvertOrbitalElements2StateVector(const OrbitalElements& orbitalElements, double mu);
 
 ////////////////////////////////////////////////////////////
 /// \brief Converts normalized spherical coordinates into a Cartesian vector

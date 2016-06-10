@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/CartesianStateVector.h>
+#include <OTL/Core/StateVector.h>
 
 namespace otl
 {
@@ -93,8 +93,8 @@ public:
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
    ///
    ////////////////////////////////////////////////////////////
-   CartesianStateVector Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta);
-   CartesianStateVector Propagate(const CartesianStateVector& cartesianStateVector, double mu, const Time& timeDelta);
+   StateVector Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta);
+   StateVector Propagate(const StateVector& StateVector, double mu, const Time& timeDelta);
    //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
 
 private:
@@ -188,13 +188,13 @@ private:
 /// auto propagator = std::make_shared<otl::LagrangianPropagator>();
 ///
 /// // Setup inputs
-/// CartesianStateVector cartesianStateVector;
-/// cartesianStateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
-/// cartesianStateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
+/// StateVector StateVector;
+/// StateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
+/// StateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
 /// double mu = ASTRO_MU_SUN;                                          // Gravitational parameter of the Sun
 /// Time timeDelta = Time::Days(150.0);                                // Propagate forward 150 days
 ///
-/// StateVector initialStateVector = cartesianStateVector;
+/// StateVector initialStateVector = StateVector;
 ///
 /// // Propagate the state vector forwards in time
 /// auto finalStateVector = propagator->Propagate(initialStateVector, mu, timeDelta);

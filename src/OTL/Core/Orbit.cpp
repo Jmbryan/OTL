@@ -39,7 +39,7 @@ m_gravitationalParameterCentralBody(1.0),
 m_direction(Direction::Invalid),
 m_propertiesDirty(false),
 m_orbitalElementsDirty(false),
-m_cartesianStateVectorDirty(false)
+m_StateVectorDirty(false)
 //m_orbitType(Type::Invalid),
 //m_orbitRadius(0.0),
 //m_mu(0.0),
@@ -71,18 +71,18 @@ m_orbitalElements(orbitalElements),
 m_direction(orbitDirection),
 m_propertiesDirty(true),
 m_orbitalElementsDirty(false),
-m_cartesianStateVectorDirty(true)
+m_StateVectorDirty(true)
 {
 
 }
 
-Orbit::Orbit(double mu, const CartesianStateVector& cartesianStateVector) :
+Orbit::Orbit(double mu, const StateVector& StateVector) :
 m_gravitationalParameterCentralBody(mu),
-m_cartesianStateVector(cartesianStateVector),
+m_StateVector(StateVector),
 m_direction(Direction::Invalid),
 m_propertiesDirty(true),
 m_orbitalElementsDirty(true),
-m_cartesianStateVectorDirty(false)
+m_StateVectorDirty(false)
 {
 
 }
@@ -105,13 +105,13 @@ void Orbit::SetOrbitalElements(const OrbitalElements& orbitalElements, Direction
    m_orbitalElementsDirty = false;
 
    m_propertiesDirty = true;  
-   m_cartesianStateVectorDirty = true;
+   m_StateVectorDirty = true;
 }
 
-void Orbit::SetCartesianStateVector(const CartesianStateVector& cartesianStateVector)
+void Orbit::SetStateVector(const StateVector& StateVector)
 {
-   m_cartesianStateVector = cartesianStateVector;
-   m_cartesianStateVectorDirty = false;
+   m_StateVector = StateVector;
+   m_StateVectorDirty = false;
 
    m_propertiesDirty = true;
    m_orbitalElementsDirty = true;
@@ -144,24 +144,24 @@ double Orbit::GetGravitationalParameterCentralBody() const
 }
 
 ////////////////////////////////////////////////////////////
-const CartesianStateVector& Orbit::GetCartesianStateVector() const
+const StateVector& Orbit::GetStateVector() const
 { 
-   UpdateCartesianStateVector();
-   return m_cartesianStateVector;
+   UpdateStateVector();
+   return m_StateVector;
 }
-//CartesianStateVector Orbit::GetCartesianStateVector() const
+//StateVector Orbit::GetStateVector() const
 //{
 //   if (m_stateVector.IsCartesian())
 //   {
-//      return m_stateVector.GetCartesianStateVector();
+//      return m_stateVector.GetStateVector();
 //   }
 //   else if (m_cachedStateVectorDirty)
 //   {
-//      m_cachedStateVector = m_stateVector.ToCartesianStateVector(m_mu);
+//      m_cachedStateVector = m_stateVector.ToStateVector(m_mu);
 //      m_cachedStateVectorDirty = false;
 //   }
 //
-//   return m_cachedStateVector.GetCartesianStateVector();
+//   return m_cachedStateVector.GetStateVector();
 //}
 
 ////////////////////////////////////////////////////////////
@@ -254,7 +254,7 @@ void Orbit::Propagate(const Time& timeDelta)
 
    m_orbitalElementsDirty = false;
    m_propertiesDirty = true;
-   m_cartesianStateVectorDirty = true;
+   m_StateVectorDirty = true;
 }
 //void Orbit::Propagate(const Time& timeDelta)
 //{
@@ -286,7 +286,7 @@ void Orbit::PropagateToMeanAnomaly(double meanAnomaly)
 
    m_orbitalElementsDirty = false;
    m_propertiesDirty = true;
-   m_cartesianStateVectorDirty = true;
+   m_StateVectorDirty = true;
 }
 void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 {
@@ -295,7 +295,7 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 
    m_orbitalElementsDirty = false;
    m_propertiesDirty = true;
-   m_cartesianStateVectorDirty = true;
+   m_StateVectorDirty = true;
 }
 
 //void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
@@ -348,7 +348,7 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 //      break;
 //
 //   case StateVectorType::Cartesian:
-//      os << m_stateVector.GetCartesianStateVector();
+//      os << m_stateVector.GetStateVector();
 //      break;
 //         
 //      default:
@@ -361,7 +361,7 @@ void Orbit::PropagateToTrueAnomaly(double trueAnomaly)
 ////////////////////////////////////////////////////////////
 std::string Orbit::ToString(std::string prefix) const
 {
-   UpdateCartesianStateVector();
+   UpdateStateVector();
    UpdateOrbitalElements();
    UpdateOrbitProperties();
 
@@ -399,7 +399,7 @@ std::string Orbit::ToString(std::string prefix) const
    //   break;
 
    //case StateVectorType::Cartesian:
-   //   os << m_stateVector.GetCartesianStateVector().ToDetailedString(prefix + "   ") << std::endl;
+   //   os << m_stateVector.GetStateVector().ToDetailedString(prefix + "   ") << std::endl;
    //   break;
    //      
    //default:
@@ -422,17 +422,17 @@ void Orbit::UpdateOrbitalElements() const
 {
    if (m_orbitalElementsDirty)
    {
-      m_orbitalElements = ConvertCartesianStateVector2OrbitalElements(m_cartesianStateVector, m_gravitationalParameterCentralBody);
+      m_orbitalElements = ConvertStateVector2OrbitalElements(m_StateVector, m_gravitationalParameterCentralBody);
       m_orbitalElementsDirty = false;
    }
 }
 
-void Orbit::UpdateCartesianStateVector() const
+void Orbit::UpdateStateVector() const
 {
-   if (m_cartesianStateVectorDirty)
+   if (m_StateVectorDirty)
    {
-      m_cartesianStateVector = ConvertOrbitalElements2CartesianStateVector(m_orbitalElements, m_gravitationalParameterCentralBody);
-      m_cartesianStateVectorDirty = false;
+      m_StateVector = ConvertOrbitalElements2StateVector(m_orbitalElements, m_gravitationalParameterCentralBody);
+      m_StateVectorDirty = false;
    }
 }
 
@@ -477,20 +477,20 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& 
 }
 
 ////////////////////////////////////////////////////////////
-Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVector& cartesianStateVector)
+Orbit::OrbitProperties ComputeOrbitProperties(double mu, const StateVector& StateVector)
 {
-   //OrbitalElements orbitalElements = ConvertCartesianStateVector2OrbitalElements(cartesianStateVector, mu);
+   //OrbitalElements orbitalElements = ConvertStateVector2OrbitalElements(StateVector, mu);
    //return ComputeOrbitProperties(mu, orbitalElements);
 
    Orbit::OrbitProperties properties;
 
    // Unpack the cartesian state vector
-   const Vector3d& R = cartesianStateVector.position;
-   const Vector3d& V = cartesianStateVector.velocity;
+   const Vector3d& R = StateVector.position;
+   const Vector3d& V = StateVector.velocity;
    const double e = ((SQR(V.norm()) / mu - 1.0 / R.norm()) * R - (R.dot(V) / mu) * V).norm();
 
    // Compute orbit type
-   properties.type = ComputeOrbitType(mu, cartesianStateVector);
+   properties.type = ComputeOrbitType(mu, StateVector);
 
    // Compute anomaly (eccentric, hyperbolic, parabolic)
    properties.anomaly = 1.0;// ConvertMeanAnomaly2Anomaly(e, M);
@@ -499,7 +499,7 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const CartesianStateVec
    properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, properties.anomaly);
 
    // Compute radius
-   properties.radius = ComputeOrbitRadius(cartesianStateVector);
+   properties.radius = ComputeOrbitRadius(StateVector);
 
    // Compute mean motion
    properties.meanMotion = 1.0;

@@ -5,8 +5,6 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 # all source files
 set(SRC
 	${INCROOT}/Base.h
-	${SRCROOT}/CartesianStateVector.cpp
-	${INCROOT}/CartesianStateVector.h
 	${INCROOT}/Config.h
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
@@ -40,8 +38,6 @@ set(SRC
 	${SRCROOT}/Logger.cpp
 	${INCROOT}/Logger.h
 	${INCROOT}/Matrix.h
-	${INCROOT}/MatrixBasePlugin.h
-	${INCROOT}/MatrixPlugin.h	
 	${INCROOT}/MGADSMNodes.h
 	${INCROOT}/MGADSMNodes.inl
 	${SRCROOT}/MGADSMTrajectory.cpp

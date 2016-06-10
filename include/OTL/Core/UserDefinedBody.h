@@ -42,7 +42,7 @@ public:
    UserDefinedBody(const std::string& name,
                    const PhysicalProperties& physicalProperties,
                    double gravitationalParameterCentralBody,
-                   const CartesianStateVector& cartesiantateVector,
+                   const StateVector& cartesiantateVector,
                    const Epoch& epoch = Epoch());
 
    virtual std::string ToString(const std::string& prefix = "") const override;

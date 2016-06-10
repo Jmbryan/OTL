@@ -27,9 +27,8 @@
 #include <OTL/Core/Export.h>
 #include <OTL/Core/Logger.h>
 #include <OTL/Core/Matrix.h>
-#include <OTL/Core/CartesianStateVector.h>
+#include <OTL/Core/StateVector.h>
 #include <OTL/Core/OrbitalElements.h>
-//#include <OTL/Core/StateVector.h>
 #include <OTL/Core/Time.h>
 #include <iostream>
 #include <iomanip>

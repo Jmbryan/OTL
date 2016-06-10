@@ -1,3 +1,7 @@
+
+
+
+
 ////////////////////////////////////////////////////////////
 //
 // OTL - Orbital Trajectory Library
@@ -23,186 +27,205 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/CartesianStateVector.h>
-#include <OTL/Core/OrbitalElements.h>
+#include <OTL/Core/Export.h>
 #include <OTL/Core/Matrix.h>
-#include <OTL/Core/Logger.h>
-#include <vector>
-#include <array>
 
 namespace otl
 {
 
-// Forward declarations
-//struct CartesianStateVector;
-//struct OrbitalElements;
-
-
-class StateVector
+struct OTL_CORE_API StateVector
 {
-public:
-   explicit StateVector(double mu = 1.0);
+   Vector3d position;   ///< 3-dimensional position vector
+   Vector3d velocity;   ///< 3-dimensional velocity vector
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Default constructor
+   ////////////////////////////////////////////////////////////
+   StateVector();
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Copy constructor
+   ////////////////////////////////////////////////////////////
    StateVector(const StateVector& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Move constructor
+   ////////////////////////////////////////////////////////////
    StateVector(const StateVector&& other);
-   explicit StateVector(const OrbitalElements& orbitalElements, double mu);
-   explicit StateVector(const CartesianStateVector& cartesianStateVector, double mu);
 
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct state vector from position and velocity vectors
+   ///
+   /// \param position Absolute position
+   /// \param velocity Absolute velocity
+   ///
+   ////////////////////////////////////////////////////////////
+   StateVector(const Vector3d& position, const Vector3d& velocity);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct state vector from position and velocity components
+   ///
+   /// \param x X component of position vector
+   /// \param y Y component of position vector
+   /// \param z Z component of position vector
+   /// \param x X component of velocity vector
+   /// \param y Y component of velocity vector
+   /// \param z Z component of velocity vector
+   ///
+   ////////////////////////////////////////////////////////////
+   StateVector(double x, double y, double z, double vx, double vy, double vz);
+
+   //StateVector(const double* state);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Construct state vector from an initializer list
+   ///
+   /// The position vector will be filled first followed by the
+   /// velocity vector. If less than six values are supplied,
+   /// the remaining components are initialized to zero.
+   ///
+   /// \param list std::initializer_list<double> containing the position and velocity elements
+   ///
+   ////////////////////////////////////////////////////////////
+   StateVector(std::initializer_list<double> list);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Operator overload for assignment
+   ///
+   /// \param other Other StateVector being assigned to 
+   /// \returns Reference to this
+   ///
+   ////////////////////////////////////////////////////////////
    StateVector& operator =(const StateVector& other);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Operator overload for move
+   ///
+   /// \param other Other StateVector being moved to 
+   /// \returns Reference to this
+   ///
+   ////////////////////////////////////////////////////////////
    StateVector& operator =(const StateVector&& other);
 
-   double GetGravitationalParameterCentralBody() const;
-   const OrbitalElements& GetOrbital() const;
-   const CartesianStateVector& GetCartesian() const;
+   bool IsZero() const;
 
-   std::string ToString(const std::string& prefix = "");
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the state vector to a single-line formatted string
+   ///
+   /// The state vector is converted to a single-line string
+   /// with the following format:
+   ///
+   /// "x=[x position] y=[y position] z=[z position] vx=[x velocity] vy=[y velocity] vz=[z velocity]"
+   ///
+   /// e.g. "x=10000.0 y=8000.0 z=0.0 vx=2.5 vy=2.4 vz=0.0"
+   ///
+   /// \note Units are not shown because that information is not stored in the StateVector
+   ///
+   /// \returns std::string Stringified state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToString() const;
 
-private:
-   void UpdateOrbitalElements() const;
-   void UpdateCartesianStateVector() const;
-
-private:
-   double mu;
-   mutable OrbitalElements m_orbitalElements;
-   mutable CartesianStateVector m_cartesianStateVector;
-   mutable bool m_orbitalElementsDirty;
-   mutable bool m_cartesianStateVectorDirty;
+   ////////////////////////////////////////////////////////////
+   /// \brief Converts the state vector to a detailed multi-line formatted string
+   ///
+   /// The state vector is converted to a detailed multi-line string
+   /// with the following format:
+   ///
+   /// "State Vector:
+   ///     Position:
+   ///        X: [x position]
+   ///        Y: [y position]
+   ///        Z: [z position]
+   ///     Velocity:
+   ///        X: [x velocity]
+   ///        Y: [y velocity]
+   ///        Z: [z velocity]
+   /// "
+   ///
+   /// e.g.
+   ///
+   /// "State Vector:
+   ///     Position:
+   ///        X: 10000.0
+   ///        Y: 8000.0
+   ///        Z: 0.0
+   ///     Velocity:
+   ///        X: 2.5
+   ///        Y: 2.4
+   ///        Z: 0.0
+   /// "
+   /// \note Units are not shown because that information is not stored in the StateVector
+   ///
+   /// \returns std::string Stringified state vector
+   ///
+   ////////////////////////////////////////////////////////////
+   std::string ToDetailedString(std::string prefix = "") const;
 };
 
-
-
-enum class StateVectorType
+////////////////////////////////////////////////////////////
+/// \brief Stream operator overload
+/// \relates StateVector
+///
+/// The StateVector is converted to a string by calling the
+/// StateVector::ToString() method.
+///
+/// \param stream Templated stream object (e.g. ostream)
+/// \returns T Reference to the stream object
+///
+////////////////////////////////////////////////////////////
+template<typename T>
+T& operator<<(T& stream, const StateVector& stateVector)
 {
-   Invalid = -1,        ///< Invalid state vector type
-   //Generic,       ///< The state vector is represented as a Vector6d which is generic 6-dimensional vector
-   Cartesian,           ///< The state vector is represented as a CartesianStateVector consisting of 3-dimensional position and velocity vectors
-   Orbital,             ///< The state vector is represented as a OrbitalElements consisting of the 6 classic orbital elements
-   CartesianAndOrbital, ///< The state vector is represented as both a CartesianStateVector and OrbitalElements
-   Count                ///< Number of state vector types
-};
-
-namespace test1
-{
-class StateVector
-{
-public:
-   typedef std::array<double, 6> StateVectorData;
-
-   StateVector();
-   StateVector(const StateVector& other);
-   StateVector(const StateVector&& other);  
-   explicit StateVector(const OrbitalElements& orbitalElements);
-   explicit StateVector(const CartesianStateVector& cartesianStateVector);
-   StateVector(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
-   StateVector(const Vector3d& a, const Vector3d& b, const StateVectorType& type);
-   StateVector(const Vector6d& state, const StateVectorType& type);
-   StateVector(const std::vector<double>& state, const StateVectorType& type);
-   StateVector(double* state, const StateVectorType& type);   
-   ~StateVector();
-
-   StateVector& operator =(const StateVector& other);
-   StateVector& operator =(const StateVector&& other);
-   StateVector& operator =(const CartesianStateVector& cartesianStateVector);
-   StateVector& operator =(const OrbitalElements& orbitalElements);
-
-   bool IsCartesian() const;
-   bool IsOrbital() const;
-   bool IsType(const StateVectorType& type) const;
-   StateVectorType GetType() const;
-
-   const StateVectorData& GetState() const;
-   //Vector6d GetGenericStateVector() const;
-   //const double* GetState() const;
-   //std::vector<double> GetState() const;
-   //const Vector6d& GetState() const;
-   //const State& GetState() const;
-   //const StatePtr& GetState() const;
-   //const CartesianStateVector& GetCartesianStateVector() const;
-   //const OrbitalElements& GetOrbitalElements() const;
-   CartesianStateVector GetCartesianStateVector() const;
-   OrbitalElements GetOrbitalElements() const;
-
-   CartesianStateVector ToCartesianStateVector(double mu) const;
-   OrbitalElements ToOrbitalElements(double mu) const;
-
-   void Set(double x1, double x2, double x3, double x4, double x5, double x6, const StateVectorType& type);
-   void Set(const Vector3d& a, const Vector3d& b, const StateVectorType& type);
-   void Set(const Vector6d& state, const StateVectorType& type);
-   void Set(const std::vector<double>& state, const StateVectorType& type);
-   void Set(double* state, const StateVectorType& type);
-   
-   void ConvertTo(const StateVectorType& type, double mu);
-
-   //double& Get(int index);
-   //double Get(int index) const;
-   //void Set(int index, double value);
-
-private:
-   StateVectorType m_type;
-   StateVectorData m_state;
-   //Vector6d m_state;
-   //double m_state[6];
-   //std::vector<double> m_state;
-   //Vector6d m_state;
-   //State m_state;
-   //StatePtr m_state;  
-};
+   stream << stateVector.ToString();
+   return stream;
 }
 
-namespace test2
-{
-class StateVector
-{
-public:
-   StateVector();
-   StateVector(const StateVector& other);
-   //StateVector(const StateVector&& other);
-   explicit StateVector(const OrbitalElements& orbitalElements, double mu);
-   explicit StateVector(const CartesianStateVector& cartesianStateVector, double mu);
-   StateVector(double* state, double mu, const StateVectorType& type);
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator==
+/// \relates StateVector
+///
+/// This operator compares approximate equality between two
+/// state vectors.
+///
+/// \note Internally, the Eigen::isApprox() function is used to compare each vector with epsilon = 2 * MATH_EPSILON
+/// \warning This function cannot be used to check whether the position and velocity vectors are approximately equal to the zero vector
+///
+/// \param left Left operand (a StateVector)
+/// \param right right operand (a StateVector)
+/// \returns True if left is equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator==(const StateVector& lhs, const StateVector& rhs);
 
-   StateVector& operator =(const StateVector& other);
-   //StateVector& operator =(const StateVector&& other);
-
-   void Set(const CartesianStateVector& cartesianStateVector, double mu);
-   void Set(const OrbitalElements& orbitalElements, double mu);
-   void Set(double* state, double mu, const StateVectorType& type);
-
-   void ConvertTo(const StateVectorType& type) const;
-
-   bool IsCartesian() const;
-   bool IsOrbital() const;
-   bool IsType(const StateVectorType& type) const;
-   StateVectorType GetType() const;
-
-   double GetMu() const;
-
-   const CartesianStateVector& GetCartesianStateVector() const;
-   const OrbitalElements& GetOrbitalElements() const;
-
-private:
-   mutable StateVectorType m_type;
-   mutable CartesianStateVector m_cartesian;
-   mutable OrbitalElements m_orbital;
-   double m_mu;
-};
-}
-
-//namespace test
-//{
-//
-//class StateVector2
-//{
-//public:
-//   StateVector2(const CartesianStateVector& cartesianStateVector);
-//   StateVector2(const OrbitalElements& orbitalElements);
-//
-//   const CartesianStateVector& GetCartesianStateVector() const;
-//
-//private:
-//   StateVectorType m_type;
-//   boost::variant<Vector6d, CartesianStateVector, OrbitalElements> m_state;
-//};
-//
-//}
+////////////////////////////////////////////////////////////
+/// \brief Overload of binary operator!=
+/// \relates StateVector
+///
+/// This operator compares approximate inequality between two
+/// state vectors.
+///
+/// \note Internally, the Eigen::isApprox() function is used to compare each vector with epsilon = 2 * MATH_EPSILON
+/// \warning This function cannot be used to check whether the position and velocity vectors are approximately inequal to the zero vector
+///
+/// \param left Left operand (a StateVector)
+/// \param right right operand (a StateVector)
+/// \returns True if left is not equal to right
+///
+////////////////////////////////////////////////////////////
+OTL_CORE_API bool operator!=(const StateVector& lhs, const StateVector& rhs);
 
 } // namespace otl
+
+////////////////////////////////////////////////////////////
+/// \class otl::StateVector
+///
+/// Basic construct representing a three dimensional
+/// position and velocity in space
+///
+/// In general, six elements are required to completely
+/// define a keplerian orbit in three dimensional space.
+/// The StateVector is one common way of expressing the
+/// six elements, the other being the OrbitalElements.
+///
+////////////////////////////////////////////////////////////

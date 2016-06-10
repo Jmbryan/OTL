@@ -25,8 +25,8 @@
 #pragma once
 //#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 #define EIGEN_DONT_ALIGN
-#define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/MatrixBasePlugin.h>
-#define EIGEN_MATRIX_PLUGIN <OTL/Core/MatrixPlugin.h>
+//#define EIGEN_MATRIXBASE_PLUGIN <OTL/Core/MatrixBasePlugin.h>
+//#define EIGEN_MATRIX_PLUGIN <OTL/Core/MatrixPlugin.h>
 #include <Eigen/Dense>
 #include <OTL/Core/Vector.h>
 

@@ -116,7 +116,7 @@ protected:
    ////////////////////////////////////////////////////////////
    //virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
    virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) override;
-   virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) override;
+   virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) override;
 };
 
 } // namespace otl

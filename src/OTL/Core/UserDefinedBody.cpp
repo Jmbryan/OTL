@@ -48,7 +48,7 @@ OrbitalBody(name, physicalProperties, gravitationalParameterCentralBody, orbital
 UserDefinedBody::UserDefinedBody(const std::string& name,
                                  const PhysicalProperties& physicalProperties,
                                  double gravitationalParameterCentralBody,
-                                 const CartesianStateVector& cartesiantateVector,
+                                 const StateVector& cartesiantateVector,
                                  const Epoch& epoch) :
 OrbitalBody(name, physicalProperties, gravitationalParameterCentralBody, cartesiantateVector, epoch)
 {

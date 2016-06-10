@@ -36,7 +36,7 @@ class PhysicalProperties;
 class Epoch;
 class StateVector;
 struct OrbitalElements;
-struct CartesianStateVector;
+struct StateVector;
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 
@@ -119,7 +119,7 @@ public:
     ////////////////////////////////////////////////////////////
     //StateVector GetStateVector(const std::string& name, const Epoch& epoch);
     OrbitalElements GetOrbitalElements(const std::string& name, const Epoch& epoch);
-    CartesianStateVector GetCartesianStateVector(const std::string& name, const Epoch& epoch);
+    StateVector GetStateVector(const std::string& name, const Epoch& epoch);
 
     ////////////////////////////////////////////////////////////
     /// \brief Returns true if the entity name is found in the ephemeris database
@@ -235,7 +235,7 @@ protected:
     ////////////////////////////////////////////////////////////
     //virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) = 0;
     virtual OrbitalElements VGetOrbitalElements(const std::string& name, const Epoch& epoch) = 0;
-    virtual CartesianStateVector VGetCartesianStateVector(const std::string& name, const Epoch& epoch) = 0;
+    virtual StateVector VGetStateVector(const std::string& name, const Epoch& epoch) = 0;
 
 private:
    ////////////////////////////////////////////////////////////

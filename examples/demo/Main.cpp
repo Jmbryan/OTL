@@ -71,7 +71,7 @@ int main()
        auto sizeofdouble = sizeof(double);
 
        auto sizeofcoes = sizeof(OrbitalElements);
-       auto sizeofsv = sizeof(CartesianStateVector);
+       auto sizeofsv = sizeof(StateVector);
 
        // StateVector       
        auto sizeofvector6d = sizeof(Vector6d);
@@ -115,8 +115,8 @@ int main()
        Planet p1 = Planet("Earth", epoch1);
        Planet p2 = Planet("Mars", epoch2);
 
-       const auto& R1 = p1.GetCartesianStateVector().position;
-       const auto& R2 = p2.GetCartesianStateVector().position;
+       const auto& R1 = p1.GetStateVector().position;
+       const auto& R2 = p2.GetStateVector().position;
 
        auto lambert = keplerian::LambertExponentialSinusoid();
 
@@ -133,8 +133,8 @@ int main()
 
        for (std::size_t i = 0; i < V1.size(); ++i)
        {
-          CartesianStateVector sv1(R1, V1[i]);
-          CartesianStateVector sv2_lambert(R2, V2[i]);
+          StateVector sv1(R1, V1[i]);
+          StateVector sv2_lambert(R2, V2[i]);
 
           LagrangianPropagator propagator;
           auto sv2_propagated = propagator.Propagate(sv1, ASTRO_MU_SUN, timeDelta);
@@ -149,12 +149,12 @@ int main()
 
     //if (true)
     //{
-    //   auto cartesian = CartesianStateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
+    //   auto cartesian = StateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
     //   double mu = otl::ASTRO_MU_EARTH;
 
     //   test::StateVector sv(cartesian, mu);
     //   
-    //   const auto& svout = sv.GetCartesianStateVector();
+    //   const auto& svout = sv.GetStateVector();
     //   const auto& orbout = sv.GetOrbitalElements();
 
     //   double d = 1.0;
@@ -367,7 +367,7 @@ int main()
     //if (false)
     //{
     //   StateVector stateVector;
-    //   stateVector = CartesianStateVector(
+    //   stateVector = StateVector(
     //      Vector3d(6524.834, 6862.875, 6448.296),
     //      Vector3d(4.901327, 5.533756, -1.976341));
     //   double mu = otl::ASTRO_MU_EARTH;
@@ -396,14 +396,14 @@ int main()
 
     //   //o.SetPropagator(std::make_shared<LagrangianPropagator>());
 
-    //   auto sv1 = o.GetCartesianStateVector();
+    //   auto sv1 = o.GetStateVector();
     //   auto coes1 = o.GetOrbitalElements();
-    //   auto sv2 = o.GetCartesianStateVector();
+    //   auto sv2 = o.GetStateVector();
     //   auto coes2 = o.GetOrbitalElements();
     //   o.Propagate(Time::Days(10));
-    //   auto sv3 = o.GetCartesianStateVector();
+    //   auto sv3 = o.GetStateVector();
     //   auto coes3 = o.GetOrbitalElements();
-    //   auto sv4 = o.GetCartesianStateVector();
+    //   auto sv4 = o.GetStateVector();
     //   auto coes4 = o.GetOrbitalElements();
 
     //   double d = 1.0;
@@ -412,12 +412,12 @@ int main()
     // Eccentricity test
     if (false)
     {
-       CartesianStateVector stateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
+       StateVector stateVector(6524.834, 6862.875, 6448.296, 4.901327, 5.533756, -1.976341);
        double mu = otl::ASTRO_MU_EARTH;
 
        int numIter = 100000;
 
-       const auto& cartesianStateVector = stateVector;
+       const auto& StateVector = stateVector;
        double alpha;
        double e;
 
@@ -425,8 +425,8 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           
-          double r = cartesianStateVector.position.norm();
-          double v = cartesianStateVector.velocity.norm();
+          double r = StateVector.position.norm();
+          double v = StateVector.velocity.norm();
           alpha = 2.0 / r - SQR(v) / mu; // Reciprocal of semi-major axis
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
@@ -434,8 +434,8 @@ int main()
        std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
        for (int i = 0; i < numIter; ++i)
        {
-          const auto& R = cartesianStateVector.position;
-          const auto& V = cartesianStateVector.velocity;
+          const auto& R = StateVector.position;
+          const auto& V = StateVector.velocity;
           double r = R.norm();
           double v = V.norm();
           e = ((SQR(v) / mu - 1.0 / r) * R - (R.dot(V) / mu) * V).norm();
@@ -484,7 +484,7 @@ int main()
        auto prop00 = p.GetPhysicalProperties();
        auto mu00 = p.GetGravitationalParameterCentralBody();
        auto coes00 = p.GetOrbitalElements();
-       auto csv00 = p.GetCartesianStateVector();
+       auto csv00 = p.GetStateVector();
 
        while (true)
        {
@@ -502,7 +502,7 @@ int main()
           std::chrono::system_clock::time_point t3 = std::chrono::system_clock::now();
           for (int i = 0; i < numIter; ++i)
           {
-             const auto& csv = p.GetCartesianStateVectorAt(epoch);
+             const auto& csv = p.GetStateVectorAt(epoch);
           }
           std::chrono::system_clock::time_point t4 = std::chrono::system_clock::now();
 
@@ -529,7 +529,7 @@ int main()
 
           //auto state = p.GetStateVector().GetState();
           //auto sv = p.GetStateVector();
-          auto csv = p.GetCartesianStateVector();
+          auto csv = p.GetStateVector();
           auto orb = p.GetOrbitalElements();
 
           double dd = 1.0;
@@ -560,7 +560,7 @@ int main()
     std::cout << coes << std::endl;
     std::cout << coes.ToDetailedString() << std::endl;
 
-    CartesianStateVector sv{ -6045, -3490, 2500, -3.457, 6.618, 2.533};
+    StateVector sv{ -6045, -3490, 2500, -3.457, 6.618, 2.533};
     std::cout << sv << std::endl;
     std::cout << sv.ToDetailedString() << std::endl;
 
@@ -627,7 +627,7 @@ int main()
 
        GregorianDateTime testDate = startDate;
        testDate.year = static_cast<int>(0.5 * (startDate.year + endDate.year));
-       CartesianStateVector stateVector;
+       StateVector stateVector;
        //jplEphemeris.GetStateVector("Earth", Epoch::Gregorian(testDate), stateVector);
 
        double d = 1.0;
@@ -639,7 +639,7 @@ int main()
 
        auto propagator = std::make_shared<keplerian::KeplerianPropagator>();
 
-       CartesianStateVector stateVector, finalStateVector1, finalStateVector2, finalStateVector3, finalStateVector4;
+       StateVector stateVector, finalStateVector1, finalStateVector2, finalStateVector3, finalStateVector4;
        stateVector.position = otl::Vector3d(1131.340, -2282.343, 6672.423);            // [km]
        stateVector.velocity = otl::Vector3d(-5.64305, 4.30333, 2.42879);               // [km/s]
        double mu = otl::ASTRO_MU_EARTH;                                                // [km^3/s^2]
@@ -654,7 +654,7 @@ int main()
        //orbitalElements.semiMajorAxis = -19655;
        //orbitalElements.eccentricity = 1.4682;
        //orbitalElements.trueAnomaly = 30.0 * MATH_DEG_TO_RAD;
-       orbitalElements = ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
+       orbitalElements = ConvertStateVector2OrbitalElements(stateVector, mu);
 
        OrbitalElements finalOrbitalElements1, finalOrbitalElements2;
 
@@ -663,7 +663,7 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           //propagator->PropagateK(orbitalElements, mu, timeDelta, finalOrbitalElements1);
-          finalStateVector1 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements1, mu);
+          finalStateVector1 = ConvertOrbitalElements2StateVector(finalOrbitalElements1, mu);
        }
        std::chrono::system_clock::time_point t2 = std::chrono::system_clock::now();
 
@@ -680,7 +680,7 @@ int main()
        for (int i = 0; i < numIter; ++i)
        {
           //finalOrbitalElements2 = propagator->Propagate(orbitalElements, timeDelta, mu);
-          finalStateVector3 = ConvertOrbitalElements2CartesianStateVector(finalOrbitalElements2, mu);
+          finalStateVector3 = ConvertOrbitalElements2StateVector(finalOrbitalElements2, mu);
        }
        std::chrono::system_clock::time_point t6 = std::chrono::system_clock::now();
 
@@ -948,7 +948,7 @@ int main()
 
        Vector3d position;
        Vector3d velocity;
-       CartesianStateVector stateVector1, stateVector2, stateVector3, stateVector4;
+       StateVector stateVector1, stateVector2, stateVector3, stateVector4;
        OrbitalElements orbitalElements1, orbitalElements2, orbitalElements3, orbitalElements4;
 
        auto planetName = "Earth";

@@ -183,7 +183,7 @@ OrbitalElements KeplerianPropagator::PropagateOrbitalElements(const OrbitalEleme
 
 ////////////////////////////////////////////////////////////
 // Much less performant than universal variable approach, but included for completeness
-// Can the deltaTA and r be computed more effienently? i.e. without calling ConvertCartesianStateVector2OrbitalElements()
+// Can the deltaTA and r be computed more effienently? i.e. without calling ConvertStateVector2OrbitalElements()
 // Results are not matching Propagate()
 //void KeplerianPropagator::PropagateK(const StateVector& initialStateVector, double mu, const Time& timeDelta, StateVector& finalStateVector)
 //{
@@ -198,7 +198,7 @@ OrbitalElements KeplerianPropagator::PropagateOrbitalElements(const OrbitalEleme
 //   double hSquared = SQR(h);
 //
 //   // Convert to orbital elements
-//   auto initialOrbitalElements = ConvertCartesianStateVector2OrbitalElements(initialStateVector, mu);
+//   auto initialOrbitalElements = ConvertStateVector2OrbitalElements(initialStateVector, mu);
 //
 //   // Propagate the orbital elements
 //   OrbitalElements finalOrbitalElements;

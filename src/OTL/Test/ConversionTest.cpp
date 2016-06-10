@@ -6,7 +6,7 @@ const double TOL_PCT = 0.0001;
 
 TEST_CASE("StateVector2OrbitalElements, Conversion")
 {
-    otl::CartesianStateVector stateVector;
+    otl::StateVector stateVector;
     otl::OrbitalElements orbitalElements;
     double mu;
 
@@ -17,7 +17,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         stateVector.velocity = otl::Vector3d({4.901327, 5.533756, -1.976341}); // [km/s]
         mu = otl::ASTRO_MU_EARTH;                                            // [km^3/s^2]
         
-        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
 
         double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
 
@@ -36,7 +36,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
         stateVector.velocity = otl::Vector3d({0.62, 0.7, -0.25});    // [ER/TU]
         mu = 1.0;                                                  // [ER^3/TU^2]
         
-        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
 
         double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
 
@@ -55,7 +55,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
        stateVector.velocity = otl::Vector3d({ -3.457, 6.618, 2.533 });     // [km/s]
         mu = 398600.0;                                                  // [km^3/s^2]
         
-        orbitalElements = otl::ConvertCartesianStateVector2OrbitalElements(stateVector, mu);
+        orbitalElements = otl::ConvertStateVector2OrbitalElements(stateVector, mu);
 
         double trueAnomaly = otl::ConvertMeanAnomaly2TrueAnomaly(orbitalElements.eccentricity, orbitalElements.meanAnomaly);
 
@@ -70,7 +70,7 @@ TEST_CASE("StateVector2OrbitalElements, Conversion")
 
 TEST_CASE("OrbitalElements2StateVector, Conversion")
 {
-    otl::CartesianStateVector stateVector;
+    otl::StateVector stateVector;
     otl::OrbitalElements orbitalElements;
     double mu;
 
@@ -87,7 +87,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.meanAnomaly        = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = otl::ASTRO_MU_EARTH;                                           // [km^3/s^2]
         
-        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(6525.344));  // [km]
         CHECK(stateVector.position.y() == OTL_APPROX(6861.535));  // [km]
@@ -110,7 +110,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.meanAnomaly        = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = 1.0;                                                           // [ER^3/TU^2]
         
-        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(1.02308));  // [ER]
         CHECK(stateVector.position.y() == OTL_APPROX(1.07579));  // [ER]
@@ -137,7 +137,7 @@ TEST_CASE("OrbitalElements2StateVector, Conversion")
         orbitalElements.meanAnomaly = otl::ConvertTrueAnomaly2MeanAnomaly(orbitalElements.eccentricity, trueAnomaly);
         mu = 398600.0;                                                    // [km^3/s^2]
         
-        stateVector = otl::ConvertOrbitalElements2CartesianStateVector(orbitalElements, mu);
+        stateVector = otl::ConvertOrbitalElements2StateVector(orbitalElements, mu);
 
         CHECK(stateVector.position.x() == OTL_APPROX(-4039.9));  // [km]
         CHECK(stateVector.position.y() == OTL_APPROX(4814.56));  // [km]

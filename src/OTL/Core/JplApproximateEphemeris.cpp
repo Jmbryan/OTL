@@ -139,9 +139,9 @@ OrbitalElements JplApproximateEphemeris::VGetOrbitalElements(const std::string& 
 }
 
 ////////////////////////////////////////////////////////////
-CartesianStateVector JplApproximateEphemeris::VGetCartesianStateVector(const std::string& name, const Epoch& epoch)
+StateVector JplApproximateEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
 {
-   return ConvertOrbitalElements2CartesianStateVector(
+   return ConvertOrbitalElements2StateVector(
       VGetOrbitalElements(name, epoch), ASTRO_MU_SUN);
 }
 

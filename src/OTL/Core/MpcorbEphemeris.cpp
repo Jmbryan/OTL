@@ -210,9 +210,9 @@ OrbitalElements MpcorbEphemeris::VGetOrbitalElements(const std::string& name, co
 }
 
 ////////////////////////////////////////////////////////////
-CartesianStateVector MpcorbEphemeris::VGetCartesianStateVector(const std::string& name, const Epoch& epoch)
+StateVector MpcorbEphemeris::VGetStateVector(const std::string& name, const Epoch& epoch)
 {
-   return ConvertOrbitalElements2CartesianStateVector(
+   return ConvertOrbitalElements2StateVector(
       VGetOrbitalElements(name, epoch), ASTRO_MU_SUN);
 }
 

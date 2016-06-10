@@ -108,7 +108,7 @@ private:
 /// Convenience functions for retrieving the state vector and
 /// specific variants are also provided:
 /// \li GetStateVector()
-/// \li GetCartesianStateVector()
+/// \li GetStateVector()
 /// \li GetOrbitalElements()
 ///
 /// The following alias is also provided for convenience:
@@ -126,18 +126,18 @@ private:
 /// // Query the state vector at the epoch Janurary 10, 2014
 /// // The MpcorbEphemeris returns the state vector in
 /// StateVectorType::Orbital format, so a conversion is required
-/// to obtain the CartesianStateVector.
+/// to obtain the StateVector.
 /// planet.QueryStateVector(Epoch::GregorianDateTime(2014, 1, 10));
 /// auto myOrbitalElements1 = planet.GetOrbitalElements();
-/// auto myCartesianStateVector1 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
+/// auto myStateVector1 = planet.GetStateVector(); // automatic conversion from orbital elements
 ///
 /// // Propagate the planet forward 30 days.
 /// planet.Propagate(Time::Days(30));
 /// auto myOrbitalElements2 = planet.GetOrbitalElements();
-/// auto myCartesianStateVector2 = planet.GetCartesianStateVector(); // automatic conversion from orbital elements
+/// auto myStateVector2 = planet.GetStateVector(); // automatic conversion from orbital elements
 ///
 /// \endcode
 ///
-/// \see IEphemerisBody, MpcorbEphemeris, StateVector, OrbitalElements, CartesianStateVector
+/// \see IEphemerisBody, MpcorbEphemeris, StateVector, OrbitalElements, StateVector
 ///
 ////////////////////////////////////////////////////////////

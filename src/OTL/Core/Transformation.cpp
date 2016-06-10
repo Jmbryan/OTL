@@ -40,13 +40,13 @@ Vector3d TransformPerifocal2Inertial(const Vector3d& perifocalVector,
    return matrix * perifocalVector;
 }
 
-CartesianStateVector TransformPerifocal2Inertial(const CartesianStateVector& perifocalStateVector,
+StateVector TransformPerifocal2Inertial(const StateVector& perifocalStateVector,
                                                  double inclination,
                                                  double argOfPericenter,
                                                  double lonOfAscendingNode)
 {
    Matrix3d transformationMatrix = CreatePerifocal2InertialMatrix(inclination, argOfPericenter, lonOfAscendingNode);
-   return CartesianStateVector(
+   return StateVector(
       transformationMatrix * perifocalStateVector.position,
       transformationMatrix * perifocalStateVector.velocity);
 }

@@ -617,7 +617,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 
     // Trajectory initial conditions
     m_finalEpoch.SetMJD2000(states[iState++]);
-    m_finalStateVector = m_legs.front().initialPlanet.GetCartesianStateVectorAt(m_finalEpoch);
+    m_finalStateVector = m_legs.front().initialPlanet.GetStateVectorAt(m_finalEpoch);
 
    // Calculate the trajectory one leg at a time
    for (std::size_t iLeg = 0; iLeg < m_legs.size(); ++iLeg)
@@ -627,7 +627,7 @@ void MGADSMTrajectory::CalculateTrajectory(const std::vector<double>& states, st
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const CartesianStateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, CartesianStateVector& finalStateVector, std::vector<double>& deltaVs)
+void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch& initialEpoch, const StateVector& initialStateVector, const std::vector<double>& states, Epoch& finalEpoch, StateVector& finalStateVector, std::vector<double>& deltaVs)
 {
    if (!m_legsInitialized)
    {
@@ -651,7 +651,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch
 
    // Leg final conditions
    m_finalEpoch = m_initialEpoch + Time::Seconds(timeOfFlightLeg);
-   m_planetStateVector = planet.GetCartesianStateVectorAt(m_finalEpoch);
+   m_planetStateVector = planet.GetStateVectorAt(m_finalEpoch);
    m_finalStateVector = m_planetStateVector;
 
    // Handle departure event
@@ -694,7 +694,7 @@ void MGADSMTrajectory::CalculateTrajectoryLeg(int iLeg, int& iState, const Epoch
          }
 
          //auto tempSV = m_propagator->Propagate(StateVector(m_initialStateVector), Time::Seconds(timeOfFlight), ASTRO_MU_SUN); // [TODO] clean up
-         //m_initialStateVector = tempSV.ToCartesianStateVector(ASTRO_MU_SUN);
+         //m_initialStateVector = tempSV.ToStateVector(ASTRO_MU_SUN);
       }      
    }
 

@@ -54,14 +54,14 @@ OTL_CORE_API Vector3d TransformPerifocal2Inertial(const Vector3d& perifocalVecto
 /// \reference H. Curtis. Orbital Mechanics for Engineering Students 1st Edition
 /// Algorthm ?? (X.X)XX, 2007
 ///
-/// \param perifocalStateVector CartesianStateVector in perifocal coordinates
+/// \param perifocalStateVector StateVector in perifocal coordinates
 /// \param inclinaiton Inclination (radians)
 /// \param argOfPericenter Arguement of Perigee (radians)
 /// \param lonOfAscendingNode Right Ascension of the Ascending Node (radians)
-/// \Returns Transformed CartesianStateVector in inertial coordinates.
+/// \Returns Transformed StateVector in inertial coordinates.
 ///
 ////////////////////////////////////////////////////////////
-OTL_CORE_API CartesianStateVector TransformPerifocal2Inertial(const CartesianStateVector& perifocalStateVector,
+OTL_CORE_API StateVector TransformPerifocal2Inertial(const StateVector& perifocalStateVector,
                                                               double inclination,
                                                               double argOfPericenter,
                                                               double lonOfAscendingNode);
