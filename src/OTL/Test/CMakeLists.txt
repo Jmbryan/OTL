@@ -20,5 +20,5 @@ include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 # define the otl-test target
 otl_add_project(otl-unit-test
 				SOURCES ${SRC}
-				DEPENDS otl-core
+				DEPENDS otl-core -lpthread
 				FOLDER "Tests")
