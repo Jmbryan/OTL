@@ -61,11 +61,11 @@ inline const Scalar& z() const
    return this->operator[](2);
 }
 
-inline typename FixedSegmentReturnType<3>::Type position()
-{
-   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
-   return typename FixedSegmentReturnType<3>::Type(derived(), 0, 3);
-}
+//inline typename FixedSegmentReturnType<3>::Type position()
+//{
+//   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(MatrixBase, 6)
+//   return typename FixedSegmentReturnType<3>::Type(derived(), 0, 3);
+//}
 
 inline typename ConstFixedSegmentReturnType<3>::Type position() const
 {
