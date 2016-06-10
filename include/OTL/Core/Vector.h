@@ -24,6 +24,8 @@
 
 #pragma once
 #include <OTL/Core/Logger.h>
+#include <numeric>
+#include <iterator>
 
 namespace otl
 {
@@ -296,7 +298,7 @@ private:
 template<typename T, int NumRows, int NumCols>
 Matrix<T, NumRows, NumCols> operator -(const Matrix<T, NumRows, NumCols>& left)
 {
-   return Matrix(left, -1.0);
+   return Matrix<T, NumRows, NumCols>(left, -1.0);
 }
 
 template<typename T, int NumRows, int NumCols>
@@ -364,7 +366,7 @@ Matrix<T, NumRows, NumCols>& operator*=(Matrix<T, NumRows, NumCols>& left, const
 template<typename T, int NumRows, int NumCols>
 Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const T& scalar)
 {
-   OTL_ASSERT(fabs(scalar) > MATH_TOLERANCE, "Divide by zero");
+   OTL_ASSERT(fabs(scalar) > 1e-15, "Divide by zero"); // TODO: use MATH_EPSILON but avoid circular dependency
    return Matrix<T, NumRows, NumCols>(left, T(1) / scalar);
 }
 
