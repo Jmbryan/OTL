@@ -6,8 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#ifndef ActualInvocation_h__
-#define ActualInvocation_h__
+#pragma once
 
 #include <typeinfo>
 #include <unordered_set>
@@ -24,61 +23,50 @@
 
 namespace fakeit {
 
-static std::atomic_int invocationOrdinal;
+    template<typename ... arglist>
+    struct ActualInvocation : public Invocation {
 
-static int nextInvocationOrdinal(){
-	return ++invocationOrdinal;
-}
+        struct Matcher : public virtual Destructible {
+            virtual bool matches(ActualInvocation<arglist...> &actualInvocation) = 0;
 
+            virtual std::string format() const = 0;
+        };
 
-template<typename ... arglist>
-struct ActualInvocation: public Invocation {
+        ActualInvocation(unsigned int ordinal, MethodInfo &method, const arglist &... args) :
+                Invocation(ordinal, method), _matcher{nullptr}, actualArguments{args...} {
+        }
 
-	struct Matcher: public virtual Destructable {
-		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
-		virtual std::string format() const = 0;
-	};
+        const std::tuple<arglist...> &getActualArguments() const {
+            return actualArguments;
+        }
 
-	ActualInvocation(int ordinal, Method & method, const arglist&... args) :
-			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
-	}
+        /**
+         * The Matcher that was use to match this ActualInvocation.
+         */
+        void setActualMatcher(Matcher *matcher) {
+            this->_matcher = matcher;
+        }
 
-	const std::tuple<arglist...>& getActualArguments() const {
-		return actualArguments;
-	}
+        Matcher *getActualMatcher() {
+            return _matcher;
+        }
 
-	/**
-	 * The Matcher that was use to match this ActualInvocation.
-	 */
-	void setActualMatcher(Matcher* matcher){
-		this->_matcher = matcher;
-	}
+        virtual std::string format() const {
+            std::ostringstream out;
+            out << getMethod().name();
+            print(out, actualArguments);
+            return out.str();
+        }
 
-	Matcher* getActualMatcher(){
-		return _matcher;
-	}
+    private:
+        Matcher *_matcher;
+        std::tuple<arglist...> actualArguments;
+    };
 
-	virtual std::string format() const {
-		std::ostringstream out;
-		out << getMethod().name();
-		print(out,actualArguments);
-		return out.str();
-	}
-
-private:
-	Matcher* _matcher;
-	std::tuple<arglist...> actualArguments;
-};
-
-template<typename ... arglist>
-std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>& ai) {
-	strm << ai.format();
-	return strm;
-}
-
-struct ActualInvocationsSource {
-	virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const = 0;
-};
+    template<typename ... arglist>
+    std::ostream &operator<<(std::ostream &strm, const ActualInvocation<arglist...> &ai) {
+        strm << ai.format();
+        return strm;
+    }
 
 }
-#endif // ActualInvocation_h__

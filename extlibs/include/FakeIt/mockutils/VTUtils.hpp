@@ -6,40 +6,52 @@
  * 
  * Created on Jun 3, 2014
  */
-#ifndef VTUTILS_HPP_
-#define VTUTILS_HPP_
+#pragma once
 
 #include <functional>
 #include <type_traits>
 #include "mockutils/VirtualOffestSelector.hpp"
+#include "union_cast.hpp"
 
 namespace fakeit {
+    class NoVirtualDtor {
+    };
 
-static VirtualOffsetSelector offsetSelctor;
+    class VTUtils {
+    public:
 
-class VTUtils {
-public:
-	template<typename C, typename R, typename ... arglist>
-	static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
-		auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-		unsigned int offset = (offsetSelctor.*sMethod)();
-		return offset;
-	}
+        template<typename C, typename R, typename ... arglist>
+        static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
+            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
+            VirtualOffsetSelector offsetSelctor;
+            return (offsetSelctor.*sMethod)(0);
+        }
 
-	template<typename C>
-	static unsigned int getVTSize() {
-		struct Derrived:public C{
-			virtual void endOfVt(){}
-		};
+        template<typename C>
+        static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
+        getDestructorOffset() {
+            VirtualOffsetSelector offsetSelctor;
+            union_cast<C *>(&offsetSelctor)->~C();
+            return offsetSelctor.offset;
+        }
 
-		unsigned int vtSize = getOffset(&Derrived::endOfVt);
-		return vtSize;
-	}
+        template<typename C>
+        static typename std::enable_if<!std::has_virtual_destructor<C>::value, unsigned int>::type
+        getDestructorOffset() {
+            throw NoVirtualDtor();
+        }
 
-};
+        template<typename C>
+        static unsigned int getVTSize() {
+            struct Derrived : public C {
+                virtual void endOfVt() {
+                }
+            };
+
+            unsigned int vtSize = getOffset(&Derrived::endOfVt);
+            return vtSize;
+        }
+    };
 
 
 }
-
-
-#endif /* VTUTILS_HPP_ */

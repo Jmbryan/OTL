@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef StubbingImpl_h__
-#define StubbingImpl_h__
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -23,17 +21,17 @@
 
 namespace fakeit {
 
-template<typename C, typename DATA_TYPE>
-class DataMemberStubbingRoot {
-private:
-	//DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
-public:
-	DataMemberStubbingRoot(const DataMemberStubbingRoot&) = default;
-	DataMemberStubbingRoot() = default;
+    template<typename C, typename DATA_TYPE>
+    class DataMemberStubbingRoot {
+    private:
+        //DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
+    public:
+        DataMemberStubbingRoot(const DataMemberStubbingRoot &) = default;
 
-	void operator=(const DATA_TYPE& val) {
-	}
-};
+        DataMemberStubbingRoot() = default;
+
+        void operator=(const DATA_TYPE &val) {
+        }
+    };
 
 }
-#endif // StubbingImpl_h__

@@ -5,24 +5,22 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef EventHandler_h__
-#define EventHandler_h__
+#pragma once
 
 #include "fakeit/FakeitEvents.hpp"
 
 namespace fakeit {
 
+    struct VerificationEventHandler {
+        virtual void handle(const SequenceVerificationEvent &e) = 0;
 
-struct EventHandler {
+        virtual void handle(const NoMoreInvocationsVerificationEvent &e) = 0;
+    };
 
-	virtual void handle(const UnexpectedMethodCallEvent& e) = 0;
+    struct EventHandler : public VerificationEventHandler {
+        using VerificationEventHandler::handle;
 
-	virtual void handle(const SequenceVerificationEvent& e) = 0;
-
-	virtual void handle(const NoMoreInvocationsVerificationEvent& e) = 0;
-
-};
+        virtual void handle(const UnexpectedMethodCallEvent &e) = 0;
+    };
 
 }
-#endif

@@ -5,126 +5,154 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef VirtualTable_h__
-#define VirtualTable_h__
+#pragma once
 
 #ifndef __clang__
+
 #include "mockutils/gcc/is_simple_inheritance_layout.hpp"
+
 #endif
 
 #include "mockutils/VTUtils.hpp"
+#include "mockutils/union_cast.hpp"
 
 namespace fakeit {
 
-template<class C, class ... baseclasses>
-struct VirtualTable {
+    struct VirtualTableBase {
 
-	#ifndef __clang__
-		static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
-	#endif
+        static VirtualTableBase &getVTable(void *instance) {
+            fakeit::VirtualTableBase *vt = (fakeit::VirtualTableBase *) (instance);
+            return *vt;
+        }
 
-	class Handle {
+        VirtualTableBase(void **firstMethod) : _firstMethod(firstMethod) { }
 
-		friend struct VirtualTable<C, baseclasses...> ;
-		void** firstMethod;
-		Handle(void** firstMethod) :
-				firstMethod(firstMethod) {
-		}
+        void *getCookie(int index) {
+            return _firstMethod[-3 - index];
+        }
 
-	public:
+        void setCookie(int index, void *value) {
+            _firstMethod[-3 - index] = value;
+        }
 
-		VirtualTable<C, baseclasses...>& restore() {
-			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*) this;
-			return *vt;
-		}
-	};
+        void *getMethod(unsigned int index) const {
+            return _firstMethod[index];
+        }
 
-	static VirtualTable<C, baseclasses...>& nullVTable() {
-		static VirtualTable<C, baseclasses...> instance;
-		return instance;
-	}
+        void setMethod(unsigned int index, void *method) {
+            _firstMethod[index] = method;
+        }
 
-	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
-		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*) (&instance);
-		return *vt;
-	}
+    protected:
+        void **_firstMethod;
+    };
 
-	void copyFrom(VirtualTable<C, baseclasses...>& from) {
-		unsigned int size = VTUtils::getVTSize<C>();
-		//firstMethod[-1] = from.firstMethod[-1]; // copy type_info
-		for (size_t i = 0; i < size; ++i) {
-			firstMethod[i] = from.getMethod(i);
-		}
-	}
+    template<class C, class ... baseclasses>
+    struct VirtualTable : public VirtualTableBase {
 
-	VirtualTable() :
-			VirtualTable(buildVTArray()) {
-	}
+#ifndef __clang__
+        static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
+#endif
 
-	void dispose() {
-		firstMethod--; // type_info
-		firstMethod--; // top_offset
-		firstMethod--; // cookie 0
-		firstMethod--; // cookie 1
-		delete[] firstMethod;
-	}
+        class Handle {
 
-	void setMethod(unsigned int index, void *method) {
-		firstMethod[index] = method;
-	}
+            friend struct VirtualTable<C, baseclasses...>;
+            void **firstMethod;
 
-	void * getMethod(unsigned int index) const {
-		return firstMethod[index];
-	}
+            Handle(void **firstMethod) :
+                    firstMethod(firstMethod) {
+            }
 
-	unsigned int getSize() {
-		return VTUtils::getVTSize<C>();
-	}
+        public:
 
-	void initAll(void* value) {
-		unsigned int size = getSize();
-		for (unsigned int i = 0; i < size; i++) {
-			setMethod(i, value);
-		}
-	}
+            VirtualTable<C, baseclasses...> &restore() {
+                VirtualTable<C, baseclasses...> *vt = (VirtualTable<C, baseclasses...> *) this;
+                return *vt;
+            }
+        };
 
-	const std::type_info* getTypeId() {
-		return (const std::type_info*) (firstMethod[-1]);
-	}
+        static VirtualTable<C, baseclasses...> &getVTable(C &instance) {
+            fakeit::VirtualTable<C, baseclasses...> *vt = (fakeit::VirtualTable<C, baseclasses...> *) (&instance);
+            return *vt;
+        }
 
-	void* getCookie(int index) {
-		return firstMethod[-3 - index];
-	}
+        void copyFrom(VirtualTable<C, baseclasses...> &from) {
+            unsigned int size = VTUtils::getVTSize<C>();
+            //firstMethod[-1] = from.firstMethod[-1]; // copy type_info
+            for (size_t i = 0; i < size; ++i) {
+                _firstMethod[i] = from.getMethod(i);
+            }
+        }
 
-	void setCookie(int index, void * value) {
-		firstMethod[-3 - index] = value;
-	}
+        VirtualTable() :
+                VirtualTable(buildVTArray()) {
+        }
 
-	Handle createHandle() {
-		Handle h(firstMethod);
-		return h;
-	}
+        void dispose() {
+            _firstMethod--; // type_info
+            _firstMethod--; // top_offset
+            _firstMethod -= numOfCookies; // skip cookies
+            delete[] _firstMethod;
+        }
 
-private:
+        unsigned int dtor(int) {
+            C *c = (C *) this;
+            C &cRef = *c;
+            auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
+            unsigned int index = VTUtils::getDestructorOffset<C>();
+            void *dtorPtr = vt.getMethod(index);
+            void(*method)(C *) = union_cast<void (*)(C *)>(dtorPtr);
+            method(c);
+            return 0;
+        }
 
-	void** firstMethod;
 
-	static void ** buildVTArray() {
-		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 4] { };
-		array[3] = (void*) &typeid(C);
-		array++; // skip cookie 1
-		array++; // skip cookie 0
-		array++; // skip top_offset
-		array++; // skip type_info ptr
-		return array;
-	}
+        void setDtor(void *method) {
+            unsigned int index = VTUtils::getDestructorOffset<C>();
+            void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
+            // replace the non deleting destructor.
+            // for example (c1->~C()) calls the non deleting dtor only
+            _firstMethod[index] = method;
+            // replace the deleting destructor with a method that calls the non deleting one
+            _firstMethod[index + 1] = dtorPtr;
+        }
 
-	VirtualTable(void** firstMethod) :
-			firstMethod(firstMethod) {
-	}
 
-};
+        unsigned int getSize() {
+            return VTUtils::getVTSize<C>();
+        }
+
+        void initAll(void *value) {
+            unsigned int size = getSize();
+            for (unsigned int i = 0; i < size; i++) {
+                setMethod(i, value);
+            }
+        }
+
+        const std::type_info *getTypeId() {
+            return (const std::type_info *) (_firstMethod[-1]);
+        }
+
+        Handle createHandle() {
+            Handle h(_firstMethod);
+            return h;
+        }
+
+    private:
+        static const unsigned int numOfCookies = 2;
+
+        static void **buildVTArray() {
+            int size = VTUtils::getVTSize<C>();
+            auto array = new void *[size + 2 + numOfCookies]{};
+            array += numOfCookies; // skip cookies
+            array++; // skip top_offset
+            array[0] = (void *) &typeid(C); // type_info
+            array++; // skip type_info ptr
+            return array;
+        }
+
+        VirtualTable(void **firstMethod) : VirtualTableBase(firstMethod) {
+        }
+
+    };
 }
-#endif // VirtualTable_h__

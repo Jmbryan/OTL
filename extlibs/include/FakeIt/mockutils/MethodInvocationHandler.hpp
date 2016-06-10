@@ -5,23 +5,18 @@
  *
  * Created on Mar 10, 2014
  */
+#pragma once
 
-#ifndef MethodInvocationHandler_h__
-#define MethodInvocationHandler_h__
-
-#include "mockutils/Destructable.hpp"
+#include "mockutils/Destructible.hpp"
 
 namespace fakeit {
 
-struct NoMoreRecordedActionException {
-};
+    struct NoMoreRecordedActionException {
+    };
 
-template<typename R, typename ... arglist>
-struct MethodInvocationHandler: public Destructable {
-	virtual ~MethodInvocationHandler() = default;
-	virtual R handleMethodInvocation(arglist&... args) = 0;
-};
+    template<typename R, typename ... arglist>
+    struct MethodInvocationHandler : public Destructible {
+        virtual R handleMethodInvocation(arglist &... args) = 0;
+    };
 
 }
-#endif // MethodInvocationHandler_h__
-

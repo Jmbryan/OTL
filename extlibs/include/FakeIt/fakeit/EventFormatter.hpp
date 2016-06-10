@@ -5,26 +5,24 @@
  *
  * Created on August, 2014
  */
-#ifndef EventFormatter_h__
-#define EventFormatter_h__
+#pragma once
 
 #include <string>
 
 namespace fakeit {
 
-struct UnexpectedMethodCallEvent;
-struct SequenceVerificationEvent;
-struct NoMoreInvocationsVerificationEvent;
+    struct UnexpectedMethodCallEvent;
+    struct SequenceVerificationEvent;
+    struct NoMoreInvocationsVerificationEvent;
 
-struct EventFormatter {
+    struct EventFormatter {
 
-	virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) = 0;
+        virtual std::string format(const fakeit::UnexpectedMethodCallEvent &e) = 0;
 
-	virtual std::string format(const fakeit::SequenceVerificationEvent& e) = 0;
+        virtual std::string format(const fakeit::SequenceVerificationEvent &e) = 0;
 
-	virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e) = 0;
+        virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent &e) = 0;
 
-};
+    };
 
 }
-#endif

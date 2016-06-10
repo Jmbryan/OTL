@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef FakeFunctor_hpp_
-#define FakeFunctor_hpp_
+#pragma once
 
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/StubbingImpl.hpp"
@@ -16,28 +14,26 @@
 
 namespace fakeit {
 
-class FakeFunctor {
-private:
-	template<typename R, typename ... arglist>
-	void fake(const StubbingContext<R, arglist...>& root) {
-		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(root);
-		rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
-		rootWithoutConst.commit();
-	}
+    class FakeFunctor {
+    private:
+        template<typename R, typename ... arglist>
+        void fake(const StubbingContext<R, arglist...> &root) {
+            StubbingContext<R, arglist...> &rootWithoutConst = const_cast<StubbingContext<R, arglist...> &>(root);
+            rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
+            rootWithoutConst.commit();
+        }
 
-	void operator()() {
-	}
+        void operator()() {
+        }
 
-public:
+    public:
 
-	template<typename H, typename ... M>
-	void operator()(const H& head, const M&... tail) {
-		fake(head);
-		this->operator()(tail...);
-	}
+        template<typename H, typename ... M>
+        void operator()(const H &head, const M &... tail) {
+            fake(head);
+            this->operator()(tail...);
+        }
 
-};
+    };
 
 }
-
-#endif /* FakeFunctor_hpp_ */

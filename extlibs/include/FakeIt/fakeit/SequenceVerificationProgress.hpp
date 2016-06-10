@@ -1,87 +1,124 @@
-#ifndef SequenceVerificationProgress_hpp_
-#define SequenceVerificationProgress_hpp_
+#pragma once
 
 #include <memory>
 #include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/SequenceVerificationExpectation.hpp"
+#include "fakeit/ThrowFalseEventHandler.hpp"
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/to_string.hpp"
 
 
 namespace fakeit {
 
-	struct FakeitContext;
+    struct FakeitContext;
 
-	class SequenceVerificationProgress {
+    class SequenceVerificationProgress {
 
-		friend class UsingFunctor;
-		friend class VerifyFunctor;
-		friend class UsingProgress;
+        friend class UsingFunctor;
 
-		smart_ptr<SequenceVerificationExpectation> _expectationPtr;
-		//std::shared_ptr<SequenceVerificationExpectation> ptr;
+        friend class VerifyFunctor;
 
-		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :_expectationPtr(ptr){
-		}
+        friend class UsingProgress;
 
-		SequenceVerificationProgress(
-				FakeitContext& fakeit,
-				std::set<const ActualInvocationsSource*>& sources,
-				std::vector<Sequence*>& allSequences) :
-			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources, allSequences)){
-		}
+        smart_ptr<SequenceVerificationExpectation> _expectationPtr;
 
-		virtual void verifyInvocations(const int times) {
-			_expectationPtr->setExpectedCount(times);
-		}
+        SequenceVerificationProgress(SequenceVerificationExpectation *ptr) : _expectationPtr(ptr) {
+        }
 
-	public:
+        SequenceVerificationProgress(
+                FakeitContext &fakeit,
+                InvocationsSourceProxy sources,
+                std::vector<Sequence *> &allSequences) :
+                SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources, allSequences)) {
+        }
 
-		~SequenceVerificationProgress() THROWS{};
+        virtual void verifyInvocations(const int times) {
+            _expectationPtr->setExpectedCount(times);
+        }
 
-		void Never() {
-			Exactly(0);
-		}
+        class Terminator {
+            smart_ptr<SequenceVerificationExpectation> _expectationPtr;
 
-		void Once() {
-			Exactly(1);
-		}
+            bool toBool() {
+                try {
+                    ThrowFalseEventHandler eh;
+                    _expectationPtr->VerifyExpectation(eh);
+                    return true;
+                }
+                catch (bool e) {
+                    return e;
+                }
+            }
 
-		void Twice() {
-			Exactly(2);
-		}
+        public:
+            Terminator(smart_ptr<SequenceVerificationExpectation> expectationPtr) : _expectationPtr(expectationPtr) { };
 
-		void AtLeastOnce() {
-			verifyInvocations(-1);
-		}
+            operator bool() {
+                return toBool();
+            }
 
-		void Exactly(const int times) {
-			if (times < 0) {
-				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
-			}
-			verifyInvocations(times);
-		}
+            bool operator!() const { return !const_cast<Terminator *>(this)->toBool(); }
+        };
 
-		void Exactly(const Quantity & q) {
-			Exactly(q.quantity);
-		}
+    public:
 
-		void AtLeast(const int times) {
-			if (times < 0) {
-				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
-			}
-			verifyInvocations(-times);
-		}
+        ~SequenceVerificationProgress() THROWS { };
 
-		void AtLeast(const Quantity & q) {
-			AtLeast(q.quantity);
-		}
+        operator bool() {
+            return Terminator(_expectationPtr);
+        }
 
-		SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
-			_expectationPtr->setFileInfo(file, line, callingMethod);
-			return *this;
-		}
-	};
+        bool operator!() const { return !Terminator(_expectationPtr); }
+
+        Terminator Never() {
+            Exactly(0);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator Once() {
+            Exactly(1);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator Twice() {
+            Exactly(2);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator AtLeastOnce() {
+            verifyInvocations(-1);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator Exactly(const int times) {
+            if (times < 0) {
+                throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
+            }
+            verifyInvocations(times);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator Exactly(const Quantity &q) {
+            Exactly(q.quantity);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator AtLeast(const int times) {
+            if (times < 0) {
+                throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
+            }
+            verifyInvocations(-times);
+            return Terminator(_expectationPtr);
+        }
+
+        Terminator AtLeast(const Quantity &q) {
+            AtLeast(q.quantity);
+            return Terminator(_expectationPtr);
+        }
+
+        SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
+            _expectationPtr->setFileInfo(file, line, callingMethod);
+            return *this;
+        }
+    };
 }
-
-#endif

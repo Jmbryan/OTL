@@ -5,16 +5,12 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef Destructable_h__
-#define Destructable_h__
+#pragma once
 
 namespace fakeit {
-class Destructable {
-public:
-	virtual ~Destructable() {
-	}
-};
+    class Destructible {
+    public:
+        virtual ~Destructible() THROWS {
+        }
+    };
 }
-#endif // Destructable_h__
-

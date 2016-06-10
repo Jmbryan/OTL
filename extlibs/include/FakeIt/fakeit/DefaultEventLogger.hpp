@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef DefaultEventHandler_h__
-#define DefaultEventHandler_h__
+#pragma once
 
 #include <iostream>
 #include "fakeit/EventHandler.hpp"
@@ -16,27 +14,25 @@
 
 namespace fakeit {
 
-	struct DefaultEventLogger : public fakeit::EventHandler {
+    struct DefaultEventLogger : public fakeit::EventHandler {
 
-		DefaultEventLogger(EventFormatter& formatter):_formatter(formatter),_out(std::cout){}
+        DefaultEventLogger(EventFormatter &formatter) : _formatter(formatter), _out(std::cout) { }
 
-		virtual void handle(const UnexpectedMethodCallEvent& e) override {
-			_out << _formatter.format(e) << std::endl;
-		}
+        virtual void handle(const UnexpectedMethodCallEvent &e) override {
+            _out << _formatter.format(e) << std::endl;
+        }
 
-		virtual void handle(const SequenceVerificationEvent& e) override {
-			_out << _formatter.format(e) << std::endl;
-		}
+        virtual void handle(const SequenceVerificationEvent &e) override {
+            _out << _formatter.format(e) << std::endl;
+        }
 
-		virtual void handle(const NoMoreInvocationsVerificationEvent& e) override {
-			_out << _formatter.format(e) << std::endl;
-		}
+        virtual void handle(const NoMoreInvocationsVerificationEvent &e) override {
+            _out << _formatter.format(e) << std::endl;
+        }
 
-	private:
-		EventFormatter& _formatter;
-		std::ostream& _out;
-	};
+    private:
+        EventFormatter &_formatter;
+        std::ostream &_out;
+    };
 
 }
-
-#endif
