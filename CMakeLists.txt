@@ -17,13 +17,13 @@ set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
 # enable c++11 (GCC compilers only)
-if (CMAKE_COMPILER_IS_GNUCXX)
+#if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
     #add_definitions(-std=c++11)
-endif()
-if (MACOSX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
-endif()
+#endif()
+#if (MACOSX)
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
+#endif()
 
 # required to compile spdlog on mingw
 if (CMAKE_COMPILER_IS_GNUCXX)
