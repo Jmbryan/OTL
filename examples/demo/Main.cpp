@@ -99,11 +99,11 @@ int main()
        double d = 1.0;
     }
 
-    if (true)
-    {
-       Vector6d sv;
-       auto pos = sv.position();
-    }
+    //if (true)
+    //{
+    //   Vector6d sv;
+    //   auto pos = sv.position();
+    //}
 
     // Lambert
     if (true)
