@@ -3,9 +3,6 @@
 #include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Conversion.h>
 
-const double TOL_PCT = 0.001;
-#define OTL_APPROX(x) Approx(x, TOL_PCT)
-
 TEST_CASE("Propagator", "")
 {
    auto keplerianPropagator = otl::keplerian::KeplerianPropagator();

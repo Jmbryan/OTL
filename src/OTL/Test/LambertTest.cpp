@@ -1,9 +1,6 @@
 #include <OTL/Test/BaseTest.h>
 #include <OTL/Core/LambertExponentialSinusoid.h>
 
-const double TOL_PCT = 0.1;
-#define OTL_APPROX(x) Approx(x, TOL_PCT)
-
 TEST_CASE("ExponentialSinusoidLambert", "Lambert")
 {
     //auto lambert = std::unique_ptr<otl::ILambertAlgorithm>(new otl::ExponentialSinusoidLambert());

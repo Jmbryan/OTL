@@ -1,9 +1,6 @@
 #include <OTL/Test/BaseTest.h>
 #include <OTL/Core/Conversion.h>
 
-const double TOL_PCT = 0.0001;
-#define OTL_APPROX(x) Approx(x, TOL_PCT)
-
 TEST_CASE("StateVector2OrbitalElements, Conversion")
 {
     otl::StateVector stateVector;
