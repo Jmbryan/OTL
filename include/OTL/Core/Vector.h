@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
+#include <OTL/Core/Constants.h>
 #include <OTL/Core/Logger.h>
 #include <numeric>
 #include <iterator>
@@ -199,7 +200,7 @@ public:
    {
       OTL_STATIC_ASSERT_VECTOR_ONLY(Matrix);
       return std::accumulate(m_data, m_data + Size, T(0),
-         [](const T& sum, const T& value){return sum + value*value;} // TODO: replace value*value with SQR(value) but avoid circular dependency
+         [](const T& sum, const T& value){return sum + value*value;}
       );
    }
 
@@ -249,7 +250,7 @@ public:
          x() * other.y() - y() * other.x());
    }
 
-   bool isApprox(const Matrix& other, const T& epsilon = 2.0 * 1e-15) const // TODO: use MATH_EPSILON but avoid circular dependency
+   bool isApprox(const Matrix& other, const T& epsilon = 2.0 * MATH_EPSILON) const
    {
 #ifdef OTL_COMPILER_MSVC
       return std::equal(m_data, m_data + Size, stdext::checked_array_iterator<const T*>(other.GetRawData(), other.GetSize()),
@@ -371,7 +372,7 @@ Matrix<T, NumRows, NumCols>& operator*=(Matrix<T, NumRows, NumCols>& left, const
 template<typename T, int NumRows, int NumCols>
 Matrix<T, NumRows, NumCols> operator /(const Matrix<T, NumRows, NumCols>& left, const T& scalar)
 {
-   OTL_ASSERT(fabs(scalar) > 1e-15, "Divide by zero"); // TODO: use MATH_EPSILON but avoid circular dependency
+   OTL_ASSERT(fabs(scalar) > MATH_EPSILON, "Divide by zero");
    return Matrix<T, NumRows, NumCols>(left, T(1) / scalar);
 }
 

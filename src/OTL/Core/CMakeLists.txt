@@ -6,6 +6,7 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/OTL/Core)
 set(SRC
 	${INCROOT}/Base.h
 	${INCROOT}/Config.h
+	${INCROOT}/Constants.h
 	${SRCROOT}/Conversion.cpp
 	${INCROOT}/Conversion.h
 	${SRCROOT}/Ephemeris.cpp
