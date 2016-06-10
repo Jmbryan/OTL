@@ -34,9 +34,8 @@ namespace otl
 // Forward declarations
 class PhysicalProperties;
 class Epoch;
-class StateVector;
-struct OrbitalElements;
 struct StateVector;
+struct OrbitalElements;
 class IEphemeris;
 typedef std::shared_ptr<IEphemeris> EphemerisPointer;
 

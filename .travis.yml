@@ -7,11 +7,11 @@ matrix:
  include:
   - os: linux
     compiler: gcc
-    env: COMPILER=g++-5.4
+    env: COMPILER=g++-5
     addons:
      apt:
       packages:
-       - g++-5.4
+       - g++-5
       sources: &sources
        - ubuntu-toolchain-r-test
   - os: linux

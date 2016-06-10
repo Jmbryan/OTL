@@ -37,8 +37,8 @@ m_initialized(false)
 
 ////////////////////////////////////////////////////////////
 OrbitalBody::OrbitalBody(const std::string& name, const Epoch& epoch) :
-m_name(name),
 m_epoch(epoch),
+m_name(name),
 m_initialized(false)
 {
 
@@ -50,10 +50,10 @@ OrbitalBody::OrbitalBody(const std::string& name,
                          double gravitationalParameterCentralBody,
                          const OrbitalElements& orbitalElements,
                          const Epoch& epoch) :
-m_name(name),
-m_physicalProperties(physicalProperties),
 m_epoch(epoch),
+m_physicalProperties(physicalProperties),
 m_orbit(gravitationalParameterCentralBody, orbitalElements),
+m_name(name),
 m_initialized(false)
 {
 
@@ -63,10 +63,10 @@ OrbitalBody::OrbitalBody(const std::string& name,
                          double gravitationalParameterCentralBody,
                          const StateVector& StateVector,
                          const Epoch& epoch) :
-m_name(name),
-m_physicalProperties(physicalProperties),
 m_epoch(epoch),
+m_physicalProperties(physicalProperties),
 m_orbit(gravitationalParameterCentralBody, StateVector),
+m_name(name),
 m_initialized(false)
 {
 

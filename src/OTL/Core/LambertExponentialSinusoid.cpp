@@ -428,7 +428,7 @@ void LambertExponentialSinusoid::Evaluate(const Vector3d& initialPosition,
         x1 = x2;    x2 = xnew;
         y1 = y2;    y2 = ynew;
 
-        error = abs(x1 - xnew);
+        error = std::abs(x1 - xnew);
         iteration++;
     }
 

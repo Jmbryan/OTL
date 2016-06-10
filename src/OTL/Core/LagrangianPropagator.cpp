@@ -201,7 +201,7 @@ LagrangianPropagator::LagrangeCoefficients LagrangianPropagator::CalculateLagran
    g = seconds - pow(x, 3.0) / sqrtMu * c3;
    gDot = 1.0 - SQR(x) / r * c2;
 
-   double sanityCheck = abs((f * gDot - fDot * g) - 1.0);
+   double sanityCheck = std::abs((f * gDot - fDot * g) - 1.0);
    OTL_WARN_IF(sanityCheck > MATH_TOLERANCE, "Sanity check failed for " << Bracket(sanityCheck) << " == " << Bracket(MATH_TOLERANCE));
 
    return coeff;

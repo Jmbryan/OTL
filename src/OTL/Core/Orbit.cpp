@@ -444,7 +444,7 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& 
    // Unpack the orbital elements
    const double a = orbitalElements.semiMajorAxis;
    const double e = orbitalElements.eccentricity;
-   const double M = orbitalElements.meanAnomaly;
+   //const double M = orbitalElements.meanAnomaly;
 
    // Compute orbit type
    properties.type = ComputeOrbitType(mu, orbitalElements);
