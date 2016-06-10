@@ -25,7 +25,7 @@
 
 #include <OTL/Core/System.h>
 #include <OTL/Core/Logger.h>
-#include <spdlog\spdlog.h>
+#include <spdlog/spdlog.h>
 
 #include <numeric>
 #include <assert.h>
