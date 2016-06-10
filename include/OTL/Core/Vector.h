@@ -251,7 +251,7 @@ public:
 
    bool isApprox(const Matrix& other, const T& epsilon = 2.0 * 1e-15) const // TODO: use MATH_EPSILON but avoid circular dependency
    {
-      return std::equal(m_data, m_data + Size, stdext::checked_array_iterator<const T*>(other.GetRawData(), other.GetSize()),
+      return std::equal(m_data, m_data + Size, checked_array_iterator<const T*>(other.GetRawData(), other.GetSize()),
          [&epsilon](const T& left, const T& right) -> bool {return IsApprox(left, right, epsilon);}
       );
    }
