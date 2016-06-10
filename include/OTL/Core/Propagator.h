@@ -31,8 +31,8 @@ namespace otl
 
 // Forward declarations
 class Time;
-class StateVector;
-enum class StateVectorType;
+struct StateVector;
+//enum class StateVectorType;
 
 class OTL_CORE_API IPropagator
 {
@@ -62,7 +62,7 @@ public:
    ////////////////////////////////////////////////////////////
    //StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
 
-   virtual StateVectorType GetType() const = 0;
+   //virtual StateVectorType GetType() const = 0;
 
 protected:
    ////////////////////////////////////////////////////////////
