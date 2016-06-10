@@ -25,9 +25,10 @@ set(VERSION_PATCH 0)
 #	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
 #endif()
 
-# required to compile spdlog on mingw
+# required to compile spdlog on gcc
 if (CMAKE_COMPILER_IS_GNUCXX)
 	add_definitions(-D_WIN32_WINNT=0x600)
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lpthread")
 endif()
 
 # include the configuration file
