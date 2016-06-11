@@ -18,7 +18,7 @@ set(VERSION_PATCH 0)
 
 # enable c++11 (GCC compilers only)
 #if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread")
     #add_definitions(-std=c++11)
 #endif()
 #if (MACOSX)

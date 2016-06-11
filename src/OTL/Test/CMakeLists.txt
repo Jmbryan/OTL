@@ -7,7 +7,7 @@ set(SRC
 	${TEST_INCROOT}/BaseTest.h
 	${TEST_INCROOT}/fakeit_instance.h
 	${TEST_SRCROOT}/ConversionTest.cpp
-	${TEST_SRCROOT}/LambertTest.cpp	
+	${TEST_SRCROOT}/LambertTest.cpp
 	${TEST_SRCROOT}/Main.cpp
 	${TEST_SRCROOT}/PropagatorTest.cpp
 	${TEST_SRCROOT}/TimeTest.cpp
@@ -20,5 +20,5 @@ include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 # define the otl-test target
 otl_add_project(otl-unit-test
 				SOURCES ${SRC}
-				DEPENDS otl-core -lpthread
+				DEPENDS otl-core -pthread
 				FOLDER "Tests")
