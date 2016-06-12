@@ -48,6 +48,7 @@ matrix:
      - BUILD_TYPE=Release
 
 script:
+ - uname -a
  - $COMPILER --version
  - mkdir build
  - cd build

@@ -10,7 +10,7 @@ OTL - Orbital Trajectory Library
 
 OTL is a simple, fast, cross-platform and object-oriented Orbital Mechanics library for general orbital trajectory computation.
 
-This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. Some of the design and configuration is inspired by SFML (http://www.sfml-dev.org/).
+This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. Some of the design and configuration is inspired by [SFML](http://www.sfml-dev.org/).
 
 Features
 --------
@@ -31,7 +31,7 @@ Features
 Build Instructions (Windows)
 ----------------------------
 1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "C:/OTL"
-2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-win32-x86.msi") - https://cmake.org/download/
+2. Download [CMake](https://cmake.org/download/) (last built using version 3.5.2 using "cmake-3.5.2-win32-x86.msi")
     - Note: Recommend adding CMake to system path (not done by default in installer)
 3. Launch CMake dialog
 4. Set source directory to root directory e.g. "C:/OTL"
@@ -51,8 +51,11 @@ Build Instructions (Windows)
 Build Instructions (Mac OSX)
 ----------------------------
 
-1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "/Users/username/OTL"
-2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-Darwin-x86_64.dmg") - https://cmake.org/download/
+1. First, acquire the source code by cloning the git repository (these instructions assume you download the source to /Users/username/OTL):
+```
+git clone https::/github.com/Jmbryan/OTL.git
+```
+2. Download [CMake](https://cmake.org/download/) (last built using version 3.5.2 using "cmake-3.5.2-Darwin-x86_64.dmg")
 3. Launch CMake dialog
 4. Set source directory to root directory e.g. "/Users/username/OTL"
 5. Create a build directory e.g. "/Users/username/OTL/build"
@@ -70,16 +73,16 @@ Build Instructions (Mac OSX)
 
 3rd Party Libraries (included)
 ------------------------------
-- Eigen (v3.2.8) - http://eigen.tuxfamily.org/
-- Spdlog - https://github.com/gabime/spdlog
-- niek-ephem - https://www.openhub.net/p/niek-ephem
-- Catch (v1.5.6) - https://github.com/philsquared/Catch
-- FakeIt (v2.0.2) - https://github.com/eranpeer/FakeIt
+- [Eigen](http://eigen.tuxfamily.org/) (v3.2.8)
+- [Spdlog](https://github.com/gabime/spdlog)
+- [niek-ephem](https://www.openhub.net/p/niek-ephem)
+- [Catch](https://github.com/philsquared/Catch) (v1.5.6)
+- [FakeIt](https://github.com/eranpeer/FakeIt) (v2.0.2)
 
 3rd Party Libraries (not included / experimental)
 -------------------------------------------------
-- CSPICE - https://naif.jpl.nasa.gov/naif/toolkit_C.html (last tested using "PC, Windows, MS Visual C, 32bit")
-- SGP4 - https://www.danrw.com/sgp4/ (source is located at the bottom of the page)
+- [CSPICE](https://naif.jpl.nasa.gov/naif/toolkit_C.html) (last tested using "PC, Windows, MS Visual C, 32bit")
+- [SGP4](https://www.danrw.com/sgp4/) (source is located at the bottom of the page)
 
 Authors
 -------
