@@ -95,10 +95,10 @@ std::string PhysicalProperties::ToString() const
 std::string PhysicalProperties::ToDetailedString(std::string prefix) const
 {
    std::stringstream os;
-   os << prefix << "Mass:                    " << m_mass;
-   os << prefix << "Equatorial Radius:       " << m_radius;
-   os << prefix << "Safe Radius:             " << m_safeRadius;
-   os << prefix << "Gravitational Parameter: " << m_mu;
+   os << prefix << "Mass:                    " << m_mass       << std::endl;
+   os << prefix << "Equatorial Radius:       " << m_radius     << std::endl;
+   os << prefix << "Safe Radius:             " << m_safeRadius << std::endl;
+   os << prefix << "Gravitational Parameter: " << m_mu         << std::endl;
 
    return os.str();
 }

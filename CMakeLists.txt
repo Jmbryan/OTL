@@ -16,19 +16,23 @@ set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
-# enable c++11 (GCC compilers only)
-#if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread")
-    #add_definitions(-std=c++11)
-#endif()
-#if (MACOSX)
-#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=lib++")
-#endif()
+set(CMAKE_CXX_STANDARD_11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# required to compile spdlog on gcc
-if (CMAKE_COMPILER_IS_GNUCXX)
-	add_definitions(-D_WIN32_WINNT=0x600)
-	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lpthread")
+if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+	# using Clang
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES GNU)
+	# using GCC
+	# spdlog requires the D_WIN32_WINNT=0x600 and pthread flags
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x600 -Wall -std=c++11 -pthread")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	# using Visual Studio C++
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
+else ()
+	# using unsupported compiler
+	message(FATAL_ERROR "Compiler is not supported.")
 endif()
 
 # include the configuration file
@@ -58,6 +62,16 @@ otl_set_option(OTL_BUILD_SPICE FALSE BOOL "TRUE to build spice (experimental), F
 
 # add an option for building the SGP4 library
 otl_set_option(OTL_BUILD_SGP4 FALSE BOOL "TRUE to build sgp4 (experimental), FALSE to ignore it or link externally")
+
+# add an option to suppress warnings from external libraries
+otl_set_option(OTL_SUPPRESS_EXT_LIB_WARNINGS TRUE BOOL "TRUE to suppress warnings from external libraries, FALSE to show them")
+
+# Include external lib headers as "system" headers to suppress their warnings
+if (OTL_SUPPRESS_EXT_LIB_WARNINGS)
+	set(OTL_INCLUDE_EXT_LIB_TYPE "SYSTEM")
+else()
+	set(OTL_INCLUDE_EXT_LIB_TYPE "")
+endif()
 
 # set install directories
 set(CMAKE_INSTALL_PREFIX ./install)

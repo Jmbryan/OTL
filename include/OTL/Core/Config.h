@@ -39,7 +39,7 @@
 
 #if defined(_MSC_VER)
    #define OTL_COMPILER_MSVC
-#elif defined (__MINGW64__)
+#elif defined (__MINGW64__) || defined(__MINGW32__)
    #define OTL_COMPILER_MINGW
 #else
    #error This Windows compiler is not supported by OTL library

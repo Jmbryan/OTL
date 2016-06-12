@@ -1,10 +1,10 @@
 
 # set the source directory
-set(EXAMPLE_DEMO_SRCROOT ${PROJECT_SOURCE_DIR}/examples/demo)
+set(EXAMPLE_LAMBERT_SRCROOT ${PROJECT_SOURCE_DIR}/examples/lambert)
 
 # all source files
 set(SRC
-	${EXAMPLE_DEMO_SRCROOT}/Main.cpp
+	${EXAMPLE_LAMBERT_SRCROOT}/lambert.cpp
 )
 source_group("" FILES ${SRC})
 
@@ -12,10 +12,10 @@ source_group("" FILES ${SRC})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # for testing. should be removed
-include_directories(${PROJECT_SOURCE_DIR}/extlibs/include)
+include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include)
 
 # define the otl-test target
-otl_add_project(demo
+otl_add_project(lambert
 				SOURCES ${SRC}
 				DEPENDS otl-core
 				FOLDER "Examples")

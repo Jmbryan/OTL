@@ -33,6 +33,56 @@ namespace otl
 namespace keplerian
 {
 
+std::string Orbit::OrbitProperties::ToString(std::string prefix) const
+{
+   std::ostringstream os;
+   os << prefix << "Type:                      ";
+   std::string anomalyType = "";
+   switch (type)
+   {
+   case Orbit::Type::Elliptical:
+      os << "Elliptical";
+      anomalyType = "Eccentric";
+      break;
+
+   case Orbit::Type::Hyperbolic:
+      os << "Hyperbolic";
+      anomalyType = "Hyperbolic";
+      break;
+
+   case Orbit::Type::Parabolic:
+      os << "Parabolic";
+      anomalyType = "Parabolic";
+      break;
+
+   case Orbit::Type::Circular:
+      os << "Circular";
+      break;
+
+   default:
+      os << "Unknown";
+      break;
+   }
+   os << std::endl;
+
+   os << prefix << "Mean Radius:               " << std::setprecision(6) << std::fixed << radius << std::endl;
+   if (type == Orbit::Type::Elliptical)
+      os << prefix << "Eccentric Anomaly          " << std::setprecision(6) << std::fixed << anomaly << std::endl;
+   else if (type == Orbit::Type::Hyperbolic)
+      os << prefix << "Hyperbolic Anomaly         " << std::setprecision(6) << std::fixed << anomaly << std::endl;
+   else if (type == Orbit::Type::Parabolic)
+      os << prefix << "Parabolic Anomaly          " << std::setprecision(6) << std::fixed << anomaly << std::endl;
+   os << prefix << "True Anomaly:              " << std::setprecision(6) << std::fixed << trueAnomaly << std::endl;
+   os << prefix << "Mean Motion:               " << std::setprecision(6) << std::fixed << meanMotion << std::endl;
+   os << prefix << "Period:                    " << std::setprecision(6) << std::fixed << period << std::endl;
+   os << prefix << "Time Since Perapsis:       " << std::setprecision(6) << std::fixed << timeSincePerapsis << std::endl;
+   os << prefix << "Specific Angular Momentum: " << std::setprecision(6) << std::fixed << specificAngularMomentum << std::endl;
+   os << prefix << "Semiparameter:             " << std::setprecision(6) << std::fixed << semiparameter << std::endl;
+
+   return os.str();
+}
+
+
 ////////////////////////////////////////////////////////////
 Orbit::Orbit() :
 m_gravitationalParameterCentralBody(1.0),
@@ -366,45 +416,26 @@ std::string Orbit::ToString(std::string prefix) const
    UpdateOrbitProperties();
 
    std::ostringstream os;
-   os << prefix << "Orbit Type:                           ";
-   switch (m_properties.type)
+   os << prefix << "Direction:                              ";
+   switch (m_direction)
    {
-   case Orbit::Type::Elliptical:
-      os << "Elliptical";
+   case Direction::Prograde:
+      os << "Prograde" << std::endl;
       break;
 
-   case Orbit::Type::Hyperbolic:
-      os << "Hyperbolic";
-      break;
-
-   case Orbit::Type::Parabolic:
-      os << "Parabolic";
-      break;
-
-   case Orbit::Type::Circular:
-      os << "Circular";
+   case Direction::Retrograde:
+      os << "Retrograde" << std::endl;
       break;
 
    default:
-      os << "Unknown";
+      os << "Unknown" << std::endl;
       break;
-   }
-   //os << prefix << "Orbit Radius:                         " << std::setprecision(6) << std::fixed << m_orbitRadius << std::endl;
-   //os << prefix << "Central Body Gravitational Parameter: " << std::setprecision(6) << std::fixed << m_mu << std::endl;
-   //os << prefix << "State Vector:" << std::endl;
-   //switch (m_stateVector.GetType())
-   //{
-   //case StateVectorType::Orbital:
-   //   os << m_stateVector.GetOrbitalElements().ToDetailedString(prefix + "   ") << std::endl;
-   //   break;
-
-   //case StateVectorType::Cartesian:
-   //   os << m_stateVector.GetStateVector().ToDetailedString(prefix + "   ") << std::endl;
-   //   break;
-   //      
-   //default:
-   //   break;
-   //}
+   }  
+   os << prefix << "Gravitational Parameter (central body): " << std::setprecision(6) << std::fixed << m_gravitationalParameterCentralBody << std::endl;
+   os << prefix << "Properties:" << std::endl << m_properties.ToString(prefix + "  ");
+   os << prefix << "Orbital Elements:" << std::endl << m_orbitalElements.ToDetailedString(prefix + "  ");
+   os << prefix << "State Vector:" << std::endl << m_StateVector.ToDetailedString(prefix + "  ");
+   
 
    return os.str();
 }

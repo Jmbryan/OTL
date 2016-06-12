@@ -75,7 +75,7 @@ void JplApproximateBody::LoadEphemerisDataFile(const std::string& filename)
 std::string JplApproximateBody::ToString(const std::string& prefix) const
 {
    std::ostringstream os;
-   os << prefix << "Orbital Body:" << std::endl;
+   os << prefix << "(Orbital Body)" << std::endl;
    os << OrbitalBody::ToString(prefix + "   ");
 
    return os.str();

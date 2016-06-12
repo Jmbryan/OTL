@@ -14,11 +14,15 @@ set(SRC
 )
 source_group("" FILES ${SRC})
 
+# add the OTL include paths
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 # add the built-in external libraries paths
-include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
+include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include)
+include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include/FakeIt)
 
 # define the otl-test target
 otl_add_project(otl-unit-test
 				SOURCES ${SRC}
-				DEPENDS otl-core -pthread
+				DEPENDS otl-core
 				FOLDER "Tests")

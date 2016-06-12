@@ -272,7 +272,7 @@ std::string Time::ToDetailedString(std::string prefix) const
    auto aggregate = GetAggregrate();
 
    std::ostringstream os;
-   os << prefix << "Aggregrate:" << std::endl;
+   os << prefix << "Aggregrate" << std::endl;
    os << prefix << "   Years:   " << aggregate.years << std::endl;
    os << prefix << "   Days:    " << aggregate.days << std::endl;
    os << prefix << "   Hours:   " << aggregate.hours << std::endl;

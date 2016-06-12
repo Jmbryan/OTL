@@ -25,12 +25,6 @@ elseif(MACOSX)
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/lib")
 endif()
 
-# add the OTL include paths
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# add the built-in external libraries paths
-include_directories(${PROJECT_SOURCE_DIR}/extlibs/include)
-
 # define the path of our additional CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 

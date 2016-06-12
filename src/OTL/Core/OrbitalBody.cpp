@@ -220,8 +220,8 @@ std::string OrbitalBody::ToString(const std::string& prefix) const
    os << prefix << "Epoch:" << std::endl;
    os << GetEpoch().ToDetailedString(prefix + "   ");
    os << prefix << "Orbit:" << std::endl;
-   os << GetOrbit().ToString(prefix + "   ");
-   os << prefix << "Ephemeris:" << std::endl;
+   os << GetOrbit().ToString(prefix + "   ") << std::endl;
+   //os << prefix << "Ephemeris:" << std::endl;
 
    return os.str();
 }

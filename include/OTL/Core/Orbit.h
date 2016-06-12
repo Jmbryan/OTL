@@ -78,6 +78,8 @@ public:
       double timeSincePerapsis;        ///< Time since periapsis (seconds)
       double specificAngularMomentum;  ///< Specific angular momentum ()
       double semiparameter;            ///< Semiparameter (km)
+
+      std::string ToString(std::string prefix = "") const;
    };
 
    ////////////////////////////////////////////////////////////

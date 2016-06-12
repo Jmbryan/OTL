@@ -1,3 +1,3 @@
 
 # add the examples subdirectories
-add_subdirectory(demo)
+add_subdirectory(lambert)

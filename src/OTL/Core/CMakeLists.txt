@@ -130,13 +130,17 @@ if(OTL_BUILD_SGP4)
 	source_group("sgp4" FILES ${SGP4_SRC})
 endif()
 
+# add the OTL include paths
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 # add the built-in external libraries paths
-include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
+include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include)
+include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include/niek-ephem)
 if(OTL_BUILD_SPICE)
-	include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/cspice)
+	include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include/cspice)
 endif()
 if(OTL_BUILD_SGP4)
-	include_directories(${PROJECT_SOURCE_DIR}/extlibs/include/libsgp4)
+	include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/include/libsgp4)
 endif()
 
 # add the OTL sources path
