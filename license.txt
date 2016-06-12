@@ -1,7 +1,10 @@
 OTL
 ----
 
-OTL - Copyright (C) 2013-2018 Jason Bryan - Jmbryan10@gmail.com
+The OTL libraries and source code are distributed under the [zlib/png license][https://opensource.org/licenses/Zlib]
+
+'''
+OTL (Orbital Trajectory Library) - Copyright (c) Jason Bryan
 
 This software is provided 'as-is', without any express or
 implied warranty. In no event will the authors be held
@@ -22,11 +25,12 @@ it freely, subject to the following restrictions:
 
 3. This notice may not be removed or altered from any
    source distribution.
-
-
+'''
 
 External libraries used by OTL
 -------------------------------
-
-* SFML is under the zlib/png License
-* Catch is under the Boost Software License
+* Eigen is under the [MPL2 License][https://www.mozilla.org/en-US/MPL/2.0/]
+* Spdlog is under the [MIT License][https://opensource.org/licenses/MIT]
+* Niek-ephem is under the [BSD-4-Clause-UC License][https://www.openhub.net/licenses/bsd]
+* Catch is under the [Boost Software License][http://www.boost.org/users/license.html]
+* FakeIt is under the [MIT License][https://opensource.org/licenses/MIT]
