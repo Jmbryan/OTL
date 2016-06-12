@@ -27,10 +27,10 @@ it freely, subject to the following restrictions:
    source distribution.
 ```
 
-External libraries used by OTL
+External libraries included with OTL
 -------------------------------
-* Eigen is under the [MPL2 License](https://www.mozilla.org/en-US/MPL/2.0/)
-* Spdlog is under the [MIT License](https://opensource.org/licenses/MIT)
-* Niek-ephem is under the [BSD-4-Clause-UC License](https://www.openhub.net/licenses/bsd)
-* Catch is under the [Boost Software License](http://www.boost.org/users/license.html)
-* FakeIt is under the [MIT License](https://opensource.org/licenses/MIT)
+* [Eigen](http://eigen.tuxfamily.org/) is under the [MPL2 License](https://www.mozilla.org/en-US/MPL/2.0/)
+* [Spdlog](https://github.com/gabime/spdlog) is under the [MIT License](https://opensource.org/licenses/MIT)
+* [niek-ephem](https://www.openhub.net/p/niek-ephem) is under the [BSD-4-Clause-UC License](https://www.openhub.net/licenses/bsd)
+* [Catch](https://github.com/philsquared/Catch) is under the [Boost Software License](http://www.boost.org/users/license.html)
+* [FakeIt](https://github.com/eranpeer/FakeIt) is under the [MIT License](https://opensource.org/licenses/MIT)

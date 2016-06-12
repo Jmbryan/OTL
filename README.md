@@ -30,7 +30,10 @@ Features
 
 Build Instructions (Windows)
 ----------------------------
-1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "C:/OTL"
+1. First, acquire the source code by cloning the git repository (these instructions assume you download the source to C:/OTL):
+```
+git clone https::/github.com/Jmbryan/OTL.git
+```
 2. Download [CMake](https://cmake.org/download/) (last built using version 3.5.2 using "cmake-3.5.2-win32-x86.msi")
     - Note: Recommend adding CMake to system path (not done by default in installer)
 3. Launch CMake dialog
