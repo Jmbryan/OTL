@@ -1,11 +1,16 @@
 OTL - Orbital Trajectory Library
 ================================
-[![Build Status](https://travis-ci.org/Jmbryan/OTL.svg?branch=master)](https://travis-ci.org/Jmbryan/OTL)
+| Linux/Mac OSX                   | Windows |
+| ------------------------------- | ------- |
+| [![Build Status][master]][repo] |         |
 [![codecov](https://codecov.io/gh/Jmbryan/OTL/branch/master/graph/badge.svg)](https://codecov.io/gh/Jmbryan/OTL)
 
-OTL is a simple, fast, cross-platform and object-oriented library for general orbital trajectory computation.
+[master]: https://travis-ci.org/Jmbryan/OTL.svg?branch=master
+[repo]: https://travis-ci.org/Jmbryan/OTL
 
-This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. The CMake configuration is based off of SFML (http://www.sfml-dev.org/).
+OTL is a simple, fast, cross-platform and object-oriented Orbital Mechanics library for general orbital trajectory computation.
+
+This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. Some of the design and configuration is inspired by SFML (http://www.sfml-dev.org/).
 
 Features
 --------
@@ -46,8 +51,6 @@ Build Instructions (Windows)
 Build Instructions (Mac OSX)
 ----------------------------
 
-NOTE: Build is currently broken on OSX due to complications with Eigen library
-
 1. Get the repository. i.e. open a command prompt and type "git clone https://github.com/Jmbryan/OTL". These instructions assume you download the repository to "/Users/username/OTL"
 2. Download CMake (last built using version 3.5.2 using "cmake-3.5.2-Darwin-x86_64.dmg") - https://cmake.org/download/
 3. Launch CMake dialog
@@ -67,11 +70,11 @@ NOTE: Build is currently broken on OSX due to complications with Eigen library
 
 3rd Party Libraries (included)
 ------------------------------
-- Eigen - http://eigen.tuxfamily.org/
+- Eigen (v3.2.8) - http://eigen.tuxfamily.org/
 - Spdlog - https://github.com/gabime/spdlog
 - niek-ephem - https://www.openhub.net/p/niek-ephem
-- Catch - https://github.com/philsquared/Catch
-- FakeIt - https://github.com/eranpeer/FakeIt
+- Catch (v1.5.6) - https://github.com/philsquared/Catch
+- FakeIt (v2.0.2) - https://github.com/eranpeer/FakeIt
 
 3rd Party Libraries (not included / experimental)
 -------------------------------------------------
