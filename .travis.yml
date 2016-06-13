@@ -67,9 +67,6 @@ matrix:
     - BUILD_TYPE=Debug
     - BUILD_EXT=-d
 
-before_script:
-
-
 script:
  - uname -a
  - $COMPILER --version
