@@ -14,6 +14,7 @@ macro(otl_add_library target)
 
     # create the target
     add_library(${target} ${THIS_SOURCES})
+    add_coverage_target(${target})
 
     # define the export symbol of the module
     string(REPLACE "-" "_" NAME_UPPER "${target}")
@@ -112,6 +113,7 @@ macro(otl_add_project target)
 
     # create the target
     add_executable(${target} ${THIS_SOURCES})
+    add_coverage_target(${target})
 
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
@@ -139,7 +141,60 @@ macro(otl_add_project target)
     # install the example's source code
     #install(FILES ${THIS_SOURCES}
     #        DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
-	
+
 	#install(FILES ${THIS_SOURCES}
 	#		DESTINATION bin COMPONENT bin)
 endmacro()
+
+if (NOT TARGET gcov)
+   add_custom_target(gcov)
+endif()
+
+function(add_coverage_target TNAME)
+    get_target_property(TSOURCES ${TNAME} SOURCES)
+    set(TARGET_COMPILER "CXX")
+    set(ADDITIONAL_FILES "")
+    foreach(FILE ${TSOURCES})
+       string(REGEX MATCH "TARGET_OBJECTS:([^ >]+)" _file ${FILE})
+       if("${_file}" STREQUAL "")
+          list(APPEND ADDITIONAL_FILES "${FILE}.gcno")
+          list(APPEND ADDITIONAL_FILES "${FILE}.gcda")
+       endif()
+    endforeach()
+
+    #set_property(TARGET ${TNAME} APPEND_STRING PROPERTY COMPILE_FLAGS " ${COVERAGE_${TARGET_COMPILER}_FLAGS}")
+    #set_property(TARGET ${TNAME} APPEND_STRING PROPERTY LINK_FLAGS " ${COVERAGE_${TARGET_COMPILER}_FLAGS}")
+
+    set_property(TARGET ${TNAME} APPEND_STRING PROPERTY COMPILE_FLAGS " -O0 -g -fprofile-arcs -ftest-coverage")
+
+    set(CLEAN_FILES "")
+    foreach(FILE ${ADDITIONAL_FILES})
+       list(APPEND CLEAN_FILES "CMakeFiles/${TNAME}.dir/${FILE}")
+    endforeach()
+
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${CLEAN_FILES}")
+
+    add_gcov_target(${TNAME})
+endfunction()
+
+function(add_gcov_target TNAME)
+   set(TDIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TNAME}.dir)
+
+   get_target_property(TSOURCES ${TNAME} SOURCES)
+
+   set(BUFFER "")
+   foreach(FILE ${SOURCES})
+      get_filename_component(FILE_PATH "${TDIR}/${FILE}" PATH)
+
+      add_custom_command(OUTPUT ${TDIR}/${FILE}.gcov
+         COMMAND ${GCOV_ENV} ${GCOV_BIN} ${TDIR}/${FILE}.gcno > /dev/null
+         DEPENDS ${TNAME} ${TDIR}/${FILE}.gcno
+         WORKING_DIRECTORY ${FILE_PATH})
+
+      list(APPEND BUFFER ${TDIR}/${FILE}.gcov)
+   endforeach()
+
+   add_custom_target(${TNAME}-gcov DEPENDS ${BUFFER})
+
+   add_dependencies(gcov ${TNAME}-gcov)
+endfunction()
