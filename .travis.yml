@@ -31,9 +31,24 @@ matrix:
    addons: *gcc5
 
  # Clang builds
- # from https://github.com/travis-ci/travis-ci/issues/6120
+ # workaround from https://github.com/travis-ci/travis-ci/issues/6120
  - os: linux
-   env: &clang_env
+   env:
+    - LLVM_VERSION=3.8.0
+    - LLVM_ARCHIVE_PATH=$HOME/clang+llvm.tar.xz
+    - COMPILER=clang++
+    - CPPFLAGS="-I $HOME/clang-$LLVM_VERSION/include/c++/v1"
+    #- CXXFLAGS=-lc++
+    - PATH=$HOME/clang-$LLVM_VERSION/bin:$PATH
+    - LD_LIBRARY_PATH=$HOME/clang-$LLVM_VERSION/lib:$LD_LIBRARY_PATH
+    - BUILD_TYPE=Release
+    - COVERAGE=false
+   before_install:
+    - wget http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O $LLVM_ARCHIVE_PATH
+    - mkdir $HOME/clang-$LLVM_VERSION
+    - tar xf $LLVM_ARCHIVE_PATH -C $HOME/clang-$LLVM_VERSION --strip-components 1
+ - os: linux
+   env:
     - LLVM_VERSION=3.8.0
     - LLVM_ARCHIVE_PATH=$HOME/clang+llvm.tar.xz
     - COMPILER=clang++
@@ -44,7 +59,7 @@ matrix:
     - BUILD_TYPE=Debug
     - BUILD_EXT=-d
     - COVERAGE=true
-   before_install: &clang_before_install
+   before_install:
     - wget http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O $LLVM_ARCHIVE_PATH
     - mkdir $HOME/clang-$LLVM_VERSION
     - tar xf $LLVM_ARCHIVE_PATH -C $HOME/clang-$LLVM_VERSION --strip-components 1
@@ -70,6 +85,7 @@ matrix:
 script:
  - uname -a
  - $COMPILER --version
+ - cmake -version
  - mkdir build
  - cd build
  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOTL_ENABLE_CODE_COVERAGE=$COVERAGE .. && make

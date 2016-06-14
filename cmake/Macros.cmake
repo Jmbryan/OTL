@@ -15,9 +15,9 @@ macro(otl_add_library target)
 
     # create the target
     add_library(${target} ${THIS_SOURCES})
-	if(THIS_COVERAGE AND OTL_ENABLE_CODE_COVERAGE)
-		add_coverage_target(${target})
-	endif()
+    if(THIS_COVERAGE AND OTL_ENABLE_CODE_COVERAGE)
+      add_coverage_target(${target})
+    endif()
 
     # define the export symbol of the module
     string(REPLACE "-" "_" NAME_UPPER "${target}")
@@ -118,8 +118,8 @@ macro(otl_add_project target)
     # create the target
     add_executable(${target} ${THIS_SOURCES})
     if(THIS_COVERAGE AND OTL_ENABLE_CODE_COVERAGE)
-		add_coverage_target(${target})
-	endif()
+      add_coverage_target(${target})
+    endif()
 
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
@@ -148,24 +148,37 @@ macro(otl_add_project target)
     #install(FILES ${THIS_SOURCES}
     #        DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
 
-	#install(FILES ${THIS_SOURCES}
-	#		DESTINATION bin COMPONENT bin)
+  #install(FILES ${THIS_SOURCES}
+  #    DESTINATION bin COMPONENT bin)
 endmacro()
 
+# global gcov target
 if (NOT TARGET gcov)
    add_custom_target(gcov)
 endif()
 
+# add a target for code coverage
 function(add_coverage_target target)
   message("Adding coverage target ${target}")
 
-  # Get all files for this target
+  # find the gcov binary
+  if(NOT GCOV_EXE)
+    get_filename_component(COMPILER_PATH "${CMAKE_CXX_COMPILER}" PATH)
+    string(REGEX MATCH "^[0-9]+" GCC_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
+    find_program(GCOV_EXE NAMES gcov-${GCC_VERSION} gcov HINTS ${COMPILER_PATH})
+  endif()
+  if(NOT GCOV_EXE)
+    message(WARNING "Could not find gcov binary for compiler ${CMAKE_CXX_COMPILER}")
+    return()
+  endif()
+
+  # get all files for this target
   get_target_property(target_files ${target} SOURCES)
 
   set(SOURCES "")
   set(ADDITIONAL_CLEAN_FILES "")
   foreach(FILE ${target_files})
-    # Extract the (lowercase) extension e.g. "cpp"
+    # extract the (lowercase) extension e.g. "cpp"
     get_filename_component(FILE_EXT "${FILE}" EXT)
     string(TOLOWER "${FILE_EXT}" FILE_EXT)
     string(SUBSTRING "${FILE_EXT}" 1 -1 FILE_EXT)
@@ -173,8 +186,7 @@ function(add_coverage_target target)
     # Filter out any non-source files e.g. header files
     list(FIND CMAKE_CXX_SOURCE_FILE_EXTENSIONS "${FILE_EXT}" TEMP)
     if (NOT ${TEMP} EQUAL -1)
-
-      # Change the path to the object file directory
+      # Change the path to be relative to the object file directory
       if(IS_ABSOLUTE ${FILE})
         file(RELATIVE_PATH FILE ${CMAKE_CURRENT_SOURCE_DIR} ${FILE})
       endif()
@@ -187,20 +199,10 @@ function(add_coverage_target target)
     endif()
   endforeach()
 
-  # Add the intermediate coverage files to clean target
+  # add the intermediate coverage files to clean target
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_CLEAN_FILES}")
 
-  # Find the gcov binary
-  get_filename_component(COMPILER_PATH "${CMAKE_CXX_COMPILER}" PATH)
-  string(REGEX MATCH "^[0-9]+" GCC_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
-  find_program(GCOV_BIN NAMES gcov-${GCC_VERSION} gcov HINTS ${COMPILER_PATH})
-
-  if(NOT GCOV_BIN)
-    message(WARNING "No coverage evaluation binary found for ${CMAKE_CXX_COMPILER}")
-  return()
-  endif()
-
-  # Redirect the output to null
+  # redirect the output to null depending on platform
   set(GCOV_NUL /dev/null)
   if(WIN32)
     set(GCOV_NUL NUL)
@@ -211,14 +213,16 @@ function(add_coverage_target target)
   foreach(FILE ${SOURCES})
     get_filename_component(FILE_PATH "${FILE}" PATH)
 
+    # call gcov command
     add_custom_command(OUTPUT ${FILE}.gcov
-    COMMAND ${GCOV_BIN} ${FILE}.gcno > ${GCOV_NUL}
-    DEPENDS ${target} ${FILE}.gcno
-    WORKING_DIRECTORY ${FILE_PATH})
+      COMMAND ${GCOV_EXE} ${FILE}.gcno > ${GCOV_NUL}
+      DEPENDS ${target} ${FILE}.gcno
+      WORKING_DIRECTORY ${FILE_PATH})
 
-    list(APPEND BUFFER ${FILE}.gcov)
+    list(APPEND target_depends ${FILE}.gcov)
   endforeach()
 
+  # add this coverage target and add to global gcov target
   add_custom_target(${target}-gcov DEPENDS ${target_depends})
   add_dependencies(gcov ${target}-gcov)
 endfunction()
