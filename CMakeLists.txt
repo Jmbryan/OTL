@@ -19,22 +19,6 @@ set(VERSION_PATCH 0)
 set(CMAKE_CXX_STANDARD_11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
-	# using Clang
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES GNU)
-	# using GCC
-	# spdlog requires the D_WIN32_WINNT=0x600 and pthread flags
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x600 -Wall -std=c++11 -pthread")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-	# using Visual Studio C++
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
-else ()
-	# using unsupported compiler
-	message(FATAL_ERROR "Compiler is not supported.")
-endif()
-
 # include the configuration file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake)
 
@@ -66,11 +50,35 @@ otl_set_option(OTL_BUILD_SGP4 FALSE BOOL "TRUE to build sgp4 (experimental), FAL
 # add an option to suppress warnings from external libraries
 otl_set_option(OTL_SUPPRESS_EXT_LIB_WARNINGS TRUE BOOL "TRUE to suppress warnings from external libraries, FALSE to show them")
 
-# Include external lib headers as "system" headers to suppress their warnings
+# add an option to enable code coverage generation
+otl_set_option(OTL_ENABLE_CODE_COVERAGE FALSE BOOL "TRUE to enable code coverage, FALSE to disable it")
+
+if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+	# using Clang
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES GNU)
+	# using GCC
+	# spdlog requires the D_WIN32_WINNT=0x600 and pthread flags
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x600 -Wall -std=c++11 -pthread")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	# using Visual Studio C++
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
+else ()
+	# using unsupported compiler
+	message(FATAL_ERROR "Compiler is not supported.")
+endif()
+
+# include external lib headers as "system" headers to suppress their warnings
 if (OTL_SUPPRESS_EXT_LIB_WARNINGS)
 	set(OTL_INCLUDE_EXT_LIB_TYPE "SYSTEM")
 else()
 	set(OTL_INCLUDE_EXT_LIB_TYPE "")
+endif()
+
+# add code coverage compile flags. --coverage should be equivalent to -fprofile-arcs -ftest-coverage
+if (OTL_ENABLE_CODE_COVERAGE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
 endif()
 
 # set install directories

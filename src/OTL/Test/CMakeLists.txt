@@ -25,4 +25,5 @@ include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/in
 otl_add_project(otl-unit-test
 				SOURCES ${SRC}
 				DEPENDS otl-core
-				FOLDER "Tests")
+				FOLDER "Tests"
+				COVERAGE true)

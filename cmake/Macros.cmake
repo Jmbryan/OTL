@@ -6,15 +6,18 @@ include(CMakeParseArguments)
 #                     SOURCES Orbit.cpp Orbit.h ...
 #                     DEPENDS cspice ...
 #                     EXTERNAL_LIBS ...
-#                     FOLDER "OTL")
+#                     FOLDER "OTL"
+#                     COVERAGE true)
 macro(otl_add_library target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;EXTERNAL_LIBS;FOLDER" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;EXTERNAL_LIBS;FOLDER;COVERAGE" ${ARGN})
 
     # create the target
     add_library(${target} ${THIS_SOURCES})
-    add_coverage_target(${target})
+	if(THIS_COVERAGE AND OTL_ENABLE_CODE_COVERAGE)
+		add_coverage_target(${target})
+	endif()
 
     # define the export symbol of the module
     string(REPLACE "-" "_" NAME_UPPER "${target}")
@@ -102,18 +105,21 @@ endmacro()
 # ex: otl_add_project(unit-tests
 #                     SOURCES main.cpp ...
 #                     DEPENDS otl-core
-#                     FOLDER "Tests")
+#                     FOLDER "Tests"
+#                     COVERAGE true)
 macro(otl_add_project target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;FOLDER" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;FOLDER;COVERAGE" ${ARGN})
 
     # set a source group for the source files
     source_group("" FILES ${THIS_SOURCES})
 
     # create the target
     add_executable(${target} ${THIS_SOURCES})
-    add_coverage_target(${target})
+    if(THIS_COVERAGE AND OTL_ENABLE_CODE_COVERAGE)
+		add_coverage_target(${target})
+	endif()
 
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
@@ -150,51 +156,71 @@ if (NOT TARGET gcov)
    add_custom_target(gcov)
 endif()
 
-function(add_coverage_target TNAME)
-    get_target_property(TSOURCES ${TNAME} SOURCES)
-    set(TARGET_COMPILER "CXX")
-    set(ADDITIONAL_FILES "")
-    foreach(FILE ${TSOURCES})
-       string(REGEX MATCH "TARGET_OBJECTS:([^ >]+)" _file ${FILE})
-       if("${_file}" STREQUAL "")
-          list(APPEND ADDITIONAL_FILES "${FILE}.gcno")
-          list(APPEND ADDITIONAL_FILES "${FILE}.gcda")
-       endif()
-    endforeach()
+function(add_coverage_target target)
+   message("Adding coverage target ${target}")
 
-    #set_property(TARGET ${TNAME} APPEND_STRING PROPERTY COMPILE_FLAGS " ${COVERAGE_${TARGET_COMPILER}_FLAGS}")
-    #set_property(TARGET ${TNAME} APPEND_STRING PROPERTY LINK_FLAGS " ${COVERAGE_${TARGET_COMPILER}_FLAGS}")
-
-    set_property(TARGET ${TNAME} APPEND_STRING PROPERTY COMPILE_FLAGS " -O0 -g -fprofile-arcs -ftest-coverage")
-
-    set(CLEAN_FILES "")
-    foreach(FILE ${ADDITIONAL_FILES})
-       list(APPEND CLEAN_FILES "CMakeFiles/${TNAME}.dir/${FILE}")
-    endforeach()
-
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${CLEAN_FILES}")
-
-    add_gcov_target(${TNAME})
-endfunction()
-
-function(add_gcov_target TNAME)
-   set(TDIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TNAME}.dir)
-
-   get_target_property(TSOURCES ${TNAME} SOURCES)
-
+   # Get all files for this target
+   get_target_property(TSOURCES ${target} SOURCES)
+   
+   set(SOURCES "")
+   set(ADDITIONAL_CLEAN_FILES "")
+   foreach(FILE ${TSOURCES})
+      # Extract the (lowercase) extension e.g. "cpp" 
+      get_filename_component(FILE_EXT "${FILE}" EXT)
+	  string(TOLOWER "${FILE_EXT}" FILE_EXT)
+	  string(SUBSTRING "${FILE_EXT}" 1 -1 FILE_EXT)
+	  
+	  # Filter out any non-source files e.g. header files
+	  list(FIND CMAKE_CXX_SOURCE_FILE_EXTENSIONS "${FILE_EXT}" TEMP)
+	  if (NOT ${TEMP} EQUAL -1)
+		 
+	     # Change the path to the object file directory
+		 if(IS_ABSOLUTE ${FILE})
+		    file(RELATIVE_PATH FILE ${CMAKE_CURRENT_SOURCE_DIR} ${FILE})
+		 endif()
+		 string(REPLACE ".." "__" FILE "${FILE}")
+		 string(CONCAT FILE "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/" "${FILE}")
+		 
+	     list(APPEND SOURCES "${FILE}")
+		 list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcno")
+		 list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcda")
+	  endif()	  
+   endforeach()
+   
+   # Add the intermediate coverage files to clean target
+   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_CLEAN_FILES}")
+   
+   # Find the gcov binary
+   get_filename_component(COMPILER_PATH "${CMAKE_CXX_COMPILER}" PATH) 
+   string(REGEX MATCH "^[0-9]+" GCC_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
+   find_program(GCOV_BIN NAMES gcov-${GCC_VERSION} gcov HINTS ${COMPILER_PATH})
+   
+   if(NOT GCOV_BIN)
+      message(WARNING "No coverage evaluation binary found for ${CMAKE_CXX_COMPILER}")
+	  return()
+   endif()
+   
+   # Redirect the output to null   
+   set(GCOV_NUL /dev/null)
+   if(WIN32)
+      set(GCOV_NUL NUL)
+   endif()
+   
+   # Call gcov on the generated .gcno file for each source file
    set(BUFFER "")
    foreach(FILE ${SOURCES})
-      get_filename_component(FILE_PATH "${TDIR}/${FILE}" PATH)
+      get_filename_component(FILE_PATH "${FILE}" PATH)
 
-      add_custom_command(OUTPUT ${TDIR}/${FILE}.gcov
-         COMMAND ${GCOV_ENV} ${GCOV_BIN} ${TDIR}/${FILE}.gcno > /dev/null
-         DEPENDS ${TNAME} ${TDIR}/${FILE}.gcno
+      add_custom_command(OUTPUT ${FILE}.gcov
+         COMMAND ${GCOV_BIN} ${FILE}.gcno > ${GCOV_NUL}
+         DEPENDS ${target} ${FILE}.gcno
          WORKING_DIRECTORY ${FILE_PATH})
 
-      list(APPEND BUFFER ${TDIR}/${FILE}.gcov)
+      list(APPEND BUFFER ${FILE}.gcov)
    endforeach()
 
-   add_custom_target(${TNAME}-gcov DEPENDS ${BUFFER})
+   add_custom_target(${target}-gcov DEPENDS ${BUFFER})
 
-   add_dependencies(gcov ${TNAME}-gcov)
+   add_dependencies(gcov ${target}-gcov)
 endfunction()
+

@@ -18,4 +18,5 @@ include_directories(${OTL_INCLUDE_EXT_LIB_TYPE} ${PROJECT_SOURCE_DIR}/extlibs/in
 otl_add_project(lambert
 				SOURCES ${SRC}
 				DEPENDS otl-core
-				FOLDER "Examples")
+				FOLDER "Examples"
+				COVERAGE false)

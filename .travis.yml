@@ -67,9 +67,10 @@ script:
  - $COMPILER --version
  - mkdir build
  - cd build
- - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_BUILD_TYPE=$BUILD_TYPE .. && make
+ - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOTL_ENABLE_CODE_COVERAGE=true .. && make
  - cd bin
- - otl-unit-test$BUILD_EXT
+ - ./otl-unit-test$BUILD_EXT
+ - make gcov
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
