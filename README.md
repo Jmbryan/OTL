@@ -11,25 +11,28 @@ OTL - Orbital Trajectory Library
 [appveyor_master]:https://ci.appveyor.com/api/projects/status/y7i26l79oi2c6jbn?svg=true
 [appveyor_repo]:https://ci.appveyor.com/project/Jmbryan/otl
 
-OTL is a C++11 cross-platform and object-oriented Orbital Mechanics library for general orbital trajectory computation.
+OTL is a Modern C++ Orbital Mechanics library for general Keplerian orbit trajectory analysis.
 
 This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. Some of the design and configuration is inspired by [SFML](http://www.sfml-dev.org/).
 
 Features
 --------
-- Cross-platform
-- Clean, object-oriented, and well documented C++
+- Cross-platform (Windows, Linux, Mac OSX)
+- Object-oriented C++11
 - Epoch system supporting multiple formats (MJD2000, Gregorian, etc.)
-- State vector & orbital elements conversions
-- Lamberts Solver (Exponential Sinusoids)
-- Propagation (Lagrangian with universal variable)
-- Planetary Ephemeris
-   - JPL approximate (analytical)
+- State Vector & Orbital Elements conversions
+- Multi-revolution Lamberts Solver
+- Propagation
+- Ephemeris
+   - Analytical
    - JPL SPICE
    - SGP4
    - MPCORB
-- Flybys (unpowered)
+- Flybys
+- Multiple gravity assist trajectories with deep space maneuvers (MGADSM)
 - MATLAB interface
+- Well documented
+- Unit tested
 
 Build Instructions (Windows)
 ----------------------------
