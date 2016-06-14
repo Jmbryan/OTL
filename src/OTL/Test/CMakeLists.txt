@@ -26,4 +26,4 @@ otl_add_project(otl-unit-test
 				SOURCES ${SRC}
 				DEPENDS otl-core
 				FOLDER "Tests"
-				COVERAGE true)
+			  COVERAGE false)

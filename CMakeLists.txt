@@ -78,7 +78,12 @@ endif()
 
 # add code coverage compile flags. --coverage should be equivalent to -fprofile-arcs -ftest-coverage
 if (OTL_ENABLE_CODE_COVERAGE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+	if (CMAKE_CXX_COMPILERID MATCHES Clang)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+	elseif()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+	endif()
 endif()
 
 # set install directories

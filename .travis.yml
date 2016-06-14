@@ -1,7 +1,5 @@
 language: cpp
-
-dist: trusty
-sudo: required
+sudo: false
 
 matrix:
  include:
@@ -34,6 +32,8 @@ matrix:
  # Clang builds
  # from https://github.com/travis-ci/travis-ci/issues/6120
  - os: linux
+   dist: trusty
+   sudo: required
    env: &clang_env
     - LLVM_VERSION=3.8.0
     - LLVM_ARCHIVE_PATH=$HOME/clang+llvm.tar.xz
