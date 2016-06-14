@@ -157,70 +157,68 @@ if (NOT TARGET gcov)
 endif()
 
 function(add_coverage_target target)
-   message("Adding coverage target ${target}")
+  message("Adding coverage target ${target}")
 
-   # Get all files for this target
-   get_target_property(TSOURCES ${target} SOURCES)
-   
-   set(SOURCES "")
-   set(ADDITIONAL_CLEAN_FILES "")
-   foreach(FILE ${TSOURCES})
-      # Extract the (lowercase) extension e.g. "cpp" 
-      get_filename_component(FILE_EXT "${FILE}" EXT)
-	  string(TOLOWER "${FILE_EXT}" FILE_EXT)
-	  string(SUBSTRING "${FILE_EXT}" 1 -1 FILE_EXT)
-	  
-	  # Filter out any non-source files e.g. header files
-	  list(FIND CMAKE_CXX_SOURCE_FILE_EXTENSIONS "${FILE_EXT}" TEMP)
-	  if (NOT ${TEMP} EQUAL -1)
-		 
-	     # Change the path to the object file directory
-		 if(IS_ABSOLUTE ${FILE})
-		    file(RELATIVE_PATH FILE ${CMAKE_CURRENT_SOURCE_DIR} ${FILE})
-		 endif()
-		 string(REPLACE ".." "__" FILE "${FILE}")
-		 string(CONCAT FILE "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/" "${FILE}")
-		 
-	     list(APPEND SOURCES "${FILE}")
-		 list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcno")
-		 list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcda")
-	  endif()	  
-   endforeach()
-   
-   # Add the intermediate coverage files to clean target
-   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_CLEAN_FILES}")
-   
-   # Find the gcov binary
-   get_filename_component(COMPILER_PATH "${CMAKE_CXX_COMPILER}" PATH) 
-   string(REGEX MATCH "^[0-9]+" GCC_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
-   find_program(GCOV_BIN NAMES gcov-${GCC_VERSION} gcov HINTS ${COMPILER_PATH})
-   
-   if(NOT GCOV_BIN)
-      message(WARNING "No coverage evaluation binary found for ${CMAKE_CXX_COMPILER}")
-	  return()
-   endif()
-   
-   # Redirect the output to null   
-   set(GCOV_NUL /dev/null)
-   if(WIN32)
-      set(GCOV_NUL NUL)
-   endif()
-   
-   # Call gcov on the generated .gcno file for each source file
-   set(BUFFER "")
-   foreach(FILE ${SOURCES})
-      get_filename_component(FILE_PATH "${FILE}" PATH)
+  # Get all files for this target
+  get_target_property(target_files ${target} SOURCES)
 
-      add_custom_command(OUTPUT ${FILE}.gcov
-         COMMAND ${GCOV_BIN} ${FILE}.gcno > ${GCOV_NUL}
-         DEPENDS ${target} ${FILE}.gcno
-         WORKING_DIRECTORY ${FILE_PATH})
+  set(SOURCES "")
+  set(ADDITIONAL_CLEAN_FILES "")
+  foreach(FILE ${target_files})
+    # Extract the (lowercase) extension e.g. "cpp"
+    get_filename_component(FILE_EXT "${FILE}" EXT)
+    string(TOLOWER "${FILE_EXT}" FILE_EXT)
+    string(SUBSTRING "${FILE_EXT}" 1 -1 FILE_EXT)
 
-      list(APPEND BUFFER ${FILE}.gcov)
-   endforeach()
+    # Filter out any non-source files e.g. header files
+    list(FIND CMAKE_CXX_SOURCE_FILE_EXTENSIONS "${FILE_EXT}" TEMP)
+    if (NOT ${TEMP} EQUAL -1)
 
-   add_custom_target(${target}-gcov DEPENDS ${BUFFER})
+      # Change the path to the object file directory
+      if(IS_ABSOLUTE ${FILE})
+        file(RELATIVE_PATH FILE ${CMAKE_CURRENT_SOURCE_DIR} ${FILE})
+      endif()
+      string(REPLACE ".." "__" FILE "${FILE}")
+      string(CONCAT FILE "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/" "${FILE}")
 
-   add_dependencies(gcov ${target}-gcov)
+      list(APPEND SOURCES "${FILE}")
+      list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcno")
+      list(APPEND ADDITIONAL_CLEAN_FILES "${FILE}.gcda")
+    endif()
+  endforeach()
+
+  # Add the intermediate coverage files to clean target
+  set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_CLEAN_FILES}")
+
+  # Find the gcov binary
+  get_filename_component(COMPILER_PATH "${CMAKE_CXX_COMPILER}" PATH)
+  string(REGEX MATCH "^[0-9]+" GCC_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
+  find_program(GCOV_BIN NAMES gcov-${GCC_VERSION} gcov HINTS ${COMPILER_PATH})
+
+  if(NOT GCOV_BIN)
+    message(WARNING "No coverage evaluation binary found for ${CMAKE_CXX_COMPILER}")
+  return()
+  endif()
+
+  # Redirect the output to null
+  set(GCOV_NUL /dev/null)
+  if(WIN32)
+    set(GCOV_NUL NUL)
+  endif()
+
+  # Call gcov on the generated .gcno file for each source file
+  set(target_depends "")
+  foreach(FILE ${SOURCES})
+    get_filename_component(FILE_PATH "${FILE}" PATH)
+
+    add_custom_command(OUTPUT ${FILE}.gcov
+    COMMAND ${GCOV_BIN} ${FILE}.gcno > ${GCOV_NUL}
+    DEPENDS ${target} ${FILE}.gcno
+    WORKING_DIRECTORY ${FILE_PATH})
+
+    list(APPEND BUFFER ${FILE}.gcov)
+  endforeach()
+
+  add_custom_target(${target}-gcov DEPENDS ${target_depends})
+  add_dependencies(gcov ${target}-gcov)
 endfunction()
-

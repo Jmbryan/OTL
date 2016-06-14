@@ -156,6 +156,6 @@ endif()
 # define the otl-core target
 otl_add_library(otl-core
                 SOURCES ${SRC} ${INTERNAL_SRC} ${PLATFORM_SRC} ${SPICE_SRC} ${SGP4_SRC}
-				FOLDER "OTL"
-				DEPENDS ${CORE_DEPENDS}
-				COVERAGE true)
+								FOLDER "OTL"
+								DEPENDS ${CORE_DEPENDS}
+								COVERAGE true)
