@@ -1,13 +1,15 @@
 OTL - Orbital Trajectory Library
 ================================
-| Linux/Mac OSX                   | Windows   |
-| ------------------------------- | --------- |
-| [![Build Status][master]][repo] |           |
-| <ul><li>Linux GCC 5.3</li><li>Linux Clang 3.8</li><li>Mac OSX XCode 7.3</li></ul>            | MSVC 2015 |
+| Linux/Mac OSX | Windows   |
+| ------------- | --------- |
+| [![Build Status][travis_master]][travis_repo] | [![Build status][appveyor_master]][appveyor_repo] |
+| <ul><li>Linux GCC 5.3</li><li>Linux Clang 3.8</li><li>Mac OSX XCode 7.3</li></ul> | <ul><li>MSVC 2015</li></ul> |
 [![codecov](https://codecov.io/gh/Jmbryan/OTL/branch/master/graph/badge.svg)](https://codecov.io/gh/Jmbryan/OTL)
 
-[master]: https://travis-ci.org/Jmbryan/OTL.svg?branch=master
-[repo]: https://travis-ci.org/Jmbryan/OTL
+[travis_master]: https://travis-ci.org/Jmbryan/OTL.svg?branch=master
+[travis_repo]: https://travis-ci.org/Jmbryan/OTL
+[appveyor_master]:(https://ci.appveyor.com/api/projects/status/y7i26l79oi2c6jbn?svg=true)
+[appveyor_repo]:(https://ci.appveyor.com/project/Jmbryan/otl)
 
 OTL is a C++11 cross-platform and object-oriented Orbital Mechanics library for general orbital trajectory computation.
 

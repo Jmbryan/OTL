@@ -6,7 +6,7 @@ environment:
   # VS 2015
   - VS_VERSION: Visual Studio 14 2015
     BUILD_TYPE: Release
-	
+    
   - VS_VERSION: Visual Studio 14 2015
     BUILD_TYPE: Debug
 
