@@ -44,7 +44,7 @@ std::string System::GetCurrentDirectory()
 #if defined (OTL_USE_TR2_FILESYSTEM)
    try
    {
-#if (_MSCV_VER >= 1900) // Visual Studio 14 2015
+#if (_MSC_VER >= 1900) // Visual Studio 14 2015
       return std::tr2::sys::current_path().string();
 #else
 	  return std::tr2::sys::current_path<std::string>();
