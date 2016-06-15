@@ -1,21 +1,61 @@
-platform:
- - x86
+version: 0.1.{build}
 
 environment:
  matrix:
   # VS 2015
-  - VS_VERSION: Visual Studio 14 2015
+  - platform: x86
+    GENERATOR: Visual Studio 14 2015
     BUILD_TYPE: Release
-
-  - VS_VERSION: Visual Studio 14 2015
+  - platform: x86
+    GENERATOR: Visual Studio 14 2015
     BUILD_TYPE: Debug
+  - platform: x64
+    GENERATOR: Visual Studio 14 2015
+    BUILD_TYPE: Release
+  - platform: x64
+    GENERATOR: Visual Studio 14 2015
+    BUILD_TYPE: Debug
+  - platform: x64
+    GENERATOR: Visual Studio 14 2015 Win64
+    BUILD_TYPE: Release
+  - platform: x64
+    GENERATOR: Visual Studio 14 2015 Win64
+    BUILD_TYPE: Debug
+
+  # VS 2013
+  - platform: x86
+    GENERATOR: Visual Studio 12 2013
+    BUILD_TYPE: Release
+  - platform: x86
+    GENERATOR: Visual Studio 12 2013
+    BUILD_TYPE: Debug
+  - platform: x64
+    GENERATOR: Visual Studio 12 2013
+    BUILD_TYPE: Release
+  - platform: x64
+    GENERATOR: Visual Studio 12 2013
+    BUILD_TYPE: Debug
+  - platform: x64
+    GENERATOR: Visual Studio 12 2013 Win64
+    BUILD_TYPE: Release
+  - platform: x64
+    GENERATOR: Visual Studio 12 2013 Win64
+    BUILD_TYPE: Debug
+
+build:
+  parallel: true
+
+# Prevent useless warnings from Xamarin targets
+# See http://help.appveyor.com/discussions/problems/4569-the-target-_convertpdbfiles-listed-in-a-beforetargets-attribute-at-c-does-not-exist-in-the-project-and-will-be-ignored
+before_build:
+  - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
 
 build_script:
  - cmake -version
  - mkdir build
  - cd build
- - cmake -G "%VS_VERSION%" -DCMAKE_BUILD_TYPE="%BUILD_TYPE%" ..
- - cmake --build . --config "%BUILD_TYPE%"
+ - cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE="%BUILD_TYPE%" ..
+ - cmake --build .
 
 test_script:
  - cd bin
