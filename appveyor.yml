@@ -56,5 +56,6 @@ build_script:
 
 test_script:
  - cd bin
+ - dir
  - if "%BUILD_TYPE%" == "Release" otl-unit-test.exe
  - if "%BUILD_TYPE%" == "Debug" otl-unit-test-d.exe
