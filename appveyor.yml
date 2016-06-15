@@ -6,7 +6,7 @@ environment:
   # VS 2015
   - VS_VERSION: Visual Studio 14 2015
     BUILD_TYPE: Release
-    
+
   - VS_VERSION: Visual Studio 14 2015
     BUILD_TYPE: Debug
 
@@ -14,10 +14,10 @@ build_script:
  - cmake -version
  - mkdir build
  - cd build
- - cmake -G "$VS_VERSION$" -DCMAKE_BUILD_TYPE="$BUILD_TYPE$" ..
- - cmake --build . --config "$BUILD_TYPE$"
- 
+ - cmake -G %VS_VERSION% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+ - cmake --build . --config %BUILD_TYPE%
+
 test_script:
  - cd bin
- - if "$BUILD_TYPE$" == "Release" otl-unit-test.exe 
- - if "$BUILD_TYPE$" == "Debug" otl-unit-test-d.exe
+ - if %BUILD_TYPE% == "Release" otl-unit-test.exe
+ - if %BUILD_TYPE% == "Debug" otl-unit-test-d.exe
