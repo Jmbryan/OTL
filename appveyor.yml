@@ -42,9 +42,6 @@ environment:
     GENERATOR: Visual Studio 12 2013 Win64
     BUILD_TYPE: Debug
 
-build:
-  parallel: true
-
 # Prevent useless warnings from Xamarin targets
 # See http://help.appveyor.com/discussions/problems/4569-the-target-_convertpdbfiles-listed-in-a-beforetargets-attribute-at-c-does-not-exist-in-the-project-and-will-be-ignored
 before_build:
