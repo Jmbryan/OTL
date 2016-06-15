@@ -20,6 +20,7 @@ matrix:
    env:
     - COMPILER=g++-5
     - BUILD_TYPE=Release
+    - VALGRIND=true
    addons: &gcc5
     apt:
      sources:
@@ -100,7 +101,7 @@ script:
  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOTL_ENABLE_CODE_COVERAGE=$COVERAGE .. && make
  - if [ "${BUILD_TYPE}" = "Release" ]; then ./bin/otl-unit-test ; fi
  - if [ "${BUILD_TYPE}" = "Debug" ]; then ./bin/otl-unit-test-d ; fi
- - if [ 'which valgrind' ]; then
+ - if [ "${VALGRIND}" = "true" ]; then
    valgrind --error-exitcode=1 --leak-check=full ./bin/otl-unit-test ;
    fi
  - if [ "${COVERAGE}" = "true" ]; then
