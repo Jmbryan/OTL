@@ -2,6 +2,12 @@ language: cpp
 dist: trusty
 sudo: required
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "Gnqnt+oMO4KpPNijgULvRZVO1iumJGMlpgYarr/wRuef0+bqur1mToBYB6gAMN7/+4jYWfAhIXvNTkwItP/aLvXRXSK+bPVBmXc7cl1HiX2tms6CtIMxwKI7ToRTVUPDgGeoqHrLzdHRM45/5LjkGlu8K2awbbaQJAKVBGlZAaHLrSgawTpfqWGr9sM9eo3JvY/e+YkbGjXH3xo91dzzhDwhmYwSA9vmnuaqK6BIcR4nGQAEYfla1eOl3y6J7VEHug+3qej9sFtrs+Sax/CLiWXuyIGK8LV2YrOqwbzzNkI0yykfFuBFbhckYxWFqo+6uP20ICFo4/AWW5uupEtq6IUWICG5HC/VkPTRPV9f1CEbqIMi629r7Km6aclQ4yNzZS+rU6CUSZ50DvbPgvu0kIxldvbCZDcxBIxP4W9Hc0ET79jnUdRHnlXwBjMIZZpZ7ayGv4h3jSleCwTaom+YaIjxDyYrtgjJE3naqrsBldBHVVJvd7jJAO2HGVFrC9HJY9W5e5xwYU/pXs8kDre2Yt4DpxkN6CFyO8EFjGCAiAFYxESlh7h62Ler1L7EXW22lpmYWa0/ReBScQ/qMB2dW+XaRRoIOksBzoZ18OQbhRMnU05k0FLtqA1dVDt8jp7ZXHIcbykZUYpPsS9ro0Is1VWkwnrAX0DSQPHlctNouL8="
+
 matrix:
  include:
 
@@ -14,19 +20,26 @@ matrix:
    env:
     - COMPILER=g++-5
     - BUILD_TYPE=Release
-    - COVERAGE=false
    addons: &gcc5
     apt:
      sources:
       - ubuntu-toolchain-r-test
      packages:
       - g++-5
+      - valgrind
+   coverity_scan:
+    project:
+     name: "Jmbryan/OTL"
+     description: "Build submitted via Travis CI"
+    notification_email: "Jmbryan10@gmail.com"
+    build_command_prepend: "make clean"
+    build_command: "make"
+    branch_pattern: coverity_scan
  - os: linux
    compiler: gcc
    env:
     - COMPILER=g++-5
     - BUILD_TYPE=Debug
-    - BUILD_EXT=-d
     - COVERAGE=true
    addons: *gcc5
 
@@ -42,7 +55,6 @@ matrix:
     - PATH=$HOME/clang-$LLVM_VERSION/bin:$PATH
     - LD_LIBRARY_PATH=$HOME/clang-$LLVM_VERSION/lib:$LD_LIBRARY_PATH
     - BUILD_TYPE=Release
-    - COVERAGE=false
    before_install:
     - wget http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O $LLVM_ARCHIVE_PATH
     - mkdir $HOME/clang-$LLVM_VERSION
@@ -57,8 +69,7 @@ matrix:
     - PATH=$HOME/clang-$LLVM_VERSION/bin:$PATH
     - LD_LIBRARY_PATH=$HOME/clang-$LLVM_VERSION/lib:$LD_LIBRARY_PATH
     - BUILD_TYPE=Debug
-    - BUILD_EXT=-d
-    - COVERAGE=false #TODO need to update gcov to match version of clang
+    #- COVERAGE=true #TODO need to update gcov to match version of clang, or remove altogether. Already running coverage on Clang for Mac OSX
    before_install:
     - wget http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O $LLVM_ARCHIVE_PATH
     - mkdir $HOME/clang-$LLVM_VERSION
@@ -67,19 +78,17 @@ matrix:
   # Mac OSX builds
   # --------------
  - os: osx
-   osx_image: xcode 7.3
+   osx_image: xcode 7
    compiler: clang
    env:
     - COMPILER=clang++
     - BUILD_TYPE=Release
-    - COVERAGE=false
  - os: osx
-   osx_image: xcode 7.3
+   osx_image: xcode 7
    compiler: clang
    env:
     - COMPILER=clang++
     - BUILD_TYPE=Debug
-    - BUILD_EXT=-d
     - COVERAGE=true
 
 script:
@@ -89,8 +98,14 @@ script:
  - mkdir build
  - cd build
  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOTL_ENABLE_CODE_COVERAGE=$COVERAGE .. && make
- - ./bin/otl-unit-test$BUILD_EXT
- - make gcov
+ - if [ "${BUILD_TYPE}" = "Release" ]; then ./bin/otl-unit-test
+ - if [ "${BUILD_TYPE}" = "Debug" ]; then ./bin/otl-unit-test-d
+ - if [ 'which valgrind' ]; then
+   valgrind --error-exitcode=1 --leak-check=full ./bin/otl-unit-test ;
+   fi
+ - if [ "${COVERAGE}" = "true" ]; then
+   make gcov ;
+   fi
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)

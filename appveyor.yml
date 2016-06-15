@@ -5,42 +5,18 @@ environment:
   # VS 2015
   - platform: x86
     GENERATOR: Visual Studio 14 2015
-    BUILD_TYPE: Release
-  - platform: x86
-    GENERATOR: Visual Studio 14 2015
-    BUILD_TYPE: Debug
   - platform: x64
     GENERATOR: Visual Studio 14 2015
-    BUILD_TYPE: Release
-  - platform: x64
-    GENERATOR: Visual Studio 14 2015
-    BUILD_TYPE: Debug
   - platform: x64
     GENERATOR: Visual Studio 14 2015 Win64
-    BUILD_TYPE: Release
-  - platform: x64
-    GENERATOR: Visual Studio 14 2015 Win64
-    BUILD_TYPE: Debug
 
   # VS 2013
   - platform: x86
     GENERATOR: Visual Studio 12 2013
-    BUILD_TYPE: Release
-  - platform: x86
-    GENERATOR: Visual Studio 12 2013
-    BUILD_TYPE: Debug
   - platform: x64
     GENERATOR: Visual Studio 12 2013
-    BUILD_TYPE: Release
-  - platform: x64
-    GENERATOR: Visual Studio 12 2013
-    BUILD_TYPE: Debug
   - platform: x64
     GENERATOR: Visual Studio 12 2013 Win64
-    BUILD_TYPE: Release
-  - platform: x64
-    GENERATOR: Visual Studio 12 2013 Win64
-    BUILD_TYPE: Debug
 
 # Prevent useless warnings from Xamarin targets
 # See http://help.appveyor.com/discussions/problems/4569-the-target-_convertpdbfiles-listed-in-a-beforetargets-attribute-at-c-does-not-exist-in-the-project-and-will-be-ignored
@@ -51,11 +27,12 @@ build_script:
  - cmake -version
  - mkdir build
  - cd build
- - cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE="%BUILD_TYPE%" ..
- - cmake --build . --config "%BUILD_TYPE%"
+ - cmake -G "%GENERATOR%" ..
+ - cmake --build . --config "Release"
+ - cmake --build . --config "Debug"
 
 test_script:
  - cd bin
  - dir
- - if "%BUILD_TYPE%" == "Release" otl-unit-test.exe
- - if "%BUILD_TYPE%" == "Debug" otl-unit-test-d.exe
+ - otl-unit-test.exe
+ - otl-unit-test-d.exe

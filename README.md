@@ -3,7 +3,7 @@ OTL - Orbital Trajectory Library
 | Linux/Mac OSX | Windows   |
 | ------------- | --------- |
 | [![Build Status][travis_master]][travis_repo] | [![Build status][appveyor_master]][appveyor_repo] |
-| <ul><li>Linux GCC 5.3</li><li>Linux Clang 3.8</li><li>Mac OSX XCode 7.3</li></ul> | <ul><li>MSVC 2015</li></ul> |
+| <ul><li>Linux GCC 5.3</li><li>Linux Clang 3.8</li><li>Mac OSX XCode 7.3</li></ul> | <ul><li>MSVC 2015</li><li>MSVC 2013</li><li>MinGW</li></ul> |
 [![codecov](https://codecov.io/gh/Jmbryan/OTL/branch/master/graph/badge.svg)](https://codecov.io/gh/Jmbryan/OTL)
 
 [travis_master]: https://travis-ci.org/Jmbryan/OTL.svg?branch=master
@@ -11,7 +11,7 @@ OTL - Orbital Trajectory Library
 [appveyor_master]:https://ci.appveyor.com/api/projects/status/y7i26l79oi2c6jbn?svg=true
 [appveyor_repo]:https://ci.appveyor.com/project/Jmbryan/otl
 
-OTL is a Modern C++ Orbital Mechanics library for general Keplerian orbit trajectory analysis.
+OTL is a Modern C++ Orbital Mechanics library for general Keplerian orbit trajectory computation.
 
 This project is very much a work in progress. Feel free to fork and do with it as you like. The license is very liberal. Some of the design and configuration is inspired by [SFML](http://www.sfml-dev.org/).
 
@@ -21,7 +21,7 @@ Features
 - Object-oriented C++11
 - Epoch system supporting multiple formats (MJD2000, Gregorian, etc.)
 - State Vector & Orbital Elements conversions
-- Multi-revolution Lamberts Solver
+- Lambert's Problem solver
 - Propagation
 - Ephemeris
    - Analytical
