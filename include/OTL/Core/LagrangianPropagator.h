@@ -23,15 +23,15 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/StateVector.h>
+#include <OTL/Core/KeplerianPropagator.h>
 
 namespace otl
 {
 
-// Forward declarations
-class Time;
+namespace keplerian
+{
 
-class OTL_CORE_API LagrangianPropagator
+class OTL_CORE_API LagrangianPropagator : public KeplerianPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -75,9 +75,6 @@ public:
    ////////////////////////////////////////////////////////////
    virtual ~LagrangianPropagator();
 
-   //virtual StateVectorType GetType() const override;
-
-//protected:
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time using the Universal Variable and Lagrange coefficients
    ///
@@ -93,9 +90,7 @@ public:
    /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, page 101
    ///
    ////////////////////////////////////////////////////////////
-   StateVector Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta);
-   StateVector Propagate(const StateVector& StateVector, double mu, const Time& timeDelta);
-   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
+   virtual StateVector PropagateStateVector(const StateVector& stateVector, double mu, const Time& timeDelta) override;
 
 private:
    ////////////////////////////////////////////////////////////
@@ -172,6 +167,8 @@ private:
    LagrangeCoefficients CalculateLagrangeCoefficients(double r0, double seconds, double sqrtMu, const UniversalVariableResult& results);
 };
 
+} // namespace keplerian
+
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
@@ -185,24 +182,22 @@ private:
 ///
 /// Usage example:
 /// \code
-/// auto propagator = std::make_shared<otl::LagrangianPropagator>();
+/// auto propagator = otl::keplerian::LagrangianPropagator();
 ///
 /// // Setup inputs
-/// StateVector StateVector;
-/// StateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
-/// StateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
-/// double mu = ASTRO_MU_SUN;                                          // Gravitational parameter of the Sun
-/// Time timeDelta = Time::Days(150.0);                                // Propagate forward 150 days
+/// StateVector stateVector;
+/// stateVector.position = Vector3d(1000.0, 2000.0, 3000.0);  // Absolute position (km)
+/// stateVector.velocity = Vector3d(1.0, 2.0, 3.0);           // Absolute velocity (km/s)
+/// double mu = ASTRO_MU_SUN;                                 // Gravitational parameter of the Sun
+/// Time timeDelta = Time::Days(150.0);                       // Propagate forward 150 days
 ///
-/// StateVector initialStateVector = StateVector;
+/// auto initialStateVector = stateVector;
 ///
 /// // Propagate the state vector forwards in time
-/// auto finalStateVector = propagator->Propagate(initialStateVector, mu, timeDelta);
+/// auto finalStateVector = propagator.PropagateStateVector(initialStateVector, mu, timeDelta);
 ///
 /// // Now propagate backwards in time to verify we end up where we started
-/// auto initialStateVector2 = propagator->Propagate(finalStateVector, mu, -timeDelta);
-///
-/// OTL_ASSERT(initialStateVector == initialStateVector2);
+/// auto initialStateVector2 = propagator.PropagateStateVector(finalStateVector, mu, -timeDelta);
 /// \endcode
 ///
 /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 8, section 2.3, pages 101-102

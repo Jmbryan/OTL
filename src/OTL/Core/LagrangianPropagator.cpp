@@ -28,6 +28,9 @@
 namespace otl
 {
 
+namespace keplerian
+{
+
 ////////////////////////////////////////////////////////////
 LagrangianPropagator::LagrangianPropagator()
 {
@@ -41,27 +44,11 @@ LagrangianPropagator::~LagrangianPropagator()
 }
 
 ////////////////////////////////////////////////////////////
-//StateVectorType LagrangianPropagator::GetType() const
-//{
-//   return StateVectorType::Cartesian;
-//}
-
-////////////////////////////////////////////////////////////
-//StateVector LagrangianPropagator::VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu)
-//{
-//   // Convert the state vector to cartesian state vector
-//   //const StateVector& StateVector = initialStateVector.ToStateVector(mu);
-//   const auto& StateVector = initialStateVector.GetStateVector();
-//
-//   // Unpack the initial cartesian vectors and time duration in seconds
-//   const Vector3d& R1 = StateVector.position;
-//   const Vector3d& V1 = StateVector.velocity;
-//   double seconds = timeDelta.Seconds();
-StateVector LagrangianPropagator::Propagate(const Vector3d& position, const Vector3d& velocity, double mu, const Time& timeDelta)
+StateVector LagrangianPropagator::PropagateStateVector(const StateVector& stateVector, double mu, const Time& timeDelta)
 {
    // Compute frequently used variables
-   const auto& R1 = position;
-   const auto& V1 = velocity;
+   const auto& R1 = stateVector.position;
+   const auto& V1 = stateVector.velocity;
    const double seconds = timeDelta.Seconds();
    const double sqrtMu = sqrt(mu);
    const double r0 = R1.norm();
@@ -79,11 +66,6 @@ StateVector LagrangianPropagator::Propagate(const Vector3d& position, const Vect
    Vector3d V2 = coeff.fDot * R1 + coeff.gDot * V1;
 
    return StateVector(R2, V2);
-}
-
-StateVector LagrangianPropagator::Propagate(const StateVector& StateVector, double mu, const Time& timeDelta)
-{
-   return Propagate(StateVector.position, StateVector.velocity, mu, timeDelta);
 }
 
 ////////////////////////////////////////////////////////////
@@ -206,5 +188,7 @@ LagrangianPropagator::LagrangeCoefficients LagrangianPropagator::CalculateLagran
 
    return coeff;
 }
+
+} // namespace keplerian
 
 } // namespace otl

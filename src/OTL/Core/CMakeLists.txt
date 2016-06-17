@@ -57,8 +57,7 @@ set(SRC
 	${INCROOT}/PhysicalProperties.h
 	${SRCROOT}/Planet.cpp
 	${INCROOT}/Planet.h
-	#${SRCROOT}/Propagator.cpp
-	#${INCROOT}/Propagator.h
+	${INCROOT}/Propagator.h
 	#${SRCROOT}/Rotation.cpp
 	#${INCROOT}/Rotation.h
 	${SRCROOT}/StateVector.cpp

@@ -352,6 +352,8 @@ public:
    ////////////////////////////////////////////////////////////
    std::string ToDetailedString(std::string prefix = "") const;
 
+   Time operator- ();
+
 private:
    double m_seconds; ///< Total number of seconds
 };
@@ -471,7 +473,7 @@ OTL_CORE_API Time& operator+=(Time& left, const Time& right);
 OTL_CORE_API Time& operator-=(Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator-=
+/// \brief Overload of binary operator+
 ///
 /// Create a new Time by adding left and right.
 ///
@@ -483,7 +485,7 @@ OTL_CORE_API Time& operator-=(Time& left, const Time& right);
 OTL_CORE_API Time operator+ (const Time& left, const Time& right);
 
 ////////////////////////////////////////////////////////////
-/// \brief Overload of binary operator-=
+/// \brief Overload of binary operator-
 ///
 /// Create a new Time by subtracting right from left.
 ///

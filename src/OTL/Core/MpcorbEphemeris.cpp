@@ -25,7 +25,7 @@
 #include <OTL/Core/MpcorbEphemeris.h>
 #include <OTL/Core/Mpcorb/MpcorbEphemerisIO.h>
 #include <OTL/Core/PhysicalProperties.h>
-#include <OTL/Core/KeplerianPropagator.h>
+#include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
 
@@ -204,7 +204,7 @@ OrbitalElements MpcorbEphemeris::GetReferenceOrbitalElements(const std::string& 
 OrbitalElements MpcorbEphemeris::VGetOrbitalElements(const std::string& name, const Epoch& epoch)
 {
    UpdateReference(name);
-   keplerian::KeplerianPropagator propagator;
+   keplerian::LagrangianPropagator propagator;
    m_cachedOrbitalElements = propagator.PropagateOrbitalElements(m_referenceOrbitalElements, ASTRO_MU_SUN, epoch - m_referenceEpoch);
    return m_cachedOrbitalElements;
 }

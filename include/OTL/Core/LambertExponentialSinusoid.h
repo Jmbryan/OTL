@@ -58,7 +58,7 @@ public:
                           int numRevolutions,
                           double mu,
                           Vector3d& initialVelocity,
-                          Vector3d& finalVelocity);
+                          Vector3d& finalVelocity) override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Evaluate all solutions to Lambert's Problem up to a maximum number of revolutions
@@ -86,7 +86,7 @@ public:
                              int maxRevolutions,
                              double mu,
                              std::vector<Vector3d>& initialVelocities,
-                             std::vector<Vector3d>& finalVelocities);
+                             std::vector<Vector3d>& finalVelocities) override;
 
 private:
    ////////////////////////////////////////////////////////////

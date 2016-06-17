@@ -289,6 +289,12 @@ std::string Time::ToDetailedString(std::string prefix) const
 }
 
 ////////////////////////////////////////////////////////////
+Time Time::operator- ()
+{
+   return Time::Seconds(-m_seconds);
+}
+
+////////////////////////////////////////////////////////////
 bool operator==(const Time& left, const Time& right)
 {
    return (IsApprox(left.Seconds(), right.Seconds(), 2.0 * MATH_EPSILON));

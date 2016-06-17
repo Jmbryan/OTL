@@ -32,7 +32,7 @@ namespace otl
 // Forward declarations
 class Time;
 struct StateVector;
-//enum class StateVectorType;
+struct OrbitalElements;
 
 class OTL_CORE_API IPropagator
 {
@@ -40,12 +40,12 @@ public:
    ////////////////////////////////////////////////////////////
    /// \brief Default constructor
    ////////////////////////////////////////////////////////////
-   IPropagator();
+   IPropagator() {}
 
    ////////////////////////////////////////////////////////////
    /// \brief Destructor
    ////////////////////////////////////////////////////////////
-   virtual ~IPropagator();
+   virtual ~IPropagator() {}
 
    ////////////////////////////////////////////////////////////
    /// \brief Propagate the state vector in time
@@ -55,33 +55,27 @@ public:
    /// achieved by setting a negative timeDelta.
    ///
    /// \param initialStateVector StateVector before propagation
-   /// \param timeDelta Propgation time (may be negative)
    /// \param mu Gravitational parameter of the central body
+   /// \param timeDelta Propgation time (may be negative)
    /// \return StateVector after propagation
    ///
    ////////////////////////////////////////////////////////////
-   //StateVector Propagate(const StateVector& initialStateVector, const Time& timeDelta, double mu);
+   virtual StateVector PropagateStateVector(const StateVector& StateVector, double mu, const Time& timeDelta) = 0;
 
-   //virtual StateVectorType GetType() const = 0;
-
-protected:
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the state vector in time
+   /// \brief Propagate the Orbital Elements in time
    ///
-   /// Calculates the final state vector after propagating
+   /// Calculates the final Orbital Elements after propagating
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
-   /// This is a pure virtual function that must be re-implemented
-   /// by the derived class.
-   ///
-   /// \param initialStateVector StateVector before propagation
-   /// \param timeDelta Propgation time (may be negative)
+   /// \param orbitalElements OrbitalElements before propagation
    /// \param mu Gravitational parameter of the central body
-   /// \return StateVector after propagation
+   /// \param timeDelta Propgation time (may be negative)
+   /// \return OrbitalElements after propagation
    ///
    ////////////////////////////////////////////////////////////
-   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) = 0;
+   virtual OrbitalElements PropagateOrbitalElements(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta) = 0;
 };
 
 typedef std::shared_ptr<IPropagator> PropagatorPointer;
@@ -89,7 +83,7 @@ typedef std::shared_ptr<IPropagator> PropagatorPointer;
 } // namespace otl
 
 ////////////////////////////////////////////////////////////
-/// \class otl::keplerian::IPropagator
+/// \class otl::IPropagator
 ///
 /// Interface class for all propagation algorithms.  
 ///

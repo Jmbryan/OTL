@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////
 
 #include <OTL/Core/Orbit.h>
-#include <OTL/Core/KeplerianPropagator.h>
+#include <OTL/Core/LagrangianPropagator.h>
 #include <OTL/Core/Conversion.h>
 #include <OTL/Core/Logger.h>
 
@@ -289,7 +289,7 @@ bool Orbit::IsDirection(Direction orbitDirection) const
 ////////////////////////////////////////////////////////////
 void Orbit::Propagate(const Time& timeDelta)
 {
-   keplerian::KeplerianPropagator propagator;
+   keplerian::LagrangianPropagator propagator;
    if (m_propertiesDirty || m_orbitalElementsDirty)
    {
       m_orbitalElements.meanAnomaly = propagator.PropagateMeanAnomaly(

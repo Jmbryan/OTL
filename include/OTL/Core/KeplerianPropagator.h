@@ -20,19 +20,15 @@
 ////////////////////////////////////////////////////////////
 
 #pragma once
-#include <OTL/Core/Export.h>
+#include <OTL/Core/Propagator.h>
 
 namespace otl
 {
 
-// Forward declarations
-struct OrbitalElements;
-class Time;
-
 namespace keplerian
 {
 
-class OTL_CORE_API KeplerianPropagator
+class OTL_CORE_API KeplerianPropagator : public IPropagator
 {
 public:
    ////////////////////////////////////////////////////////////
@@ -45,28 +41,50 @@ public:
    ////////////////////////////////////////////////////////////
    ~KeplerianPropagator();
 
-   //virtual StateVectorType GetType() const override;
-
-//protected:
    ////////////////////////////////////////////////////////////
-   /// \brief Propagate the state vector in time using Kepler's equations
+   /// \brief Propagate the Orbital Elements in time
    ///
-   /// Calculates the final state vector after propagating
+   /// Calculates the final Orbital Elements after propagating
    /// forwards or backwards in time. Backwards propgation is
    /// achieved by setting a negative timeDelta.
    ///
-   /// \param initialStateVector StateVector before propagation
-   /// \param timeDelta Propgation time (may be negative)
+   /// \param orbitalElements OrbitalElements before propagation
    /// \param mu Gravitational parameter of the central body
-   /// \returns StateVector after propagation
+   /// \param timeDelta Propgation time (may be negative)
+   /// \return OrbitalElements after propagation
    ///
-   /// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 7, section 2.3, page 89
+   ////////////////////////////////////////////////////////////
+   virtual OrbitalElements PropagateOrbitalElements(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta) override;
+  
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the Orbital Element's Mean Anomaly in time
+   ///
+   /// Calculates the Mean Anomaly of the Orbital Elements
+   /// after propagating forwards or backwards in time.
+   /// Backwards propgation is achieved by setting a negative timeDelta.
+   ///
+   /// \param orbitalElements OrbitalElements before propagation
+   /// \param mu Gravitational parameter of the central body
+   /// \param timeDelta Propgation time (may be negative)
+   /// \return Mean Anomaly after propagation
+   ///
+   ////////////////////////////////////////////////////////////
+   double PropagateMeanAnomaly(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Propagate the Mean Anomaly in time
+   ///
+   /// Calculates the Mean Anomaly after propagating
+   /// forwards or backwards in time. Backwards propgation is
+   /// achieved by setting a negative timeDelta.
+   ///
+   /// \param meanAnomaly Mean Anomaly before propagation
+   /// \param meanMotion Mean motion of the orbit
+   /// \param timeDelta Propgation time (may be negative)
+   /// \return Mean Anomaly after propagation
    ///
    ////////////////////////////////////////////////////////////
    double PropagateMeanAnomaly(double meanAnomaly, double meanMotion, const Time& timeDelta);
-   double PropagateMeanAnomaly(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
-   OrbitalElements PropagateOrbitalElements(const OrbitalElements& orbitalElements, double mu, const Time& timeDelta);
-   //virtual StateVector VPropagate(const StateVector& initialStateVector, const Time& timeDelta, double mu) override;
 };
 
 } // namespace keplerian
@@ -77,32 +95,6 @@ public:
 /// \class otl::keplerian::KeplerianPropagator
 /// \ingroup keplerian
 ///
-/// Propagates a keplerian orbit forward or backwards in
-/// time using the Kepler's equations. All orbit types are
-/// inheritely supported.
-///
-/// Usage example:
-/// \code
-/// auto propagator = std::make_shared<otl::keplerian::KeplerianPropagator>();
-///
-/// // Setup inputs
-/// OrbitalElements orbitalElements;
-/// initialOrbitalElements.semimajorAxis = ..
-/// ...
-/// double mu = ASTRO_MU_SUN;                                        // Gravitational parameter of the Sun
-/// Time timeDelta = Time::Days(150.0);                              // Propagate forward 150 days
-///
-/// StateVector initialStateVector = orbitalElements;
-///
-/// // Propagate the orbital elements forwards in time
-/// auto finalStateVector = propagator->Propagate(initialStateVector, mu, timeDelta);
-///
-/// // Now propagate backwards in time to verify we end up where we started
-/// auto initialStateVector2 = propagator->Propagate(finalStateVector, mu, -timeDelta);
-///
-/// OTL_ASSERT(initialStateVector == initialStateVector2);
-/// \endcode
-///
-/// \reference D. Vallado. Fundamentals of Astrodynamics and Applications 3rd Edition 2007. Algorithm 7, section 2.3, page 89
+/// Base class for all propagators using Keplerian motion. 
 /// 
 ////////////////////////////////////////////////////////////
