@@ -47,10 +47,11 @@ public:
    virtual ~ILambertAlgorithm() {}
 
    ////////////////////////////////////////////////////////////
-   /// \brief Evaluate Lambert's Problem
+   /// \brief Evaluate the solution to Lambert's Problem
    ///
    /// Calculates the initial and final velocity vectors given
-   /// an initial position, final position, and time delta.  
+   /// an initial position, final position, time delta, and
+   /// number of full revolutions.
    ///
    /// This is a pure virtual function that must be re-implemented
    /// by the derived class.
@@ -59,7 +60,7 @@ public:
    /// \param finalPosition Vector3d consisting of the final cartesian position
    /// \param timeDelta Total time of flight between initial and final positions
    /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
-   /// \param maxRevolutions Maximum number of revolutions allowed
+   /// \param numRevolutions Number of full revolutions performed over the timeDelta
    /// \param mu Gravitational parameter of the central body
    /// \param [out] initialVelocity Vector3d consisting of computed initial cartesian velocity
    /// \param [out] finalVelocity Vector3d consisting of computed final cartesian velocity
@@ -69,10 +70,39 @@ public:
                          const Vector3d& finalPosition,
                          const Time& timeDelta,
                          const Orbit::Direction& orbitDirection,
-                         int maxRevolutions,
+                         int numRevolutions,
                          double mu,
                          Vector3d& initialVelocity,
                          Vector3d& finalVelocity) = 0;
+
+   ////////////////////////////////////////////////////////////
+   /// \brief Evaluate all solutions to Lambert's Problem up to a maximum number of revolutions
+   ///
+   /// Calculates all initial and final velocity vectors given
+   /// an initial position, final position, time delta, and
+   /// maximum number of full revolutions allowed.
+   ///
+   /// This is a pure virtual function that must be re-implemented
+   /// by the derived class.
+   ///
+   /// \param initialPosition Vector3d consisting of the initial cartesian position
+   /// \param finalPosition Vector3d consisting of the final cartesian position
+   /// \param timeDelta Total time of flight between initial and final positions
+   /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
+   /// \param maxRevolutions Maximum number of full revolutions allowed
+   /// \param mu Gravitational parameter of the central body
+   /// \param [out] initialVelocity Vector of Vector3d's consisting of computed initial cartesian velocity
+   /// \param [out] finalVelocity Vector of Vector3d's consisting of computed final cartesian velocity
+   ///
+   ////////////////////////////////////////////////////////////
+   virtual void EvaluateAll(const Vector3d& initialPosition,
+                            const Vector3d& finalPosition,
+                            const Time& timeDelta,
+                            const Orbit::Direction& orbitDirection,
+                            int maxRevolutions,
+                            double mu,
+                            std::vector<Vector3d>& initialVelocity,
+                            std::vector<Vector3d>& finalVelocity) = 0;
 };
 
 } // namespace keplerian

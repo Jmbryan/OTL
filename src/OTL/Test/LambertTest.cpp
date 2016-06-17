@@ -3,7 +3,6 @@
 
 TEST_CASE("ExponentialSinusoidLambert", "Lambert")
 {
-    //auto lambert = std::unique_ptr<otl::ILambertAlgorithm>(new otl::ExponentialSinusoidLambert());
    auto lambert = otl::keplerian::LambertExponentialSinusoid();
 
     otl::Vector3d initialPosition, finalPosition;

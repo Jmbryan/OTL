@@ -42,7 +42,7 @@ int main()
    // Evaluate Lambert's Problem
    auto lambert = keplerian::LambertExponentialSinusoid();
    std::vector<Vector3d> V1, V2;
-   lambert.Evaluate(
+   lambert.EvaluateAll(
       R1,
       R2,
       timeDelta,

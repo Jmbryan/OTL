@@ -34,28 +34,18 @@ namespace keplerian
 class OTL_CORE_API LambertExponentialSinusoid : public ILambertAlgorithm
 {
 public:
-
-   // Lambert Revisted http://arxiv.org/pdf/1403.2705.pdf
-   void Evaluate(const Vector3d& initialPosition,
-                 const Vector3d& finalPosition,
-                 const Time& timeDelta,
-                 const Orbit::Direction& orbitDirection,
-                 int maxRevolutions,
-                 double mu,
-                 std::vector<Vector3d>& initialVelocities,
-                 std::vector<Vector3d>& finalVelocities);
-
    ////////////////////////////////////////////////////////////
-   /// \brief Evaluate Lambert's Problem
+   /// \brief Evaluate the solution to Lambert's Problem
    ///
    /// Calculates the initial and final velocity vectors given
-   /// an initial position, final position, and time delta.  
+   /// an initial position, final position, time delta, and
+   /// number of full revolutions. 
    ///
    /// \param initialPosition Vector3d consisting of the initial cartesian position
    /// \param finalPosition Vector3d consisting of the final cartesian position
    /// \param timeDelta Total time of flight between initial and final positions
    /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
-   /// \param maxRevolutions Maximum number of revolutions allowed
+   /// \param numRevolutions Number of full revolutions performed over the timeDelta
    /// \param mu Gravitational parameter of the central body
    /// \param [out] initialVelocity Vector3d consisting of computed initial cartesian velocity
    /// \param [out] finalVelocity Vector3d consisting of computed final cartesian velocity
@@ -65,16 +55,38 @@ public:
                           const Vector3d& finalPosition,
                           const Time& timeDelta,
                           const Orbit::Direction& orbitDirection,
-                          int maxRevolutions,
+                          int numRevolutions,
                           double mu,
                           Vector3d& initialVelocity,
                           Vector3d& finalVelocity);
 
-    int HouseHolder(double T, double lambda, int N, double eps, int iter_max, double& x0);
-    void ComputeDerivatives(double x, double T, double lambda, double& DT, double& DDT, double& DDDT);
-    double ComputeTimeOfFlight(double x, double lambda, int N);
-    double EvaluateHyperGeometricFunction(double a, double b, double c, double d, double tol);
-    double EvaluateHyperGeometricFunction(double z, double tol);
+    ////////////////////////////////////////////////////////////
+    /// \brief Evaluate all solutions to Lambert's Problem up to a maximum number of revolutions
+    ///
+    /// Calculates all initial and final velocity vectors given
+    /// an initial position, final position, time delta, and
+    /// maximum number of full revolutions.
+    ///
+    /// \note There should be N+1 solutions where N=maxRevolutions. 
+    ///
+    /// \param initialPosition Vector3d consisting of the initial cartesian position
+    /// \param finalPosition Vector3d consisting of the final cartesian position
+    /// \param timeDelta Total time of flight between initial and final positions
+    /// \param orbitDirection Either Orbit::Direction::Prograde or Orbit::Direciton::Retrograde
+    /// \param maxRevolutions Maximum number of full revolutions allowed
+    /// \param mu Gravitational parameter of the central body
+    /// \param [out] initialVelocities Vector of Vector3d's consisting of computed initial cartesian velocity
+    /// \param [out] finalVelocities Vector of Vector3d's consisting of computed final cartesian velocity
+    ///
+    ////////////////////////////////////////////////////////////
+    virtual void EvaluateAll(const Vector3d& initialPosition,
+                             const Vector3d& finalPosition,
+                             const Time& timeDelta,
+                             const Orbit::Direction& orbitDirection,
+                             int maxRevolutions,
+                             double mu,
+                             std::vector<Vector3d>& initialVelocities,
+                             std::vector<Vector3d>& finalVelocities);
 
 private:
    ////////////////////////////////////////////////////////////
@@ -117,30 +129,29 @@ private:
 /// using otl;
 /// using otl::keplerian;
 ///
-/// ILambertAlgorithm* lambert = new LambertExponentialSinusoid();
+/// auto lambert = otl::keplerian::LambertExponentialSinusoid();
 ///
 /// // Setup the inputs:
 /// Vector3d initialPosition = Vector3d(1.0, 2.0, 3.0);      // Initial absolute position (km)
 /// Vector3d finalPosition = Vector3d(4.0, 5.0, 6.0);        // Final absolute position (km)
 /// Time timeDelta = Time::Days(150.0);                      // Total time of flight is 150 days
 /// Orbit::Direction orbitDirection = otl::Orbit::Prograde;  // Prograde orbit
-/// int maxRevolutions = 1;                                  // Allow at most 1 full revolution
+/// int numRevolutions = 1;                                  // Require one full revolution during the transfer
 /// double mu = ASTRO_MU_SUN;                                // Gravitational parameter of the Sun
 ///
 /// // Setup the outputs:
 /// Vector3d initialVelocity, finalVelocity;
 ///
 /// // Evaluate Lambert's problem
-/// lambert->Evaluate(initialPosition,
-///                   finalPosition,
-///                   timeDelta,
-///                   orbitDirection,
-///                   maxRevolutions,
-///                   mu,
-///                   initialVelocity,
-///                   finalVelocity);
+/// lambert.Evaluate(initialPosition,
+///                  finalPosition,
+///                  timeDelta,
+///                  orbitDirection,
+///                  numRevolutions,
+///                  mu,
+///                  initialVelocity,
+///                  finalVelocity);
 ///
-/// OTL_SAFE_DELETE(lambert);
 /// \endcode
 ///
 /// \reference D. Izzo. Lambert's problem for exponential sinusoids.
