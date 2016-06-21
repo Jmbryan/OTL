@@ -353,11 +353,11 @@ private:
    double m_gravitationalParameterCentralBody;           ///< Gravitational parameter of the central body
    mutable OrbitProperties m_properties;                 ///< Additional properties of the orbit
    mutable OrbitalElements m_orbitalElements;            ///< Orbital elements
-   mutable StateVector m_StateVector;  ///< Cartesian state vector
+   mutable StateVector m_StateVector;                    ///< Cartesian state vector
    mutable Direction m_direction;                        ///< Orbit direction (e.g. Prograde or Retrograde)
    mutable bool m_propertiesDirty;                       ///< True if the orbit properties are not up-to-date
    mutable bool m_orbitalElementsDirty;                  ///< True if the orbital elements are not up-to-date
-   mutable bool m_StateVectorDirty;             ///< True if the cartesian state vector is not up-to-date
+   mutable bool m_StateVectorDirty;                      ///< True if the cartesian state vector is not up-to-date
 };
 
 ////////////////////////////////////////////////////////////

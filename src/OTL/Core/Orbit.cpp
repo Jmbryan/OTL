@@ -475,13 +475,13 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const OrbitalElements& 
    // Unpack the orbital elements
    const double a = orbitalElements.semiMajorAxis;
    const double e = orbitalElements.eccentricity;
-   //const double M = orbitalElements.meanAnomaly;
+   const double M = orbitalElements.meanAnomaly;
 
    // Compute orbit type
    properties.type = ComputeOrbitType(mu, orbitalElements);
 
    // Compute anomaly (eccentric, hyperbolic, parabolic)
-   properties.anomaly = 1.0;// ConvertMeanAnomaly2Anomaly(e, M);
+   properties.anomaly = ConvertMeanAnomalyToAnomaly(e, M);
 
    // Compute true anomaly
    properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, properties.anomaly);
@@ -524,7 +524,7 @@ Orbit::OrbitProperties ComputeOrbitProperties(double mu, const StateVector& Stat
    properties.type = ComputeOrbitType(mu, StateVector);
 
    // Compute anomaly (eccentric, hyperbolic, parabolic)
-   properties.anomaly = 1.0;// ConvertMeanAnomaly2Anomaly(e, M);
+   properties.anomaly = 1.0;// ConvertMeanAnomalyToAnomaly(e, M);
 
    // Compute true anomaly
    properties.trueAnomaly = ConvertAnomaly2TrueAnomaly(e, properties.anomaly);

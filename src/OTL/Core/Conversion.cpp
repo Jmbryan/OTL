@@ -288,6 +288,38 @@ double ConvertParabolicAnomaly2TrueAnomaly(double parabolicAnomaly)
 }
 
 ////////////////////////////////////////////////////////////
+double ConvertMeanAnomalyToAnomaly(double eccentricity, double meanAnomaly)
+{
+   if (IsCircularOrElliptical(eccentricity))
+   {
+      return ConvertMeanAnomalyToEccentricAnomaly(eccentricity, meanAnomaly);
+   }
+   else if (IsHyperbolic(eccentricity))
+   {
+      return ConvertMeanAnomalyToHyperbolicAnomaly(eccentricity, meanAnomaly);
+   }
+   else if (IsParabolic(eccentricity))
+   {
+      return meanAnomaly; // [TODO] Fix this
+   }
+
+   OTL_ERROR() << "Invalid orbit type";
+   return 0.0;
+}
+
+////////////////////////////////////////////////////////////
+double ConvertMeanAnomalyToEccentricAnomaly(double eccentricity, double meanAnomaly)
+{
+   return 2.0 * atan(sqrt((1.0 - eccentricity) / (1.0 + eccentricity)) * tan(0.5 * meanAnomaly)); // requires quadrant check?
+}
+
+////////////////////////////////////////////////////////////
+double ConvertMeanAnomalyToHyperbolicAnomaly(double eccentricity, double meanAnomaly)
+{
+   return 2.0 * atan(sqrt((eccentricity - 1.0) / (eccentricity + 1.0)) * tanh(0.5 * meanAnomaly)); // requires quadrant check?
+}
+
+////////////////////////////////////////////////////////////
 double ConvertEccentricAnomaly2MeanAnomaly(double eccentricity, double eccentricAnomaly)
 {
    return eccentricAnomaly - eccentricity * sin(eccentricAnomaly);
